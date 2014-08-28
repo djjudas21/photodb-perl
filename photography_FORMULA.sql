@@ -36,6 +36,16 @@ CREATE TABLE `FORMULA` (
   PRIMARY KEY (`formula_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `FORMULA`
+--
+
+LOCK TABLES `FORMULA` WRITE;
+/*!40000 ALTER TABLE `FORMULA` DISABLE KEYS */;
+INSERT INTO `FORMULA` VALUES (1,'Tessar',4,3,'Normal',1,NULL,NULL),(2,'Biogon',6,4,'Wide angle',NULL,NULL,NULL),(3,'Plasmat',NULL,NULL,NULL,NULL,NULL,NULL),(4,'Sonnar',6,4,'Telephoto',NULL,NULL,NULL),(5,'Planar',6,4,'Normal',NULL,NULL,NULL),(6,'Meniscus',1,1,NULL,0,0,0),(7,'Petzval',4,3,'Portrait',NULL,NULL,0),(8,'Protar',NULL,NULL,NULL,1,NULL,NULL),(9,'Cooke triplet',3,3,NULL,1,NULL,0);
+/*!40000 ALTER TABLE `FORMULA` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -46,4 +56,4 @@ CREATE TABLE `FORMULA` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-28 23:32:25
+-- Dump completed on 2014-08-28 23:24:12

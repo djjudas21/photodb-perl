@@ -30,6 +30,16 @@ CREATE TABLE `SHUTTER_TYPE` (
   PRIMARY KEY (`shutter_type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `SHUTTER_TYPE`
+--
+
+LOCK TABLES `SHUTTER_TYPE` WRITE;
+/*!40000 ALTER TABLE `SHUTTER_TYPE` DISABLE KEYS */;
+INSERT INTO `SHUTTER_TYPE` VALUES (1,'Focal plane (horizontal travelling)'),(2,'Leaf'),(3,'Rotary'),(4,'Focal plane (vertical travelling)'),(5,'Sliding');
+/*!40000 ALTER TABLE `SHUTTER_TYPE` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -40,4 +50,4 @@ CREATE TABLE `SHUTTER_TYPE` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-28 23:32:26
+-- Dump completed on 2014-08-28 23:24:13

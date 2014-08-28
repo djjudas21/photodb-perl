@@ -32,6 +32,16 @@ CREATE TABLE `BATTERY` (
   PRIMARY KEY (`battery_type`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `BATTERY`
+--
+
+LOCK TABLES `BATTERY` WRITE;
+/*!40000 ALTER TABLE `BATTERY` DISABLE KEYS */;
+INSERT INTO `BATTERY` VALUES (1,'AA',1.50,'Alkaline'),(2,'AAA',1.50,'Alkaline'),(3,'LP-E8',7.20,'Lithium-Ion'),(4,'PX625',1.35,'Mercury'),(5,'PX625A',1.50,'Alkaline'),(6,'CR123A',3.00,'Lithium'),(7,'4LR44',6.00,'Alkaline'),(8,'LP-E5',7.40,'Lithium-Ion'),(9,'D386',1.55,'Silver Oxide'),(11,'MD',1.30,'Mercury'),(12,'2CR5',6.00,'Lithium');
+/*!40000 ALTER TABLE `BATTERY` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -42,4 +52,4 @@ CREATE TABLE `BATTERY` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-28 23:32:26
+-- Dump completed on 2014-08-28 23:24:13

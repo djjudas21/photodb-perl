@@ -32,6 +32,16 @@ CREATE TABLE `LENS_TYPE` (
   PRIMARY KEY (`lens_type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `LENS_TYPE`
+--
+
+LOCK TABLES `LENS_TYPE` WRITE;
+/*!40000 ALTER TABLE `LENS_TYPE` DISABLE KEYS */;
+INSERT INTO `LENS_TYPE` VALUES (1,0,8,'Super telephoto'),(2,9,25,'Medium telephoto'),(3,40,62,'Normal'),(4,63,84,'Wide angle'),(5,85,120,'Super wide angle'),(6,121,360,'Fisheye'),(7,26,39,'Short telephoto');
+/*!40000 ALTER TABLE `LENS_TYPE` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -42,4 +52,4 @@ CREATE TABLE `LENS_TYPE` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-28 23:32:25
+-- Dump completed on 2014-08-28 23:24:12
