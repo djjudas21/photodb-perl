@@ -145,9 +145,8 @@ Inventory of types of camera body (e.g. SLR, TLR, compact, etc).
 
 Inventory of cameras.
 
-+-----------------------+----------------+------------------------------------------------------------------------------+
 | COLUMN_NAME           | COLUMN_TYPE    | COLUMN_COMMENT                                                               |
-+-----------------------+----------------+------------------------------------------------------------------------------+
+|-----------------------|----------------|------------------------------------------------------------------------------|
 | `camera_id`           | `int(11)`      | Auto-incremented camera ID                                                   |
 | `manufacturer_id`     | `int(11)`      | Denotes the manufacturer of the camera.                                      |
 | `model`               | `varchar(45)`  | The model name of the camera                                                 |
@@ -204,7 +203,6 @@ Inventory of cameras.
 | `meter_min_ev`        | `tinyint(4)`   | Lowest EV/LV the built-in meter supports                                     |
 | `meter_max_ev`        | `tinyint(4)`   | Highest EV/LV the built-in meter supports                                    |
 | `condition_id`        | `int(11)`      | Denotes the cosmetic condition of the camera                                 |
-+-----------------------+----------------+------------------------------------------------------------------------------+
 
 
  * `camera_id` Integer. PK auto-increment.
