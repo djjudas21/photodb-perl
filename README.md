@@ -145,6 +145,8 @@ Inventory of types of camera body (e.g. SLR, TLR, compact, etc).
 
 Inventory of cameras.
 
+| COLUMN_NAME           | COLUMN_TYPE    | COLUMN_COMMENT                                                               |
+|-----------------------|----------------|------------------------------------------------------------------------------|
 | `camera_id`           | `int(11)`      | Auto-incremented camera ID                                                   |
 | `manufacturer_id`     | `int(11)`      | Denotes the manufacturer of the camera.                                      |
 | `model`               | `varchar(45)`  | The model name of the camera                                                 |
