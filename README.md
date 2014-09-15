@@ -1,23 +1,55 @@
 photography-database
 ====================
 
-MySQL schema for a film photography database. This database schema can track cameras, lenses, films and negatives.
+MySQL schema for a film photography database. This database schema can track cameras, lenses, films and negatives
+to fully catalogue a collection of camera, lenses, accessories as well as negatives and prints.
 
-Some of the tables include sample data which you may wish to keep (e.g. film formats). Others are blank table structures for you to fill with your own data (e.g. cameras).
+## Usage
 
-## Installation
+### Installation
 
 This is just a set of sql files. Import them into your MySQL or MariaDB instance by running
 
 ```
-mysql -p < *.sql
+mysql -p photography < *.sql
 ```
+
+### Sample data
+
+Some of the tables in this schema contain sample data which could be useful and is not site-specific.
+This includes data like common manufacturers, lens mounts and film types. Toimport the sample data,
+first install the schema and then execute:
+
+```
+mysql -p photography < sample-data
+```
+
+### Upgrading
+
+Upgrading to a new version of the schema is tricky. You can of course do a `git pull` to get the
+latest schema files and then execute `mysql -p photography < *.sql` again, but this will discard
+all of your data. The only real upgrade path is to back up your data, drop and create the new schema,
+and re-import your data.
 
 ## Reference
 
 These subheadings are for each table, and sub-subheadings are for each field.
 
+### `BACK`
+
+Inventory of interchangeable film backs, for cameras that can use them.
+
+### `BATTERY`
+
+Inventory of types of battery commonly used in photography.
+
+### `BODY_TYPE`
+
+Inventory of types of camera body (e.g. SLR, TLR, compact, etc).
+
 ### `CAMERA`
+
+Inventory of cameras.
 
 #### `camera_id`
 Integer. PK auto-increment.
@@ -132,10 +164,140 @@ Integer. Highest EV/LV the built-in meter supports.
 #### `condition_id`
 Integer. FK on `CONDITION`, denotes the cosmetic condition of the camera.
 
+### `CONDITION`
+
+List of types of cosmetic condition ranking.
+
+### `DEVELOPER`
+
+Inventory of types of photographic developer.
+
+### `DEV_BATCH`
+
+Inventory of batches of developer that have been prepared.
+
+### `ENLARGER`
+
+Inventory of photographic enlargers.
+
+### `FILM`
+
+Inventory of rolls/sheets of film that have been exposed and developed.
+
+### `FILMSTOCK`
+
+Inventory of types of film stock available.
+
+### `FILTER`
+
+Inventory of photographic filters.
+
+### `FILTER_ADAPTER`
+
+Inventory of screw-thread filter adapters.
+
+### `FLASH`
+
+Inventory of external flash units.
+
+### `FOCUS_TYPE`
+
+List of types of focus system (e.g. SLR, rangefinder, etc)
+
+### `FORMAT`
+
+List of film formats.
+
+### `LENS`
+
+Inventory of lenses, including interchangeable camera lenses, fixed lenses in compact
+cameras and enlarger lenses.
+
+### `LENS_TYPE`
+
+Categories of lenses based on field of view.
+
+### `LIGHT_METER`
+
+Inventory of light meters.
+
+### `LOCATION`
+
+List of locations (places) where photographs have been taken.
+
+### `MANUFACTURER`
+
+List of manufacturers of photographic equipment.
+
+### `METERING_PATTERN`
+
+List of metering modes (e.g. spot, centre, average).
+
+### `METERING_TYPE`
+
+List of technologies that can be used in light metering (e.g. selenium, CdS, etc)
+
+### `MOTION_PICTURE_FILM`
+
+Inventory of motion picture (movie) films that have been exposed and developed.
+
+### `MOUNT`
+
+Inventory of lens mount systems (e.g. Canon FD, Nikon F, etc)
+
+### `MOUNT_ADAPTER`
+
+Inventory of lens mount adapters which can be used to mount lenses on other camera systems.
+
+### `NEGATIVE`
+
+Inventory of negatives (and slides) that have been exposed and developed.
+
+### `NEGATIVE_SIZE`
+
+List of negative sizes that can be made.
+
+### `PAPER_STOCK`
+
+Inventory of photographic paper stock
+
+### `PHOTOGRAPHER`
+
+List of people who have taken photographs that are catalogued in this database.
+
+### `PRINT`
+
+Inventory of photographic prints made from negatives that are catalogued in the `NEGATIVE` table.
+
+### `PROCESS`
+
+List of chemical photographic processes (e.g. C-41, E-6, etc)
+
+### `PROJECTOR`
+
+Inventory of projectors for slides and motion picture films.
+
+### `REPAIR`
+
+Log of repairs performed on cameras and lenses in this database.
+
+### `SHUTTER_TYPE`
+
+List of shutter types (e.g. leaf, focal plane, etc)
+
+### `TELECONVERTER`
+
+Inventory of teleconverters.
+
+### `TONER`
+
+Inventory of chemical toners for use when printing.
+
+
 ## Updating the schema
 
 Make your edits to the schema using any tool you prefer (I like MySQL Workbench). Then use
-the included script `dump-schema.pl` to export the dump files in the right format.
+the included Perl script `dump-schema.pl` to export the dump files in the right format.
 
 You'll need the following CPAN modules on your system:
  * `Getopt::Long` 
