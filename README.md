@@ -4,14 +4,65 @@ photography-database
 MySQL schema for a film photography database. This database schema can track cameras, lenses, films and negatives
 to fully catalogue a collection of camera, lenses, accessories as well as negatives and prints.
 
+This project is just the schema - no application is included. You can use the raw database using the MySQL command
+line, or by using an application such as [MySQL Workbench](http://www.mysql.com/products/workbench/) or
+[phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) to obtain a GUI for manipulating the tables.
+
+## Table of Contents
+
+1. [Usage](#usage)
+    * [Installation](#installation)
+    * [Sample data](#sample-data)
+    * [Upgrading](#upgrading)
+    * [Altering the schema](#altering-the-schema)
+2. [Reference](#reference)
+    * [BACK](#back)
+    * [BATTERY](#battery)
+    * [BODY_TYPE](#body_type)
+    * [CAMERA](#camera)
+    * [CONDITION](#condition)
+    * [DEVELOPER](#developer)
+    * [DEV_BATCH](#dev_batch)
+    * [ENLARGER](#enlarger)
+    * [FILM](#film)
+    * [FILMSTOCK](#filmstock)
+    * [FILTER](#filter)
+    * [FILTER_ADAPTER](#filter_adapter)
+    * [FLASH](#flash)
+    * [FOCUS_TYPE](#focus_type)
+    * [FORMAT](#format)
+    * [LENS](#lens)
+    * [LENS_TYPE](#lens_type)
+    * [LIGHT_METER](#light_meter)
+    * [LOCATION](#location)
+    * [MANUFACTURER](#manufacturer)
+    * [METERING_PATTERN](#metering_pattern)
+    * [METERING_TYPE](#metering_type)
+    * [MOTION_PICTURE_FILM](#motion_picture_film)
+    * [MOUNT](#mount)
+    * [MOUNT_ADAPTER](#mount_adapter)
+    * [NEGATIVE](#negative)
+    * [NEGATIVE_SIZE](#negative_size)
+    * [PAPER_STOCK](#paper_stock)
+    * [PHOTOGRAPHER](#photographer)
+    * [PRINT](#print)
+    * [PROCESS](#process)
+    * [PROJECTOR](#projector)
+    * [REPAIR](#repair)
+    * [SHUTTER_TYPE](#shutter_type)
+    * [TELECONVERTER](#teleconverter)
+    * [TONER](#toner)
+
+
 ## Usage
 
 ### Installation
 
-This is just a set of sql files. Import them into your MySQL or MariaDB instance by running
+This is just a set of SQL files that describe the schema for a photographic database. Import them
+into your MySQL or MariaDB instance by running the following command to create the database and tables.
 
 ```
-mysql -p photography < *.sql
+mysql -p < *.sql
 ```
 
 ### Sample data
@@ -30,6 +81,44 @@ Upgrading to a new version of the schema is tricky. You can of course do a `git 
 latest schema files and then execute `mysql -p photography < *.sql` again, but this will discard
 all of your data. The only real upgrade path is to back up your data, drop and create the new schema,
 and re-import your data.
+
+### Altering the schema
+
+This section describes how to alter the schema, and document the changes.
+
+Make your edits to the schema using any tool you prefer (I like MySQL Workbench). Then use
+the included Perl script `dump-schema.pl` to export the dump files in the right format.
+
+You'll need the following CPAN modules on your system:
+ * `Getopt::Long`
+ * `Term::ReadKey`
+ * `DBI`
+ * `DBD::MySQL`
+
+`Getopt::Long` seems to be standard in the Red Hat distribution of Perl but you'll need
+to install the others by doing:
+
+```
+yum install perl-TermReadKey perl-DBI perl-DBD-MySQL
+```
+
+Change into the working directory of the script and do the following:
+
+```
+./dump-schema.pl --hostname 192.168.0.1 --database photography --username joebloggs
+
+# Default values:
+# hostname = localhost
+# database = photography
+# username = whoever is currently logged in
+```
+
+The script **will delete all existing SQL dump files and write them out again**. Do not run
+this in random paths on your system!
+
+After running the script, check which files have been added, removed or changed, and then commit
+the diffs with a meaningful commit message.
+
 
 ## Reference
 
@@ -292,39 +381,3 @@ Inventory of teleconverters.
 ### `TONER`
 
 Inventory of chemical toners for use when printing.
-
-
-## Updating the schema
-
-Make your edits to the schema using any tool you prefer (I like MySQL Workbench). Then use
-the included Perl script `dump-schema.pl` to export the dump files in the right format.
-
-You'll need the following CPAN modules on your system:
- * `Getopt::Long` 
- * `Term::ReadKey`
- * `DBI`
- * `DBD::MySQL`
-
-`Getopt::Long` seems to be standard in the Red Hat distribution of Perl but you'll need
-to install the others by doing:
-
-```
-yum install perl-TermReadKey perl-DBI perl-DBD-MySQL
-```
-
-Change into the working directory of the script and do the following:
-
-```
-./dump-schema.pl --hostname 192.168.0.1 --database photography --username joebloggs
-
-# Default values:
-# hostname = localhost
-# database = photography
-# username = whoever is currently logged in
-```
-
-The script **will delete all existing SQL dump files and write them out again**. Do not run
-this in random paths on your system!
-
-After running the script, check which files have been added, removed or changed, and then commit
-the diffs with a meaningful commit message.
