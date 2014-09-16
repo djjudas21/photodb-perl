@@ -1,13 +1,13 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PROJECTOR` (
-  `projector_id` int(11) NOT NULL AUTO_INCREMENT,
-  `manufacturer_id` int(11) DEFAULT NULL,
-  `model` varchar(45) DEFAULT NULL,
-  `mount_id` int(11) DEFAULT NULL,
-  `negative_size_id` int(11) DEFAULT NULL,
-  `own` tinyint(1) DEFAULT NULL,
-  `cine` tinyint(1) DEFAULT NULL,
+  `projector_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of this projector',
+  `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer of this projector',
+  `model` varchar(45) DEFAULT NULL COMMENT 'Model name of this projector',
+  `mount_id` int(11) DEFAULT NULL COMMENT 'ID of the lens mount of this projector, if it has interchangeable lenses',
+  `negative_size_id` int(11) DEFAULT NULL COMMENT 'ID of the largest negative size that this projector can handle',
+  `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this projector',
+  `cine` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a cine (movie) projector',
   PRIMARY KEY (`projector_id`),
   KEY `fk_PROJECTOR_1_idx` (`manufacturer_id`),
   KEY `fk_PROJECTOR_2_idx` (`mount_id`),

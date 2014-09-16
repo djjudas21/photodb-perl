@@ -1,10 +1,10 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `LOCATION` (
-  `loc_id` int(11) NOT NULL AUTO_INCREMENT,
-  `description` varchar(45) DEFAULT NULL,
-  `latitude` decimal(9,6) DEFAULT NULL,
-  `longitude` decimal(9,6) DEFAULT NULL,
+  `loc_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of a location',
+  `description` varchar(45) DEFAULT NULL COMMENT 'Name of the location',
+  `latitude` decimal(9,6) DEFAULT NULL COMMENT 'Latitude of the location',
+  `longitude` decimal(9,6) DEFAULT NULL COMMENT 'Longitude of the location',
   PRIMARY KEY (`loc_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
