@@ -10,5 +10,5 @@ CREATE TABLE `BACK` (
   `qty_shots` int(11) DEFAULT NULL COMMENT 'Number of exposures this back can hold',
   `qty_backs` int(11) DEFAULT NULL COMMENT 'Quantity of backs like this that you own',
   PRIMARY KEY (`back_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

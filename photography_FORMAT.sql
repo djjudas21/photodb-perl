@@ -5,5 +5,5 @@ CREATE TABLE `FORMAT` (
   `format` varchar(45) DEFAULT NULL COMMENT 'The name of this film/sensor format',
   `digital` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a digital format',
   PRIMARY KEY (`format_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

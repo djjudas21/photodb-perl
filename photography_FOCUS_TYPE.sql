@@ -4,5 +4,5 @@ CREATE TABLE `FOCUS_TYPE` (
   `focus_type_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of focus type',
   `focus_type` varchar(45) DEFAULT NULL COMMENT 'Name of focus type',
   PRIMARY KEY (`focus_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

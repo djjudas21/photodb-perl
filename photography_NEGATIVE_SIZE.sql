@@ -9,5 +9,5 @@ CREATE TABLE `NEGATIVE_SIZE` (
   `area` int(11) DEFAULT NULL COMMENT 'Area of this negative size in sq. mm',
   `aspect_ratio` decimal(4,2) DEFAULT NULL COMMENT 'Aspect ratio of this negative size, expressed as a single decimal. (e.g. 3:2 is expressed as 1.5)',
   PRIMARY KEY (`negative_size_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

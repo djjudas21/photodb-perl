@@ -6,5 +6,5 @@ CREATE TABLE `TONER` (
   `toner` varchar(45) DEFAULT NULL COMMENT 'Name of the toner',
   `formulation` varchar(45) DEFAULT NULL COMMENT 'Chemical formulation of the toner',
   PRIMARY KEY (`toner_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -22,5 +22,5 @@ CREATE TABLE `FLASH` (
   `trigger_voltage` decimal(4,1) DEFAULT NULL COMMENT 'Trigger voltage of the flash, in Volts',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this flash',
   PRIMARY KEY (`flash_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;

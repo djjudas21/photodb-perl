@@ -8,5 +8,5 @@ CREATE TABLE `REPAIR` (
   `summary` varchar(100) DEFAULT NULL COMMENT 'Brief summary of the repair',
   `description` varchar(500) DEFAULT NULL COMMENT 'Longer description of the repair',
   PRIMARY KEY (`repair_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
