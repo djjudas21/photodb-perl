@@ -47,6 +47,6 @@ $sqlQuery->finish;
 # Function to do the dump
 sub dumptable {
 	my $table = shift;
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" > ${database}_${table}.sql`
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > ${database}_${table}.sql`
 
 }
