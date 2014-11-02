@@ -23,6 +23,7 @@ CREATE TABLE `CAMERA` (
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera is currently owned',
   `negative_size_id` int(11) DEFAULT NULL COMMENT 'Denotes the size of negative made by the camera',
   `shutter_type_id` int(11) DEFAULT NULL COMMENT 'Denotes type of shutter',
+  `shutter_model` varchar(45) DEFAULT NULL,
   `cable_release` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has the facility for a remote cable release',
   `viewfinder_coverage` int(11) DEFAULT NULL COMMENT 'Percentage coverage of the viewfinder. Mostly applicable to SLRs.',
   `power_drive` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has integrated motor drive',
@@ -70,15 +71,15 @@ CREATE TABLE `CAMERA` (
   KEY `fk_shutter_type_id` (`shutter_type_id`),
   KEY `fk_CAMERA_3_idx` (`condition_id`),
   KEY `fk_CAMERA_3_idx1` (`metering_pattern_id`),
-  CONSTRAINT `fk_negative_size` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_shutter_type` FOREIGN KEY (`shutter_type_id`) REFERENCES `SHUTTER_TYPE` (`shutter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_metering_pattern` FOREIGN KEY (`metering_pattern_id`) REFERENCES `METERING_PATTERN` (`metering_pattern_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_condition` FOREIGN KEY (`condition_id`) REFERENCES `CONDITION` (`condition_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_body_type` FOREIGN KEY (`body_type_id`) REFERENCES `BODY_TYPE` (`body_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_condition` FOREIGN KEY (`condition_id`) REFERENCES `CONDITION` (`condition_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_focus_type` FOREIGN KEY (`focus_type_id`) REFERENCES `FOCUS_TYPE` (`focus_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_format` FOREIGN KEY (`format_id`) REFERENCES `FORMAT` (`format_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_manufacturer` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_metering_pattern` FOREIGN KEY (`metering_pattern_id`) REFERENCES `METERING_PATTERN` (`metering_pattern_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_metering_type` FOREIGN KEY (`metering_type_id`) REFERENCES `METERING_TYPE` (`metering_type_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_mount` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=latin1;
+  CONSTRAINT `fk_mount` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_negative_size` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_shutter_type` FOREIGN KEY (`shutter_type_id`) REFERENCES `SHUTTER_TYPE` (`shutter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
