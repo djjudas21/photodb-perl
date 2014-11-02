@@ -5,6 +5,7 @@ CREATE TABLE `BATTERY` (
   `battery_name` varchar(45) DEFAULT NULL COMMENT 'Common name of the battery',
   `voltage` decimal(4,2) DEFAULT NULL COMMENT 'Nominal voltage of the battery',
   `chemistry` varchar(45) DEFAULT NULL COMMENT 'Battery chemistry (e.g. Alkaline, Lithium, etc)',
+  `other_names` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`battery_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
