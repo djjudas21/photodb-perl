@@ -226,6 +226,7 @@ Inventory of cameras.
 | `meter_min_ev`        | `tinyint(4)`   | Lowest EV/LV the built-in meter supports                                     |
 | `meter_max_ev`        | `tinyint(4)`   | Highest EV/LV the built-in meter supports                                    |
 | `condition_id`        | `int(11)`      | Denotes the cosmetic condition of the camera                                 |
+| `oem_case`            | `tinyint(1)`   | Whether the camera has an original case included                             |
 
 ### `CONDITION`
 

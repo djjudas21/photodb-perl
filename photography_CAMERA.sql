@@ -58,6 +58,7 @@ CREATE TABLE `CAMERA` (
   `meter_min_ev` tinyint(4) DEFAULT NULL COMMENT 'Lowest EV/LV the built-in meter supports',
   `meter_max_ev` tinyint(4) DEFAULT NULL COMMENT 'Highest EV/LV the built-in meter supports',
   `condition_id` int(11) DEFAULT NULL COMMENT 'Denotes the cosmetic condition of the camera',
+  `oem_case` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`camera_id`),
   KEY `manufacturer_id` (`manufacturer_id`),
   KEY `body_type_id` (`body_type_id`),
