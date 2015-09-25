@@ -567,6 +567,7 @@ Inventory of lens mount adapters which can be used to mount lenses on other came
 | `camera_mount`     | `int(11)`    | ID of the mount used between the adapter and the camera |
 | `has_optics`       | `tinyint(1)` | Whether this adapter includes optical elements          |
 | `infinity_focus`   | `tinyint(1)` | Whether this adapter allows infinity focus              |
+| `notes`            | `varchar(45) | Freeform notes field                                    |
 
 ### `NEGATIVE`
 
