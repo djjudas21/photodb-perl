@@ -10,7 +10,9 @@ CREATE TABLE `MOTION_PICTURE_FILM` (
   `fps` int(11) DEFAULT NULL COMMENT 'Frame rate of thsi movie, in fps',
   `filmstock_id` int(11) DEFAULT NULL COMMENT 'ID of the filmstock used to shoot this movie',
   `feet` int(11) DEFAULT NULL COMMENT 'Length of this movie in feet',
+  `date_loaded` date DEFAULT NULL,
   `date_shot` date DEFAULT NULL COMMENT 'Date on which this movie was shot',
+  `date_processed` date DEFAULT NULL,
   `process_id` int(11) DEFAULT NULL COMMENT 'ID of the process used to develop this film',
   `description` varchar(45) DEFAULT NULL COMMENT 'Freeform text description of this movie',
   PRIMARY KEY (`mp_film_id`)

@@ -524,20 +524,22 @@ List of technologies that can be used in light metering (e.g. selenium, CdS, etc
 
 Inventory of motion picture (movie) films that have been exposed and developed.
 
-| COLUMN_NAME    | COLUMN_TYPE   | COLUMN_COMMENT                                     |
-|----------------|---------------|----------------------------------------------------|
-| `mp_film_id`   | `int(11)`     | Unique ID for this motion picture film / movie     |
-| `title`        | `varchar(45)` | Title of this movie                                |
-| `camera_id`    | `int(11)`     | ID of the camera used to shoot this movie          |
-| `lens_id`      | `int(11)`     | ID of the lens used to shoot this movie            |
-| `format_id`    | `int(11)`     | ID of the film format on which this movie was shot |
-| `sound`        | `tinyint(1)`  | Whether this movie has sound                       |
-| `fps`          | `int(11)`     | Frame rate of thsi movie, in fps                   |
-| `filmstock_id` | `int(11)`     | ID of the filmstock used to shoot this movie       |
-| `feet`         | `int(11)`     | Length of this movie in feet                       |
-| `date_shot`    | `date`        | Date on which this movie was shot                  |
-| `process_id`   | `int(11)`     | ID of the process used to develop this film        |
-| `description`  | `varchar(45)` | Freeform text description of this movie            |
+| COLUMN_NAME      | COLUMN_TYPE   | COLUMN_COMMENT                                     |
+|------------------|---------------|----------------------------------------------------|
+| `mp_film_id`     | `int(11)`     | Unique ID for this motion picture film / movie     |
+| `title`          | `varchar(45)` | Title of this movie                                |
+| `camera_id`      | `int(11)`     | ID of the camera used to shoot this movie          |
+| `lens_id`        | `int(11)`     | ID of the lens used to shoot this movie            |
+| `format_id`      | `int(11)`     | ID of the film format on which this movie was shot |
+| `sound`          | `tinyint(1)`  | Whether this movie has sound                       |
+| `fps`            | `int(11)`     | Frame rate of thsi movie, in fps                   |
+| `filmstock_id`   | `int(11)`     | ID of the filmstock used to shoot this movie       |
+| `feet`           | `int(11)`     | Length of this movie in feet                       |
+| `date_loaded`    | `date`        | Date on which this movie was loaded                |
+| `date_shot`      | `date`        | Date on which this movie was shot                  |
+| `date_processed` | `date`        | Date on which this movie was processed             |
+| `process_id`     | `int(11)`     | ID of the process used to develop this film        |
+| `description`    | `varchar(45)` | Freeform text description of this movie            |
 
 ### `MOUNT`
 
