@@ -68,11 +68,11 @@ mysql -p < *.sql
 ### Sample data
 
 Some of the tables in this schema contain sample data which could be useful and is not site-specific.
-This includes data like common manufacturers, lens mounts and film types. Toimport the sample data,
-first install the schema and then execute:
+This includes data like common manufacturers, lens mounts and film types. To import the sample data,
+first [install the schema](#installation) and then execute:
 
 ```
-mysql -p photography < sample-data
+mysql -p photography < sample-data/*.sql
 ```
 
 ### Upgrading
