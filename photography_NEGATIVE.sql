@@ -17,6 +17,7 @@ CREATE TABLE `NEGATIVE` (
   `latitude` decimal(9,6) DEFAULT NULL COMMENT 'Latitude of the location where the picture was taken',
   `longitude` decimal(9,6) DEFAULT NULL COMMENT 'Longitude of the location where the picture was taken',
   `filename` varchar(100) DEFAULT NULL COMMENT 'Filename of the scanned image file from this negative',
+  `flash` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`negative_id`),
   KEY `fk_NEGATIVE_1` (`film_id`),
   KEY `fk_NEGATIVE_2` (`lens_id`),

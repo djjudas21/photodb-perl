@@ -20,6 +20,8 @@ CREATE TABLE `FILM` (
   `development_notes` varchar(200) DEFAULT NULL COMMENT 'Extra freeform notes about the development process',
   `film_batch` varchar(45) DEFAULT NULL COMMENT 'Batch number of the film',
   `film_expiry` date DEFAULT NULL COMMENT 'Expiry date of the film',
+  `purchase_date` date DEFAULT NULL,
+  `price` decimal(4,2) DEFAULT NULL,
   PRIMARY KEY (`film_id`),
   KEY `fk_filmstock_id` (`filmstock_id`),
   KEY `fk_camera_id` (`camera_id`),
