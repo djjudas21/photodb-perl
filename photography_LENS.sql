@@ -43,6 +43,7 @@ CREATE TABLE `LENS` (
   `source` varchar(150) DEFAULT NULL COMMENT 'Place where the lens was acquired from',
   `coating` varchar(45) DEFAULT NULL COMMENT 'Notes about the lens coating type',
   `hood` varchar(45) DEFAULT NULL COMMENT 'Model number of the compatible lens hood',
+  `hood_id` int(11) DEFAULT NULL COMMENT 'ID of the hood in the HOOD table',
   `exif_lenstype` varchar(45) DEFAULT NULL COMMENT 'EXIF LensID integer, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/',
   `rectilinear` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a rectilinear lens',
   `length` int(11) DEFAULT NULL COMMENT 'Length of lens in mm',
