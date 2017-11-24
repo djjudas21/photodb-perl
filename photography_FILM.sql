@@ -22,16 +22,17 @@ CREATE TABLE `FILM` (
   `film_expiry` date DEFAULT NULL COMMENT 'Expiry date of the film',
   `purchase_date` date DEFAULT NULL,
   `price` decimal(4,2) DEFAULT NULL,
+  `processed_by` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`film_id`),
   KEY `fk_filmstock_id` (`filmstock_id`),
   KEY `fk_camera_id` (`camera_id`),
   KEY `fk_format_id` (`format_id`),
   KEY `fk_FILM_1` (`developer_id`),
   KEY `fk_FILM_2_idx` (`photographer_id`),
-  CONSTRAINT `fk_camera_id` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_filmstock_id` FOREIGN KEY (`filmstock_id`) REFERENCES `FILMSTOCK` (`filmstock_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_FILM_1` FOREIGN KEY (`developer_id`) REFERENCES `DEVELOPER` (`developer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_FILM_2` FOREIGN KEY (`photographer_id`) REFERENCES `PHOTOGRAPHER` (`photographer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_camera_id` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_filmstock_id` FOREIGN KEY (`filmstock_id`) REFERENCES `FILMSTOCK` (`filmstock_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `FORMAT` (`format_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
