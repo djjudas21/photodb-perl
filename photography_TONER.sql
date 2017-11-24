@@ -5,6 +5,7 @@ CREATE TABLE `TONER` (
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer of the toner',
   `toner` varchar(45) DEFAULT NULL COMMENT 'Name of the toner',
   `formulation` varchar(45) DEFAULT NULL COMMENT 'Chemical formulation of the toner',
+  `stock_dilution` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`toner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
