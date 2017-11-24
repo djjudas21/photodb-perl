@@ -18,6 +18,8 @@ CREATE TABLE `FILM` (
   `dev_temp` decimal(3,1) DEFAULT NULL COMMENT 'Temperature of development',
   `dev_n` int(11) DEFAULT NULL COMMENT 'Number of the Push/Pull rating of the film, e.g. N+1, N-2',
   `development_notes` varchar(200) DEFAULT NULL COMMENT 'Extra freeform notes about the development process',
+  `film_bulk_id` int(11) DEFAULT NULL,
+  `film_bulk_loaded` date DEFAULT NULL,
   `film_batch` varchar(45) DEFAULT NULL COMMENT 'Batch number of the film',
   `film_expiry` date DEFAULT NULL COMMENT 'Expiry date of the film',
   `purchase_date` date DEFAULT NULL,
