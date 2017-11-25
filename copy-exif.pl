@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+# Find derivative images and copy exif data to them from their parents
 
 use strict;
 use warnings;
