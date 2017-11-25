@@ -1,7 +1,7 @@
 #!/usr/bin/perl -wT
 # Ensure all scans are named in the format:
 # <filmID>-<frame>-<originalfilename>.jpg
-# e.g. 182-13.img3023.jpg
+# e.g. 182-13-img3023.jpg
 
 use strict;
 use DBI;
