@@ -79,7 +79,7 @@ my $sql = q{SELECT
 	if(l.min_focal_length=l.max_focal_length, concat(l.min_focal_length, '.0 mm'), concat(n.focal_length, '.0mm')) as FocalLength,
 	if(f.exposed_at is not null, f.exposed_at, fs.iso) as ISO,
 	n.description as ImageDescription,
-	concat (date_format(n.date, '%Y:%m:%d'), ' 00:00:00') as DateTimeOriginal,
+	date_format(date, '%Y:%m:%d %H:%i:%s') as DateTimeOriginal,
 	n.latitude as GPSLatitude,
 	n.longitude as GPSLongitude
 FROM
