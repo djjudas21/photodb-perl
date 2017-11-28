@@ -5,7 +5,7 @@ CREATE TABLE `NEGATIVE` (
   `film_id` int(11) DEFAULT NULL COMMENT 'ID of the film that this negative belongs to',
   `frame` varchar(5) DEFAULT NULL COMMENT 'Frame number or code of this negative',
   `description` varchar(145) DEFAULT NULL COMMENT 'Caption of this picture',
-  `date` date DEFAULT NULL COMMENT 'Date on which this picture was taken',
+  `date` datetime DEFAULT NULL COMMENT 'Date on which this picture was taken',
   `lens_id` int(11) DEFAULT NULL COMMENT 'ID of lens used to take this picture',
   `shutter_speed` varchar(45) DEFAULT NULL COMMENT 'Shutter speed used to take this picture',
   `aperture` decimal(4,1) DEFAULT NULL COMMENT 'Aperture used to take this picture (numerical part only)',
