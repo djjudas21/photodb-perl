@@ -6,7 +6,7 @@ CREATE TABLE `MOUNT_ADAPTER` (
   `camera_mount` int(11) DEFAULT NULL COMMENT 'ID of the mount used between the adapter and the camera',
   `has_optics` tinyint(1) DEFAULT NULL COMMENT 'Whether this adapter includes optical elements',
   `infinity_focus` tinyint(1) DEFAULT NULL COMMENT 'Whether this adapter allows infinity focus',
-  `notes` varchar(45) DEFAULT NULL,
+  `notes` varchar(45) DEFAULT NULL COMMENT 'Freeform notes',
   PRIMARY KEY (`mount_adapter_id`),
   KEY `fk_MOUNT_ADAPTER_1` (`lens_mount`),
   KEY `fk_MOUNT_ADAPTER_2` (`camera_mount`),

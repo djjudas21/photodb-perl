@@ -21,9 +21,9 @@ CREATE TABLE `FLASH` (
   `ttl_compatibility` varchar(45) DEFAULT NULL COMMENT 'Compatibility of this flash''s TTL system',
   `trigger_voltage` decimal(4,1) DEFAULT NULL COMMENT 'Trigger voltage of the flash, in Volts',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this flash',
-  `ttl_metering` varchar(12) DEFAULT NULL,
-  `acquired` date DEFAULT NULL,
-  `cost` varchar(45) DEFAULT NULL,
+  `ttl_metering` varchar(12) DEFAULT NULL COMMENT 'Flash metering protocol',
+  `acquired` date DEFAULT NULL COMMENT 'Date this flash was acquired',
+  `cost` varchar(45) DEFAULT NULL COMMENT 'Purchase cost of this flash',
   PRIMARY KEY (`flash_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
