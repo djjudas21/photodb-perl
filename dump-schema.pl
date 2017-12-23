@@ -25,8 +25,8 @@ chomp $password;
 ReadMode 'normal';
 print "\n";
 
-# Find out the list of table names
-my $query = "show full tables where Table_Type = 'BASE TABLE'";
+# Find out the list of table and view names
+my $query = "show full tables";
 my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
 my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
 my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
