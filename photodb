@@ -1,0 +1,135 @@
+#!/usr/bin/perl -wT
+
+# Interactive user interface for interacting with the photography database
+
+use strict;
+use warnings;
+use Switch;
+
+# Will be called like:
+# - photodb film add
+# - photodb camera view
+#
+# Top level commands:
+# film
+# 	add (when buying a new film)
+# 	load (when loading a film into a camera)
+# 	develop (when developing one)
+# 	help
+# camera
+# 	add
+# 	help
+# 	show-lenses
+# negative
+# 	add (add a single neg to a film, asks lots of questions)
+# 	bulk-add (add lots of negatives to a film, maybe asks if they were all shot with the same lens)
+# 	help
+# lens
+# 	add
+# 	help
+# print
+# 	add (lets you choose a negative to have printed)
+# 	tone
+# 	help
+# help
+
+# Read in command
+my $command = $ARGV[0] or &nocommand;
+
+switch ($command) {
+	case 'film' {
+		print "you chose film\n";
+		my $subcommand = $ARGV[1] or &nosubcommand;
+		switch ($subcommand) {
+			case '' {
+			}
+			case 'help' {
+			}
+			else {
+			}
+		}
+	}
+	case 'camera' {
+		print "you chose camera\n";
+		my $subcommand = $ARGV[1] or &nosubcommand;
+		switch ($subcommand) {
+			case '' {
+			}
+			case 'help' {
+			}
+			else {
+			}
+		}
+	}
+	case 'negative' {
+		print "you chose negative\n";
+		my $subcommand = $ARGV[1] or &nosubcommand;
+		switch ($subcommand) {
+			case '' {
+			}
+			case 'help' {
+			}
+			else {
+			}
+		}
+	}
+	case 'lens' {
+		print "you chose lens\n";
+		my $subcommand = $ARGV[1] or &nosubcommand;
+		switch ($subcommand) {
+			case '' {
+			}
+			case 'help' {
+			}
+			else {
+			}
+		}
+	}
+	case 'print' {
+		print "you chose lens\n";
+		my $subcommand = $ARGV[1] or &nosubcommand;
+		switch ($subcommand) {
+			case '' {
+			}
+			case 'help' {
+			}
+			else {
+			}
+		}
+	}
+	case 'help' {
+		&help;
+	}
+	else {
+		&nocommand;
+	}
+}
+
+# Print a warning that this command/subcommand is not yet implemented
+sub notimplemented {
+	die "This command or subcommand is not yet implemented.\n";
+}
+
+# Quit if no command is given
+sub nocommand {
+	die "Please enter a valid command. Use '$0 help' for list of commands.\n";
+}
+
+# Quit if no subcommand is given
+sub nosubcommand {
+	die "Please enter a valid subcommand. Use '$0 $command help' for list of subcommands.\n";
+}
+
+# Print help message
+sub help {
+	my $command = shift;
+        my $subcommand = shift;
+
+	print "Photography Database UI\n";
+	print "\n";
+	print "$0 <command> <subcommand>\n";
+	print "e.g. $0 film add\n";
+	print "\n";
+	print "Valid commands: film, camera, negative, lens, print, help\n";
+	exit;
+}
