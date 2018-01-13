@@ -20,16 +20,21 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				# Add a newly-purchased film
+				&notimplemented;
 			}
 			case 'load' {
 				# Load a film into a camera
+				&notimplemented;
 			}
 			case 'develop' {
 				# Develop a film
+				&notimplemented;
 			}
 			case 'help' {
+				&notimplemented;
 			}
 			else {
+				&notimplemented;
 			}
 		}
 	}
@@ -38,12 +43,16 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
+				&notimplemented;
 			}
 			case 'show-lenses' {
+				&notimplemented;
 			}
 			case 'help' {
+				&notimplemented;
 			}
 			else {
+				&notimplemented;
 			}
 		}
 	}
@@ -53,13 +62,17 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				# Add a single neg to a film
+				&notimplemented;
 			}
 			case 'bulk-add' {
 				# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
+				&notimplemented;
 			}
 			case 'help' {
+				&notimplemented;
 			}
 			else {
+				&notimplemented;
 			}
 		}
 	}
@@ -68,10 +81,13 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
+				&notimplemented;
 			}
 			case 'help' {
+				&notimplemented;
 			}
 			else {
+				&notimplemented;
 			}
 		}
 	}
@@ -80,12 +96,16 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
+				&notimplemented;
 			}
 			case 'tone' {
+				&notimplemented;
 			}
 			case 'help' {
+				&notimplemented;
 			}
 			else {
+				&notimplemented;
 			}
 		}
 	}
