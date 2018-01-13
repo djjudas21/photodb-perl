@@ -9,29 +9,6 @@ use Switch;
 # Will be called like:
 # - photodb film add
 # - photodb camera view
-#
-# Top level commands:
-# film
-# 	add (when buying a new film)
-# 	load (when loading a film into a camera)
-# 	develop (when developing one)
-# 	help
-# camera
-# 	add
-# 	help
-# 	show-lenses
-# negative
-# 	add (add a single neg to a film, asks lots of questions)
-# 	bulk-add (add lots of negatives to a film, maybe asks if they were all shot with the same lens)
-# 	help
-# lens
-# 	add
-# 	help
-# print
-# 	add (lets you choose a negative to have printed)
-# 	tone
-# 	help
-# help
 
 # Read in command
 my $command = $ARGV[0] or &nocommand;
@@ -41,7 +18,14 @@ switch ($command) {
 		print "you chose film\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
-			case '' {
+			case 'add' {
+				# Add a newly-purchased film
+			}
+			case 'load' {
+				# Load a film into a camera
+			}
+			case 'develop' {
+				# Develop a film
 			}
 			case 'help' {
 			}
@@ -53,7 +37,9 @@ switch ($command) {
 		print "you chose camera\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
-			case '' {
+			case 'add' {
+			}
+			case 'show-lenses' {
 			}
 			case 'help' {
 			}
@@ -65,7 +51,11 @@ switch ($command) {
 		print "you chose negative\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
-			case '' {
+			case 'add' {
+				# Add a single neg to a film
+			}
+			case 'bulk-add' {
+				# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
 			}
 			case 'help' {
 			}
@@ -77,7 +67,7 @@ switch ($command) {
 		print "you chose lens\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
-			case '' {
+			case 'add' {
 			}
 			case 'help' {
 			}
@@ -89,7 +79,9 @@ switch ($command) {
 		print "you chose lens\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
-			case '' {
+			case 'add' {
+			}
+			case 'tone' {
 			}
 			case 'help' {
 			}
