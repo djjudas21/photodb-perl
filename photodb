@@ -5,6 +5,8 @@
 use strict;
 use warnings;
 use Switch;
+use DBI;
+use DBD::mysql;
 
 # Will be called like:
 # - photodb film add
@@ -20,7 +22,7 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				# Add a newly-purchased film
-				&notimplemented;
+				&listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
 			}
 			case 'load' {
 				# Load a film into a camera
@@ -144,4 +146,30 @@ sub help {
 	print "\n";
 	print "Valid commands: film, camera, negative, lens, print, help\n";
 	exit;
+}
+
+sub listchoices {
+	my $keyword = shift;
+	my $query = shift;
+
+	print "Please select a $keyword from the list:\n";
+
+	my $db = &db;
+	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute();
+
+	$sth->execute();
+	my $ref;
+
+	while ($ref = $sth->fetchrow_hashref) {
+		print "\t$ref->{id}\t$ref->{opt}\n";
+	}
+}
+
+# Connect to the database
+sub db {
+	#TODO: Move DB settings out to config file
+	my $dsn = "DBI:mysql:database=photography;host=192.168.0.2";
+	my $dbh = DBI->connect($dsn, 'photography','photography') or die "Couldn't connect to database: " . DBI->errstr;
+	return $dbh;
 }
