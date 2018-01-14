@@ -22,7 +22,9 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				# Add a newly-purchased film
-				&listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
+				my %data;
+				$data{'filmstock'} = &listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
+				$data{'format'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
 			}
 			case 'load' {
 				# Load a film into a camera
@@ -148,6 +150,7 @@ sub help {
 	exit;
 }
 
+# List arbitrary choices and return ID of the selected one
 sub listchoices {
 	my $keyword = shift;
 	my $query = shift;
@@ -164,6 +167,36 @@ sub listchoices {
 	while ($ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
+
+	# Wait for input
+	# Validate input
+	# Return input
+}
+
+# Insert a record into any table
+sub newrecord {
+	# Read in hash of values
+	my $data = shift;
+	# Read in table name
+	# Build query
+	# Execute query
+	# Display inserted row
+}
+
+# Read in arbitrary field
+sub readvalue {
+	my $prompt = shift;
+	my $type = shift;
+
+	# Prompt for input
+
+	# Validate input
+	switch ($type) {
+		case 'int' {}
+		case 'str' {}
+	}
+
+	# Return input
 }
 
 # Connect to the database
