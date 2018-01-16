@@ -24,8 +24,19 @@ switch ($command) {
 			case 'add' {
 				# Add a newly-purchased film
 				my %data;
-				$data{'filmstock'} = &listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
-				$data{'format'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
+				$data{'filmstock_id'} = &listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
+				$data{'format_id'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
+				$data{'frames'} = prompt('', 'How many frames?');
+				if (prompt('no', 'Is this film bulk-loaded?') eq 'yes') {
+					$data{'film_bulk_id'} = &listchoices('bulk film', "select film_bulk_id as id, name as opt from FILM_BULK, FILMSTOCK where FILM_BULK.filmstock_id=FILMSTOCK.filmstock_id");
+					$data{'film_bulk_loaded'} = prompt('', 'When was the film bulk-loaded?');
+				} else {
+					$data{'film_batch'} = prompt('', 'Film batch number');
+					$data{'film_expiry'} = prompt('', 'Film expiry date');
+				}
+				$data{'purchase_date'} = prompt('', 'Purchase date');
+				$data{'price'} = prompt('', 'Purchase price');
+
 				&newrecord(\%data);
 			}
 			case 'load' {
@@ -197,22 +208,6 @@ sub newrecord {
 	# Display inserted row
 }
 
-# Read in arbitrary field
-sub readvalue {
-	my $prompt = shift;
-	my $type = shift;
-
-	# Prompt for input
-
-	# Validate input
-	switch ($type) {
-		case 'int' {}
-		case 'str' {}
-	}
-
-	# Return input
-}
-
 # Connect to the database
 sub db {
 	#TODO: Move DB settings out to config file
@@ -221,7 +216,7 @@ sub db {
 	return $dbh;
 }
 
-# prompt($default, $prompt_string)
+# Prompt for an arbitrary value
 sub prompt {
         my $default = shift || "";
         my $prompt = shift;
@@ -231,9 +226,5 @@ sub prompt {
         chomp($input);
 
         my $rv = ($input eq "") ? $default:$input;
-        if ($rv eq "") {
-                print "ERR: required parameter '$prompt' not specified.  Quitting!\n\n";
-                exit;
-        }
         return $rv;
 }
