@@ -169,7 +169,7 @@ sub listchoices {
 	}
 
 	# Wait for input
-	my $input = prompt($keyword);
+	my $input = prompt('', "Please select a $keyword");
 
 	# Validate input
 	$input =~ s/[^0-9]//g;
@@ -182,7 +182,10 @@ sub listchoices {
 sub newrecord {
 	# Read in hash of values
 	my $data = shift;
+
 	# Read in table name
+	my $table = shift;
+
 	# Build query
 	# Execute query
 	# Display inserted row
@@ -210,4 +213,21 @@ sub db {
 	my $dsn = "DBI:mysql:database=photography;host=192.168.0.2";
 	my $dbh = DBI->connect($dsn, 'photography','photography') or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
+}
+
+# prompt($default, $prompt_string)
+sub prompt {
+        my $default = shift || "";
+        my $prompt = shift;
+
+        print "$prompt [$default]: ";
+        my $input = <STDIN>;
+        chomp($input);
+
+        my $rv = ($input eq "") ? $default:$input;
+        if ($rv eq "") {
+                print "ERR: required parameter '$prompt' not specified.  Quitting!\n\n";
+                exit;
+        }
+        return $rv;
 }
