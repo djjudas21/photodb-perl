@@ -7,6 +7,7 @@ use warnings;
 use Switch;
 use DBI;
 use DBD::mysql;
+use SQL::Abstract;
 use Data::Dumper;
 
 # Will be called like:
@@ -37,11 +38,18 @@ switch ($command) {
 				$data{'purchase_date'} = prompt('', 'Purchase date');
 				$data{'price'} = prompt('', 'Purchase price');
 
-				&newrecord(\%data);
+				&newrecord(\%data, 'FILM');
 			}
 			case 'load' {
 				# Load a film into a camera
-				&notimplemented;
+				my %data;
+				my $film_id = &listchoices('film', "select film_id as id, concat(MANUFACTURER.manufacturer, ' ', FILMSTOCK.name, ' (', FORMAT.format, ' format, ', if(colour, 'colour', 'B&W'), ')' ) as opt from FILM, FILMSTOCK, FORMAT, MANUFACTURER where camera_id is null and date is null and FILM.filmstock_id=FILMSTOCK.filmstock_id and FILM.format_id=FORMAT.format_id and FILMSTOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				$data{'exposed_at'} = prompt('', 'What ISO?');
+				$data{'date_loaded'} = prompt('', 'What date was this film loaded?');
+				$data{'camera_id'} = &listchoices('camera', "select CAMERA.camera_id as id, concat(MANUFACTURER.manufacturer, ' ', CAMERA.model) as opt from CAMERA, FILM, MANUFACTURER where FILM.format_id=CAMERA.format_id and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and film_id=$film_id and own=1");
+				$data{'notes'} = prompt('', 'Notes');
+
+				&updaterecord(\%data, 'FILM', "film_id=$film_id");
 			}
 			case 'develop' {
 				# Develop a film
@@ -200,12 +208,35 @@ sub newrecord {
 	my $table = shift;
 
 	# Dump data for debugging
-	print "\n\nThis is what I would have inserted:\n";
+	print "\n\nThis is what I would have inserted into $table:\n";
 	print Dumper(\$data);
 
 	# Build query
 	# Execute query
 	# Display inserted row
+}
+
+# Update an existing record in any table
+sub updaterecord {
+	# Read in hash new values
+	my $data = shift;
+
+	# Read in table name
+	my $table = shift;
+
+	# Read in condition
+	my $condition = shift;
+
+	# Dump data for debugging
+        print "\n\nThis is what I would have updated into $table where $condition:\n";
+        print Dumper(\$data);
+
+	#	my $string;
+	#foreach (keys $data) {
+	#	$string .= "$_=$data{$_}";
+	#}
+
+	#my $query = "update $table set $flattened where $condition";
 }
 
 # Connect to the database
