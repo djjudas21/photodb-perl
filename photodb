@@ -169,8 +169,13 @@ sub listchoices {
 	}
 
 	# Wait for input
+	my $input = prompt($keyword);
+
 	# Validate input
+	$input =~ s/[^0-9]//g;
+
 	# Return input
+	return $input;
 }
 
 # Insert a record into any table
