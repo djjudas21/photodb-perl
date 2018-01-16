@@ -7,6 +7,7 @@ use warnings;
 use Switch;
 use DBI;
 use DBD::mysql;
+use Data::Dumper;
 
 # Will be called like:
 # - photodb film add
@@ -25,6 +26,7 @@ switch ($command) {
 				my %data;
 				$data{'filmstock'} = &listchoices('filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
 				$data{'format'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
+				&newrecord(\%data);
 			}
 			case 'load' {
 				# Load a film into a camera
@@ -185,6 +187,10 @@ sub newrecord {
 
 	# Read in table name
 	my $table = shift;
+
+	# Dump data for debugging
+	print "\n\nThis is what I would have inserted:\n";
+	print Dumper(\$data);
 
 	# Build query
 	# Execute query
