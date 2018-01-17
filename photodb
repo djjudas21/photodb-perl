@@ -300,6 +300,7 @@ sub newrecord {
 	# Build query
 	# Execute query
 	# Display inserted row
+	# $sth->{mysql_insertid}
 }
 
 # Update an existing record in any table
