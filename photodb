@@ -81,67 +81,80 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
-				&notimplemented;
-
-$data{'manufacturer_id'}
-$data{'model'} = prompt('', 'What model is the camera?');
-$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
-$data{'format_id'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
-$data{'focus_type_id'} = &listchoices('focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
-$data{'metering'}
-$data{'coupled_metering'}
-$data{'metering_pattern_id'} = &listchoices('metering pattern', "select metering_pattern_id as id, metering_pattern as opt from METERING_PATTERN");
-$data{'metering_type_id'} = &listchoices('metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
-$data{'body_type_id'} = &listchoices('body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
-$data{'weight'}
-$data{'acquired'}
-$data{'cost'}
-$data{'introduced'}
-$data{'discontinued'}
-$data{'serial'}
-$data{'datecode'}
-$data{'manufactured'}
-$data{'own'}
-$data{'negative_size_id'} = &listchoices('negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
-$data{'shutter_type_id'} = &listchoices('shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
-$data{'shutter_model'}
-$data{'cable_release'}
-$data{'viewfinder_coverage'}
-$data{'power_drive'}
-$data{'continuous_fps'}
-$data{'video'}
-$data{'digital'}
-$data{'fixed_mount'}
-$data{'lens_id'}
-$data{'battery_qty'}
-$data{'battery_type'} = &listchoices('battery type', "select battery_type as id, concat(battery_name, ifnull(concat(' (', voltage, 'V)'), '')) as opt from BATTERY");
-$data{'notes'}
-$data{'source'}
-$data{'M'}
-$data{'Av'}
-$data{'Tv'}
-$data{'P'}
-$data{'min_shutter'}
-$data{'max_shutter'}
-$data{'bulb'}
-$data{'time'}
-$data{'min_iso'}
-$data{'max_iso'}
-$data{'af_points'}
-$data{'int_flash'}
-$data{'int_flash_gn'}
-$data{'ext_flash'}
-$data{'flash_metering'}
-$data{'pc_sync'}
-$data{'hotshoe'}
-$data{'coldshoe'}
-$data{'x_sync'}
-$data{'meter_min_ev'}
-$data{'meter_max_ev'}
-$data{'condition_id'} = &listchoices('condition', "select condition_id as id, name as opt from `CONDITION`");
-$data{'oem_case'}
-$data{'dof_preview'}
-
+				my %data;
+				#				$data{'manufacturer_id'}
+				$data{'model'} = prompt('', 'What model is the camera?');
+				$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
+				$data{'format_id'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
+				$data{'focus_type_id'} = &listchoices('focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
+				$data{'metering'} = prompt('', 'Does this camera have metering?');
+				if ($data{'metering'} == 1) {
+					$data{'coupled_metering'} = prompt('', 'Is the metering coupled?');
+					$data{'metering_pattern_id'} = &listchoices('metering pattern', "select metering_pattern_id as id, metering_pattern as opt from METERING_PATTERN");
+					$data{'metering_type_id'} = &listchoices('metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
+					$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?');
+					$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?');
+				}
+				$data{'body_type_id'} = &listchoices('body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
+				$data{'weight'} = prompt('', 'What does it weigh?');
+				$data{'acquired'} = prompt('', 'When was it acquired?');
+				$data{'cost'} = prompt('', 'What did the camera cost?');
+				$data{'introduced'} = prompt('', 'What year was the camera introduced?');
+				$data{'discontinued'} = prompt('', 'What year was the camera discontinued?');
+				$data{'serial'} = prompt('', 'What is the camera\'s serial number?');
+				$data{'datecode'} = prompt('', 'What is the camera\'s datecode?');
+				$data{'manufactured'} = prompt('', 'When was the camera manufactured?');
+				$data{'own'} = prompt(1, 'Do you own this camera?');
+				$data{'negative_size_id'} = &listchoices('negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+				$data{'shutter_type_id'} = &listchoices('shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
+				$data{'shutter_model'} = prompt('', 'What is the shutter model?');
+				$data{'cable_release'} = prompt('', 'Does this camera have a cable release?');
+				$data{'viewfinder_coverage'} = prompt('', 'What is the viewfinder coverage?');
+				$data{'power_drive'} = prompt('', 'Does this camera have power drive?');
+				if ($data{'power_drive'} == 1) {
+					$data{'continuous_fps'} = prompt('How many frames per second can this camera manage?');
+				}
+				$data{'video'} = prompt('', 'Does this camera have a video/movie function?');
+				$data{'digital'} = prompt('', 'Is this a digital camera?');
+				$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?');
+				if ($data{'fixed_mount'} == 1) {
+					#$data{'lens_id'} = &listchoices
+				}
+				$data{'battery_qty'} = prompt('', 'How many batteries does this camera take?');
+				if ($data{'battery_qty'} > 0) {
+					$data{'battery_type'} = &listchoices('battery type', "select battery_type as id, concat(battery_name, ifnull(concat(' (', voltage, 'V)'), '')) as opt from BATTERY");
+				}
+				$data{'notes'} = prompt('', 'Additional notes');
+				$data{'source'} = prompt('', 'Where was the camera acquired from?');
+				$data{'M'} = prompt('', 'Does it have manual exposure?');
+				$data{'Av'} = prompt('', 'Does it have aperture priority exposure?');
+				$data{'Tv'} = prompt('', 'Does it have shutter priority exposure?');
+				$data{'P'} = prompt('', 'Does it have program/auto exposure?');
+				$data{'min_shutter'} = prompt('', 'What\'s the fastest shutter speed?');
+				$data{'max_shutter'} = prompt('', 'What\'s the slowest shutter speed?');
+				$data{'bulb'} = prompt('', 'Does the camera have bulb exposure mode?');
+				$data{'time'} = prompt('', 'Does the camera have time exposure mode?');
+				$data{'min_iso'} = prompt('', 'What\'s the lowest ISO the camera can do?');
+				$data{'max_iso'} = prompt('', 'What\'s the highest ISO the camera can do?');
+				$data{'af_points'} = prompt('', 'How many autofocus points does the camera have?');
+				$data{'int_flash'} = prompt('', 'Does the camera have an internal flash?');
+				if ($data{'int_flash'} == 1) {
+					$data{'int_flash_gn'} = prompt('', 'What\'s the guide number of the internal flash?');
+				}
+				$data{'ext_flash'} = prompt('', 'Does the camera support an external flash?');
+				if ($data{'ext_flash'} == 1) {
+					$data{'pc_sync'} = prompt('', 'Does the camera have a PC sync socket?');
+					$data{'hotshoe'} = prompt('', 'Does the camera have a hot shoe?');
+				}
+				if ($data{'int_flash'} == 1 || $data{'ext_flash'} == 1) {
+					$data{'coldshoe'} = prompt('', 'Does the camera have a cold/accessory shoe?');
+					$data{'x_sync'} = prompt('', 'What\'s the X-sync speed?');
+					$data{'flash_metering'} = &listchoices('flash protocol', "select * from FLASH_PROTOCOL");
+				}
+				$data{'condition_id'} = &listchoices('condition', "select condition_id as id, name as opt from `CONDITION`");
+				$data{'oem_case'} = prompt('', 'Do you have the original case for this camera?');
+				$data{'dof_preview'} = prompt('', 'Does this camera have a depth-of-field preview feature?');
+				&newrecord(\%data, 'CAMERA');
 			}
 			case 'show-lenses' {
 				&notimplemented;
@@ -314,7 +327,7 @@ sub updaterecord {
 
 # Connect to the database
 sub db {
-	my %connect;
+	my $connect;
 
 	# Look for ini file
 	if (-e '~/.photodb.ini') {
@@ -332,12 +345,12 @@ sub db {
 	}
 
 	# host, schema, user, pass
-	if (!defined($connect{'host'}) || !defined($connect{'schema'}) || !defined($connect{'user'}) || !defined($connect{'pass'})) {
+	if (!defined($$connect{'photodb'}{'host'}) || !defined($$connect{'photodb'}{'schema'}) || !defined($$connect{'photodb'}{'user'}) || !defined($$connect{'photodb'}{'pass'})) {
 		print "Config file did not contain correct values";
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$connect{'schema'};host=$connect{'host'}", $connect{'user'}, $connect{'pass'})
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'photodb'}{'schema'};host=$$connect{'photodb'}{'host'}", $$connect{'photodb'}{'user'}, $$connect{'photodb'}{'pass'})
 		or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
