@@ -192,6 +192,7 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
+				my %data;
 				$data{'fixed_mount'} = prompt(0, 'Does this lens have a fixed mount?');
 				if ($data{'fixed_mount'} == 0) {
 					$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT");
@@ -252,14 +253,44 @@ switch ($command) {
 		}
 	}
 	case 'print' {
-		print "you chose lens\n";
+		print "you chose print\n";
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
-				&notimplemented;
+				my %data;
+				$data{'negative_id'} = prompt('', 'Negative ID to print from');
+				$data{'date'} = prompt('', 'Date that the print was made');
+				$data{'paper_stock_id'} = &listchoices('paper stock', "select paper_stock_id as id, concat(manufacturer, ' ', name, ifnull(concat(' (', finish, ')'), '')) as opt from PAPER_STOCK, MANUFACTURER where PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				$data{'height'} = prompt('', 'Height of the print (inches)');
+				$data{'width'} = prompt('', 'Width of the print (inches)');
+				$data{'aperture'} = prompt('', 'Aperture used on enlarging lens');
+				$data{'exposure_time'} = prompt('', 'Exposure time (s)');
+				$data{'filtration_grade'} = prompt('', 'Filtration grade');
+				$data{'development_time'} = prompt('', 'Development time (s)');
+				$data{'enlarger_id'} = &listchoices('enlarger', "select enlarger_id as id, concat(manufacturer, ' ', enlarger) as opt from ENLARGER, MANUFACTURER where ENLARGER.manufacturer_id=MANUFACTURER.manufacturer_id and lost is null");
+				$data{'lens_id'} = &listchoices('enlarger lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MOUNT, MANUFACTURER where LENS.mount_id=MOUNT.mount_id and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and purpose='Enlarger' and own=1");
+				$data{'developer_id'} = &listchoices('developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1");
+				$data{'fine'} = prompt('', 'Is this a fine print?');
+				$data{'notes'} = prompt('', 'Notes');
+				&newrecord(\%data, 'PRINT');
 			}
 			case 'tone' {
-				&notimplemented;
+				my %data;
+				my $print_id = prompt('', 'Which print did you tone?');
+				$data{'bleach_time'} = prompt('How long did you bleach for? (HH:MM:SS)');
+				$data{'toner_id'} = &listchoices('toner', "select toner_id as id, toner as opt from TONER");
+				$data{'toner_dilution'} = prompt('', 'What was the dilution of the first toner?');
+				$data{'toner_time'} = prompt('How long did you tone for? (HH:MM:SS)');
+				$data{'2nd_toner_id'} = &listchoices('toner', "select toner_id as id, toner as opt from TONER");
+				$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?');
+				$data{'2nd_toner_time'} = prompt('How long did you tone for? (HH:MM:SS)');
+                                &updaterecord(\%data, 'PRINT', "print_id=$print_id");
+			}
+			case 'sell' {
+				$data{'own'} = 0;
+				$data{'location'} = prompt('', 'What happened to the print?');
+				$data{'sold_price'} = prompt('', 'What price was the print sold for?');
+                                &updaterecord(\%data, 'PRINT', "print_id=$print_id");
 			}
 			case 'help' {
 				&notimplemented;
