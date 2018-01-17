@@ -82,7 +82,7 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				my %data;
-				#				$data{'manufacturer_id'}
+				$data{'manufacturer_id'} = &listchoices('manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
 				$data{'model'} = prompt('', 'What model is the camera?');
 				$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
 				$data{'format_id'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
