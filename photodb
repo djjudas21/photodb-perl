@@ -54,7 +54,19 @@ switch ($command) {
 			}
 			case 'develop' {
 				# Develop a film
-				&notimplemented;
+				my %data;
+				my $film_id = &listchoices('film', "select film_id as id, concat(MANUFACTURER.manufacturer, ' ', FILMSTOCK.name, ' (', FORMAT.format, ' format, ', if(colour, 'colour', 'B&W'), ')' ) as opt from FILM, FILMSTOCK, FORMAT, MANUFACTURER where camera_id is not null and date is null and FILM.filmstock_id=FILMSTOCK.filmstock_id and FILM.format_id=FORMAT.format_id and FILMSTOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				$data{'date'} = prompt('', 'What date was this film processed?');
+				$data{'developer_id'} = &listchoices('developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1");
+				$data{'directory'} = prompt('', 'What directory are these scans in?');
+				$data{'photographer_id'} = &listchoices('photographer', "select photographer_id as id, name as opt from PHOTOGRAPHER");
+				$data{'dev_uses'} = prompt('', 'How many previous uses has the developer had?');
+				$data{'dev_time'} = prompt('', 'How long was the film developed for?');
+				$data{'dev_temp'} = prompt('', 'What temperature was the developer?');
+				$data{'dev_n'} = prompt('', 'What push/pull was used?');
+				$data{'development_notes'} = prompt('', 'Any other development notes');
+				$data{'processed_by'} = prompt('', 'Who developed the film?');
+				&updaterecord(\%data, 'FILM', "film_id=$film_id");
 			}
 			case 'help' {
 				&notimplemented;
