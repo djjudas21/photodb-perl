@@ -8,6 +8,7 @@ use Switch;
 use DBI;
 use DBD::mysql;
 use SQL::Abstract;
+use Config::IniHash;
 use Data::Dumper;
 
 # Will be called like:
@@ -241,9 +242,31 @@ sub updaterecord {
 
 # Connect to the database
 sub db {
-	#TODO: Move DB settings out to config file
-	my $dsn = "DBI:mysql:database=photography;host=192.168.0.2";
-	my $dbh = DBI->connect($dsn, 'photography','photography') or die "Couldn't connect to database: " . DBI->errstr;
+	my %connect;
+
+	# Look for ini file
+	if (-e '~/.photodb.ini') {
+		$connect = ReadINI('~/.photodb.ini');
+	}
+	elsif (-e 'photodb.ini') {
+                $connect = ReadINI('photodb.ini');
+        }
+	elsif (-e '/etc/photodb.ini') {
+		$connect = ReadINI('/etc/photodb.ini');
+	}
+	else {
+		print "Could not find config file";
+		exit;
+	}
+
+	# host, schema, user, pass
+	if (!defined($connect{'host'}) || !defined($connect{'schema'}) || !defined($connect{'user'}) || !defined($connect{'pass'})) {
+		print "Config file did not contain correct values";
+		exit;
+	}
+
+	my $dbh = DBI->connect("DBI:mysql:database=$connect{'schema'};host=$connect{'host'}", $connect{'user'}, $connect{'pass'})
+		or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
 
