@@ -82,6 +82,66 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				&notimplemented;
+
+$data{'manufacturer_id'}
+$data{'model'} = prompt('', 'What model is the camera?');
+$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
+$data{'format_id'} = &listchoices('format', "select format_id as id, format as opt from FORMAT");
+$data{'focus_type_id'} = &listchoices('focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
+$data{'metering'}
+$data{'coupled_metering'}
+$data{'metering_pattern_id'} = &listchoices('metering pattern', "select metering_pattern_id as id, metering_pattern as opt from METERING_PATTERN");
+$data{'metering_type_id'} = &listchoices('metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
+$data{'body_type_id'} = &listchoices('body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
+$data{'weight'}
+$data{'acquired'}
+$data{'cost'}
+$data{'introduced'}
+$data{'discontinued'}
+$data{'serial'}
+$data{'datecode'}
+$data{'manufactured'}
+$data{'own'}
+$data{'negative_size_id'} = &listchoices('negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+$data{'shutter_type_id'} = &listchoices('shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
+$data{'shutter_model'}
+$data{'cable_release'}
+$data{'viewfinder_coverage'}
+$data{'power_drive'}
+$data{'continuous_fps'}
+$data{'video'}
+$data{'digital'}
+$data{'fixed_mount'}
+$data{'lens_id'}
+$data{'battery_qty'}
+$data{'battery_type'} = &listchoices('battery type', "select battery_type as id, concat(battery_name, ifnull(concat(' (', voltage, 'V)'), '')) as opt from BATTERY");
+$data{'notes'}
+$data{'source'}
+$data{'M'}
+$data{'Av'}
+$data{'Tv'}
+$data{'P'}
+$data{'min_shutter'}
+$data{'max_shutter'}
+$data{'bulb'}
+$data{'time'}
+$data{'min_iso'}
+$data{'max_iso'}
+$data{'af_points'}
+$data{'int_flash'}
+$data{'int_flash_gn'}
+$data{'ext_flash'}
+$data{'flash_metering'}
+$data{'pc_sync'}
+$data{'hotshoe'}
+$data{'coldshoe'}
+$data{'x_sync'}
+$data{'meter_min_ev'}
+$data{'meter_max_ev'}
+$data{'condition_id'} = &listchoices('condition', "select condition_id as id, name as opt from `CONDITION`");
+$data{'oem_case'}
+$data{'dof_preview'}
+
 			}
 			case 'show-lenses' {
 				&notimplemented;
