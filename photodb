@@ -192,7 +192,56 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand;
 		switch ($subcommand) {
 			case 'add' {
-				&notimplemented;
+				$data{'fixed_mount'} = prompt(0, 'Does this lens have a fixed mount?');
+				if ($data{'fixed_mount'} == 0) {
+					$data{'mount_id'} = &listchoices('mount', "select mount_id as id, mount as opt from MOUNT");
+				}
+				$data{'zoom'} = prompt(0, 'Is this a zoom lens?');
+				if ($data{'zoom'} == 0) {
+					$data{'min_focal_length'} = prompt('', 'What is the focal length?');
+					$data{'max_focal_length'} = $data{'min_focal_length'};
+				} else {
+					$data{'min_focal_length'} = prompt('', 'What is the minimum focal length?');
+				        $data{'max_focal_length'} = prompt('', 'What is the maximum focal length?');
+				}
+				$data{'manufacturer_id'} = &listchoices('manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+				$data{'model'} = prompt('', 'What is the lens model?');
+				$data{'closest_focus'} = prompt('', 'How close can the lens focus? (cm)');
+				$data{'max_aperture'} = prompt('', 'What is the largest lens aperture?');
+				$data{'min_aperture'} = prompt('', 'What is the smallest lens aperture?');
+				$data{'elements'} = prompt('', 'How many elements does the lens have?');
+				$data{'groups'} = prompt('', 'How many groups are these elements in?');
+				$data{'weight'} = prompt('', 'What is the weight of the lens? (g)');
+				$data{'nominal_min_angle_diag'} = prompt('', 'What is the minimum diagonal angle of view?');
+				$data{'nominal_max_angle_diag'} = prompt('', 'What is the maximum diagonal angle of view?');
+				$data{'aperture_blades'} = prompt('', 'How many aperture blades does the lens have?');
+				$data{'autofocus'} = prompt('', 'Does this lens have autofocus?');
+				$data{'filter_thread'} = prompt('', 'What is the diameter of the filter thread? (mm)');
+				$data{'magnification'} = prompt('', 'What is the maximum magnification possible with this lens?');
+				$data{'url'} = prompt('', 'Informational URL for this lens');
+				$data{'serial'} = prompt('', 'What is the serial number of the lens?');
+				$data{'date_code'} = prompt('', 'What is the date code of the lens?');
+				$data{'introduced'} = prompt('', 'When was this lens introduced?');
+				$data{'discontinued'} = prompt('', 'When was this lens discontinued?');
+				$data{'manufactured'} = prompt('', 'When was this lens manufactured?');
+				$data{'negative_size_id'} = &listchoices('negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+				$data{'acquired'} = prompt('', 'When was this lens acquired?');
+				$data{'cost'} = prompt('', 'How much did this lens cost?');
+				$data{'notes'} = prompt('', 'Notes');
+				$data{'own'} = prompt(1, 'Do you own this lens?');
+				$data{'source'} = prompt('', 'Where was this lens sourced from?');
+				$data{'coating'} = prompt('', 'Does this lens have any coating?');
+				$data{'hood'} = prompt('', 'What is the model number of the suitable hood for this lens?');
+				$data{'hood_id'} = &listchoices('lens hood', "select hood_id as id, model as opt from HOOD");
+				$data{'exif_lenstype'} = prompt('', 'EXIF lens type code');
+				$data{'rectilinear'} = prompt(1, 'Is this a rectilinear lens?');
+				$data{'length'} = prompt('', 'How long is this lens? (mm)');
+				$data{'diameter'} = prompt('', 'How wide is this lens? (mm)');
+				$data{'condition_id'} = &listchoices('condition', "select condition_id as id, name as opt from `CONDITION`");
+				$data{'image_circle'} = prompt('', 'What is the diameter of the image circle?');
+				$data{'formula'} = prompt('', 'Does this lens have a named optical formula?');
+				$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?');
+				&newrecord(\%data, 'CAMERA');
 			}
 			case 'help' {
 				&notimplemented;
