@@ -407,6 +407,10 @@ sub updaterecord {
 	my $where = shift;
 
 	# Quit if where is null
+	if (!defined($where)) {
+		print "No valid where clause, not going to do a risky UPDATE\n";
+		exit;
+	}
 
 	# Dump data for debugging
         print "\n\nThis is what I would have updated into $table where $where:\n";
