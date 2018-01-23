@@ -276,17 +276,22 @@ switch ($command) {
 			}
 			case 'tone' {
 				my %data;
-				my $print_id = prompt('', 'Which print did you tone?');
-				$data{'bleach_time'} = prompt('How long did you bleach for? (HH:MM:SS)');
+				my %where;
+				$where{'print_id'} = prompt('', 'Which print did you tone?');
+				$data{'bleach_time'} = prompt('', 'How long did you bleach for? (HH:MM:SS)');
 				$data{'toner_id'} = &listchoices('toner', "select toner_id as id, toner as opt from TONER");
 				$data{'toner_dilution'} = prompt('', 'What was the dilution of the first toner?');
-				$data{'toner_time'} = prompt('How long did you tone for? (HH:MM:SS)');
-				$data{'2nd_toner_id'} = &listchoices('toner', "select toner_id as id, toner as opt from TONER");
-				$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?');
-				$data{'2nd_toner_time'} = prompt('How long did you tone for? (HH:MM:SS)');
-                                &updaterecord(\%data, 'PRINT', "print_id=$print_id");
+				$data{'toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)');
+				if (prompt('no', 'Did you use a second toner?') eq 'yes') {
+					$data{'2nd_toner_id'} = &listchoices('toner', "select toner_id as id, toner as opt from TONER");
+					$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?');
+					$data{'2nd_toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)');
+				}
+                                &updaterecord(\%data, 'PRINT', \%where);
 			}
 			case 'sell' {
+				my %data;
+				my $print_id = prompt('', 'Which print did you sell?');
 				$data{'own'} = 0;
 				$data{'location'} = prompt('', 'What happened to the print?');
 				$data{'sold_price'} = prompt('', 'What price was the print sold for?');
