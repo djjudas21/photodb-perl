@@ -383,7 +383,14 @@ sub newrecord {
 	print Dumper(\$data);
 
 	# Build query
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->insert($table, $data);
+	print "And here's the SQL I've generated:\n$stmt\n";
+
 	# Execute query
+	# my $sth = $dbh->prepare($stmt);
+        # $sth->execute(@bind);
+
 	# Display inserted row
 	# $sth->{mysql_insertid}
 }
@@ -396,19 +403,28 @@ sub updaterecord {
 	# Read in table name
 	my $table = shift;
 
-	# Read in condition
-	my $condition = shift;
+	# Read in where condition
+	my $where = shift;
+
+	# Quit if where is null
 
 	# Dump data for debugging
-        print "\n\nThis is what I would have updated into $table where $condition:\n";
+        print "\n\nThis is what I would have updated into $table where $where:\n";
         print Dumper(\$data);
 
-	#	my $string;
-	#foreach (keys $data) {
-	#	$string .= "$_=$data{$_}";
-	#}
+        # Build query
+        my $sql = SQL::Abstract->new;
+        my($stmt, @bind) = $sql->update($table, $data, $where);
+        print "And here's the SQL I've generated:\n$stmt\n";
+	local $" = ',';
+	print "@bind\n";
 
-	#my $query = "update $table set $flattened where $condition";
+	# Execute query
+	# my $sth = $dbh->prepare($stmt);
+        # $sth->execute(@bind);
+
+        # Display inserted row
+        # $sth->{mysql_insertid}
 }
 
 # Connect to the database
