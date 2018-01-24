@@ -15,6 +15,9 @@ use Data::Dumper;
 # - photodb film add
 # - photodb camera view
 
+# Connect to DB - for now this is a global
+my $db = &db;
+
 # Read in command
 my $command = $ARGV[0] or &nocommand;
 
@@ -173,7 +176,23 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				# Add a single neg to a film
-				&notimplemented;
+				my %data;
+				$data{'film_id'} = prompt('', 'Which film does this negative belong to?');
+				$data{'frame'} = prompt('', 'Frame number');
+				$data{'description'} = prompt('', 'Caption');
+				$data{'date'} = prompt('', 'What date was this negative taken?');
+				$data{'lens_id'} = &listchoices('lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
+				$data{'shutter_speed'} = prompt('', 'Shutter speed');
+				$data{'aperture'} = prompt('', 'Aperture');
+				$data{'filter_id'} = &listchoices('filter', "select filter_id as id, concat(type, ' (', thread, 'mm)') as opt from FILTER");
+				$data{'teleconverter_id'} = &listchoices('teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', TELECONVERTER.model, ' (', factor, 'x)') as opt from TELECONVERTER, CAMERA, FILM, MANUFACTURER where CAMERA.mount_id=TELECONVERTER.mount_id and FILM.camera_id=CAMERA.camera_id and MANUFACTURER.manufacturer_id=TELECONVERTER.manufacturer_id and film_id=$data{'film_id'}");
+				$data{'notes'} = prompt('', 'Extra notes');
+				$data{'mount_adapter_id'} = &listchoices('mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER, CAMERA, FILM, MOUNT where CAMERA.mount_id=MOUNT_ADAPTER.camera_mount and FILM.camera_id=CAMERA.camera_id and MOUNT.mount_id=MOUNT_ADAPTER.lens_mount and film_id=$data{'film_id'}");
+				$data{'focal_length'} = prompt('', 'Focal length');
+				$data{'latitude'} = prompt('', 'Latitude');
+				$data{'longitude'} = prompt('', 'Longitude');
+				$data{'flash'} = prompt(0, 'Was flash used?');
+				&newrecord(\%data, 'NEGATIVE');
 			}
 			case 'bulk-add' {
 				# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
@@ -349,7 +368,6 @@ sub listchoices {
 
 	print "Please select a $keyword from the list:\n";
 
-	my $db = &db;
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
