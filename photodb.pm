@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
+use Data::Dumper;
+use Config::IniHash;
 
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices);
 
@@ -52,6 +54,8 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
+	my $db = shift;
+
         # Read in hash new values
         my $data = shift;
 
@@ -84,15 +88,14 @@ sub updaterecord {
         print "@bind\n";
 
         # Execute query
-        # my $sth = $dbh->prepare($stmt);
+        # my $sth = $db->prepare($stmt);
         # $sth->execute(@bind);
-
-        # Display inserted row
-        # $sth->{mysql_insertid}
 }
 
 # Insert a record into any table
 sub newrecord {
+	my $db = shift;
+
         # Read in hash of values
         my $data = shift;
 
@@ -113,12 +116,14 @@ sub newrecord {
         my($stmt, @bind) = $sql->insert($table, $data);
         print "And here's the SQL I've generated:\n$stmt\n";
 
-        # Execute query
-        # my $sth = $dbh->prepare($stmt);
-        # $sth->execute(@bind);
+	# Execute query
+	my $sth = $db->prepare($stmt);
+	$sth->execute(@bind);
 
-        # Display inserted row
-        # $sth->{mysql_insertid}
+	# Display inserted row
+        my $insertedrow = $sth->{mysql_insertid};
+        print "Inserted $table $insertedrow\n";
+
 }
 
 # Print a warning that this command/subcommand is not yet implemented
@@ -133,6 +138,7 @@ sub nocommand {
 
 # Quit if no subcommand is given
 sub nosubcommand {
+	my $command = shift;
         die "Please enter a valid subcommand. Use '$0 $command help' for list of subcommands.\n";
 }
 
@@ -152,6 +158,7 @@ sub help {
 
 # List arbitrary choices and return ID of the selected one
 sub listchoices {
+	my $db = shift;
         my $keyword = shift;
         my $query = shift;
 
