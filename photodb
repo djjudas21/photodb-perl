@@ -223,7 +223,7 @@ switch ($command) {
 					$data{'max_focal_length'} = $data{'min_focal_length'};
 				} else {
 					$data{'min_focal_length'} = prompt('', 'What is the minimum focal length?');
-				        $data{'max_focal_length'} = prompt('', 'What is the maximum focal length?');
+					$data{'max_focal_length'} = prompt('', 'What is the maximum focal length?');
 				}
 				$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
 				$data{'model'} = prompt('', 'What is the lens model?');
@@ -307,7 +307,7 @@ switch ($command) {
 					$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?');
 					$data{'2nd_toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)');
 				}
-                                &updaterecord($db, \%data, 'PRINT', \%where);
+				&updaterecord($db, \%data, 'PRINT', \%where);
 			}
 			case 'sell' {
 				my %data;
@@ -315,7 +315,7 @@ switch ($command) {
 				$data{'own'} = 0;
 				$data{'location'} = prompt('', 'What happened to the print?');
 				$data{'sold_price'} = prompt('', 'What price was the print sold for?');
-                                &updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+				&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
 			}
 			case 'help' {
 				&notimplemented;
