@@ -88,8 +88,8 @@ sub updaterecord {
 	print "@bind\n";
 
 	# Execute query
-	# my $sth = $db->prepare($stmt);
-	# $sth->execute(@bind);
+	my $sth = $db->prepare($stmt);
+	$sth->execute(@bind);
 }
 
 # Insert a record into any table
