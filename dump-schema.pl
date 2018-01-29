@@ -31,8 +31,8 @@ my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
 my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
 my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 
-# Delete all existing *.sql files in this current directory
-unlink <*.sql>;
+# Delete all existing *.sql files in the schema subdir
+unlink <schema/*.sql>;
 
 # Dump each table to its own file
 while (my @row= $sqlQuery->fetchrow_array()) {
@@ -47,6 +47,6 @@ $sqlQuery->finish;
 # Function to do the dump
 sub dumptable {
 	my $table = shift;
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > ${database}_${table}.sql`
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`
 
 }
