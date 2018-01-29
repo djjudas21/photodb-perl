@@ -62,7 +62,7 @@ This is just a set of SQL files that describe the schema for a photographic data
 into your MySQL or MariaDB instance by running the following command to create the database and tables.
 
 ```
-mysql -p < *.sql
+mysql -p < schema/*.sql
 ```
 
 ### Sample data
