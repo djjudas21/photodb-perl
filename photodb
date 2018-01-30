@@ -34,7 +34,7 @@ switch ($command) {
 				$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
 				$data{'frames'} = prompt('', 'How many frames?');
 				if (prompt('no', 'Is this film bulk-loaded?') eq 'yes') {
-					$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select film_bulk_id as id, name as opt from FILM_BULK, FILMSTOCK where FILM_BULK.filmstock_id=FILMSTOCK.filmstock_id");
+					$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
 					$data{'film_bulk_loaded'} = prompt('', 'When was the film bulk-loaded?');
 				} else {
 					$data{'film_batch'} = prompt('', 'Film batch number');
@@ -48,7 +48,7 @@ switch ($command) {
 			case 'load' {
 				# Load a film into a camera
 				my %data;
-				my $film_id = &listchoices($db, 'film', "select film_id as id, concat(MANUFACTURER.manufacturer, ' ', FILMSTOCK.name, ' (', FORMAT.format, ' format, ', if(colour, 'colour', 'B&W'), ')' ) as opt from FILM, FILMSTOCK, FORMAT, MANUFACTURER where camera_id is null and date is null and FILM.filmstock_id=FILMSTOCK.filmstock_id and FILM.format_id=FORMAT.format_id and FILMSTOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				my $film_id = &listchoices($db, 'film', "select * from choose_film_to_load");
 				$data{'exposed_at'} = prompt('', 'What ISO?');
 				$data{'date_loaded'} = prompt('', 'What date was this film loaded?');
 				$data{'camera_id'} = &listchoices($db, 'camera', "select CAMERA.camera_id as id, concat(MANUFACTURER.manufacturer, ' ', CAMERA.model) as opt from CAMERA, FILM, MANUFACTURER where FILM.format_id=CAMERA.format_id and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and film_id=$film_id and own=1");
@@ -59,7 +59,7 @@ switch ($command) {
 			case 'develop' {
 				# Develop a film
 				my %data;
-				my $film_id = &listchoices($db, 'film', "select film_id as id, concat(MANUFACTURER.manufacturer, ' ', FILMSTOCK.name, ' (', FORMAT.format, ' format, ', if(colour, 'colour', 'B&W'), ')' ) as opt from FILM, FILMSTOCK, FORMAT, MANUFACTURER where camera_id is not null and date is null and FILM.filmstock_id=FILMSTOCK.filmstock_id and FILM.format_id=FORMAT.format_id and FILMSTOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				my $film_id = &listchoices($db, 'film', "select * from choose_film_to_develop");
 				$data{'date'} = prompt('', 'What date was this film processed?');
 				$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1");
 				$data{'directory'} = prompt('', 'What directory are these scans in?');
@@ -126,7 +126,7 @@ switch ($command) {
 				}
 				$data{'battery_qty'} = prompt('', 'How many batteries does this camera take?');
 				if ($data{'battery_qty'} > 0) {
-					$data{'battery_type'} = &listchoices($db, 'battery type', "select battery_type as id, concat(battery_name, ifnull(concat(' (', voltage, 'V)'), '')) as opt from BATTERY");
+					$data{'battery_type'} = &listchoices($db, 'battery type', "select * from choose_battery");
 				}
 				$data{'notes'} = prompt('', 'Additional notes');
 				$data{'source'} = prompt('', 'Where was the camera acquired from?');
@@ -185,7 +185,7 @@ switch ($command) {
 				$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
 				$data{'shutter_speed'} = prompt('', 'Shutter speed');
 				$data{'aperture'} = prompt('', 'Aperture');
-				$data{'filter_id'} = &listchoices($db, 'filter', "select filter_id as id, concat(type, ' (', thread, 'mm)') as opt from FILTER");
+				$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter");
 				$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', TELECONVERTER.model, ' (', factor, 'x)') as opt from TELECONVERTER, CAMERA, FILM, MANUFACTURER where CAMERA.mount_id=TELECONVERTER.mount_id and FILM.camera_id=CAMERA.camera_id and MANUFACTURER.manufacturer_id=TELECONVERTER.manufacturer_id and film_id=$data{'film_id'}");
 				$data{'notes'} = prompt('', 'Extra notes');
 				$data{'mount_adapter_id'} = &listchoices($db, 'mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER, CAMERA, FILM, MOUNT where CAMERA.mount_id=MOUNT_ADAPTER.camera_mount and FILM.camera_id=CAMERA.camera_id and MOUNT.mount_id=MOUNT_ADAPTER.lens_mount and film_id=$data{'film_id'}");
@@ -280,15 +280,15 @@ switch ($command) {
 				my %data;
 				$data{'negative_id'} = prompt('', 'Negative ID to print from');
 				$data{'date'} = prompt('', 'Date that the print was made');
-				$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select paper_stock_id as id, concat(manufacturer, ' ', name, ifnull(concat(' (', finish, ')'), '')) as opt from PAPER_STOCK, MANUFACTURER where PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+				$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select * from choose_paper");
 				$data{'height'} = prompt('', 'Height of the print (inches)');
 				$data{'width'} = prompt('', 'Width of the print (inches)');
 				$data{'aperture'} = prompt('', 'Aperture used on enlarging lens');
 				$data{'exposure_time'} = prompt('', 'Exposure time (s)');
 				$data{'filtration_grade'} = prompt('', 'Filtration grade');
 				$data{'development_time'} = prompt('', 'Development time (s)');
-				$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select enlarger_id as id, concat(manufacturer, ' ', enlarger) as opt from ENLARGER, MANUFACTURER where ENLARGER.manufacturer_id=MANUFACTURER.manufacturer_id and lost is null");
-				$data{'lens_id'} = &listchoices($db, 'enlarger lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MOUNT, MANUFACTURER where LENS.mount_id=MOUNT.mount_id and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and purpose='Enlarger' and own=1");
+				$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select * from choose_enlarger");
+				$data{'lens_id'} = &listchoices($db, 'enlarger lens', "select * from choose_enlarger_lens");
 				$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1");
 				$data{'fine'} = prompt('', 'Is this a fine print?');
 				$data{'notes'} = prompt('', 'Notes');
