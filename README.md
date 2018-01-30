@@ -25,12 +25,15 @@ You can use the raw database using the MySQL command line, or by using an applic
 
 ## Table of Contents
 
-1. [Usage](#usage)
-    * [Installation](#installation)
-    * [Sample data](#sample-data)
+1. [Installation](#installation)
+    * [Install MySQL](#install-mysql)
+    * [Create a user](#create-a-user)
+    * [Import the schema](#import-the-schema)
+    * [Import sample data](#import-sample-data)
+2. [Usage](#usage)
     * [Upgrading](#upgrading)
     * [Altering the schema](#altering-the-schema)
-2. [Reference](#reference)
+3. [Reference](#reference)
     * [BACK](#back)
     * [BATTERY](#battery)
     * [BODY_TYPE](#body_type)
@@ -68,19 +71,46 @@ You can use the raw database using the MySQL command line, or by using an applic
     * [TELECONVERTER](#teleconverter)
     * [TONER](#toner)
 
+## Installation
 
-## Usage
+### Install MySQL
+A pre-requisite for PhotoDB is a functioning MySQL or MariaDB database instance. If you have access to an existing
+MySQL server, e.g. at a hosting provider, note down the details for connecting (hostname or IP address, username, password).
 
-### Installation
+Otherwise, consider installing a MySQL server locally on your computer. If you do this, the hostname will be `localhost`.
 
-This is just a set of SQL files that describe the schema for a photographic database. Import them
-into your MySQL or MariaDB instance by running the following command to create the database and tables.
+CentOS / Red Hat:
+```
+sudo yum install mysql-server
+sudo chkconfig mysqld on
+sudo service mysqld start
+```
+
+Fedora:
+```
+sudo yum install mariadb-server
+sudo systemctl mariadb on
+sudo systemctl mariadb start
+```
+
+Ubuntu:
+```
+sudo apt-get install mysql-server
+# enable on boot
+# start service
+```
+
+### Create a user
+Create a database user with a password for PhotoDB
+
+### Import the schema
+Import the schema into your MySQL or MariaDB instance by running the following command to create the database and tables.
 
 ```
 mysql -p < schema/*.sql
 ```
 
-### Sample data
+### Import sample data
 
 Some of the tables in this schema contain sample data which could be useful and is not site-specific.
 This includes data like common manufacturers, lens mounts and film types. To import the sample data,
@@ -89,6 +119,8 @@ first [install the schema](#installation) and then execute:
 ```
 mysql -p photography < sample-data/*.sql
 ```
+
+## Usage
 
 ### Upgrading
 
