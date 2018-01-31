@@ -1,15 +1,15 @@
-photography-database
-====================
+PhotoDB
+=======
 
-This project is an attempt to create a database for film photography that can be used to track
+PhotoDB is an attempt to create a database for film photography that can be used to track
 cameras, lenses, films and negatives to fully catalogue a collection of cameras, lenses,
 accessories as well as negatives and prints.
 
-At the moment, this project is unfinished and the code continues to change unpredictably.
+At the moment, the PhotoDB project is unfinished and the code continues to change unpredictably.
 
 #### The schema
 
-The heart of this project is the MySQL/MariaDB database schema. This is the most complete
+The heart of PhotoDB is the MySQL/MariaDB database schema. This is the most complete
 part of the project.
 
 #### The application
