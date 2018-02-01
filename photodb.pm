@@ -7,20 +7,81 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today validate);
 
 # Prompt for an arbitrary value
 sub prompt {
 	my $default = shift || "";
 	my $prompt = shift;
+	my $type = shift || 'text';
 
 	print "$prompt [$default]: ";
 	my $input = <STDIN>;
 	chomp($input);
 
 	my $rv = ($input eq "") ? $default:$input;
-	return $rv;
+
+	if (&validate($rv, $type)) {
+		if ($type eq 'boolean') {
+			return friendlybool($rv);
+		} else {
+			return $rv;
+		}
+	} else {
+		die "Value '$rv' is not a valid '$type' type\n";
+	}
 }
+
+# Validate that a value is a certain type
+sub validate {
+	my $val = shift;
+	my $type = shift || 'text';
+
+	if ($val eq '') {
+		return 1;
+	}
+	elsif ($type eq 'boolean') {
+		if ($val =~ m/^(y(es)?|no?|false|true|1|0)$/i) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} elsif ($type eq 'integer') {
+		if ($val =~ m/^\d+$/) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} elsif ($type eq 'text') {
+		if ($val =~ m/^.+$/) {
+			return 1;
+		} else {
+			return 0;
+		}
+        } elsif ($type eq 'date') {
+                if ($val =~ m/^\d{4}-\d{2}-\d{2}$/) {
+                        return 1;
+                } else {
+                        return 0;
+                }
+
+	} elsif ($type eq 'decimal') {
+		if ($val =~ m/^\d+(\.\d+)?$/) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} elsif ($type eq 'hh:mm:ss') {
+		if ($val =~ m/^\d\d?:\d\d?:\d\d?$/) {
+			return 1;
+		} else {
+			return 0;
+		}
+	} else {
+		die "$type is not a valid data type\n";
+	}
+}
+
 
 # Connect to the database
 sub db {
@@ -181,7 +242,7 @@ sub listchoices {
 	}
 
 	# Wait for input
-	my $input = prompt('', "Please select a $keyword");
+	my $input = prompt('', "Please select a $keyword", 'integer');
 
 	# Validate input
 	$input =~ s/[^0-9]//g;
@@ -208,6 +269,18 @@ sub lookupval {
 sub today {
 	my $db = shift;
 	return &lookupval($db, 'select curdate()');
+}
+
+# Translate "friendly" bools to integers
+sub friendlybool {
+	my $val = shift;
+	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
+		return 1;
+	} elsif ($val =~ m/^n(o)?$/i || $val =~ m/^false$/i || $val eq 0) {
+		return 0;
+	} else {
+		return '';
+	}
 }
 
 # This ensures the lib loads smoothly
