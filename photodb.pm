@@ -15,7 +15,7 @@ sub prompt {
 	my $prompt = shift;
 	my $type = shift || 'text';
 
-	print "$prompt [$default]: ";
+	print "$prompt ($type) [$default]: ";
 	my $input = <STDIN>;
 	chomp($input);
 
