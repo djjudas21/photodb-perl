@@ -7,7 +7,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -184,8 +184,25 @@ sub listchoices {
 	return $input;
 }
 
+# Return arbitrary value from database
+sub lookupval {
+	my $db = shift;
+	my $query = shift;
 
+        my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+        my $rows = $sth->execute();
 
+        $sth->execute();
+	my $row = $sth->fetchrow_array();
+
+	return $row;
+}
+
+# Return today's date
+sub today {
+	my $db = shift;
+	return &lookupval($db, 'select curdate()');
+}
 
 # This ensures the lib loads smoothly
 1;

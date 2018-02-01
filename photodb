@@ -10,7 +10,7 @@ use DBD::mysql;
 use SQL::Abstract;
 
 use lib '.';
-use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices);
+use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today);
 
 # Will be called like:
 # - photodb film add
@@ -50,7 +50,7 @@ switch ($command) {
 				my %data;
 				my $film_id = &listchoices($db, 'film', "select * from choose_film_to_load");
 				$data{'exposed_at'} = prompt('', 'What ISO?');
-				$data{'date_loaded'} = prompt('', 'What date was this film loaded?');
+				$data{'date_loaded'} = prompt(&today($db), 'What date was this film loaded?');
 				$data{'camera_id'} = &listchoices($db, 'camera', "select CAMERA.camera_id as id, concat(MANUFACTURER.manufacturer, ' ', CAMERA.model) as opt from CAMERA, FILM, MANUFACTURER where FILM.format_id=CAMERA.format_id and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and film_id=$film_id and own=1");
 				$data{'notes'} = prompt('', 'Notes');
 
@@ -60,7 +60,7 @@ switch ($command) {
 				# Develop a film
 				my %data;
 				my $film_id = &listchoices($db, 'film', "select * from choose_film_to_develop");
-				$data{'date'} = prompt('', 'What date was this film processed?');
+				$data{'date'} = prompt(&today($db), 'What date was this film processed?');
 				$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1");
 				$data{'directory'} = prompt('', 'What directory are these scans in?');
 				$data{'photographer_id'} = &listchoices($db, 'photographer', "select photographer_id as id, name as opt from PHOTOGRAPHER");
@@ -101,7 +101,7 @@ switch ($command) {
 				}
 				$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
 				$data{'weight'} = prompt('', 'What does it weigh?');
-				$data{'acquired'} = prompt('', 'When was it acquired?');
+				$data{'acquired'} = prompt(&today($db), 'When was it acquired?');
 				$data{'cost'} = prompt('', 'What did the camera cost?');
 				$data{'introduced'} = prompt('', 'What year was the camera introduced?');
 				$data{'discontinued'} = prompt('', 'What year was the camera discontinued?');
@@ -181,7 +181,7 @@ switch ($command) {
 				$data{'film_id'} = prompt('', 'Which film does this negative belong to?');
 				$data{'frame'} = prompt('', 'Frame number');
 				$data{'description'} = prompt('', 'Caption');
-				$data{'date'} = prompt('', 'What date was this negative taken?');
+				$data{'date'} = prompt(&today($db), 'What date was this negative taken?');
 				$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
 				$data{'shutter_speed'} = prompt('', 'Shutter speed');
 				$data{'aperture'} = prompt('', 'Aperture');
@@ -246,7 +246,7 @@ switch ($command) {
 				$data{'discontinued'} = prompt('', 'When was this lens discontinued?');
 				$data{'manufactured'} = prompt('', 'When was this lens manufactured?');
 				$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
-				$data{'acquired'} = prompt('', 'When was this lens acquired?');
+				$data{'acquired'} = prompt(&today($db), 'When was this lens acquired?');
 				$data{'cost'} = prompt('', 'How much did this lens cost?');
 				$data{'notes'} = prompt('', 'Notes');
 				$data{'own'} = prompt(1, 'Do you own this lens?');
@@ -279,7 +279,7 @@ switch ($command) {
 			case 'add' {
 				my %data;
 				$data{'negative_id'} = prompt('', 'Negative ID to print from');
-				$data{'date'} = prompt('', 'Date that the print was made');
+				$data{'date'} = prompt(&today($db), 'Date that the print was made');
 				$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select * from choose_paper");
 				$data{'height'} = prompt('', 'Height of the print (inches)');
 				$data{'width'} = prompt('', 'Width of the print (inches)');
