@@ -87,6 +87,9 @@ sub updaterecord {
 	local $" = ',';
 	print "@bind\n";
 
+	# Final confirmation
+	prompt(1, 'Proceed?') or die "Aborted!\n";
+
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	$sth->execute(@bind);
@@ -115,6 +118,9 @@ sub newrecord {
 	my $sql = SQL::Abstract->new;
 	my($stmt, @bind) = $sql->insert($table, $data);
 	print "And here's the SQL I've generated:\n$stmt\n";
+
+	# Final confirmation
+	prompt(1, 'Proceed?') or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
