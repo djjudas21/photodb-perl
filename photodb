@@ -35,12 +35,12 @@ switch ($command) {
 				$data{'frames'} = prompt('', 'How many frames?');
 				if (prompt('no', 'Is this film bulk-loaded?') eq 'yes') {
 					$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
-					$data{'film_bulk_loaded'} = prompt('', 'When was the film bulk-loaded?');
+					$data{'film_bulk_loaded'} = prompt(&today($db), 'When was the film bulk-loaded?');
 				} else {
 					$data{'film_batch'} = prompt('', 'Film batch number');
 					$data{'film_expiry'} = prompt('', 'Film expiry date');
 				}
-				$data{'purchase_date'} = prompt('', 'Purchase date');
+				$data{'purchase_date'} = prompt(&today($db), 'Purchase date');
 				$data{'price'} = prompt('', 'Purchase price');
 
 				&newrecord($db, \%data, 'FILM');
@@ -67,7 +67,7 @@ switch ($command) {
 				$data{'dev_uses'} = prompt('', 'How many previous uses has the developer had?');
 				$data{'dev_time'} = prompt('', 'How long was the film developed for?');
 				$data{'dev_temp'} = prompt('', 'What temperature was the developer?');
-				$data{'dev_n'} = prompt('', 'What push/pull was used?');
+				$data{'dev_n'} = prompt(0, 'What push/pull was used?');
 				$data{'development_notes'} = prompt('', 'Any other development notes');
 				$data{'processed_by'} = prompt('', 'Who developed the film?');
 				&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
@@ -118,8 +118,8 @@ switch ($command) {
 				if ($data{'power_drive'} == 1) {
 					$data{'continuous_fps'} = prompt('How many frames per second can this camera manage?');
 				}
-				$data{'video'} = prompt('', 'Does this camera have a video/movie function?');
-				$data{'digital'} = prompt('', 'Is this a digital camera?');
+				$data{'video'} = prompt(0, 'Does this camera have a video/movie function?');
+				$data{'digital'} = prompt(0, 'Is this a digital camera?');
 				$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?');
 				if ($data{'fixed_mount'} == 1) {
 					#$data{'lens_id'} = &listchoices
