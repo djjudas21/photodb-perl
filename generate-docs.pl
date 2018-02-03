@@ -31,20 +31,37 @@ my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
 my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
 $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 
-# Delete all existing *.sql files in the schema subdir
-unlink <SCHEMA.md>;
+# Set up array to write file into
+my @output;
 
 # Print headers
-`echo "# PhotoDB schema documentation\n" >> SCHEMA.md`;
+push(@output, "# PhotoDB schema documentation\n");
 
-# Dump each table to its own file
+# Generate docs for each table in turn
 while (my @row= $sqlQuery->fetchrow_array()) {
   my $table = $row[0];
   
-  print "Dumping $table\n";
-  `echo "\n## $table\n" >> SCHEMA.md`;
-  `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database >> SCHEMA.md`;
+  print "Generating docs for $table\n";
+  push(@output, "\n## $table\n\n");
+  my @tableoutput =  `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
+
+  # Delete first and last elements (table borders)
+  shift(@tableoutput);
+  pop(@tableoutput);
+
+  # Substitute some table chars
+  foreach (@tableoutput) {
+	  $_ =~ s/\+/\|/g;
+  }
+  push(@output, @tableoutput);
 }
 
 # Disconnect from the database 
 $sqlQuery->finish;
+
+# Open a file and dump compiled array into it
+open my $fh, '>', "SCHEMA.md" or die "Cannot open SCHEMA.md: $!";
+foreach (@output) {
+    print $fh $_;
+}
+close $fh;
