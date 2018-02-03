@@ -245,10 +245,8 @@
 | COLUMN_NAME       | COLUMN_TYPE  | COLUMN_COMMENT                                              |
 |-------------------|--------------|-------------------------------------------------------------|
 | flash_id          | int(11)      | Unique ID of external flash unit                            |
-| manufacturer_id   | int(11)      | Manufacturer ID of the flash
-                               |
-| model             | varchar(45)  | Model name/number of the flash
-                             |
+| manufacturer_id   | int(11)      | Manufacturer ID of the flash                                |
+| model             | varchar(45)  | Model name/number of the flash                              |
 | guide_number      | int(11)      | Guide number of the flash                                   |
 | gn_info           | varchar(45)  | Extra freeform info about how the guide number was measured |
 | battery_powered   | tinyint(1)   | Whether this flash takes batteries                          |

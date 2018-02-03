@@ -2,8 +2,8 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FLASH` (
   `flash_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of external flash unit',
-  `manufacturer_id` int(11) DEFAULT NULL COMMENT 'Manufacturer ID of the flash\n',
-  `model` varchar(45) DEFAULT NULL COMMENT 'Model name/number of the flash\n',
+  `manufacturer_id` int(11) DEFAULT NULL COMMENT 'Manufacturer ID of the flash',
+  `model` varchar(45) DEFAULT NULL COMMENT 'Model name/number of the flash',
   `guide_number` int(11) DEFAULT NULL COMMENT 'Guide number of the flash',
   `gn_info` varchar(45) DEFAULT NULL COMMENT 'Extra freeform info about how the guide number was measured',
   `battery_powered` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash takes batteries',
