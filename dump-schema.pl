@@ -44,9 +44,16 @@ while (my @row= $sqlQuery->fetchrow_array()) {
 # Disconnect from the database 
 $sqlQuery->finish;
 
+# Dump functions too
+&dumpfuncs;
+
 # Function to do the dump
 sub dumptable {
 	my $table = shift;
 	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`
+}
 
+# Dump functions
+sub dumpfuncs {
+	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" > schema/${database}_functions.sql`;
 }
