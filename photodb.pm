@@ -91,9 +91,6 @@ sub db {
 	if (-e '~/.photodb.ini') {
 		$connect = ReadINI('~/.photodb.ini');
 	}
-	elsif (-e 'photodb.ini') {
-		$connect = ReadINI('photodb.ini');
-	}
 	elsif (-e '/etc/photodb.ini') {
 		$connect = ReadINI('/etc/photodb.ini');
 	}
