@@ -146,7 +146,7 @@ sub updaterecord {
 	print "@bind\n";
 
 	# Final confirmation
-	prompt(1, 'Proceed?') or die "Aborted!\n";
+	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -178,7 +178,7 @@ sub newrecord {
 	print "And here's the SQL I've generated:\n$stmt\n";
 
 	# Final confirmation
-	prompt(1, 'Proceed?') or die "Aborted!\n";
+	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
