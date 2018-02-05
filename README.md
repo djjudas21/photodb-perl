@@ -83,6 +83,11 @@ first [install the schema](#installation) and then execute:
 mysql -p photography < sample-data/*.sql
 ```
 
+### Configure database connection
+
+The app and accessory scripts need to know how to connect to the database. Copy the sample config file,
+`photodb.ini` to `/etc/photodb.ini` and edit it to include the connection details for your database.
+
 ## Usage
 
 ### Upgrading
