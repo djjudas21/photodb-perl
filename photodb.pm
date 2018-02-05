@@ -225,6 +225,7 @@ sub listchoices {
 	my $db = shift;
 	my $keyword = shift;
 	my $query = shift;
+	my $type = shift || 'integer';
 
 	print "Please select a $keyword from the list:\n";
 
@@ -239,10 +240,7 @@ sub listchoices {
 	}
 
 	# Wait for input
-	my $input = prompt('', "Please select a $keyword", 'integer');
-
-	# Validate input
-	$input =~ s/[^0-9]//g;
+	my $input = prompt('', "Please select a $keyword", $type);
 
 	# Return input
 	return $input;
