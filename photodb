@@ -49,7 +49,7 @@ switch ($command) {
 				# Load a film into a camera
 				my %data;
 				my $film_id = &listchoices($db, 'film', "select * from choose_film_to_load");
-				$data{'exposed_at'} = prompt('', 'What ISO?', 'integer');
+				$data{'exposed_at'} = prompt(&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), 'What ISO?', 'integer');
 				$data{'date_loaded'} = prompt(&today($db), 'What date was this film loaded?', 'date');
 				$data{'camera_id'} = &listchoices($db, 'camera', "select CAMERA.camera_id as id, concat(MANUFACTURER.manufacturer, ' ', CAMERA.model) as opt from CAMERA, FILM, MANUFACTURER where FILM.format_id=CAMERA.format_id and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and film_id=$film_id and own=1");
 				$data{'notes'} = prompt('', 'Notes', 'text');
@@ -100,7 +100,7 @@ switch ($command) {
 					$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
 				}
 				$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
-				$data{'weight'} = prompt('', 'What does it weigh?', 'integer');
+				$data{'weight'} = prompt('', 'What does it weigh? (g)', 'integer');
 				$data{'acquired'} = prompt(&today($db), 'When was it acquired?', 'date');
 				$data{'cost'} = prompt('', 'What did the camera cost?', 'decimal');
 				$data{'introduced'} = prompt('', 'What year was the camera introduced?', 'integer');
@@ -108,7 +108,7 @@ switch ($command) {
 				$data{'serial'} = prompt('', 'What is the camera\'s serial number?', 'text');
 				$data{'datecode'} = prompt('', 'What is the camera\'s datecode?', 'text');
 				$data{'manufactured'} = prompt('', 'When was the camera manufactured?', 'integer');
-				$data{'own'} = prompt(1, 'Do you own this camera?', 'boolean');
+				$data{'own'} = prompt('yes', 'Do you own this camera?', 'boolean');
 				$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
 				$data{'shutter_type_id'} = &listchoices($db, 'shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
 				$data{'shutter_model'} = prompt('', 'What is the shutter model?', 'text');
@@ -118,8 +118,8 @@ switch ($command) {
 				if ($data{'power_drive'} == 1) {
 					$data{'continuous_fps'} = prompt('How many frames per second can this camera manage?', 'decimal');
 				}
-				$data{'video'} = prompt(0, 'Does this camera have a video/movie function?', 'boolean');
-				$data{'digital'} = prompt(0, 'Is this a digital camera?', 'boolean');
+				$data{'video'} = prompt('no', 'Does this camera have a video/movie function?', 'boolean');
+				$data{'digital'} = prompt('no', 'Is this a digital camera?', 'boolean');
 				$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?', 'boolean');
 				if ($data{'fixed_mount'} == 1) {
 					#$data{'lens_id'} = &listchoices
@@ -189,10 +189,10 @@ switch ($command) {
 				$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', TELECONVERTER.model, ' (', factor, 'x)') as opt from TELECONVERTER, CAMERA, FILM, MANUFACTURER where CAMERA.mount_id=TELECONVERTER.mount_id and FILM.camera_id=CAMERA.camera_id and MANUFACTURER.manufacturer_id=TELECONVERTER.manufacturer_id and film_id=$data{'film_id'}");
 				$data{'notes'} = prompt('', 'Extra notes', 'text');
 				$data{'mount_adapter_id'} = &listchoices($db, 'mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER, CAMERA, FILM, MOUNT where CAMERA.mount_id=MOUNT_ADAPTER.camera_mount and FILM.camera_id=CAMERA.camera_id and MOUNT.mount_id=MOUNT_ADAPTER.lens_mount and film_id=$data{'film_id'}");
-				$data{'focal_length'} = prompt('', 'Focal length', 'integer');
+				$data{'focal_length'} = prompt(&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), 'Focal length', 'integer');
 				$data{'latitude'} = prompt('', 'Latitude', 'decimal');
 				$data{'longitude'} = prompt('', 'Longitude', 'decimal');
-				$data{'flash'} = prompt(0, 'Was flash used?', 'boolean');
+				$data{'flash'} = prompt('no', 'Was flash used?', 'boolean');
 				&newrecord($db, \%data, 'NEGATIVE');
 			}
 			case 'bulk-add' {
@@ -213,11 +213,11 @@ switch ($command) {
 		switch ($subcommand) {
 			case 'add' {
 				my %data;
-				$data{'fixed_mount'} = prompt(0, 'Does this lens have a fixed mount?', 'boolean');
+				$data{'fixed_mount'} = prompt('no', 'Does this lens have a fixed mount?', 'boolean');
 				if ($data{'fixed_mount'} == 0) {
 					$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT");
 				}
-				$data{'zoom'} = prompt(0, 'Is this a zoom lens?', 'boolean');
+				$data{'zoom'} = prompt('no', 'Is this a zoom lens?', 'boolean');
 				if ($data{'zoom'} == 0) {
 					$data{'min_focal_length'} = prompt('', 'What is the focal length?', 'integer');
 					$data{'max_focal_length'} = $data{'min_focal_length'};
@@ -249,13 +249,13 @@ switch ($command) {
 				$data{'acquired'} = prompt(&today($db), 'When was this lens acquired?', 'date');
 				$data{'cost'} = prompt('', 'How much did this lens cost?', 'decimal');
 				$data{'notes'} = prompt('', 'Notes', 'text');
-				$data{'own'} = prompt(1, 'Do you own this lens?', 'boolean');
+				$data{'own'} = prompt('yes', 'Do you own this lens?', 'boolean');
 				$data{'source'} = prompt('', 'Where was this lens sourced from?', 'text');
 				$data{'coating'} = prompt('', 'What coating does this lens have?', 'text');
 				$data{'hood'} = prompt('', 'What is the model number of the suitable hood for this lens?', 'text');
 				$data{'hood_id'} = &listchoices($db, 'lens hood', "select hood_id as id, model as opt from HOOD");
 				$data{'exif_lenstype'} = prompt('', 'EXIF lens type code', 'text');
-				$data{'rectilinear'} = prompt(1, 'Is this a rectilinear lens?', 'boolean');
+				$data{'rectilinear'} = prompt('yes', 'Is this a rectilinear lens?', 'boolean');
 				$data{'length'} = prompt('', 'How long is this lens? (mm)', 'integer');
 				$data{'diameter'} = prompt('', 'How wide is this lens? (mm)', 'integer');
 				$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
@@ -301,7 +301,7 @@ switch ($command) {
 				my %data;
 				my %where;
 				$where{'print_id'} = prompt('', 'Which print did you tone?', 'integer');
-				$data{'bleach_time'} = prompt('', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
+				$data{'bleach_time'} = prompt('00:00:00', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
 				$data{'toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER");
 				$data{'toner_dilution'} = prompt('', 'What was the dilution of the first toner?', 'text');
 				$data{'toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
