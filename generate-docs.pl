@@ -43,6 +43,15 @@ while (my @row= $sqlQuery->fetchrow_array()) {
   
   print "Generating docs for $table\n";
   push(@output, "\n## $table\n\n");
+
+  my $query2 = "select TABLE_COMMENT from information_schema.TABLES where TABLE_NAME='$table' and TABLE_SCHEMA='$database'";
+  my $sth2 = $dbh->prepare($query2) or die "Can't prepare $query2: $dbh->errstr\n";
+  $sth2->execute or die "can't execute the query $sth2->errstr";
+  my @commentrow = $sth2->fetchrow_array();
+  if ($commentrow[0]) {
+	  push(@output, "$commentrow[0]\n\n");
+  }
+
   my @tableoutput =  `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
 
   # Delete first and last elements (table borders)
