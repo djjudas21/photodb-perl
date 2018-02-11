@@ -8,5 +8,5 @@ CREATE TABLE `CONDITION` (
   `max_rating` int(11) DEFAULT NULL COMMENT 'The highest percentage rating that encompasses this condition',
   `description` varchar(300) DEFAULT NULL COMMENT 'Longer description of condition',
   PRIMARY KEY (`condition_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to list of physical condition descriptions that can be used to evaluate equipment';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -18,5 +18,5 @@ CREATE TABLE `LIGHT_METER` (
   KEY `fk_LIGHT_METER_2_idx` (`metering_type`),
   CONSTRAINT `fk_LIGHT_METER_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_LIGHT_METER_2` FOREIGN KEY (`metering_type`) REFERENCES `METERING_TYPE` (`metering_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog light meters';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -8,5 +8,5 @@ CREATE TABLE `DEV_BATCH` (
   PRIMARY KEY (`dev_batch_id`),
   KEY `fk_DEV_BATCH_1_idx` (`developer_id`),
   CONSTRAINT `fk_DEV_BATCH_1` FOREIGN KEY (`developer_id`) REFERENCES `DEVELOPER` (`developer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog batches of developer that have been prepared';
 /*!40101 SET character_set_client = @saved_cs_client */;

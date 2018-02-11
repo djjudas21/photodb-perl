@@ -16,5 +16,5 @@ CREATE TABLE `MOTION_PICTURE_FILM` (
   `process_id` int(11) DEFAULT NULL COMMENT 'ID of the process used to develop this film',
   `description` varchar(45) DEFAULT NULL COMMENT 'Freeform text description of this movie',
   PRIMARY KEY (`mp_film_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog motion picture films (movies)';
 /*!40101 SET character_set_client = @saved_cs_client */;

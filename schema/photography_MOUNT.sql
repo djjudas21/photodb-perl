@@ -10,5 +10,5 @@ CREATE TABLE `MOUNT` (
   `notes` varchar(45) DEFAULT NULL COMMENT 'Freeform notes field',
   `digital_only` tinyint(1) DEFAULT NULL COMMENT 'Whether this mount is intended only for digital cameras',
   PRIMARY KEY (`mount_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog different lens mount standards. This is mostly used for camera lens mounts, but can also be used for enlarger and projector lenses.';
 /*!40101 SET character_set_client = @saved_cs_client */;

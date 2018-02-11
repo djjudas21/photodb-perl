@@ -8,5 +8,5 @@ CREATE TABLE `REPAIR` (
   `summary` varchar(100) DEFAULT NULL COMMENT 'Brief summary of the repair',
   `description` varchar(500) DEFAULT NULL COMMENT 'Longer description of the repair',
   PRIMARY KEY (`repair_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Tabe to catalog all repairs and servicing undertaken on cameras and lenses in the collection';
 /*!40101 SET character_set_client = @saved_cs_client */;

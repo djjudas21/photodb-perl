@@ -6,5 +6,5 @@ CREATE TABLE `LENS_TYPE` (
   `diagonal_angle_max` int(11) DEFAULT NULL COMMENT 'Maximum diagonal angle of view to quality for this lens type',
   `lens_type` varchar(45) DEFAULT NULL COMMENT 'Name of the lens type (e.g. Wide Angle, Telephoto, etc)',
   PRIMARY KEY (`lens_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to categorise lenses by type based on angle of view';
 /*!40101 SET character_set_client = @saved_cs_client */;

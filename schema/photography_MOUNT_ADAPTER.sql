@@ -12,5 +12,5 @@ CREATE TABLE `MOUNT_ADAPTER` (
   KEY `fk_MOUNT_ADAPTER_2` (`camera_mount`),
   CONSTRAINT `fk_MOUNT_ADAPTER_1` FOREIGN KEY (`lens_mount`) REFERENCES `MOUNT` (`mount_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_MOUNT_ADAPTER_2` FOREIGN KEY (`camera_mount`) REFERENCES `MOUNT` (`mount_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog adapters to mount lenses on other cameras';
 /*!40101 SET character_set_client = @saved_cs_client */;

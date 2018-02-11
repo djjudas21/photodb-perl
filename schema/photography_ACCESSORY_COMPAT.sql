@@ -8,5 +8,5 @@ CREATE TABLE `ACCESSORY_COMPAT` (
   PRIMARY KEY (`compat_id`),
   KEY `fk_ACCESSORY_COMPAT_1_idx` (`accessory_id`),
   CONSTRAINT `fk_ACCESSORY_COMPAT_1` FOREIGN KEY (`accessory_id`) REFERENCES `ACCESSORY` (`accessory_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to define compatibility between accessories and cameras or lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;

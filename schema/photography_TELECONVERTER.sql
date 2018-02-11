@@ -14,5 +14,5 @@ CREATE TABLE `TELECONVERTER` (
   KEY `fk_TELECONVERTER_2` (`mount_id`),
   CONSTRAINT `fk_TELECONVERTER_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_TELECONVERTER_2` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog teleconverters (multipliers)';
 /*!40101 SET character_set_client = @saved_cs_client */;

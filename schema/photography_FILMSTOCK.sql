@@ -11,5 +11,5 @@ CREATE TABLE `FILMSTOCK` (
   PRIMARY KEY (`filmstock_id`),
   KEY `fk_manufacturer_id` (`manufacturer_id`),
   CONSTRAINT `fk_manufacturer_id` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to list different brands of film stock';
 /*!40101 SET character_set_client = @saved_cs_client */;

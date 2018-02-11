@@ -6,5 +6,5 @@ CREATE TABLE `LOCATION` (
   `latitude` decimal(9,6) DEFAULT NULL COMMENT 'Latitude of the location',
   `longitude` decimal(9,6) DEFAULT NULL COMMENT 'Longitude of the location',
   PRIMARY KEY (`loc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to record commonly-used locations';
 /*!40101 SET character_set_client = @saved_cs_client */;

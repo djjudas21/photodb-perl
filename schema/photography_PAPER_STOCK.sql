@@ -11,5 +11,5 @@ CREATE TABLE `PAPER_STOCK` (
   PRIMARY KEY (`paper_stock_id`),
   KEY `fk_PAPER_STOCK_1` (`manufacturer_id`),
   CONSTRAINT `fk_PAPER_STOCK_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog different paper stocks available';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -25,5 +25,5 @@ CREATE TABLE `FLASH` (
   `acquired` date DEFAULT NULL COMMENT 'Date this flash was acquired',
   `cost` varchar(45) DEFAULT NULL COMMENT 'Purchase cost of this flash',
   PRIMARY KEY (`flash_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catlog flashes, flashguns and speedlights';
 /*!40101 SET character_set_client = @saved_cs_client */;

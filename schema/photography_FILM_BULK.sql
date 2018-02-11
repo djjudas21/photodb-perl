@@ -10,5 +10,5 @@ CREATE TABLE `FILM_BULK` (
   `batch` varchar(45) DEFAULT NULL COMMENT 'Batch code of this bulk roll',
   `expiry` date DEFAULT NULL COMMENT 'Expiry date of this bulk roll',
   PRIMARY KEY (`film_bulk_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to record bulk film stock, from which individual films can be cut';
 /*!40101 SET character_set_client = @saved_cs_client */;

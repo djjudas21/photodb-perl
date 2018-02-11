@@ -8,5 +8,5 @@ CREATE TABLE `DEVELOPER` (
   `for_film` tinyint(1) DEFAULT NULL COMMENT 'Whether this developer can be used with film',
   `chemistry` varchar(45) DEFAULT NULL COMMENT 'The key chemistry on which this developer is based (e.g. phenidone)',
   PRIMARY KEY (`developer_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to list film and paper developers';
 /*!40101 SET character_set_client = @saved_cs_client */;

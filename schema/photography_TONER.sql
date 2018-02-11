@@ -7,5 +7,5 @@ CREATE TABLE `TONER` (
   `formulation` varchar(45) DEFAULT NULL COMMENT 'Chemical formulation of the toner',
   `stock_dilution` varchar(10) DEFAULT NULL COMMENT 'Stock dilution of the toner',
   PRIMARY KEY (`toner_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog paper toners that can be used during the printing process';
 /*!40101 SET character_set_client = @saved_cs_client */;

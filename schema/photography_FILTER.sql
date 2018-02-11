@@ -7,5 +7,5 @@ CREATE TABLE `FILTER` (
   `attenuation` decimal(2,1) DEFAULT NULL COMMENT 'Attenuation of this filter in decimal stops',
   `qty` int(11) DEFAULT NULL COMMENT 'Quantity of these filters available',
   PRIMARY KEY (`filter_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog filters';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -2,6 +2,8 @@
 
 ## ACCESSORY
 
+Table to catalog accessories that are not tracked in more specific tables
+
 | COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT                 |
 |-------------------|-------------|--------------------------------|
 | accessory_id      | int(11)     | Unique ID of this accessory    |
@@ -12,6 +14,8 @@
 
 ## ACCESSORY_COMPAT
 
+Table to define compatibility between accessories and cameras or lenses
+
 | COLUMN_NAME  | COLUMN_TYPE | COLUMN_COMMENT                   |
 |--------------|-------------|----------------------------------|
 | compat_id    | int(11)     | Unique ID for this compatibility |
@@ -21,12 +25,16 @@
 
 ## ACCESSORY_TYPE
 
+Table to catalog types of photographic accessory
+
 | COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT                       |
 |-------------------|-------------|--------------------------------------|
 | accessory_type_id | int(11)     | Unique ID for this type of accessory |
 | accessory_type    | varchar(45) | Type of accessory                    |
 
 ## BACK
+
+Table to catalog Interchangeable backs and film holders
 
 | COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                                   |
 |------------------|-------------|--------------------------------------------------|
@@ -41,6 +49,8 @@
 
 ## BATTERY
 
+Table to catalog of types of battery
+
 | COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT                                  |
 |--------------|--------------|-------------------------------------------------|
 | battery_type | int(11)      | Unique battery ID                               |
@@ -51,12 +61,16 @@
 
 ## BODY_TYPE
 
+Table to catalog types of camera body style
+
 | COLUMN_NAME  | COLUMN_TYPE | COLUMN_COMMENT                                    |
 |--------------|-------------|---------------------------------------------------|
 | body_type_id | int(11)     | Unique body type ID                               |
 | body_type    | varchar(45) | Name of camera body type (e.g. SLR, compact, etc) |
 
 ## CAMERA
+
+Table to catalog cameras - both cameras with fixed lenses and cameras with interchangeable lenses
 
 | COLUMN_NAME         | COLUMN_TYPE  | COLUMN_COMMENT                                                               |
 |---------------------|--------------|------------------------------------------------------------------------------|
@@ -124,6 +138,8 @@
 
 ## CONDITION
 
+Table to list of physical condition descriptions that can be used to evaluate equipment
+
 | COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT                                                |
 |--------------|--------------|---------------------------------------------------------------|
 | condition_id | int(11)      | Unique condition ID                                           |
@@ -134,6 +150,8 @@
 | description  | varchar(300) | Longer description of condition                               |
 
 ## DEVELOPER
+
+Table to list film and paper developers
 
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                                      |
 |-----------------|-------------|---------------------------------------------------------------------|
@@ -146,6 +164,8 @@
 
 ## DEV_BATCH
 
+Table to catalog batches of developer that have been prepared
+
 | COLUMN_NAME  | COLUMN_TYPE | COLUMN_COMMENT                                                   |
 |--------------|-------------|------------------------------------------------------------------|
 | dev_batch_id | int(11)     | Unique developer batch ID                                        |
@@ -154,6 +174,8 @@
 | prepared     | date        | Date that this batch was prepared                                |
 
 ## ENLARGER
+
+Table to list enlargers
 
 | COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                               |
 |------------------|--------------|--------------------------------------------------------------|
@@ -169,6 +191,8 @@
 | lost_price       | decimal(6,2) | Sale price of the enlarger                                   |
 
 ## FILM
+
+Table to list films which consist of one or more negatives. A film can be a roll film, one or more sheets of sheet film, one or more photographic plates, etc.
 
 | COLUMN_NAME       | COLUMN_TYPE  | COLUMN_COMMENT                                                        |
 |-------------------|--------------|-----------------------------------------------------------------------|
@@ -199,6 +223,8 @@
 
 ## FILMSTOCK
 
+Table to list different brands of film stock
+
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                         |
 |-----------------|-------------|----------------------------------------|
 | filmstock_id    | int(11)     | Unique ID of the filmstock             |
@@ -210,6 +236,8 @@
 | panchromatic    | tinyint(1)  | Whether this film is panchromatic      |
 
 ## FILM_BULK
+
+Table to record bulk film stock, from which individual films can be cut
 
 | COLUMN_NAME   | COLUMN_TYPE  | COLUMN_COMMENT                             |
 |---------------|--------------|--------------------------------------------|
@@ -224,6 +252,8 @@
 
 ## FILTER
 
+Table to catalog filters
+
 | COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                              |
 |-------------|--------------|---------------------------------------------|
 | filter_id   | int(11)      | Unique filter ID                            |
@@ -234,6 +264,8 @@
 
 ## FILTER_ADAPTER
 
+Table to catalogue filter adapter rings
+
 | COLUMN_NAME       | COLUMN_TYPE  | COLUMN_COMMENT                               |
 |-------------------|--------------|----------------------------------------------|
 | filter_adapter_id | int(11)      | Unique ID of filter adapter                  |
@@ -241,6 +273,8 @@
 | filter_thread     | decimal(3,1) | Diameter of filter-facing screw thread in mm |
 
 ## FLASH
+
+Table to catlog flashes, flashguns and speedlights
 
 | COLUMN_NAME       | COLUMN_TYPE  | COLUMN_COMMENT                                              |
 |-------------------|--------------|-------------------------------------------------------------|
@@ -270,6 +304,8 @@
 
 ## FLASH_PROTOCOL
 
+Table to catalog different protocols used to communicate with flashes
+
 | COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT                                             |
 |-------------------|-------------|------------------------------------------------------------|
 | flash_protocol_id | int(11)     | Unique ID of this flash protocol                           |
@@ -278,12 +314,16 @@
 
 ## FOCUS_TYPE
 
+Table to catalog different focusing methods
+
 | COLUMN_NAME   | COLUMN_TYPE | COLUMN_COMMENT          |
 |---------------|-------------|-------------------------|
 | focus_type_id | int(11)     | Unique ID of focus type |
 | focus_type    | varchar(45) | Name of focus type      |
 
 ## FORMAT
+
+Table to catalogue different film formats. These are distinct from negative sizes.
 
 | COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                      |
 |-------------|-------------|-------------------------------------|
@@ -292,6 +332,8 @@
 | digital     | tinyint(1)  | Whether this is a digital format    |
 
 ## HOOD
+
+Table to catalog lens hoods
 
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                  |
 |-----------------|-------------|-------------------------------------------------|
@@ -303,6 +345,8 @@
 | mounting        | varchar(15) | How the lens hood attaches to the lens          |
 
 ## LENS
+
+Table to catalog lenses
 
 | COLUMN_NAME            | COLUMN_TYPE  | COLUMN_COMMENT                                                                                                                               |
 |------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
@@ -354,6 +398,8 @@
 
 ## LENS_TYPE
 
+Table to categorise lenses by type based on angle of view
+
 | COLUMN_NAME        | COLUMN_TYPE | COLUMN_COMMENT                                               |
 |--------------------|-------------|--------------------------------------------------------------|
 | lens_type_id       | int(11)     | Unique ID for the type of lens                               |
@@ -362,6 +408,8 @@
 | lens_type          | varchar(45) | Name of the lens type (e.g. Wide Angle, Telephoto, etc)      |
 
 ## LIGHT_METER
+
+Table to catalog light meters
 
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                                     |
 |-----------------|-------------|--------------------------------------------------------------------|
@@ -380,6 +428,8 @@
 
 ## LOCATION
 
+Table to record commonly-used locations
+
 | COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT            |
 |-------------|--------------|---------------------------|
 | loc_id      | int(11)      | Unique ID of a location   |
@@ -388,6 +438,8 @@
 | longitude   | decimal(9,6) | Longitude of the location |
 
 ## MANUFACTURER
+
+Table to catalog manufacturers of equipment and consumables
 
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                               |
 |-----------------|-------------|----------------------------------------------|
@@ -401,6 +453,8 @@
 
 ## METERING_PATTERN
 
+Table to catalog the different light metering patterns available
+
 | COLUMN_NAME         | COLUMN_TYPE | COLUMN_COMMENT                                           |
 |---------------------|-------------|----------------------------------------------------------|
 | metering_pattern_id | int(11)     | Unique ID of the metering pattern                        |
@@ -408,12 +462,16 @@
 
 ## METERING_TYPE
 
+Table to catalog different metering technologies and cell types
+
 | COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                            |
 |------------------|-------------|-------------------------------------------|
 | metering_type_id | int(11)     | Unique ID of the metering type            |
 | metering         | varchar(45) | Name of the metering type (e.g. Selenium) |
 
 ## MOTION_PICTURE_FILM
+
+Table to catalog motion picture films (movies)
 
 | COLUMN_NAME    | COLUMN_TYPE | COLUMN_COMMENT                                     |
 |----------------|-------------|----------------------------------------------------|
@@ -434,6 +492,8 @@
 
 ## MOUNT
 
+Table to catalog different lens mount standards. This is mostly used for camera lens mounts, but can also be used for enlarger and projector lenses.
+
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                                             |
 |-----------------|-------------|----------------------------------------------------------------------------|
 | mount_id        | int(11)     | Unique ID of this lens mount                                               |
@@ -447,6 +507,8 @@
 
 ## MOUNT_ADAPTER
 
+Table to catalog adapters to mount lenses on other cameras
+
 | COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                                          |
 |------------------|-------------|---------------------------------------------------------|
 | mount_adapter_id | int(11)     | Unique ID of lens mount adapter                         |
@@ -457,6 +519,8 @@
 | notes            | varchar(45) | Freeform notes                                          |
 
 ## NEGATIVE
+
+Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.
 
 | COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                                |
 |------------------|--------------|---------------------------------------------------------------|
@@ -480,6 +544,8 @@
 
 ## NEGATIVE_SIZE
 
+Table to catalog different negative sizes available. Negtives sizes are distinct from film formats.
+
 | COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                                                                    |
 |------------------|--------------|---------------------------------------------------------------------------------------------------|
 | negative_size_id | int(11)      | Unique ID of negative size                                                                        |
@@ -491,6 +557,8 @@
 | aspect_ratio     | decimal(4,2) | Aspect ratio of this negative size, expressed as a single decimal. (e.g. 3:2 is expressed as 1.5) |
 
 ## PAPER_STOCK
+
+Table to catalog different paper stocks available
 
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                             |
 |-----------------|-------------|--------------------------------------------|
@@ -504,12 +572,16 @@
 
 ## PHOTOGRAPHER
 
+Table to catalog photographers
+
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                 |
 |-----------------|-------------|--------------------------------|
 | photographer_id | int(11)     | Unique ID for the photographer |
 | name            | varchar(45) | Name of the photographer       |
 
 ## PRINT
+
+Table to catalog prints made from negatives
 
 | COLUMN_NAME        | COLUMN_TYPE  | COLUMN_COMMENT                                                          |
 |--------------------|--------------|-------------------------------------------------------------------------|
@@ -542,6 +614,8 @@
 
 ## PROCESS
 
+Table to catalog chemical processes that can be used to develop film and paper
+
 | COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                                     |
 |-------------|-------------|----------------------------------------------------|
 | process_id  | int(11)     | ID of this development process                     |
@@ -550,6 +624,8 @@
 | positive    | tinyint(1)  | Whether this is a positive/reversal process        |
 
 ## PROJECTOR
+
+Table to catalog projectors (still and movie)
 
 | COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                                                           |
 |------------------|-------------|--------------------------------------------------------------------------|
@@ -563,6 +639,8 @@
 
 ## REPAIR
 
+Tabe to catalog all repairs and servicing undertaken on cameras and lenses in the collection
+
 | COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                                            |
 |-------------|--------------|-----------------------------------------------------------|
 | repair_id   | int(11)      | Unique ID for the repair job                              |
@@ -574,12 +652,16 @@
 
 ## SHUTTER_SPEED
 
+Table to list all possible shutter speeds
+
 | COLUMN_NAME   | COLUMN_TYPE  | COLUMN_COMMENT                                   |
 |---------------|--------------|--------------------------------------------------|
 | shutter_speed | varchar(10)  | Shutter speed in fractional notation, e.g. 1/250 |
 | duration      | decimal(7,5) | Shutter speed in decimal notation, e.g. 0.04     |
 
 ## SHUTTER_SPEED_AVAILABLE
+
+Table to associate cameras with shutter speeds
 
 | COLUMN_NAME                | COLUMN_TYPE | COLUMN_COMMENT                     |
 |----------------------------|-------------|------------------------------------|
@@ -589,12 +671,16 @@
 
 ## SHUTTER_TYPE
 
+Table to catalog the different types of camera shutter
+
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                         |
 |-----------------|-------------|--------------------------------------------------------|
 | shutter_type_id | int(11)     | Unique ID of the shutter type                          |
 | shutter_type    | varchar(45) | Name of the shutter type (e.g. Focal plane, Leaf, etc) |
 
 ## TELECONVERTER
+
+Table to catalog teleconverters (multipliers)
 
 | COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                                             |
 |------------------|--------------|----------------------------------------------------------------------------|
@@ -609,6 +695,8 @@
 
 ## TONER
 
+Table to catalog paper toners that can be used during the printing process
+
 | COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                      |
 |-----------------|-------------|-------------------------------------|
 | toner_id        | int(11)     | Unique ID of the toner              |
@@ -618,6 +706,8 @@
 | stock_dilution  | varchar(10) | Stock dilution of the toner         |
 
 ## TO_PRINT
+
+Table to catalogue negatives that should be printed
 
 | COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                  |
 |-------------|-------------|---------------------------------|

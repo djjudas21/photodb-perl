@@ -5,5 +5,5 @@ CREATE TABLE `FILTER_ADAPTER` (
   `camera_thread` decimal(3,1) DEFAULT NULL COMMENT 'Diameter of camera-facing screw thread in mm',
   `filter_thread` decimal(3,1) DEFAULT NULL COMMENT 'Diameter of filter-facing screw thread in mm',
   PRIMARY KEY (`filter_adapter_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalogue filter adapter rings';
 /*!40101 SET character_set_client = @saved_cs_client */;

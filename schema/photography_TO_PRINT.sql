@@ -12,5 +12,5 @@ CREATE TABLE `TO_PRINT` (
   PRIMARY KEY (`id`),
   KEY `fk_TO_PRINT_1_idx` (`negative_id`),
   CONSTRAINT `fk_TO_PRINT_1` FOREIGN KEY (`negative_id`) REFERENCES `NEGATIVE` (`negative_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalogue negatives that should be printed';
 /*!40101 SET character_set_client = @saved_cs_client */;
