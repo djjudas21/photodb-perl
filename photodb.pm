@@ -15,20 +15,20 @@ sub prompt {
 	my $prompt = shift;
 	my $type = shift || 'text';
 
-	print "$prompt ($type) [$default]: ";
-	my $input = <STDIN>;
-	chomp($input);
+	my $rv;
+	# Repeatedly prompt until we get a response of the correct type
+	do {
+		print "$prompt ($type) [$default]: ";
+		my $input = <STDIN>;
+		chomp($input);
+		$rv = ($input eq "") ? $default:$input;
+	} while (!&validate($rv, $type));
 
-	my $rv = ($input eq "") ? $default:$input;
-
-	if (&validate($rv, $type)) {
-		if ($type eq 'boolean') {
-			return friendlybool($rv);
-		} else {
-			return $rv;
-		}
+	# Rewrite friendly bools
+	if ($type eq 'boolean') {
+		return friendlybool($rv);
 	} else {
-		die "Value '$rv' is not a valid '$type' type\n";
+		return $rv;
 	}
 }
 
