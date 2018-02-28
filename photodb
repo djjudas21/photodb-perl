@@ -269,7 +269,7 @@ switch ($command) {
 				$data{'image_circle'} = prompt('', 'What is the diameter of the image circle?', 'integer');
 				$data{'formula'} = prompt('', 'Does this lens have a named optical formula?', 'text');
 				$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
-				&newrecord($db, \%data, 'CAMERA');
+				&newrecord($db, \%data, 'LENS');
 			}
 			case 'help' {
 				&notimplemented;
