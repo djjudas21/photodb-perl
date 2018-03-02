@@ -72,9 +72,6 @@ switch ($command) {
 				$data{'processed_by'} = prompt('', 'Who developed the film?', 'text');
 				&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
 			}
-			case 'help' {
-				&notimplemented;
-			}
 			else {
 				&notimplemented;
 			}
@@ -163,9 +160,6 @@ switch ($command) {
 			case 'show-lenses' {
 				&notimplemented;
 			}
-			case 'help' {
-				&notimplemented;
-			}
 			else {
 				&notimplemented;
 			}
@@ -205,9 +199,6 @@ switch ($command) {
 				for my $i (1..$num) {
 					$sth->execute($film_id, $i);
 				}
-			}
-			case 'help' {
-				&notimplemented;
 			}
 			else {
 				&notimplemented;
@@ -271,9 +262,6 @@ switch ($command) {
 				$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
 				&newrecord($db, \%data, 'LENS');
 			}
-			case 'help' {
-				&notimplemented;
-			}
 			else {
 				&notimplemented;
 			}
@@ -326,9 +314,6 @@ switch ($command) {
 				$data{'location'} = prompt('', 'What happened to the print?', 'text');
 				$data{'sold_price'} = prompt('', 'What price was the print sold for?', 'decimal');
 				&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
-			}
-			case 'help' {
-				&notimplemented;
 			}
 			else {
 				&notimplemented;
