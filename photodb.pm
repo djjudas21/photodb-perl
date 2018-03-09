@@ -141,9 +141,6 @@ sub updaterecord {
 	# Build query
 	my $sql = SQL::Abstract->new;
 	my($stmt, @bind) = $sql->update($table, $data, $where);
-	print "And here's the SQL I've generated:\n$stmt\n";
-	local $" = ',';
-	print "@bind\n";
 
 	# Final confirmation
 	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
@@ -175,7 +172,6 @@ sub newrecord {
 	# Build query
 	my $sql = SQL::Abstract->new;
 	my($stmt, @bind) = $sql->insert($table, $data);
-	print "And here's the SQL I've generated:\n$stmt\n";
 
 	# Final confirmation
 	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
