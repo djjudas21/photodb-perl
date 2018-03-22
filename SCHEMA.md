@@ -173,6 +173,16 @@ Table to catalog batches of developer that have been prepared
 | dilution     | varchar(45) | The dilution of the developer in this batch (e.g. 1|0, 1|1, etc) |
 | prepared     | date        | Date that this batch was prepared                                |
 
+## DISPLAYLENS
+
+Table to record which cameras should be displayed with which lens
+
+| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT |
+|-------------|-------------|----------------|
+| display_id  | int(11)     |                |
+| camera_id   | int(11)     | Camera ID      |
+| lens_id     | int(11)     | Lens ID        |
+
 ## ENLARGER
 
 Table to list enlargers

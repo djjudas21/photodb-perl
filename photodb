@@ -157,6 +157,13 @@ switch ($command) {
 				$data{'dof_preview'} = prompt('', 'Does this camera have a depth-of-field preview feature?', 'boolean');
 				&newrecord($db, \%data, 'CAMERA');
 			}
+			case 'display-lens' {
+				my %data;
+				$data{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)");
+				my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{'camera_id'}");
+				$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)");
+				&newrecord($db, \%data, 'DISPLAYLENS');
+			}
 			case 'show-lenses' {
 				&notimplemented;
 			}
