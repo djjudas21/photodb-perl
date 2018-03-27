@@ -200,6 +200,15 @@ Table to list enlargers
 | cost             | decimal(6,2) | Purchase cost of the enlarger                                |
 | lost_price       | decimal(6,2) | Sale price of the enlarger                                   |
 
+## EXPOSURE_PROGRAM
+
+Exposure programs as defined by EXIF tag ExposureProgram
+
+| COLUMN_NAME         | COLUMN_TYPE | COLUMN_COMMENT                                                  |
+|---------------------|-------------|-----------------------------------------------------------------|
+| exposure_program_id | int(11)     | ID of exposure program as defined by EXIF tag ExposureProgram   |
+| exposure_program    | varchar(45) | Name of exposure program as defined by EXIF tag ExposureProgram |
+
 ## FILM
 
 Table to list films which consist of one or more negatives. A film can be a roll film, one or more sheets of sheet film, one or more photographic plates, etc.
@@ -461,6 +470,15 @@ Table to catalog manufacturers of equipment and consumables
 | founded         | smallint(6) | Year in which the manufacturer was founded   |
 | dissolved       | smallint(6) | Year in which the manufacturer was dissolved |
 
+## METERING_MODE
+
+Metering modes as defined by EXIF tag MeteringMode
+
+| COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                                            |
+|------------------|-------------|-----------------------------------------------------------|
+| metering_mode_id | int(11)     | ID of metering mode as defined by EXIF tag MeteringMode   |
+| metering_mode    | varchar(45) | Name of metering mode as defined by EXIF tag MeteringMode |
+
 ## METERING_PATTERN
 
 Table to catalog the different light metering patterns available
@@ -551,6 +569,8 @@ Table to catalog negatives (which includes positives/slide too). Negatives are c
 | longitude        | decimal(9,6) | Longitude of the location where the picture was taken         |
 | filename         | varchar(100) | Filename of the scanned image file from this negative         |
 | flash            | tinyint(1)   | Whether flash was used                                        |
+| metering_mode    | int(11)      | MeteringMode ID as defined in EXIF spec                       |
+| exposure_program | int(11)      | ExposureProgram ID as defined in EXIF spec                    |
 
 ## NEGATIVE_SIZE
 
