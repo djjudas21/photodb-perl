@@ -28,10 +28,12 @@ print "\n";
 # List of tables that contain useful sample data
 my @tables = (
 	'BODY_TYPE',
+	'EXPOSURE_PROGRAM',
 	'FILMSTOCK',
 	'FORMAT',
 	'LENS_TYPE',
 	'MANUFACTURER',
+	'METERING_MODE',
 	'METERING_PATTERN',
 	'METERING_TYPE',
 	'MOUNT',
