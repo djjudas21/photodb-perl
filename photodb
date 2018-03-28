@@ -194,6 +194,8 @@ switch ($command) {
 				$data{'latitude'} = prompt('', 'Latitude', 'decimal');
 				$data{'longitude'} = prompt('', 'Longitude', 'decimal');
 				$data{'flash'} = prompt('no', 'Was flash used?', 'boolean');
+				$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
+				$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
 				&newrecord($db, \%data, 'NEGATIVE');
 			}
 			case 'bulk-add' {
