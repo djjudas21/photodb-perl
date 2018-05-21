@@ -292,6 +292,16 @@ Table to catalogue filter adapter rings
 | camera_thread     | decimal(3,1) | Diameter of camera-facing screw thread in mm |
 | filter_thread     | decimal(3,1) | Diameter of filter-facing screw thread in mm |
 
+## FILTER_USE
+
+Table to record which filters were used in each exposure
+
+| COLUMN_NAME   | COLUMN_TYPE | COLUMN_COMMENT                        |
+|---------------|-------------|---------------------------------------|
+| filter_use_id | int(11)     | Auto-increment ID                     |
+| filter_id     | int(11)     | ID of the filter used in the exposure |
+| negative_id   | int(11)     | ID of the negative                    |
+
 ## FLASH
 
 Table to catlog flashes, flashguns and speedlights
