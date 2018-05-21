@@ -83,6 +83,7 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
 | metering            | tinyint(1)   | Whether the camera has built-in metering                                     |
 | coupled_metering    | tinyint(1)   | Whether the camera's meter is coupled automatically                          |
 | metering_pattern_id | int(11)      | Denotes the meter's sensitivity pattern                                      |
+| metering_mode_id    | int(11)      |                                                                              |
 | metering_type_id    | int(11)      | Denotes the technology used in the meter                                     |
 | body_type_id        | int(11)      | Denotes the style of camera body                                             |
 | weight              | int(11)      | Weight of the camera body (without lens or batteries) in grammes (g)         |
