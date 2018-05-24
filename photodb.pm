@@ -7,7 +7,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today validate);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval updatedata today validate);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -254,6 +254,15 @@ sub lookupval {
 	my $row = $sth->fetchrow_array();
 
 	return $row;
+}
+
+# Update data
+sub updatedata {
+	my $db = shift;
+	my $query = shift;
+	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute();
+	return $rows;
 }
 
 # Return today's date

@@ -10,7 +10,7 @@ use DBD::mysql;
 use SQL::Abstract;
 
 use lib '.';
-use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today);
+use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
 
 # Will be called like:
 # - photodb film add
@@ -326,6 +326,43 @@ switch ($command) {
 			}
 			else {
 				&notimplemented;
+			}
+		}
+	}
+	case 'task' {
+		print "you chose task\n";
+		my $subcommand = $ARGV[1] or &nosubcommand($command);
+		switch ($subcommand) {
+			case 'run' {
+
+				my @tasks;
+				push @tasks, {
+					desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',
+				        query => 'update
+				                NEGATIVE,
+				                LENS,
+				                CAMERA,
+						FILM
+					set
+						NEGATIVE.lens_id=LENS.lens_id
+					where
+						NEGATIVE.film_id=FILM.film_id
+						and FILM.camera_id=CAMERA.camera_id
+						and CAMERA.fixed_mount=1
+						and CAMERA.lens_id=LENS.lens_id'
+				};
+
+				for my $i (0 .. $#tasks) {
+					print "\t$i\t$tasks[$i]{'desc'}\n";
+				}
+
+				# Wait for input
+				my $input = prompt('', "Please select a task", 'integer');
+
+				my $sql = $tasks[$input]{'query'};
+				my $rows = &updatedata($db, $sql);
+				print "Updated $rows rows\n";
+
 			}
 		}
 	}
