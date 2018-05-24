@@ -30,8 +30,9 @@ You can use the raw database using the MySQL command line, or by using an applic
     * [Create a user](#create-a-user)
     * [Import the schema](#import-the-schema)
     * [Import sample data](#import-sample-data)
-2. [Usage](#usage)
     * [Upgrading](#upgrading)
+2. [Usage](#usage)
+3. [Development](#development)
     * [Altering the schema](#altering-the-schema)
 
 ## Installation
@@ -88,14 +89,25 @@ mysql -p photography < sample-data/*.sql
 The app and accessory scripts need to know how to connect to the database. Copy the sample config file,
 `photodb.ini` to `/etc/photodb.ini` and edit it to include the connection details for your database.
 
-## Usage
-
 ### Upgrading
 
 Upgrading to a new version of the schema is tricky. You can of course do a `git pull` to get the
 latest schema files and then execute `mysql -p photography < *.sql` again, but this will discard
 all of your data. The only real upgrade path is to back up your data, drop and create the new schema,
 and re-import your data.
+
+## Usage
+
+This section of the documentation focuses on using the command-line application to drive the database.
+Almost every command invokes the application by name and provides a command a subcommand, i.e.
+
+```
+photodb camera add
+```
+
+After providing a command and subcommand, the application then asks relevant questions interactively.
+
+## Development
 
 ### Altering the schema
 
