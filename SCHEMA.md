@@ -210,6 +210,16 @@ Exposure programs as defined by EXIF tag ExposureProgram
 | exposure_program_id | int(11)     | ID of exposure program as defined by EXIF tag ExposureProgram   |
 | exposure_program    | varchar(45) | Name of exposure program as defined by EXIF tag ExposureProgram |
 
+## EXPOSURE_PROGRAM_AVAILABLE
+
+Table to associate cameras with available exposure programs
+
+| COLUMN_NAME                   | COLUMN_TYPE | COLUMN_COMMENT         |
+|-------------------------------|-------------|------------------------|
+| exposure_program_available_id | int(11)     |                        |
+| camera_id                     | int(11)     | ID of camera           |
+| exposure_program_id           | int(11)     | ID of exposure program |
+
 ## FILM
 
 Table to list films which consist of one or more negatives. A film can be a roll film, one or more sheets of sheet film, one or more photographic plates, etc.
@@ -489,6 +499,14 @@ Metering modes as defined by EXIF tag MeteringMode
 |------------------|-------------|-----------------------------------------------------------|
 | metering_mode_id | int(11)     | ID of metering mode as defined by EXIF tag MeteringMode   |
 | metering_mode    | varchar(45) | Name of metering mode as defined by EXIF tag MeteringMode |
+
+## METERING_MODE_AVAILABLE
+
+| COLUMN_NAME                | COLUMN_TYPE | COLUMN_COMMENT |
+|----------------------------|-------------|----------------|
+| metering_mode_available_id | int(11)     |                |
+| camera_id                  | int(11)     |                |
+| metering_mode_id           | int(11)     |                |
 
 ## METERING_PATTERN
 
