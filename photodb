@@ -411,7 +411,8 @@ switch ($command) {
 						and FILM.camera_id=CAMERA.camera_id
 						and CAMERA.metering_mode_id is not null
 						and CAMERA.metering_mode_id != 4
-						and CAMERA.metering_mode_id != 5'
+						and CAMERA.metering_mode_id != 5
+						and NEGATIVE.metering_mode != CAMERA.metering_mode_id'
 				};
 
 				push @tasks, {
