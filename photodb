@@ -91,7 +91,7 @@ switch ($command) {
 				$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 				if ($data{'metering'} == 1) {
 					$data{'coupled_metering'} = prompt('', 'Is the metering coupled?', 'boolean');
-					$data{'metering_pattern_id'} = &listchoices($db, 'metering pattern', "select metering_pattern_id as id, metering_pattern as opt from METERING_PATTERN");
+					$data{'metering_mode_id'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
 					$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
 					$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 					$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
