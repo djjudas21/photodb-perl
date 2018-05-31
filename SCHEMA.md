@@ -82,8 +82,7 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
 | focus_type_id       | int(11)      | Denotes the focus type of the camera                                         |
 | metering            | tinyint(1)   | Whether the camera has built-in metering                                     |
 | coupled_metering    | tinyint(1)   | Whether the camera's meter is coupled automatically                          |
-| metering_pattern_id | int(11)      | Denotes the meter's sensitivity pattern                                      |
-| metering_mode_id    | int(11)      |                                                                              |
+| metering_mode_id    | int(11)      | Denotes the meter's sensitivity pattern                                      |
 | metering_type_id    | int(11)      | Denotes the technology used in the meter                                     |
 | body_type_id        | int(11)      | Denotes the style of camera body                                             |
 | weight              | int(11)      | Weight of the camera body (without lens or batteries) in grammes (g)         |
@@ -499,23 +498,6 @@ Metering modes as defined by EXIF tag MeteringMode
 |------------------|-------------|-----------------------------------------------------------|
 | metering_mode_id | int(11)     | ID of metering mode as defined by EXIF tag MeteringMode   |
 | metering_mode    | varchar(45) | Name of metering mode as defined by EXIF tag MeteringMode |
-
-## METERING_MODE_AVAILABLE
-
-| COLUMN_NAME                | COLUMN_TYPE | COLUMN_COMMENT |
-|----------------------------|-------------|----------------|
-| metering_mode_available_id | int(11)     |                |
-| camera_id                  | int(11)     |                |
-| metering_mode_id           | int(11)     |                |
-
-## METERING_PATTERN
-
-Table to catalog the different light metering patterns available
-
-| COLUMN_NAME         | COLUMN_TYPE | COLUMN_COMMENT                                           |
-|---------------------|-------------|----------------------------------------------------------|
-| metering_pattern_id | int(11)     | Unique ID of the metering pattern                        |
-| metering_pattern    | varchar(45) | Name of the metering mode/pattern (e.g. Centre-weighted) |
 
 ## METERING_TYPE
 

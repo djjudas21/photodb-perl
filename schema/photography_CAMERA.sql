@@ -9,7 +9,7 @@ CREATE TABLE `CAMERA` (
   `focus_type_id` int(11) DEFAULT NULL COMMENT 'Denotes the focus type of the camera',
   `metering` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has built-in metering',
   `coupled_metering` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera''s meter is coupled automatically',
-  `metering_mode_id` int(11) DEFAULT NULL,
+  `metering_mode_id` int(11) DEFAULT NULL COMMENT 'Denotes the meter''s sensitivity pattern',
   `metering_type_id` int(11) DEFAULT NULL COMMENT 'Denotes the technology used in the meter',
   `body_type_id` int(11) DEFAULT NULL COMMENT 'Denotes the style of camera body',
   `weight` int(11) DEFAULT NULL COMMENT 'Weight of the camera body (without lens or batteries) in grammes (g)',
