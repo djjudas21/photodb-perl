@@ -453,7 +453,6 @@ switch ($command) {
 						and NEGATIVE.film_id=FILM.film_id
 						and FILM.camera_id=CAMERA.camera_id
 						and CAMERA.camera_id = VALIDCAMERA.camera_id
-						and FILM.film_id=28
 						and NEGATIVE.exposure_program is null'
 				};
 
