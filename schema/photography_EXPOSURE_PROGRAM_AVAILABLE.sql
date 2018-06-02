@@ -1,10 +1,9 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EXPOSURE_PROGRAM_AVAILABLE` (
-  `exposure_program_available_id` int(11) NOT NULL AUTO_INCREMENT,
-  `camera_id` int(11) DEFAULT NULL COMMENT 'ID of camera',
-  `exposure_program_id` int(11) DEFAULT NULL COMMENT 'ID of exposure program',
-  PRIMARY KEY (`exposure_program_available_id`),
+  `camera_id` int(11) NOT NULL COMMENT 'ID of camera',
+  `exposure_program_id` int(11) NOT NULL COMMENT 'ID of exposure program',
+  PRIMARY KEY (`camera_id`,`exposure_program_id`),
   KEY `fk_EXPOSURE_PROGRAM_AVAILABLE_1_idx` (`camera_id`),
   KEY `fk_EXPOSURE_PROGRAM_AVAILABLE_2_idx` (`exposure_program_id`),
   CONSTRAINT `fk_EXPOSURE_PROGRAM_AVAILABLE_1` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,

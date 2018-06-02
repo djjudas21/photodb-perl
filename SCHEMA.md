@@ -209,11 +209,10 @@ Exposure programs as defined by EXIF tag ExposureProgram
 
 Table to associate cameras with available exposure programs
 
-| COLUMN_NAME                   | COLUMN_TYPE | COLUMN_COMMENT         |
-|-------------------------------|-------------|------------------------|
-| exposure_program_available_id | int(11)     |                        |
-| camera_id                     | int(11)     | ID of camera           |
-| exposure_program_id           | int(11)     | ID of exposure program |
+| COLUMN_NAME         | COLUMN_TYPE | COLUMN_COMMENT         |
+|---------------------|-------------|------------------------|
+| camera_id           | int(11)     | ID of camera           |
+| exposure_program_id | int(11)     | ID of exposure program |
 
 ## FILM
 
@@ -700,11 +699,10 @@ Table to list all possible shutter speeds
 
 Table to associate cameras with shutter speeds
 
-| COLUMN_NAME                | COLUMN_TYPE | COLUMN_COMMENT                     |
-|----------------------------|-------------|------------------------------------|
-| shutter_speed_available_id | int(11)     | Unique ID of this relationship     |
-| camera_id                  | int(11)     | ID of the camera                   |
-| shutter_speed              | varchar(10) | Shutter speed that this camera has |
+| COLUMN_NAME   | COLUMN_TYPE | COLUMN_COMMENT                     |
+|---------------|-------------|------------------------------------|
+| camera_id     | int(11)     | ID of the camera                   |
+| shutter_speed | varchar(10) | Shutter speed that this camera has |
 
 ## SHUTTER_TYPE
 
