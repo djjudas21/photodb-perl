@@ -127,10 +127,6 @@ switch ($command) {
 				}
 				$data{'notes'} = prompt('', 'Additional notes', 'text');
 				$data{'source'} = prompt('', 'Where was the camera acquired from?', 'text');
-				$data{'M'} = prompt('', 'Does it have manual exposure?', 'boolean');
-				$data{'Av'} = prompt('', 'Does it have aperture priority exposure?', 'boolean');
-				$data{'Tv'} = prompt('', 'Does it have shutter priority exposure?', 'boolean');
-				$data{'P'} = prompt('', 'Does it have program/auto exposure?', 'boolean');
 				$data{'min_shutter'} = prompt('', 'What\'s the fastest shutter speed?', 'text');
 				$data{'max_shutter'} = prompt('', 'What\'s the slowest shutter speed?', 'text');
 				$data{'bulb'} = prompt('', 'Does the camera have bulb exposure mode?', 'boolean');
@@ -155,7 +151,43 @@ switch ($command) {
 				$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
 				$data{'oem_case'} = prompt('', 'Do you have the original case for this camera?', 'boolean');
 				$data{'dof_preview'} = prompt('', 'Does this camera have a depth-of-field preview feature?', 'boolean');
-				&newrecord($db, \%data, 'CAMERA');
+				my $cameraid = &newrecord($db, \%data, 'CAMERA');
+
+				# Now we have a camera ID, we can insert rows in auxiliary tables
+				if (prompt('yes', 'Add exposure programs for this camera?', 'boolean')) {
+					if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
+						my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
+						&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+					}
+					if (my $p = prompt('', 'Does it have program/auto exposure?', 'boolean')) {
+						my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '2');
+						&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+					}
+					if (my $av = prompt('', 'Does it have aperture priority exposure?', 'boolean')) {
+						my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '3');
+						&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+					}
+					if (my $tv = prompt('', 'Does it have shutter priority exposure?', 'boolean')) {
+						my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '4');
+						&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+					}
+					if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
+						my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
+						&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+					}
+				}
+
+				if (prompt('yes', 'Add shutter speeds for this camera?', 'boolean')) {
+					while (1) {
+						my %shutterdata;
+						$shutterdata{'shutter_speed'} = prompt('', 'Enter shutter speed', 'text');
+						$shutterdata{'camera_id'} = $cameraid;
+						&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
+						if (!prompt('yes', 'Add another shutter speed?', 'boolean')) {
+							last;
+						}
+					}
+				}
 			}
 			case 'display-lens' {
 				my %data;

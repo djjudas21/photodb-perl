@@ -184,6 +184,7 @@ sub newrecord {
 	my $insertedrow = $sth->{mysql_insertid};
 	print "Inserted $table $insertedrow\n";
 
+	return $insertedrow;
 }
 
 # Print a warning that this command/subcommand is not yet implemented
