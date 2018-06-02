@@ -354,23 +354,6 @@ switch ($command) {
 				};
 
 				push @tasks, {
-					desc => 'Automatically set the right lens for all negatives which were taken with a fixed-lens camera',
-					query => 'update
-						NEGATIVE,
-						LENS,
-						CAMERA,
-						FILM
-					set
-						NEGATIVE.lens_id=LENS.lens_id
-					where
-						NEGATIVE.film_id=FILM.film_id
-						and FILM.camera_id=CAMERA.camera_id
-						and CAMERA.fixed_mount=1
-						and CAMERA.lens_id=LENS.lens_id
-						and NEGATIVE.lens_id!=LENS.lens_id'
-				};
-
-				push @tasks, {
 					desc => 'Update lens focal length per negative',
 					query => 'update
 						NEGATIVE left join TELECONVERTER on(NEGATIVE.teleconverter_id=TELECONVERTER.teleconverter_id),
