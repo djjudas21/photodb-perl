@@ -105,7 +105,7 @@ sub db {
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'photodb'}{'schema'};host=$$connect{'photodb'}{'host'}", $$connect{'photodb'}{'user'}, $$connect{'photodb'}{'pass'})
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'photodb'}{'schema'};host=$$connect{'photodb'}{'host'};mysql_client_found_rows=0", $$connect{'photodb'}{'user'}, $$connect{'photodb'}{'pass'})
 		or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
