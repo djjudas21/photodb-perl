@@ -381,8 +381,7 @@ switch ($command) {
 						NEGATIVE.film_id=FILM.film_id
 						and FILM.camera_id=CAMERA.camera_id
 						and CAMERA.fixed_mount=1
-						and CAMERA.lens_id=LENS.lens_id
-						and NEGATIVE.lens_id != LENS.lens_id'
+						and CAMERA.lens_id=LENS.lens_id'
 				};
 
 				push @tasks, {
@@ -396,7 +395,7 @@ switch ($command) {
 						NEGATIVE.lens_id=LENS.lens_id
 						and LENS.zoom = 0
 						and LENS.min_focal_length is not null
-						and NEGATIVE.focal_length != round(LENS.min_focal_length * coalesce(TELECONVERTER.factor,1))'
+						and NEGATIVE.focal_length is null'
 				};
 
 				push @tasks, {
@@ -426,8 +425,7 @@ switch ($command) {
 						and FILM.camera_id=CAMERA.camera_id
 						and CAMERA.metering_mode_id is not null
 						and CAMERA.metering_mode_id != 4
-						and CAMERA.metering_mode_id != 5
-						and NEGATIVE.metering_mode != CAMERA.metering_mode_id'
+						and CAMERA.metering_mode_id != 5'
 				};
 
 				push @tasks, {
@@ -453,7 +451,6 @@ switch ($command) {
 						and NEGATIVE.film_id=FILM.film_id
 						and FILM.camera_id=CAMERA.camera_id
 						and CAMERA.camera_id = VALIDCAMERA.camera_id
-						and FILM.film_id=28
 						and NEGATIVE.exposure_program is null'
 				};
 
