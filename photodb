@@ -10,7 +10,7 @@ use DBD::mysql;
 use SQL::Abstract;
 
 use lib 'lib';
-use funcs qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
+use funcs;
 
 # Will be called like:
 # - photodb film add
