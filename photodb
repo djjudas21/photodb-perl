@@ -9,7 +9,7 @@ use DBI;
 use DBD::mysql;
 use SQL::Abstract;
 
-use lib '.';
+use lib 'lib';
 use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
 
 # Will be called like:
