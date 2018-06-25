@@ -16,8 +16,8 @@ use DBI;
 use DBD::mysql;
 use Getopt::Long;
 
-use lib '.';
-use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
+use lib 'lib';
+use funcs qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
 
 # Read in cmdline args
 my $film_id = '%';
@@ -70,48 +70,11 @@ my @attributes = (
 my $dbh = &db;
 
 # This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
-my $sql = q{SELECT
-	cm.manufacturer AS Make,
-	concat (cm.manufacturer, ' ', c.model) AS Model,
-	p.name AS Author,
-	concat(lm.manufacturer, ' ', l.model) AS LensModel,
-	concat(lm.manufacturer, ' ', l.model) AS Lens,
-	concat(f.directory, '/', n.filename) AS path,
-	l.max_aperture as MaxApertureValue,
-	f.directory,
-	n.filename,
-	n.shutter_speed AS ExposureTime,
-	n.aperture AS FNumber,
-	n.aperture AS ApertureValue,
-	if(l.min_focal_length=l.max_focal_length, concat(l.min_focal_length, '.0 mm'), concat(n.focal_length, '.0mm')) as FocalLength,
-	if(f.exposed_at is not null, f.exposed_at, fs.iso) as ISO,
-	n.description as ImageDescription,
-	date_format(n.date, '%Y:%m:%d %H:%i:%s') as DateTimeOriginal,
-	n.latitude as GPSLatitude,
-	n.longitude as GPSLongitude,
-	ep.exposure_program as 'ExposureProgram',
-	mm.metering_mode as 'MeteringMode',
-	n.flash as 'Flash#'
-FROM
-	FILMSTOCK as fs,
-	PHOTOGRAPHER as p,
-	NEGATIVE AS n
-	INNER JOIN FILM AS f ON n.film_id = f.film_id 
-	INNER JOIN CAMERA AS c ON f.camera_id = c.camera_id  
-	INNER JOIN MANUFACTURER AS cm ON c.manufacturer_id = cm.manufacturer_id  
-	LEFT JOIN LENS AS l ON n.lens_id = l.lens_id  
-	LEFT JOIN MANUFACTURER AS lm ON l.manufacturer_id = lm.manufacturer_id
-	LEFT JOIN EXPOSURE_PROGRAM as ep on n.exposure_program = ep.exposure_program_id
-	LEFT JOIN METERING_MODE as mm on n.metering_mode = mm.metering_mode_id
-WHERE
-	f.photographer_id=p.photographer_id
-	and n.filename is not null
-	and f.filmstock_id=fs.filmstock_id
-};
+my $sql = 'SELECT * from exifdata';
 
 # Do we filter by film_id or not?
 if ($film_id =~ m/\d+/) {
-	$sql .= " and f.film_id = '$film_id';";
+	$sql .= " where film_id = '$film_id';";
 } else {
 	$sql .= ';';
 }
