@@ -1,4 +1,4 @@
-package photodb;
+package funcs;
 
 use strict;
 use warnings;
