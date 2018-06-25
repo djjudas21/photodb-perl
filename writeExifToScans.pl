@@ -17,7 +17,7 @@ use DBD::mysql;
 use Getopt::Long;
 
 use lib 'lib';
-use funcs qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
+use funcs;
 
 # Read in cmdline args
 my $film_id = '%';
