@@ -12,6 +12,7 @@ use SQL::Abstract;
 use lib 'lib';
 use funcs;
 use queries;
+use handlers;
 
 # Will be called like:
 # - photodb film add
@@ -29,22 +30,7 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' {
-				# Add a newly-purchased film
-				my %data;
-				$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
-				$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
-				$data{'frames'} = prompt('', 'How many frames?', 'integer');
-				if (prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
-					$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
-					$data{'film_bulk_loaded'} = prompt(&today($db), 'When was the film bulk-loaded?');
-				} else {
-					$data{'film_batch'} = prompt('', 'Film batch number', 'text');
-					$data{'film_expiry'} = prompt('', 'Film expiry date', 'date');
-				}
-				$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
-				$data{'price'} = prompt('', 'Purchase price', 'decimal');
-
-				&newrecord($db, \%data, 'FILM');
+				&add_film($db);
 			}
 			case 'load' {
 				# Load a film into a camera
