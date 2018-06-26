@@ -9,8 +9,9 @@ use DBI;
 use DBD::mysql;
 use SQL::Abstract;
 
-use lib '.';
-use photodb qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval today updatedata);
+use lib 'lib';
+use funcs;
+use queries;
 
 # Will be called like:
 # - photodb film add
@@ -370,18 +371,7 @@ switch ($command) {
 				my @tasks;
 				push @tasks, {
 					desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',
-					query => 'update
-						NEGATIVE,
-						LENS,
-						CAMERA,
-						FILM
-					set
-						NEGATIVE.lens_id=LENS.lens_id
-					where
-						NEGATIVE.film_id=FILM.film_id
-						and FILM.camera_id=CAMERA.camera_id
-						and CAMERA.fixed_mount=1
-						and CAMERA.lens_id=LENS.lens_id'
+					query => $queries::set_lens_id
 				};
 
 				push @tasks, {
