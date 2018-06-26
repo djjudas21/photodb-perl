@@ -1,5 +1,7 @@
 package funcs;
 
+# This package provides reusable functions to be consumed by the rest of the application
+
 use strict;
 use warnings;
 
