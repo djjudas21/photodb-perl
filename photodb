@@ -26,7 +26,6 @@ my $command = $ARGV[0] or &nocommand;
 
 switch ($command) {
 	case 'film' {
-		print "you chose film\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' { &film_add($db); }
@@ -36,7 +35,6 @@ switch ($command) {
 		}
 	}
 	case 'camera' {
-		print "you chose camera\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' { &camera_add($db); }
@@ -46,7 +44,6 @@ switch ($command) {
 		}
 	}
 	case 'negative' {
-		print "you chose negative\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' { &negative_add($db); }
@@ -55,7 +52,6 @@ switch ($command) {
 		}
 	}
 	case 'lens' {
-		print "you chose lens\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' { &lens_add($db); }
@@ -63,7 +59,6 @@ switch ($command) {
 		}
 	}
 	case 'print' {
-		print "you chose print\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' { &print_add($db); }
@@ -73,7 +68,6 @@ switch ($command) {
 		}
 	}
 	case 'task' {
-		print "you chose task\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'run' {
