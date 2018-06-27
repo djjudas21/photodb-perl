@@ -69,15 +69,7 @@ switch ($command) {
 				&negative_add($db);
 			}
 			case 'bulk-add' {
-				# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
-				my $film_id = prompt('', 'Bulk add negatives to which film?', 'integer');
-				my $num = prompt('', 'How many frames to add?', 'integer');
-
-				# Execute query
-				my $sth = $db->prepare('insert into NEGATIVE (film_id, frame) values (?, ?)');
-				for my $i (1..$num) {
-					$sth->execute($film_id, $i);
-				}
+				&negative_bulkadd($db);
 			}
 			else {
 				&notimplemented;
@@ -89,57 +81,7 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' {
-				my %data;
-				$data{'fixed_mount'} = prompt('no', 'Does this lens have a fixed mount?', 'boolean');
-				if ($data{'fixed_mount'} == 0) {
-					$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT");
-				}
-				$data{'zoom'} = prompt('no', 'Is this a zoom lens?', 'boolean');
-				if ($data{'zoom'} == 0) {
-					$data{'min_focal_length'} = prompt('', 'What is the focal length?', 'integer');
-					$data{'max_focal_length'} = $data{'min_focal_length'};
-				} else {
-					$data{'min_focal_length'} = prompt('', 'What is the minimum focal length?', 'integer');
-					$data{'max_focal_length'} = prompt('', 'What is the maximum focal length?', 'integer');
-				}
-				$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
-				$data{'model'} = prompt('', 'What is the lens model?', 'text');
-				$data{'closest_focus'} = prompt('', 'How close can the lens focus? (cm)', 'integer');
-				$data{'max_aperture'} = prompt('', 'What is the largest lens aperture?', 'decimal');
-				$data{'min_aperture'} = prompt('', 'What is the smallest lens aperture?', 'decimal');
-				$data{'elements'} = prompt('', 'How many elements does the lens have?', 'integer');
-				$data{'groups'} = prompt('', 'How many groups are these elements in?', 'integer');
-				$data{'weight'} = prompt('', 'What is the weight of the lens? (g)', 'integer');
-				$data{'nominal_min_angle_diag'} = prompt('', 'What is the minimum diagonal angle of view?', 'integer');
-				$data{'nominal_max_angle_diag'} = prompt('', 'What is the maximum diagonal angle of view?', 'integer');
-				$data{'aperture_blades'} = prompt('', 'How many aperture blades does the lens have?', 'integer');
-				$data{'autofocus'} = prompt('', 'Does this lens have autofocus?', 'boolean');
-				$data{'filter_thread'} = prompt('', 'What is the diameter of the filter thread? (mm)', 'decimal');
-				$data{'magnification'} = prompt('', 'What is the maximum magnification possible with this lens?', 'decimal');
-				$data{'url'} = prompt('', 'Informational URL for this lens', 'text');
-				$data{'serial'} = prompt('', 'What is the serial number of the lens?', 'text');
-				$data{'date_code'} = prompt('', 'What is the date code of the lens?', 'text');
-				$data{'introduced'} = prompt('', 'When was this lens introduced?', 'integer');
-				$data{'discontinued'} = prompt('', 'When was this lens discontinued?', 'integer');
-				$data{'manufactured'} = prompt('', 'When was this lens manufactured?', 'integer');
-				$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
-				$data{'acquired'} = prompt(&today($db), 'When was this lens acquired?', 'date');
-				$data{'cost'} = prompt('', 'How much did this lens cost?', 'decimal');
-				$data{'notes'} = prompt('', 'Notes', 'text');
-				$data{'own'} = prompt('yes', 'Do you own this lens?', 'boolean');
-				$data{'source'} = prompt('', 'Where was this lens sourced from?', 'text');
-				$data{'coating'} = prompt('', 'What coating does this lens have?', 'text');
-				$data{'hood'} = prompt('', 'What is the model number of the suitable hood for this lens?', 'text');
-				$data{'hood_id'} = &listchoices($db, 'lens hood', "select hood_id as id, model as opt from HOOD");
-				$data{'exif_lenstype'} = prompt('', 'EXIF lens type code', 'text');
-				$data{'rectilinear'} = prompt('yes', 'Is this a rectilinear lens?', 'boolean');
-				$data{'length'} = prompt('', 'How long is this lens? (mm)', 'integer');
-				$data{'diameter'} = prompt('', 'How wide is this lens? (mm)', 'integer');
-				$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
-				$data{'image_circle'} = prompt('', 'What is the diameter of the image circle?', 'integer');
-				$data{'formula'} = prompt('', 'Does this lens have a named optical formula?', 'text');
-				$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
-				&newrecord($db, \%data, 'LENS');
+				&lens_add($db);
 			}
 			else {
 				&notimplemented;
@@ -151,48 +93,13 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' {
-				my %data;
-				my $film_id = prompt('', 'Film ID to print from', 'integer');
-				my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-				my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
-				$data{'negative_id'} = prompt($neg_id, 'Negative ID to print from', 'integer');
-				$data{'date'} = prompt(&today($db), 'Date that the print was made', 'date');
-				$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select * from choose_paper");
-				$data{'height'} = prompt('', 'Height of the print (inches)', 'integer');
-				$data{'width'} = prompt('', 'Width of the print (inches)', 'integer');
-				$data{'aperture'} = prompt('', 'Aperture used on enlarging lens', 'decimal');
-				$data{'exposure_time'} = prompt('', 'Exposure time (s)', 'integer');
-				$data{'filtration_grade'} = prompt('', 'Filtration grade', 'decimal');
-				$data{'development_time'} = prompt('', 'Development time (s)', 'integer');
-				$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select * from choose_enlarger");
-				$data{'lens_id'} = &listchoices($db, 'enlarger lens', "select * from choose_enlarger_lens");
-				$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1");
-				$data{'fine'} = prompt('', 'Is this a fine print?', 'boolean');
-				$data{'notes'} = prompt('', 'Notes', 'text');
-				&newrecord($db, \%data, 'PRINT');
+				&print_add($db);
 			}
 			case 'tone' {
-				my %data;
-				my %where;
-				$where{'print_id'} = prompt('', 'Which print did you tone?', 'integer');
-				$data{'bleach_time'} = prompt('00:00:00', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
-				$data{'toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER");
-				$data{'toner_dilution'} = prompt('', 'What was the dilution of the first toner?', 'text');
-				$data{'toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
-				if (prompt('no', 'Did you use a second toner?', 'boolean') == 1) {
-					$data{'2nd_toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER");
-					$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?', 'text');
-					$data{'2nd_toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
-				}
-				&updaterecord($db, \%data, 'PRINT', \%where);
+				&print_tone($db);
 			}
 			case 'sell' {
-				my %data;
-				my $print_id = prompt('', 'Which print did you sell?', 'integer');
-				$data{'own'} = 0;
-				$data{'location'} = prompt('', 'What happened to the print?', 'text');
-				$data{'sold_price'} = prompt('', 'What price was the print sold for?', 'decimal');
-				&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+				&print_sell($db);
 			}
 			else {
 				&notimplemented;
