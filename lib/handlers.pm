@@ -13,7 +13,7 @@ use lib 'lib';
 use funcs;
 use queries;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell paperstock_add);
+our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell paperstock_add developer_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -336,4 +336,15 @@ sub paperstock_add {
 	$data{'colour'} = prompt('', 'Is this a colour paper?', 'boolean');
 	$data{'finish'} = prompt('', 'What surface finish does this paper have?', 'text');
 	&newrecord($db, \%data, 'PAPER_STOCK');
+}
+
+sub developer_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$data{'name'} = prompt('', 'What model is the developer?', 'text');
+	$data{'for_paper'} = prompt('', 'Is this developer suitable for paper?', 'boolean');
+	$data{'for_film'} = prompt('', 'Is this developer suitable for film?', 'boolean');
+	$data{'chemistry'} = prompt('', 'What type of chemistry is this developer based on?', 'text');
+	&newrecord($db, \%data, 'DEVELOPER');
 }

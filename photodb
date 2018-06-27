@@ -74,6 +74,13 @@ switch ($command) {
 			else { &notimplemented; }
 		}
 	}
+	case 'developer' {
+		my $subcommand = $ARGV[1] or &nosubcommand($command);
+		switch ($subcommand) {
+			case 'add' { &developer_add($db); }
+			else { &notimplemented; }
+		}
+	}
 	case 'task' {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
