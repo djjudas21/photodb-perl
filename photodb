@@ -30,7 +30,7 @@ switch ($command) {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
 			case 'add' {
-				&add_film($db);
+				&film_add($db);
 			}
 			case 'load' {
 				# Load a film into a camera
