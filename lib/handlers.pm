@@ -9,6 +9,10 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
+use lib 'lib';
+use funcs;
+use queries;
+
 our @EXPORT = qw(film_add);
 
 sub film_add {
