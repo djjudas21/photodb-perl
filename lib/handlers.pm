@@ -13,7 +13,7 @@ use lib 'lib';
 use funcs;
 use queries;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell);
+our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell paperstock_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -324,4 +324,16 @@ sub print_sell {
 	$data{'location'} = prompt('', 'What happened to the print?', 'text');
 	$data{'sold_price'} = prompt('', 'What price was the print sold for?', 'decimal');
 	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+}
+
+sub paperstock_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$data{'name'} = prompt('', 'What model is the paper?', 'text');
+	$data{'resin_coated'} = prompt('', 'Is this paper resin-coated?', 'boolean');
+	$data{'tonable'} = prompt('', 'Is this paper tonable?', 'boolean');
+	$data{'colour'} = prompt('', 'Is this a colour paper?', 'boolean');
+	$data{'finish'} = prompt('', 'What surface finish does this paper have?', 'text');
+	&newrecord($db, \%data, 'PAPER_STOCK');
 }

@@ -67,6 +67,13 @@ switch ($command) {
 			else { &notimplemented; }
 		}
 	}
+	case 'paperstock' {
+		my $subcommand = $ARGV[1] or &nosubcommand($command);
+		switch ($subcommand) {
+			case 'add' { &paperstock_add($db); }
+			else { &notimplemented; }
+		}
+	}
 	case 'task' {
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
