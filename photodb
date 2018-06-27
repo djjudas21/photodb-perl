@@ -29,81 +29,47 @@ switch ($command) {
 		print "you chose film\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
-			case 'add' {
-				&film_add($db);
-			}
-			case 'load' {
-				&film_load($db);
-			}
-			case 'develop' {
-				&film_develop($db);
-			}
-			else {
-				&notimplemented;
-			}
+			case 'add' { &film_add($db); }
+			case 'load' { &film_load($db); }
+			case 'develop' { &film_develop($db); }
+			else { &notimplemented; }
 		}
 	}
 	case 'camera' {
 		print "you chose camera\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
-			case 'add' {
-				&camera_add($db);
-			}
-			case 'display-lens' {
-				&camera_displaylens($db);
-			}
-			case 'show-lenses' {
-				&notimplemented;
-			}
-			else {
-				&notimplemented;
-			}
+			case 'add' { &camera_add($db); }
+			case 'display-lens' { &camera_displaylens($db); }
+			case 'show-lenses' { &notimplemented; }
+			else { &notimplemented; }
 		}
 	}
 	case 'negative' {
 		print "you chose negative\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
-			case 'add' {
-				&negative_add($db);
-			}
-			case 'bulk-add' {
-				&negative_bulkadd($db);
-			}
-			else {
-				&notimplemented;
-			}
+			case 'add' { &negative_add($db); }
+			case 'bulk-add' { &negative_bulkadd($db); }
+			else { &notimplemented; }
 		}
 	}
 	case 'lens' {
 		print "you chose lens\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
-			case 'add' {
-				&lens_add($db);
-			}
-			else {
-				&notimplemented;
-			}
+			case 'add' { &lens_add($db); }
+			else { &notimplemented; }
 		}
 	}
 	case 'print' {
 		print "you chose print\n";
 		my $subcommand = $ARGV[1] or &nosubcommand($command);
 		switch ($subcommand) {
-			case 'add' {
-				&print_add($db);
-			}
-			case 'tone' {
-				&print_tone($db);
-			}
-			case 'sell' {
-				&print_sell($db);
-			}
-			else {
-				&notimplemented;
-			}
+			case 'add' { &print_add($db); }
+			case 'tone' { &print_tone($db); }
+			case 'sell' { &print_sell($db); }
+			else { &notimplemented; }
 		}
 	}
 	case 'task' {
