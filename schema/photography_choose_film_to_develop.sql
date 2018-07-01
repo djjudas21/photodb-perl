@@ -14,7 +14,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `choose_film_to_develop` AS select `FILM`.`film_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,' format, ',if(`FILMSTOCK`.`colour`,'colour','B&W'),')') AS `opt` from (((`FILM` join `FILMSTOCK`) join `FORMAT`) join `MANUFACTURER`) where ((`FILM`.`camera_id` is not null) and isnull(`FILM`.`date`) and (`FILM`.`filmstock_id` = `FILMSTOCK`.`filmstock_id`) and (`FILM`.`format_id` = `FORMAT`.`format_id`) and (`FILMSTOCK`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) */;
+/*!50001 VIEW `choose_film_to_develop` AS select `FILM`.`film_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,' format, ',if(`FILMSTOCK`.`colour`,'colour','B&W'),')') AS `opt` from (((`FILM` join `FILMSTOCK`) join `FORMAT`) join `MANUFACTURER`) where ((`FILM`.`camera_id` is not null) and isnull(`FILM`.`date`) and (`FILM`.`filmstock_id` = `FILMSTOCK`.`filmstock_id`) and (`FILM`.`format_id` = `FORMAT`.`format_id`) and (`FILMSTOCK`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) order by `FILM`.`film_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
