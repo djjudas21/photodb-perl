@@ -19,7 +19,7 @@ sub film_add {
 	# Add a newly-purchased film
 	my $db = shift;
 	my %data;
-	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select filmstock_id as id, name as opt from FILMSTOCK");
+	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock");
 	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
 	$data{'frames'} = prompt('', 'How many frames?', 'integer');
 	if (prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
