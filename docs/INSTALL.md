@@ -15,12 +15,13 @@
 
 ### Database backend
 
-The database backend can be run anywhere that supports MySQL or MariaDB.
+The database backend can be run anywhere that supports MySQL or MariaDB. It does not have to be
+on the same system as the frontend.
 
 ### Application frontend
 
-The application frontend requires Linux. It has been developed on Fedora, should support Ubuntu but is very hard to get to
-work on CentOS, due to the difficulty of building CPAN modules.
+The application frontend requires Linux. It has been developed and tested on Fedora, but it should
+support Ubuntu. It is very hard to get to work on CentOS, due to the difficulty of building CPAN modules.
 
 ## Install database backend
 
@@ -89,10 +90,23 @@ Fedora:
 ```
 # Set up a new yum repo to provide one package
 curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.rpm.sh | sudo bash
+
 # Install all of the deps in one go
 sudo dnf install "perl(Config::IniHash)" "perl(Data::Dumper)" "perl(DBD::mysql)" "perl(DBI)" \
 "perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(Image::ExifTool::Location)" \
 "perl(SQL::Abstract)" "perl(strict)" "perl(Switch)" "perl(Term::ReadKey)" "perl(warnings)"
+```
+
+Ubuntu:
+
+```
+# Set up a new apt repo to provide one package
+curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
+
+# Install all of the deps in one go
+sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
+libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl libswitch-perl \
+libterm-readkey-perl libimage-exiftool-location-perl
 ```
 
 ### Check out the code
