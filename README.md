@@ -24,7 +24,7 @@ You can use the raw database using the MySQL command line, or by using an applic
 [MySQL Workbench](http://www.mysql.com/products/workbench/) or
 [phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) to obtain a GUI for manipulating the tables.
 
-See also separate docs for [installation](INSTALL.md) and [contributing](CONTRIBUTING.md)
+See also separate docs for [installation](docs/INSTALL.md) and [contributing](docs/CONTRIBUTING.md)
 
 ## Table of Contents
 
