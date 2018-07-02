@@ -8,6 +8,17 @@
     * [Upgrading](#upgrading)
 2. [Usage](#usage)
 
+## Requirements
+
+### Database backend
+
+The database backend can be run anywhere that supports MySQL or MariaDB.
+
+### Application frontend
+
+The application frontend requires Linux. It has developed on Fedora, should support Ubuntu but is very hard to get to
+work on CentOS, due to the difficulty of building CPAN modules.
+
 ## Installation
 
 ### Install MySQL
