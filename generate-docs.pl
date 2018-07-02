@@ -69,7 +69,7 @@ while (my @row= $sqlQuery->fetchrow_array()) {
 $sqlQuery->finish;
 
 # Open a file and dump compiled array into it
-open my $fh, '>', "SCHEMA.md" or die "Cannot open SCHEMA.md: $!";
+open my $fh, '>', "docs/SCHEMA.md" or die "Cannot open docs/SCHEMA.md: $!";
 foreach (@output) {
     print $fh $_;
 }
