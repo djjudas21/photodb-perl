@@ -36,7 +36,7 @@ sudo service mysqld start
 
 Fedora:
 ```
-sudo yum install mariadb-server
+sudo dnf install mariadb-server
 sudo systemctl mariadb on
 sudo systemctl mariadb start
 ```
@@ -44,8 +44,8 @@ sudo systemctl mariadb start
 Ubuntu:
 ```
 sudo apt-get install mysql-server
-# enable on boot
-# start service
+sudo systemctl start mysql
+sudo systemctl enable mysql
 ```
 
 ### Create a user
