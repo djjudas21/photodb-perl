@@ -36,6 +36,7 @@ my @output;
 
 # Print headers
 push(@output, "# PhotoDB schema documentation\n");
+push(@output, 'This documentation is generated automatically from the database schema itself with the `generate-docs.pl` script, using table and column comments embedded in the database\n');
 
 # Generate docs for each table in turn
 while (my @row= $sqlQuery->fetchrow_array()) {
