@@ -1,4 +1,4 @@
-## Development
+# Contributing to PhotoDB
 
 ### Altering the schema
 

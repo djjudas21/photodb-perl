@@ -1,3 +1,5 @@
+# Installing PhotoDB
+
 ## Table of Contents
 
 1. [Requirements](#requirements)
