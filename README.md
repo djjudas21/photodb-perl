@@ -3,9 +3,10 @@ PhotoDB
 
 PhotoDB is an attempt to create a database for film photography that can be used to track
 cameras, lenses, films and negatives to fully catalogue a collection of cameras, lenses,
-accessories as well as negatives and prints.
+accessories as well as negatives and prints that are made with them.
 
 At the moment, the PhotoDB project is unfinished and the code continues to change unpredictably.
+Look for a tagged release in the future!
 
 #### The schema
 
@@ -32,8 +33,6 @@ You can use the raw database using the MySQL command line, or by using an applic
     * [Import sample data](#import-sample-data)
     * [Upgrading](#upgrading)
 2. [Usage](#usage)
-3. [Development](#development)
-    * [Altering the schema](#altering-the-schema)
 
 ## Installation
 
@@ -93,16 +92,52 @@ The app and accessory scripts need to know how to connect to the database. Copy 
 
 Upgrading to a new version of the schema is tricky. You can of course do a `git pull` to get the
 latest schema files and then execute `mysql -p photography < *.sql` again, but this will discard
-all of your data. The only real upgrade path is to back up your data, drop and create the new schema,
-and re-import your data.
+all of your data. The only real upgrade path at the moment is to back up your data, drop and create
+the new schema, and re-import your data, taking account of schema changes. I hope to provide a more
+robust upgrade path after the first tagged release of this project.
 
 ## Usage
 
 This section of the documentation focuses on using the command-line application to drive the database.
-Almost every command invokes the application by name and provides a command a subcommand, i.e.
+Every command invokes the application by name and provides a command a subcommand, e.g.
 
 ```
 photodb camera add
 ```
 
 After providing a command and subcommand, the application then asks relevant questions interactively.
+
+### Command reference
+
+### `film`
+#### `add`
+#### `load`
+#### `develop`
+
+### `camera`
+#### `add`
+#### `display-lens`
+#### `show-lenses`
+
+### `negative`
+#### `add`
+#### `bulk-add`
+
+### `lens`
+#### `add`
+
+### `print`
+#### `add`
+#### `tone`
+#### `sell`
+
+### `paperstock`
+#### `add`
+
+### `developer`
+#### `add`
+
+### `task`
+#### `run`
+
+### `help`
