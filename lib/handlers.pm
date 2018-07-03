@@ -31,7 +31,8 @@ sub film_add {
 	}
 	$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
 	$data{'price'} = prompt('', 'Purchase price', 'decimal');
-	&newrecord($db, \%data, 'FILM');
+	my $filmid = &newrecord($db, \%data, 'FILM');
+	return $filmid;
 }
 
 sub film_load {
@@ -70,6 +71,13 @@ sub camera_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
 	$data{'model'} = prompt('', 'What model is the camera?', 'text');
+	$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?', 'boolean');
+	if ($data{'fixed_mount'} == 1) {
+		# Get info about lens
+		$data{'lens_id'} = &lens_add;
+	} else {
+		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
+	}
 	$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
 	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
 	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
@@ -102,10 +110,6 @@ sub camera_add {
 	}
 	$data{'video'} = prompt('no', 'Does this camera have a video/movie function?', 'boolean');
 	$data{'digital'} = prompt('no', 'Is this a digital camera?', 'boolean');
-	$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?', 'boolean');
-	if ($data{'fixed_mount'} == 1) {
-		#$data{'lens_id'} = &listchoices
-	}
 	$data{'battery_qty'} = prompt('', 'How many batteries does this camera take?', 'integer');
 	if ($data{'battery_qty'} > 0) {
 		$data{'battery_type'} = &listchoices($db, 'battery type', "select * from choose_battery");
@@ -173,6 +177,7 @@ sub camera_add {
 			}
 		}
 	}
+	return $cameraid;
 }
 
 sub camera_displaylens {
@@ -181,7 +186,8 @@ sub camera_displaylens {
 	$data{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)");
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{'camera_id'}");
 	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)");
-	&newrecord($db, \%data, 'DISPLAYLENS');
+	my $displaylensid = &newrecord($db, \%data, 'DISPLAYLENS');
+	return $displaylensid;
 }
 
 sub negative_add {
@@ -205,7 +211,8 @@ sub negative_add {
 	$data{'flash'} = prompt('no', 'Was flash used?', 'boolean');
 	$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
 	$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
-	&newrecord($db, \%data, 'NEGATIVE');
+	my $negativeid = &newrecord($db, \%data, 'NEGATIVE');
+	return $negativeid;
 }
 
 sub negative_bulkadd {
@@ -273,7 +280,8 @@ sub lens_add {
 	$data{'image_circle'} = prompt('', 'What is the diameter of the image circle?', 'integer');
 	$data{'formula'} = prompt('', 'Does this lens have a named optical formula?', 'text');
 	$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
-	&newrecord($db, \%data, 'LENS');
+	my $lensid = &newrecord($db, \%data, 'LENS');
+	return $lensid;
 }
 
 sub print_add {
@@ -296,7 +304,8 @@ sub print_add {
 	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1");
 	$data{'fine'} = prompt('', 'Is this a fine print?', 'boolean');
 	$data{'notes'} = prompt('', 'Notes', 'text');
-	&newrecord($db, \%data, 'PRINT');
+	my $printid = &newrecord($db, \%data, 'PRINT');
+	return $printid;
 }
 
 sub print_tone {
@@ -335,7 +344,8 @@ sub paperstock_add {
 	$data{'tonable'} = prompt('', 'Is this paper tonable?', 'boolean');
 	$data{'colour'} = prompt('', 'Is this a colour paper?', 'boolean');
 	$data{'finish'} = prompt('', 'What surface finish does this paper have?', 'text');
-	&newrecord($db, \%data, 'PAPER_STOCK');
+	my $paperstockid = &newrecord($db, \%data, 'PAPER_STOCK');
+	return $paperstockid;
 }
 
 sub developer_add {
@@ -346,5 +356,6 @@ sub developer_add {
 	$data{'for_paper'} = prompt('', 'Is this developer suitable for paper?', 'boolean');
 	$data{'for_film'} = prompt('', 'Is this developer suitable for film?', 'boolean');
 	$data{'chemistry'} = prompt('', 'What type of chemistry is this developer based on?', 'text');
-	&newrecord($db, \%data, 'DEVELOPER');
+	my $developerid = &newrecord($db, \%data, 'DEVELOPER');
+	return $developerid;
 }
