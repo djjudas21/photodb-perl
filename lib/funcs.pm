@@ -233,16 +233,24 @@ sub listchoices {
 
 	$sth->execute();
 	my $ref;
+	my @allowedvals;
 
 	while ($ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
+		# Make a note of what allowed options are
+		push(@allowedvals, $ref->{id});
 	}
 
 	# Wait for input
 	my $input = prompt('', "Please select a $keyword", $type);
 
-	# Return input
-	return $input;
+	# Make sure a valid option was chosen
+	if (grep(/^$input$/, @allowedvals)) {
+		# Return input
+		return $input;
+	} else {
+		die("Must choose valid option\n");
+	}
 }
 
 # Return arbitrary value from database
