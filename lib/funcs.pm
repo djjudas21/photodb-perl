@@ -137,7 +137,7 @@ sub updaterecord {
 	}
 
 	# Dump data for debugging
-	print "\n\nThis is what I would have updated into $table where $where:\n";
+	print "\n\nThis is what I will update into $table where $where:\n";
 	print Dumper(\$data);
 
 	# Build query
