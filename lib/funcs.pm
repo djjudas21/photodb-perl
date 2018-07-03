@@ -168,7 +168,7 @@ sub newrecord {
 	}
 
 	# Dump data for debugging
-	print "\n\nThis is what I would have inserted into $table:\n";
+	print "\n\nThis is what I will insert into $table:\n";
 	print Dumper(\$data);
 
 	# Build query
