@@ -74,7 +74,8 @@ sub camera_add {
 	$data{'fixed_mount'} = prompt('', 'Does this camera have a fixed lens?', 'boolean');
 	if ($data{'fixed_mount'} == 1) {
 		# Get info about lens
-		$data{'lens_id'} = &lens_add;
+		print "Please enter some information about the lens\n";
+		$data{'lens_id'} = &lens_add($db);
 	} else {
 		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
 	}
