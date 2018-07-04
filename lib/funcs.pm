@@ -226,7 +226,7 @@ sub listchoices {
 	my $query = shift;
 	my $type = shift || 'integer';
 
-	print "Please select a $keyword from the list:\n";
+	print "Please select a $keyword from the list, or leave blank to skip:\n";
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
@@ -245,7 +245,7 @@ sub listchoices {
 	my $input = prompt('', "Please select a $keyword", $type);
 
 	# Make sure a valid option was chosen
-	if (grep(/^$input$/, @allowedvals)) {
+	if (grep(/^$input$/, @allowedvals) || $input eq '') {
 		# Return input
 		return $input;
 	} else {
