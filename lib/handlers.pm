@@ -13,7 +13,7 @@ use lib 'lib';
 use funcs;
 use queries;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell paperstock_add developer_add);
+our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order paperstock_add developer_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -333,6 +333,20 @@ sub print_sell {
 	$data{'location'} = prompt('', 'What happened to the print?', 'text');
 	$data{'sold_price'} = prompt('', 'What price was the print sold for?', 'decimal');
 	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+}
+
+sub print_order {
+	my $db = shift;
+	my %data;
+	my $film_id = prompt('', 'Film ID to print from', 'integer');
+	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	$data{'negative_id'} = prompt($neg_id, 'Negative ID to print from', 'integer');
+	$data{'height'} = prompt('', 'Height of the print (inches)', 'integer');
+	$data{'width'} = prompt('', 'Width of the print (inches)', 'integer');
+	$data{'recipient'} = prompt('', 'Who is the print for?', 'text');
+	$data{'added'} = prompt(&today($db), 'Date that this order was placed', 'date');
+	my $orderid = &newrecord($db, \%data, 'TO_PRINT');
 }
 
 sub paperstock_add {
