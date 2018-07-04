@@ -52,6 +52,10 @@ The `print` command provides subcommands for working with prints which have been
 `print tone` adds information about toning to an existing print.
 ### `sell`
 `print sell` adds information when an existing print is sold or given away.
+### `order`
+`print order` adds a new order to the print queue.
+### `fulfil`
+`print fulfil` marks an order as fulfilled after it has been printed.
 
 ## `paperstock`
 The `paperstock` command provides subcommands for working with paper stock (different types of darkroom paper).

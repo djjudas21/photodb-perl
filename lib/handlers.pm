@@ -13,7 +13,7 @@ use lib 'lib';
 use funcs;
 use queries;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order paperstock_add developer_add);
+our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -288,9 +288,15 @@ sub lens_add {
 sub print_add {
 	my $db = shift;
 	my %data;
-	my $film_id = prompt('', 'Film ID to print from', 'integer');
-	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id;
+	my $todo_id = &listchoices($db, 'print from the order queue', 'SELECT * FROM photography.choose_todo');
+	if ($todo_id) {
+		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
+	} else {
+		my $film_id = prompt('', 'Film ID to print from', 'integer');
+		my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+		$neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	}
 	$data{'negative_id'} = prompt($neg_id, 'Negative ID to print from', 'integer');
 	$data{'date'} = prompt(&today($db), 'Date that the print was made', 'date');
 	$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select * from choose_paper");
@@ -306,7 +312,25 @@ sub print_add {
 	$data{'fine'} = prompt('', 'Is this a fine print?', 'boolean');
 	$data{'notes'} = prompt('', 'Notes', 'text');
 	my $printid = &newrecord($db, \%data, 'PRINT');
+
+	# Mark is as complete in the todo list
+	if ($todo_id) {
+		my %data2;
+		$data2{'printed'} = 1;
+		$data2{'print_id'} = $printid;
+		&updaterecord($db, \%data2, 'TO_PRINT', "id=$todo_id");
+	}
+
 	return $printid;
+}
+
+sub print_fulfil {
+	my $db = shift;
+	my %data;
+	my $todo_id = &listchoices($db, 'print from the queue', 'SELECT * FROM photography.choose_todo');
+	$data{'printed'} = prompt('yes', 'Is this print order now fulfilled?', 'boolean');
+	$data{'print_id'} = prompt('', 'Which print fulfilled this order?', 'integer');
+	&updaterecord($db, \%data, 'TO_PRINT', "id=$todo_id");
 }
 
 sub print_tone {

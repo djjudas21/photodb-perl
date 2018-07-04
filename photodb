@@ -65,6 +65,7 @@ switch ($command) {
 			case 'tone' { &print_tone($db); }
 			case 'sell' { &print_sell($db); }
 			case 'order' { &print_order($db); }
+			case 'fulfil' { &print_fulfil($db); }
 			else { &notimplemented; }
 		}
 	}
