@@ -13,7 +13,7 @@ use lib 'lib';
 use funcs;
 use queries;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add);
+our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -396,4 +396,95 @@ sub developer_add {
 	$data{'chemistry'} = prompt('', 'What type of chemistry is this developer based on?', 'text');
 	my $developerid = &newrecord($db, \%data, 'DEVELOPER');
 	return $developerid;
+}
+
+sub task_run {
+	my $db = shift;
+	my @tasks;
+	push @tasks, {
+		desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',
+		query => $queries::set_lens_id
+	};
+
+	push @tasks, {
+		desc => 'Update lens focal length per negative',
+		query => 'update
+			NEGATIVE left join TELECONVERTER on(NEGATIVE.teleconverter_id=TELECONVERTER.teleconverter_id),
+			LENS
+		set
+			NEGATIVE.focal_length=round(LENS.min_focal_length * coalesce(TELECONVERTER.factor,1))
+		where
+			NEGATIVE.lens_id=LENS.lens_id
+			and LENS.zoom = 0
+			and LENS.min_focal_length is not null
+			and NEGATIVE.focal_length is null'
+	};
+
+	push @tasks, {
+		desc => 'Update dates of fixed lenses',
+		query => 'update
+			LENS,
+			CAMERA
+		set
+			LENS.acquired=CAMERA.acquired
+		where
+			LENS.lens_id = CAMERA.lens_id
+			and CAMERA.fixed_mount = 1
+			and CAMERA.acquired is not null
+			and LENS.acquired!=CAMERA.acquired'
+	};
+
+	push @tasks, {
+		desc => 'Set metering mode for negatives taken with cameras with only one metering mode',
+		query => 'update
+			NEGATIVE,
+			FILM,
+			CAMERA
+		set
+			NEGATIVE.metering_mode=CAMERA.metering_mode_id
+		where
+			NEGATIVE.film_id=FILM.film_id
+			and FILM.camera_id=CAMERA.camera_id
+			and CAMERA.metering_mode_id is not null
+			and CAMERA.metering_mode_id != 4
+			and CAMERA.metering_mode_id != 5'
+	};
+
+	push @tasks, {
+		desc => 'Set exposure program for negatives taken with cameras with only one exposure program',
+		query => 'UPDATE
+			NEGATIVE,
+			FILM,
+			CAMERA,
+			EXPOSURE_PROGRAM_AVAILABLE,
+			(SELECT
+				CAMERA.camera_id
+			FROM
+				CAMERA, EXPOSURE_PROGRAM_AVAILABLE
+			where
+				CAMERA.camera_id = EXPOSURE_PROGRAM_AVAILABLE.camera_id
+			group by camera_id
+			having count(exposure_program_id) = 1
+			) as VALIDCAMERA
+		set
+			NEGATIVE.exposure_program = EXPOSURE_PROGRAM_AVAILABLE.exposure_program_id
+		where
+			CAMERA.camera_id = EXPOSURE_PROGRAM_AVAILABLE.camera_id
+			and NEGATIVE.film_id=FILM.film_id
+			and FILM.camera_id=CAMERA.camera_id
+			and CAMERA.camera_id = VALIDCAMERA.camera_id
+			and NEGATIVE.exposure_program is null'
+	};
+
+       for my $i (0 .. $#tasks) {
+		print "\t$i\t$tasks[$i]{'desc'}\n";
+	}
+
+	# Wait for input
+	my $input = prompt('', "Please select a task", 'integer');
+
+	my $sql = $tasks[$input]{'query'};
+	my $rows = &updatedata($db, $sql);
+	$rows = 0 if ($rows eq  '0E0');
+	print "Updated $rows rows\n";
 }
