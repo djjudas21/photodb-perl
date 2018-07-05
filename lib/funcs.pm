@@ -103,12 +103,12 @@ sub db {
 	my $connect = ReadINI(&ini);
 
 	# host, schema, user, pass
-	if (!defined($$connect{'photodb'}{'host'}) || !defined($$connect{'photodb'}{'schema'}) || !defined($$connect{'photodb'}{'user'}) || !defined($$connect{'photodb'}{'pass'})) {
+	if (!defined($$connect{'database'}{'host'}) || !defined($$connect{'database'}{'schema'}) || !defined($$connect{'database'}{'user'}) || !defined($$connect{'database'}{'pass'})) {
 		print "Config file did not contain correct values";
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'photodb'}{'schema'};host=$$connect{'photodb'}{'host'};mysql_client_found_rows=0", $$connect{'photodb'}{'user'}, $$connect{'photodb'}{'pass'})
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'};mysql_client_found_rows=0", $$connect{'database'}{'user'}, $$connect{'database'}{'pass'})
 		or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
