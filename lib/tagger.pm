@@ -15,6 +15,7 @@ use Image::ExifTool;
 use Image::ExifTool::Location;
 use DBI;
 use DBD::mysql;
+use Config::IniHash;
 use Exporter qw(import);
 
 use lib 'lib';
@@ -29,7 +30,12 @@ my $db = shift;
 my $film_id = shift // '%';
 
 # Make sure basepath is valid
-my $basepath = '/home/jonathan/Pictures/Negatives';
+my $connect = ReadINI(&ini);
+if (!defined($$connect{'filesystem'}{'basepath'})) {
+	print "Config file did not contain basepath";
+	exit;
+}
+my $basepath = $$connect{'filesystem'}{'basepath'};
 if (substr($basepath, -1, 1) ne '/') {
 	$basepath .= '/';
 }
