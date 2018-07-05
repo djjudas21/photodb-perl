@@ -70,5 +70,3 @@ The `developer` command provides subcommands for working with developer chemistr
 ## `task`
 The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
 ### `run`
-
-## `help`

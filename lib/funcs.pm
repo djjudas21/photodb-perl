@@ -9,7 +9,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand help listchoices lookupval updatedata today validate);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -194,28 +194,24 @@ sub notimplemented {
 	die "This command or subcommand is not yet implemented.\n";
 }
 
-# Quit if no command is given
+# Quit if no valid command is given
 sub nocommand {
-	die "Please enter a valid command. Use '$0 help' for list of commands.\n";
+	my $handlers = shift;
+	print "Photography Database UI\n\n";
+	print "$0 <command> <subcommand>\n\n";
+	print "Please enter a valid command. Valid commands are:\n";
+	print "\t$_\n" for keys %$handlers;
+	exit;
 }
 
-# Quit if no subcommand is given
+# Quit if no valid subcommand is given
 sub nosubcommand {
+	my $handlers = shift;
 	my $command = shift;
-	die "Please enter a valid subcommand. Use '$0 $command help' for list of subcommands.\n";
-}
-
-# Print help message
-sub help {
-	my $command = shift;
-	my $subcommand = shift;
-
-	print "Photography Database UI\n";
-	print "\n";
-	print "$0 <command> <subcommand>\n";
-	print "e.g. $0 film add\n";
-	print "\n";
-	print "Valid commands: film, camera, negative, lens, print, help\n";
+	print "Photography Database UI\n\n";
+	print "$0 $command <subcommand>\n\n";
+	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
+	print "\t$_\n" for keys %$handlers;
 	exit;
 }
 

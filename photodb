@@ -17,10 +17,6 @@ use handlers;
 # Connect to DB - for now this is a global
 my $db = &db;
 
-# Read in command
-my $command = $ARGV[0] or &nocommand;
-my $subcommand = $ARGV[1] or &nosubcommand;
-
 # Define handlers for each command
 my %handlers = (
 	'film' => {
@@ -55,18 +51,19 @@ my %handlers = (
 	},
 	task => {
 		'run' => \&task_run
-	},
-	help => {
-		'' => ''
 	}
 );
 
+# Read in and verify command
+my $command = $ARGV[0] or &nocommand(\%handlers);
 if (!exists $handlers{$command}) {
-	die "Invalid command\n";
+	&nocommand(\%handlers);
 }
 
+# Read in and verify subcommand
+my $subcommand = $ARGV[1] or &nosubcommand(\%{$handlers{$command}}, $command);
 if (!exists $handlers{$command}{$subcommand}) {
-	die "Invalid subcommand\n";
+	&nosubcommand(\%{$handlers{$command}}, $command);
 }
 
 # Execute chosen handler
