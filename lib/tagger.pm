@@ -1,6 +1,5 @@
 package tagger;
 
-our @EXPORT = qw(tag);
 
 # This script reads data from the analogue photography database and
 # writes EXIF tags back to the JPGs that have been scanned from negatives
@@ -17,9 +16,12 @@ use Image::ExifTool::Location;
 use DBI;
 use DBD::mysql;
 use Getopt::Long;
+use Exporter qw(import);
 
 use lib 'lib';
 use funcs;
+
+our @EXPORT = qw(tag);
 
 sub tag {
 
