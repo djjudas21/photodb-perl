@@ -15,7 +15,6 @@ use Image::ExifTool;
 use Image::ExifTool::Location;
 use DBI;
 use DBD::mysql;
-use Getopt::Long;
 use Exporter qw(import);
 
 use lib 'lib';
