@@ -1,0 +1,12 @@
+requires 'Config::IniHash';
+requires 'Data::Dumper';
+requires 'DBD::mysql';
+requires 'DBI';
+requires 'Exporter';
+requires 'Getopt::Long';
+requires 'Image::ExifTool';
+requires 'Image::ExifTool::Location';
+requires 'SQL::Abstract';
+requires 'strict';
+requires 'Switch';
+requires 'warnings';
