@@ -36,3 +36,8 @@ this in random paths on your system!
 
 After running the script, check which files have been added, removed or changed, and then commit
 the diffs with a meaningful commit message.
+
+
+### Contributing your work
+
+Pull requests are welcome.
