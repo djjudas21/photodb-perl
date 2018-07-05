@@ -61,18 +61,11 @@ my @attributes = (
 );
 
 # This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
-my $sql = 'SELECT * from exifdata';
-
-# Do we filter by film_id or not?
-if ($film_id =~ m/\d+/) {
-	$sql .= " where film_id = '$film_id';";
-} else {
-	$sql .= ';';
-}
+my $sql = 'SELECT * from exifdata where film_id = ?';
 
 # Prepare and execute the SQL
 my $sth = $dbh->prepare($sql) or die "Couldn't prepare statement: " . $dbh->errstr;
-my $rows = $sth->execute();
+my $rows = $sth->execute($film_id);
 
 # Set some globals
 my $foundcount=0;

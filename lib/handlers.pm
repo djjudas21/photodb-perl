@@ -70,6 +70,9 @@ sub film_tag {
 	# Write EXIF tags to a film
 	my $db = shift;
 	my $film_id = prompt('', 'Which film do you want to write EXIF tags to?', 'integer');
+	if ($film_id eq '') {
+		prompt('no', 'This will write EXIF tags to ALL scans in the database. Are you sure?', 'boolean') or die "Aborted!\n";
+	}
 	&tag($db, $film_id);
 }
 
