@@ -87,14 +87,15 @@ sub validate {
 # Find ini file
 sub ini {
 	# Look for ini file
-	if (-e '~/.photodb.ini') {
-		return '~/.photodb.ini';
-	}
-	elsif (-e '/etc/photodb.ini') {
-		return '/etc/photodb.ini';
+	if (-e glob('~/.photodb.ini')) {
+		return glob('~/.photodb.ini');
 	} else {
-                print "Could not find config file";
-                exit;
+		if (prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
+			&writeconfig(glob('~/.photodb.ini'));
+			return glob('~/.photodb.ini');
+		} else {
+			exit;
+		}
         }
 }
 
@@ -289,6 +290,24 @@ sub friendlybool {
 	} else {
 		return '';
 	}
+}
+
+sub writeconfig {
+	my $inifile = shift;
+
+	# Untaint
+	unless ($inifile =~ m#^([\w.-\/]+)$#) {
+		die "filename '$inifile' has invalid characters.\n";
+	}
+	$inifile = $1;
+
+	my %inidata;
+	$inidata{'database'}{'host'} = prompt('localhost', 'Database hostname or IP address', 'text');
+	$inidata{'database'}{'schema'} = prompt('photography', 'Schema name of photography database', 'text');
+	$inidata{'database'}{'user'} = prompt('photography', 'Username with access to the schema', 'text');
+	$inidata{'database'}{'pass'} = prompt('', 'Password for this user', 'text');
+	$inidata{'filesystem'}{'basepath'} = prompt('', 'Path to your scanned images', 'text');
+	WriteINI($inifile, \%inidata);
 }
 
 # This ensures the lib loads smoothly
