@@ -1,4 +1,6 @@
-#!/usr/bin/perl -wT
+package tagger;
+
+our @EXPORT = qw(tag);
 
 # This script reads data from the analogue photography database and
 # writes EXIF tags back to the JPGs that have been scanned from negatives
@@ -19,22 +21,14 @@ use Getopt::Long;
 use lib 'lib';
 use funcs;
 
+sub tag {
+
 # Read in cmdline args
-my $film_id = '%';
-my $dry_run = 0;
-my $to_be_edited = 0;
-my $result = GetOptions ("film_id=i" => \$film_id,    # numeric
-#                    "file=s"   => \$data,      # string
-                    "dry_run"  => \$dry_run,   # flag
-                    "to_be_edited"  => \$to_be_edited);  # flag
+my $dbh = shift;
+my $film_id = shift // '%';
 
 # Make sure basepath is valid
-my $basepath;
-if ($to_be_edited) {
-	$basepath = '/home/jonathan/Pictures/Negatives/To be edited';
-} else {
-	$basepath = '/home/jonathan/Pictures/Negatives';
-}
+my $basepath = '/home/jonathan/Pictures/Negatives';
 if (substr($basepath, -1, 1) ne '/') {
 	$basepath .= '/';
 }
@@ -64,10 +58,6 @@ my @attributes = (
 	'MeteringMode',
 	'Flash#',
 );
-
-# Connect to the database
-# Connect to DB - for now this is a global
-my $dbh = &db;
 
 # This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
 my $sql = 'SELECT * from exifdata';
@@ -140,12 +130,9 @@ while (my $ref = $sth->fetchrow_hashref()) {
 				}
 			}
 
-			# If a change has been made to the EXIF data AND we're
-			# not doing a dry run, write out the data
+			# If a change has been made to the EXIF data, write out the data
 			if ($changeflag == 1) {
-				if ($dry_run != 1) {
-					$exifTool->WriteInfo("$basepath$ref->{'path'}");
-				}
+				$exifTool->WriteInfo("$basepath$ref->{'path'}");
 				print "Wrote tags to $basepath$ref->{'path'}\n\n";
 				$changedcount++;
 			}
@@ -160,3 +147,4 @@ while (my $ref = $sth->fetchrow_hashref()) {
 print "Found $foundcount images\n";
 print "Changed EXIF data in $changedcount images\n";
 print 'Found ' . ($#missingfiles + 1) . " missing files\n";
+}
