@@ -9,7 +9,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -84,22 +84,23 @@ sub validate {
 	}
 }
 
+# Find ini file
+sub ini {
+	# Look for ini file
+	if (-e '~/.photodb.ini') {
+		return '~/.photodb.ini';
+	}
+	elsif (-e '/etc/photodb.ini') {
+		return '/etc/photodb.ini';
+	} else {
+                print "Could not find config file";
+                exit;
+        }
+}
 
 # Connect to the database
 sub db {
-	my $connect;
-
-	# Look for ini file
-	if (-e '~/.photodb.ini') {
-		$connect = ReadINI('~/.photodb.ini');
-	}
-	elsif (-e '/etc/photodb.ini') {
-		$connect = ReadINI('/etc/photodb.ini');
-	}
-	else {
-		print "Could not find config file";
-		exit;
-	}
+	my $connect = ReadINI(&ini);
 
 	# host, schema, user, pass
 	if (!defined($$connect{'photodb'}{'host'}) || !defined($$connect{'photodb'}{'schema'}) || !defined($$connect{'photodb'}{'user'}) || !defined($$connect{'photodb'}{'pass'})) {
