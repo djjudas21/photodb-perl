@@ -22,7 +22,8 @@ my %handlers = (
 	'film' => {
 		'add' => \&film_add,
 		'load' => \&film_load,
-		'develop' => \&film_develop
+		'develop' => \&film_develop,
+		'tag' => \&film_tag
 	},
 	camera => {
 		'add' => \&camera_add,
