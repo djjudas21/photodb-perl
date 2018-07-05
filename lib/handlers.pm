@@ -496,3 +496,6 @@ sub task_run {
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n";
 }
+
+# This ensures the lib loads smoothly
+1;

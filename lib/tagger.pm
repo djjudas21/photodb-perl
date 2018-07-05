@@ -148,3 +148,6 @@ print "Found $foundcount images\n";
 print "Changed EXIF data in $changedcount images\n";
 print 'Found ' . ($#missingfiles + 1) . " missing files\n";
 }
+
+# This ensures the lib loads smoothly
+1;
