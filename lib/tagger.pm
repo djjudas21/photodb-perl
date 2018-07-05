@@ -25,7 +25,7 @@ our @EXPORT = qw(tag);
 sub tag {
 
 # Read in cmdline args
-my $dbh = shift;
+my $db = shift;
 my $film_id = shift // '%';
 
 # Make sure basepath is valid
@@ -64,7 +64,7 @@ my @attributes = (
 my $sql = 'SELECT * from exifdata where film_id = ?';
 
 # Prepare and execute the SQL
-my $sth = $dbh->prepare($sql) or die "Couldn't prepare statement: " . $dbh->errstr;
+my $sth = $db->prepare($sql) or die "Couldn't prepare statement: " . $db->errstr;
 my $rows = $sth->execute($film_id);
 
 # Set some globals
