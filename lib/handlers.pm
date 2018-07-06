@@ -12,8 +12,9 @@ use Config::IniHash;
 use lib 'lib';
 use funcs;
 use queries;
+use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -63,6 +64,16 @@ sub film_develop {
 	$data{'development_notes'} = prompt('', 'Any other development notes', 'text');
 	$data{'processed_by'} = prompt('', 'Who developed the film?', 'text');
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+}
+
+sub film_tag {
+	# Write EXIF tags to a film
+	my $db = shift;
+	my $film_id = prompt('', 'Which film do you want to write EXIF tags to?', 'integer');
+	if ($film_id eq '') {
+		prompt('no', 'This will write EXIF tags to ALL scans in the database. Are you sure?', 'boolean') or die "Aborted!\n";
+	}
+	&tag($db, $film_id);
 }
 
 sub camera_add {
@@ -488,3 +499,6 @@ sub task_run {
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n";
 }
+
+# This ensures the lib loads smoothly
+1;

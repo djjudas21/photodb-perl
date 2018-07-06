@@ -9,7 +9,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -84,30 +84,33 @@ sub validate {
 	}
 }
 
+# Find ini file
+sub ini {
+	# Look for ini file
+	my $path = "$ENV{HOME}/.photodb.ini";
+	if (-f $path) {
+		return glob('~/.photodb.ini');
+	} else {
+		if (prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
+			&writeconfig($path);
+			return $path;
+		} else {
+			exit;
+		}
+        }
+}
 
 # Connect to the database
 sub db {
-	my $connect;
-
-	# Look for ini file
-	if (-e '~/.photodb.ini') {
-		$connect = ReadINI('~/.photodb.ini');
-	}
-	elsif (-e '/etc/photodb.ini') {
-		$connect = ReadINI('/etc/photodb.ini');
-	}
-	else {
-		print "Could not find config file";
-		exit;
-	}
+	my $connect = ReadINI(&ini);
 
 	# host, schema, user, pass
-	if (!defined($$connect{'photodb'}{'host'}) || !defined($$connect{'photodb'}{'schema'}) || !defined($$connect{'photodb'}{'user'}) || !defined($$connect{'photodb'}{'pass'})) {
+	if (!defined($$connect{'database'}{'host'}) || !defined($$connect{'database'}{'schema'}) || !defined($$connect{'database'}{'user'}) || !defined($$connect{'database'}{'pass'})) {
 		print "Config file did not contain correct values";
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'photodb'}{'schema'};host=$$connect{'photodb'}{'host'};mysql_client_found_rows=0", $$connect{'photodb'}{'user'}, $$connect{'photodb'}{'pass'})
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'};mysql_client_found_rows=0", $$connect{'database'}{'user'}, $$connect{'database'}{'pass'})
 		or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
@@ -288,6 +291,24 @@ sub friendlybool {
 	} else {
 		return '';
 	}
+}
+
+sub writeconfig {
+	my $inifile = shift;
+
+	# Untaint
+	unless ($inifile =~ m#^([\w.-\/]+)$#) {
+		die "filename '$inifile' has invalid characters.\n";
+	}
+	$inifile = $1;
+
+	my %inidata;
+	$inidata{'database'}{'host'} = prompt('localhost', 'Database hostname or IP address', 'text');
+	$inidata{'database'}{'schema'} = prompt('photography', 'Schema name of photography database', 'text');
+	$inidata{'database'}{'user'} = prompt('photography', 'Username with access to the schema', 'text');
+	$inidata{'database'}{'pass'} = prompt('', 'Password for this user', 'text');
+	$inidata{'filesystem'}{'basepath'} = prompt('', 'Path to your scanned images', 'text');
+	WriteINI($inifile, \%inidata);
 }
 
 # This ensures the lib loads smoothly

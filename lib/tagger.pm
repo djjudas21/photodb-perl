@@ -1,4 +1,5 @@
-#!/usr/bin/perl -wT
+package tagger;
+
 
 # This script reads data from the analogue photography database and
 # writes EXIF tags back to the JPGs that have been scanned from negatives
@@ -14,27 +15,27 @@ use Image::ExifTool;
 use Image::ExifTool::Location;
 use DBI;
 use DBD::mysql;
-use Getopt::Long;
+use Config::IniHash;
+use Exporter qw(import);
 
 use lib 'lib';
 use funcs;
 
+our @EXPORT = qw(tag);
+
+sub tag {
+
 # Read in cmdline args
-my $film_id = '%';
-my $dry_run = 0;
-my $to_be_edited = 0;
-my $result = GetOptions ("film_id=i" => \$film_id,    # numeric
-#                    "file=s"   => \$data,      # string
-                    "dry_run"  => \$dry_run,   # flag
-                    "to_be_edited"  => \$to_be_edited);  # flag
+my $db = shift;
+my $film_id = shift // '%';
 
 # Make sure basepath is valid
-my $basepath;
-if ($to_be_edited) {
-	$basepath = '/home/jonathan/Pictures/Negatives/To be edited';
-} else {
-	$basepath = '/home/jonathan/Pictures/Negatives';
+my $connect = ReadINI(&ini);
+if (!defined($$connect{'filesystem'}{'basepath'})) {
+	print "Config file did not contain basepath";
+	exit;
 }
+my $basepath = $$connect{'filesystem'}{'basepath'};
 if (substr($basepath, -1, 1) ne '/') {
 	$basepath .= '/';
 }
@@ -65,23 +66,12 @@ my @attributes = (
 	'Flash#',
 );
 
-# Connect to the database
-# Connect to DB - for now this is a global
-my $dbh = &db;
-
 # This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
-my $sql = 'SELECT * from exifdata';
-
-# Do we filter by film_id or not?
-if ($film_id =~ m/\d+/) {
-	$sql .= " where film_id = '$film_id';";
-} else {
-	$sql .= ';';
-}
+my $sql = 'SELECT * from exifdata where film_id = ?';
 
 # Prepare and execute the SQL
-my $sth = $dbh->prepare($sql) or die "Couldn't prepare statement: " . $dbh->errstr;
-my $rows = $sth->execute();
+my $sth = $db->prepare($sql) or die "Couldn't prepare statement: " . $db->errstr;
+my $rows = $sth->execute($film_id);
 
 # Set some globals
 my $foundcount=0;
@@ -140,12 +130,9 @@ while (my $ref = $sth->fetchrow_hashref()) {
 				}
 			}
 
-			# If a change has been made to the EXIF data AND we're
-			# not doing a dry run, write out the data
+			# If a change has been made to the EXIF data, write out the data
 			if ($changeflag == 1) {
-				if ($dry_run != 1) {
-					$exifTool->WriteInfo("$basepath$ref->{'path'}");
-				}
+				$exifTool->WriteInfo("$basepath$ref->{'path'}");
 				print "Wrote tags to $basepath$ref->{'path'}\n\n";
 				$changedcount++;
 			}
@@ -160,3 +147,7 @@ while (my $ref = $sth->fetchrow_hashref()) {
 print "Found $foundcount images\n";
 print "Changed EXIF data in $changedcount images\n";
 print 'Found ' . ($#missingfiles + 1) . " missing files\n";
+}
+
+# This ensures the lib loads smoothly
+1;
