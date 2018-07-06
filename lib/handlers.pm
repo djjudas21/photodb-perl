@@ -230,14 +230,52 @@ sub negative_add {
 sub negative_bulkadd {
 	my $db = shift;
 	# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
-	my $film_id = prompt('', 'Bulk add negatives to which film?', 'integer');
+	my %data;
+	$data{'film_id'} = prompt('', 'Bulk add negatives to which film?', 'integer');
 	my $num = prompt('', 'How many frames to add?', 'integer');
+	if (prompt('no', "Add any other attributes to all $num negatives?", 'boolean')) {
+		$data{'description'} = prompt('', 'Caption', 'text');
+		$data{'date'} = prompt(&today($db), 'What date was this negative taken?', 'date');
+		$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
+		$data{'shutter_speed'} = prompt('', 'Shutter speed', 'text');
+		$data{'aperture'} = prompt('', 'Aperture', 'decimal');
+		$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter");
+		$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}");
+		$data{'notes'} = prompt('', 'Extra notes', 'text');
+		$data{'mount_adapter_id'} = &listchoices($db, 'mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}");
+		$data{'focal_length'} = prompt(&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), 'Focal length', 'integer');
+		$data{'latitude'} = prompt('', 'Latitude', 'decimal');
+		$data{'longitude'} = prompt('', 'Longitude', 'decimal');
+		$data{'flash'} = prompt('no', 'Was flash used?', 'boolean');
+		$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
+		$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
+	}
+
+	# Delete empty strings from data hash
+	foreach (keys %data) {
+		delete $data{$_} unless (defined $data{$_} and $data{$_} ne '');
+	}
+
+	# Build query
+	my $sql = SQL::Abstract->new;
+
+	# Final confirmation
+	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
 
 	# Execute query
-	my $sth = $db->prepare('insert into NEGATIVE (film_id, frame) values (?, ?)');
 	for my $i (1..$num) {
-		$sth->execute($film_id, $i);
+		# Now inside the loop, add an incremented frame number for each neg
+		$data{'frame'} = $i;
+
+		# Generate an abstract object for this negative
+		my($stmt, @bind) = $sql->insert('NEGATIVE', \%data);
+
+		# Execute query
+		my $sth = $db->prepare($stmt);
+		$sth->execute(@bind);
 	}
+
+	print "Inserted $num negatives into film #$data{'film_id'}\n";
 }
 
 sub lens_add {
