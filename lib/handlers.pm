@@ -388,11 +388,13 @@ sub print_tone {
 	my $print_id = prompt('', 'Which print did you tone?', 'integer');
 	$data{'bleach_time'} = prompt('00:00:00', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
 	$data{'toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER");
-	$data{'toner_dilution'} = prompt('', 'What was the dilution of the first toner?', 'text');
+	my $dilution1 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'toner_id'}");
+	$data{'toner_dilution'} = prompt($dilution1, 'What was the dilution of the first toner?', 'text');
 	$data{'toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
 	if (prompt('no', 'Did you use a second toner?', 'boolean') == 1) {
 		$data{'2nd_toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER");
-		$data{'2nd_toner_dilution'} = prompt('', 'What was the dilution of the second toner?', 'text');
+		my $dilution2 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'2nd_toner_id'}");
+		$data{'2nd_toner_dilution'} = prompt($dilution2, 'What was the dilution of the second toner?', 'text');
 		$data{'2nd_toner_time'} = prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
 	}
 	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
