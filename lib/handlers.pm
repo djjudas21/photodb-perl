@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -481,6 +481,23 @@ sub toner_add {
 	$data{'stock_dilution'} = prompt('', 'What is the stock dilution of this toner?', 'text');
 	my $tonerid = &newrecord($db, \%data, 'TONER');
 	return $tonerid;
+}
+
+sub filmstock_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$data{'name'} = prompt('', 'What is the name of this filmstock?', 'text');
+	$data{'iso'} = prompt('', 'What is the box ISO/ASA speed of this filmstock?');
+	$data{'colour'} = prompt('', 'Is this a colour film?', 'boolean');
+	if ($data{'colour'} == 1) {
+		$data{'panchromatic'} = 1;
+	} else {
+		$data{'panchromatic'} = prompt('yes', 'Is this a panchromatic film?', 'boolean');
+	}
+	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS');
+	my $filmstockid = &newrecord($db, \%data, 'FILMSTOCK');
+	return $filmstockid;
 }
 
 sub task_run {

@@ -59,6 +59,9 @@ my %handlers = (
 	},
 	task => {
 		'run' => \&task_run
+	},
+	filmstock => {
+		'add' => \&filmstock_add
 	}
 );
 
