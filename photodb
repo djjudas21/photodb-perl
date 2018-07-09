@@ -35,7 +35,8 @@ my %handlers = (
 		'bulk-add' => \&negative_bulkadd
 	},
 	mount => {
-		'add' => \&mount_add
+		'add' => \&mount_add,
+		'view' => \&mount_view
 	},
 	lens => {
 		'add' => \&lens_add

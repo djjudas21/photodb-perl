@@ -9,7 +9,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -60,12 +60,12 @@ sub validate {
 		} else {
 			return 0;
 		}
-        } elsif ($type eq 'date') {
-                if ($val =~ m/^\d{4}-\d{2}-\d{2}$/) {
-                        return 1;
-                } else {
-                        return 0;
-                }
+	} elsif ($type eq 'date') {
+		if ($val =~ m/^\d{4}-\d{2}-\d{2}$/) {
+			return 1;
+		} else {
+			return 0;
+		}
 
 	} elsif ($type eq 'decimal') {
 		if ($val =~ m/^\d+(\.\d+)?$/) {
@@ -97,7 +97,7 @@ sub ini {
 		} else {
 			exit;
 		}
-        }
+	}
 }
 
 # Connect to the database
@@ -252,15 +252,34 @@ sub listchoices {
 	}
 }
 
+# List arbitrary choices and return ID of the selected one
+sub printlist {
+	my $db = shift;
+	my $msg = shift;
+	my $query = shift;
+
+	print "Now showing $msg\n\n";
+
+	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute();
+
+	$sth->execute();
+	my $ref;
+
+	while ($ref = $sth->fetchrow_hashref) {
+		print "\t$ref->{id}\t$ref->{opt}\n";
+	}
+}
+
 # Return arbitrary value from database
 sub lookupval {
 	my $db = shift;
 	my $query = shift;
 
-        my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-        my $rows = $sth->execute();
+	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute();
 
-        $sth->execute();
+	$sth->execute();
 	my $row = $sth->fetchrow_array();
 
 	return $row;

@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -459,6 +459,15 @@ sub mount_add {
 	$data{'notes'} = prompt('', 'Notes about this mount', 'text');
 	my $mountid = &newrecord($db, \%data, 'MOUNT');
 	return $mountid;
+}
+
+sub mount_view {
+	my $db = shift;
+	my $mountid = &listchoices($db, 'mount', 'select mount_id as id, mount as opt from MOUNT');
+	my $mountname = lookupval($db, "select mount from MOUNT where mount_id = ${mountid}");
+	print "Showing data for $mountname mount\n";
+	&printlist($db, "cameras with $mountname mount", "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt");
+	&printlist($db, "lenses with $mountname mount", "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt");
 }
 
 sub task_run {
