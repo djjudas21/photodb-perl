@@ -62,6 +62,9 @@ my %handlers = (
 	},
 	filmstock => {
 		'add' => \&filmstock_add
+	},
+	teleconverter => {
+		'add' => \&teleconverter_add
 	}
 );
 

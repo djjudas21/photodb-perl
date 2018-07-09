@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -498,6 +498,20 @@ sub filmstock_add {
 	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS');
 	my $filmstockid = &newrecord($db, \%data, 'FILMSTOCK');
 	return $filmstockid;
+}
+
+sub teleconverter_add {
+	my $shiftl
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$data{'model'} = prompt('', 'What is the model of this teleconverter?', 'text');
+	$data{'factor'} = prompt('', 'What is the magnification factor of this teleconverter?', 'decimal');
+	$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'");
+	$data{'elements'} = prompt('', 'How many elements does this teleconverter have?');
+	$data{'groups'} = prompt('', 'How many groups are the elements arranged in?');
+	$data{'multicoated'} = prompt('', 'Is this teleconverter multicoated?', 'boolean');
+	my $teleconverterid = &newrecord($db, \%data, 'TELECONVERTER');
+	return $teleconverterid;
 }
 
 sub task_run {
