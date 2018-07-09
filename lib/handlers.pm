@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -445,6 +445,20 @@ sub developer_add {
 	$data{'chemistry'} = prompt('', 'What type of chemistry is this developer based on?', 'text');
 	my $developerid = &newrecord($db, \%data, 'DEVELOPER');
 	return $developerid;
+}
+
+sub mount_add {
+	my $db = shift;
+	my %data;
+	$data{'mount'} = prompt('', 'What is the name of this lens mount?', 'text');
+	$data{'fixed'} = prompt('no', 'Is this a fixed mount?', 'boolean');
+	$data{'shutter_in_lens'} = prompt('no', 'Does this mount contain the shutter in the lens?', 'boolean');
+	$data{'type'} = prompt('', 'What type of mounting does this mount use? (e.g. bayonet, screw, etc)', 'text');
+	$data{'purpose'} = prompt('camera', 'What is the intended purpose of this mount? (e.g. camera, enlarger, projector, etc)', 'text');
+	$data{'digital_only'} = prompt('no', 'Is this a digital-only mount?', 'boolean');
+	$data{'notes'} = prompt('', 'Notes about this mount', 'text');
+	my $mountid = &newrecord($db, \%data, 'MOUNT');
+	return $mountid;
 }
 
 sub task_run {
