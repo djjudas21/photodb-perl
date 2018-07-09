@@ -65,7 +65,7 @@ my %handlers = (
 	},
 	teleconverter => {
 		'add' => \&teleconverter_add
-	}
+	},
 	filter => {
 		'add' => \&filter_add
 	}
