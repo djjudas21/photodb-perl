@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -501,7 +501,7 @@ sub filmstock_add {
 }
 
 sub teleconverter_add {
-	my $shiftl
+	my $db = shift;
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
 	$data{'model'} = prompt('', 'What is the model of this teleconverter?', 'text');
@@ -512,6 +512,17 @@ sub teleconverter_add {
 	$data{'multicoated'} = prompt('', 'Is this teleconverter multicoated?', 'boolean');
 	my $teleconverterid = &newrecord($db, \%data, 'TELECONVERTER');
 	return $teleconverterid;
+}
+
+sub filter_add {
+	my $db = shift;
+	my %data;
+	$data{'type'} = prompt('', 'What type of filter is this?', 'text');
+	$data{'attenuation'} = prompt('', 'What attenutation (in stops) does this filter have?', 'decimal');
+	$data{'thread'} = prompt('', 'What diameter mounting thread does this filter have?', 'decimal');
+	$data{'qty'} = prompt(1, 'How many of these filters do you have?');
+	my $filterid = &newrecord($db, \%data, 'FILTER');
+	return $filterid;
 }
 
 sub task_run {
