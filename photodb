@@ -54,6 +54,9 @@ my %handlers = (
 	developer => {
 		'add' => \&developer_add
 	},
+	toner => {
+		'add' => \&toner_add
+	},
 	task => {
 		'run' => \&task_run
 	}

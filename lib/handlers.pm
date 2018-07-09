@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add task_run);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -468,6 +468,17 @@ sub mount_view {
 	print "Showing data for $mountname mount\n";
 	&printlist($db, "cameras with $mountname mount", "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt");
 	&printlist($db, "lenses with $mountname mount", "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt");
+}
+
+sub toner_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$data{'toner'} = prompt('', 'What is the name of this toner?', 'text');
+	$data{'formulation'} = prompt('', 'What is the chemical formulation of this toner?', 'text');
+	$data{'stock_dilution'} = prompt('', 'What is the stock dilution of this toner?', 'text');
+	my $tonerid = &newrecord($db, \%data, 'TONER');
+	return $tonerid;
 }
 
 sub task_run {
