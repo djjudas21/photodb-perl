@@ -28,7 +28,8 @@ my %handlers = (
 	camera => {
 		'add' => \&camera_add,
 		'display-lens' => \&camera_displaylens,
-		'show-lenses' => \&notimplemented
+		'show-lenses' => \&notimplemented,
+		'sell' => \&camera_sell
 	},
 	negative => {
 		'add' => \&negative_add,
@@ -39,7 +40,8 @@ my %handlers = (
 		'view' => \&mount_view
 	},
 	lens => {
-		'add' => \&lens_add
+		'add' => \&lens_add,
+		'sell' => \&lens_sell
 	},
 	print => {
 		'add' => \&print_add,

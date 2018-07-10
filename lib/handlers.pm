@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens mount_add mount_view negative_add negative_bulkadd lens_add print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -202,6 +202,27 @@ sub camera_displaylens {
 	return $displaylensid;
 }
 
+sub camera_sell {
+	my $db = shift;
+	my %data;
+	my $cameraid = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'own'} = 0;
+	$data{'lost'} = prompt(&today($db), 'What date was this camera sold?', 'date');
+	$data{'lost_price'} = prompt('', 'How much did this camera sell for?', 'decimal');
+	&updaterecord($db, \%data, 'CAMERA', "camera_id=$cameraid");
+	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id=$cameraid")) {
+		my $lensid = &lookupval($db, "select lens_id from CAMERA where camera_id=$cameraid");
+		if ($lensid) {
+			my %lensdata;
+			$lensdata{'own'} = 0;
+			$lensdata{'lost'} = $data{'lost'};
+			$lensdata{'lost_price'} = 0;
+			&updaterecord($db, \%lensdata, 'LENS', "lens_id=$lensid");
+		}
+	}
+
+}
+
 sub negative_add {
 	# Add a single neg to a film
 	my $db = shift;
@@ -332,6 +353,16 @@ sub lens_add {
 	$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
 	my $lensid = &newrecord($db, \%data, 'LENS');
 	return $lensid;
+}
+
+sub lens_sell {
+        my $db = shift;
+        my %data;
+        my $lensid = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+        $data{'own'} = 0;
+        $data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
+        $data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
+        &updaterecord($db, \%data, 'LENS', "lens_id=$lensid");
 }
 
 sub print_add {

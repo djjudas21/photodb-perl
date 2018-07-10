@@ -32,6 +32,8 @@ The `camera` command provides subcommands for working with cameras.
 `camera display-lens` sets a "display lens" that the camera should be displayed with when on the shelf.
 ### `show-lenses`
 `camera show-lenses` shows all lenses which are compatible with a camera.
+### `sell`
+`camera sell` marks a camera as sold (but keeps it in the database)
 
 ## `mount`
 The `mount` command provides subcommands for working with lens mounts (aka camera systems)
@@ -53,6 +55,8 @@ It is useful only for blocking out e.g. 24 negatives for a 24-exp film. They wil
 The `lens` command provides subcommands for working with lenses (for cameras and enlargers).
 ### `add`
 `lens add` adds a new lens to the database.
+### `sell`
+`lens sell` marks a lens as sold (but keeps it in the database)
 
 ## `print`
 The `print` command provides subcommands for working with prints which have been made from negatives.
