@@ -21,6 +21,8 @@ The `film` command provides subcommands for working with individual rolls (or se
 `film load` is used when a film is loaded into a camera.
 ### `develop`
 `film develop` is used when a film is developed/processed into negatives/slides.
+### `tag`
+`film tag` writes EXIF tags to JPG scans of negatives that belong to a film.
 
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
@@ -30,6 +32,14 @@ The `camera` command provides subcommands for working with cameras.
 `camera display-lens` sets a "display lens" that the camera should be displayed with when on the shelf.
 ### `show-lenses`
 `camera show-lenses` shows all lenses which are compatible with a camera.
+
+## `mount`
+The `mount` command provides subcommands for working with lens mounts (aka camera systems)
+### `add`
+`mount add` adds a new lens mount to the database.
+### `view`
+`mount view` displays information about a lens mount, e.g. what compatible cameras and lenses
+are in the database.
 
 ## `negative`
 The `negative` command provides subcommands for working with negatives (or slides, etc) which are part of a film.
@@ -67,6 +77,26 @@ The `developer` command provides subcommands for working with developer chemistr
 ### `add`
 `developer add` adds a new developer to the database, so it can be used for developing film and prints.
 
+## `toner`
+The `toner` command provides subcommands for working with print toner chemistry.
+### `add`
+`toner add` adds a new toner for the database, so it can be used for toning prints.
+
 ## `task`
 The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
 ### `run`
+
+## `filmstock`
+The `filmstock` command provides subcommands for working with filmstocks (aka emulsions)
+### `add`
+`filmstock add` adds a new filmstock to the database.
+
+## `teleconverter`
+The `teleconverter` command provides subcommands for working with teleconverters.
+### `add`
+`teleconverter add` adds a new teleconverter to the database.
+
+## `filter`
+The `filter` command provides subcommands for working with filters
+### `add`
+`filter add` adds a new filter to the database.
