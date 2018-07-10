@@ -30,3 +30,4 @@ the tables.
 * [Using PhotoDB](docs/USAGE.md)
 * [Developing PhotoDB](docs/CONTRIBUTING.md)
 * [Schema description](docs/SCHEMA.md)
+* [Glossary](docs/GLOSSARY.md)
