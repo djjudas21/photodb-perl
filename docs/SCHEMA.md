@@ -1,5 +1,5 @@
 # PhotoDB schema documentation
-
+This documentation is generated automatically from the database schema itself with the `generate-docs.pl` script, using table and column comments embedded in the database\n
 ## ACCESSORY
 
 Table to catalog accessories that are not tracked in more specific tables
