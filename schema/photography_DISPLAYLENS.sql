@@ -1,7 +1,7 @@
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `DISPLAYLENS` (
-  `display_id` int(11) NOT NULL AUTO_INCREMENT,
+  `display_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID for this display combination',
   `camera_id` int(11) DEFAULT NULL COMMENT 'Camera ID',
   `lens_id` int(11) DEFAULT NULL COMMENT 'Lens ID',
   PRIMARY KEY (`display_id`),

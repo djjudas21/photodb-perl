@@ -173,11 +173,11 @@ Table to catalog batches of developer that have been prepared
 
 Table to record which cameras should be displayed with which lens
 
-| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT |
-|-------------|-------------|----------------|
-| display_id  | int(11)     |                |
-| camera_id   | int(11)     | Camera ID      |
-| lens_id     | int(11)     | Lens ID        |
+| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                         |
+|-------------|-------------|----------------------------------------|
+| display_id  | int(11)     | Unique ID for this display combination |
+| camera_id   | int(11)     | Camera ID                              |
+| lens_id     | int(11)     | Lens ID                                |
 
 ## ENLARGER
 
@@ -278,13 +278,14 @@ Table to record bulk film stock, from which individual films can be cut
 
 Table to catalog filters
 
-| COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                              |
-|-------------|--------------|---------------------------------------------|
-| filter_id   | int(11)      | Unique filter ID                            |
-| thread      | decimal(4,1) | Diameter of screw thread in mm              |
-| type        | varchar(45)  | Filter type (e.g. Red, CPL, UV)             |
-| attenuation | decimal(2,1) | Attenuation of this filter in decimal stops |
-| qty         | int(11)      | Quantity of these filters available         |
+| COLUMN_NAME     | COLUMN_TYPE  | COLUMN_COMMENT                              |
+|-----------------|--------------|---------------------------------------------|
+| filter_id       | int(11)      | Unique filter ID                            |
+| thread          | decimal(4,1) | Diameter of screw thread in mm              |
+| type            | varchar(45)  | Filter type (e.g. Red, CPL, UV)             |
+| attenuation     | decimal(2,1) | Attenuation of this filter in decimal stops |
+| qty             | int(11)      | Quantity of these filters available         |
+| manufacturer_id | int(11)      | Denotes the manufacturer of the filter.     |
 
 ## FILTER_ADAPTER
 
