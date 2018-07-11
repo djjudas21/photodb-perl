@@ -549,6 +549,7 @@ sub filter_add {
 	my $db = shift;
 	my %data;
 	$data{'type'} = prompt('', 'What type of filter is this?', 'text');
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
 	$data{'attenuation'} = prompt('', 'What attenutation (in stops) does this filter have?', 'decimal');
 	$data{'thread'} = prompt('', 'What diameter mounting thread does this filter have?', 'decimal');
 	$data{'qty'} = prompt(1, 'How many of these filters do you have?');

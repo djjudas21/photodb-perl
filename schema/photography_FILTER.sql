@@ -6,6 +6,9 @@ CREATE TABLE `FILTER` (
   `type` varchar(45) DEFAULT NULL COMMENT 'Filter type (e.g. Red, CPL, UV)',
   `attenuation` decimal(2,1) DEFAULT NULL COMMENT 'Attenuation of this filter in decimal stops',
   `qty` int(11) DEFAULT NULL COMMENT 'Quantity of these filters available',
-  PRIMARY KEY (`filter_id`)
+  `manufacturer_id` int(11) DEFAULT NULL COMMENT 'Denotes the manufacturer of the filter.',
+  PRIMARY KEY (`filter_id`),
+  KEY `fk_FILTER_1_idx` (`manufacturer_id`),
+  CONSTRAINT `fk_FILTER_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog filters';
 /*!40101 SET character_set_client = @saved_cs_client */;
