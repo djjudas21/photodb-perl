@@ -126,9 +126,28 @@ ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
 
 ### Configure database connection
 
-The app and accessory scripts need to know how to connect to the database. Copy the sample config file,
-`photodb.ini` to `/etc/photodb.ini` and edit it to include the connection details for your database.
-You should have written these details down when you set up the database.
+There are three methods for connecting to the database:
+1. Database and application on same computer
+2. Database and application on different computers, connect via native MySQL
+3. Database and application on different computers, connect via SSH tunnel
+
+The app and accessory scripts need to know how to connect to the database. The first time you run
+PhotoDB, you will be prompted to enter connection details for the database backend. If you need to
+edit the config in future, the config file is created at `/etc/photodb.ini`.
+
+#### Tunnelling
+
+If the database is on a remote server and does not have the MySQL port (3306) open to receive connections,
+you will need to set up a tunnel. Run the command below, substituting in the correct hostname and
+username for the database server.
+
+```
+ssh -L 3306:localhost:3306 -N <username>@<database.example.com>
+```
+
+Once the tunnel is established, you should be able to connect to the database on `127.0.0.1:3306` and
+your connection will be tunnelled. Configure PhotoDB in the same way as if the database was local.
+You will need to re-establish the tunnel each time you wish to use PhotoDB.
 
 ### Test the connection
 
