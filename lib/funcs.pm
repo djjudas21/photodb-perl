@@ -224,6 +224,7 @@ sub listchoices {
 	my $keyword = shift;
 	my $query = shift;
 	my $type = shift || 'integer';
+	my $inserthandler = shift;
 
 	print "Please select a $keyword from the list, or leave blank to skip:\n";
 
@@ -240,11 +241,21 @@ sub listchoices {
 		push(@allowedvals, $ref->{id});
 	}
 
+	# Add option to insert a new row, if applicable
+	if ($inserthandler) {
+		print "\t0\tAdd a new $keyword\n";
+	}
+
 	# Wait for input
 	my $input = prompt('', "Please select a $keyword", $type);
 
 	# Make sure a valid option was chosen
-	if (grep(/^$input$/, @allowedvals) || $input eq '') {
+	if ($input eq '0') {
+		# Spawn a new handler if that's what the user chose
+		my $id = $inserthandler->($db);
+		return $id;
+	}
+	elsif (grep(/^$input$/, @allowedvals) || $input eq '') {
 		# Return input
 		return $input;
 	} else {

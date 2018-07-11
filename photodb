@@ -70,6 +70,9 @@ my %handlers = (
 	},
 	filter => {
 		'add' => \&filter_add
+	},
+	manufacturer => {
+		'add' => \&manufacturer_add
 	}
 );
 
