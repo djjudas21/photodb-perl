@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -555,6 +555,19 @@ sub filter_add {
 	$data{'qty'} = prompt(1, 'How many of these filters do you have?');
 	my $filterid = &newrecord($db, \%data, 'FILTER');
 	return $filterid;
+}
+
+sub manufacturer_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer'} = prompt('', 'What is the name of the manufacturer?', 'text');
+	$data{'country'} = prompt('', 'What country is the manufacturer based in?', 'text');
+	$data{'city'} = prompt('', 'What city is the manufacturer based in?', 'text');
+	$data{'url'} = prompt('', 'What is the main website of the manufacturer?', 'text');
+	$data{'founded'} = prompt('', 'When was the manufacturer founded?', 'integer');
+	$data{'dissolved'} = prompt('', 'When was the manufacturer dissolved?', 'integer');
+	my $manufacturerid = &newrecord($db, \%data, 'MANUFACTURER');
+	return $manufacturerid;
 }
 
 sub task_run {
