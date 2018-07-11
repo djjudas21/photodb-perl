@@ -250,7 +250,7 @@ sub listchoices {
 	my $input = prompt('', "Please select a $keyword", $type);
 
 	# Make sure a valid option was chosen
-	if ($input == 0) {
+	if ($input eq '0') {
 		# Spawn a new handler if that's what the user chose
 		my $id = $inserthandler->($db);
 		return $id;
