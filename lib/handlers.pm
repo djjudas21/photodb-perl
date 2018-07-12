@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -376,14 +376,14 @@ sub lens_sell {
 }
 
 sub lens_repair {
-        my $db = shift;
-        my %data;
+	my $db = shift;
+	my %data;
 	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
-        $data{'date'} = prompt(&today($db), 'What date was this lens repaired?', 'date');
-        $data{'summary'} = prompt('', 'Short summary of repair', 'text');
-        $data{'description'} = prompt('', 'Longer description of repair', 'text');
-        my $repair_id = &newrecord($db, \%data, 'REPAIR');
-        return $repair_id;
+	$data{'date'} = prompt(&today($db), 'What date was this lens repaired?', 'date');
+	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
+	$data{'description'} = prompt('', 'Longer description of repair', 'text');
+	my $repair_id = &newrecord($db, \%data, 'REPAIR');
+	return $repair_id;
 }
 
 sub print_add {
@@ -622,6 +622,29 @@ sub accessory_add {
 		}
 	}
 	return $accessoryid;
+}
+
+sub enlarger_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'enlarger'} = prompt('', 'What is the model of this enlarger?', 'text');
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+	$data{'introduced'} = prompt('', 'What year was this enlarger introduced?', 'integer');
+	$data{'discontinued'} = prompt('', 'What year was this enlarger discontinued?', 'integer');
+	$data{'acquired'} = prompt(&today($db), 'Purchase date', 'date');
+	$data{'cost'} = prompt('', 'Purchase price', 'decimal');
+	my $enlarger_id = &newrecord($db, \%data, 'ENLARGER');
+	return $enlarger_id;
+}
+
+sub enlarger_sell {
+	my $db = shift;
+	my %data;
+	my $enlarger_id = &listchoices($db, 'enlarger', "select * from choose_enlarger");
+	$data{'lost'} = prompt(&today($db), 'What date was this enlarger sold?', 'date');
+	$data{'lost_price'} = prompt('', 'How much did this enlarger sell for?', 'decimal');
+	&updaterecord($db, \%data, 'ENLARGER', "enlarger_id=$enlarger_id");
 }
 
 sub task_run {
