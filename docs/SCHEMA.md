@@ -677,14 +677,14 @@ Table to catalog projectors (still and movie)
 
 Tabe to catalog all repairs and servicing undertaken on cameras and lenses in the collection
 
-| COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                                            |
-|-------------|--------------|-----------------------------------------------------------|
-| repair_id   | int(11)      | Unique ID for the repair job                              |
-| oid         | int(11)      | ID of the camera or lens that was repaired                |
-| object_type | varchar(45)  | Type of object that was repaired (e.g. Camera, Lens, etc) |
-| date        | date         | The date of the repair                                    |
-| summary     | varchar(100) | Brief summary of the repair                               |
-| description | varchar(500) | Longer description of the repair                          |
+| COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                   |
+|-------------|--------------|----------------------------------|
+| repair_id   | int(11)      | Unique ID for the repair job     |
+| camera_id   | int(11)      | ID of camera that was repaired   |
+| lens_id     | int(11)      | ID of lens that was repaired     |
+| date        | date         | The date of the repair           |
+| summary     | varchar(100) | Brief summary of the repair      |
+| description | varchar(500) | Longer description of the repair |
 
 ## SHUTTER_SPEED
 

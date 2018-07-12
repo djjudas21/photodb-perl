@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -222,6 +222,17 @@ sub camera_sell {
 
 }
 
+sub camera_repair {
+	my $db = shift;
+	my %data;
+	$data{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'date'} = prompt(&today($db), 'What date was this camera repaired?', 'date');
+	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
+	$data{'description'} = prompt('', 'Longer description of repair', 'text');
+	my $repair_id = &newrecord($db, \%data, 'REPAIR');
+	return $repair_id;
+}
+
 sub negative_add {
 	# Add a single neg to a film
 	my $db = shift;
@@ -362,6 +373,17 @@ sub lens_sell {
 	$data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
 	&updaterecord($db, \%data, 'LENS', "lens_id=$lensid");
+}
+
+sub lens_repair {
+        my $db = shift;
+        my %data;
+	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+        $data{'date'} = prompt(&today($db), 'What date was this lens repaired?', 'date');
+        $data{'summary'} = prompt('', 'Short summary of repair', 'text');
+        $data{'description'} = prompt('', 'Longer description of repair', 'text');
+        my $repair_id = &newrecord($db, \%data, 'REPAIR');
+        return $repair_id;
 }
 
 sub print_add {
