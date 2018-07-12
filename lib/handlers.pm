@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell mount_add mount_view negative_add negative_bulkadd lens_add lens_sell print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -355,13 +355,13 @@ sub lens_add {
 }
 
 sub lens_sell {
-        my $db = shift;
-        my %data;
-        my $lensid = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
-        $data{'own'} = 0;
-        $data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
-        $data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
-        &updaterecord($db, \%data, 'LENS', "lens_id=$lensid");
+	my $db = shift;
+	my %data;
+	my $lensid = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'own'} = 0;
+	$data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
+	$data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
+	&updaterecord($db, \%data, 'LENS', "lens_id=$lensid");
 }
 
 sub print_add {
@@ -567,6 +567,39 @@ sub manufacturer_add {
 	$data{'dissolved'} = prompt('', 'When was the manufacturer dissolved?', 'integer');
 	my $manufacturerid = &newrecord($db, \%data, 'MANUFACTURER');
 	return $manufacturerid;
+}
+
+sub accessory_add {
+	my $db = shift;
+	my %data;
+	$data{'accessory_type_id'} = &listchoices($db, 'accessory type', "select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", 'integer');
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'model'} = prompt('', 'What is the model of this accessory?', 'text');
+	my $accessoryid = &newrecord($db, \%data, 'ACCESSORY');
+
+	if (prompt('yes', 'Add camera compatibility info for this accessory?', 'boolean')) {
+		while (1) {
+			my %compatdata;
+			$compatdata{'accessory_id'} = $accessoryid;
+			$compatdata{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			if (!prompt('yes', 'Add another compatible camera?', 'boolean')) {
+				last;
+			}
+		}
+	}
+	if (prompt('yes', 'Add lens compatibility info for this accessory?', 'boolean')) {
+		while (1) {
+			my %compatdata;
+			$compatdata{'accessory_id'} = $accessoryid;
+			$compatdata{'lens_id'} = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			if (!prompt('yes', 'Add another compatible lens?', 'boolean')) {
+				last;
+			}
+		}
+	}
+	return $accessoryid;
 }
 
 sub task_run {

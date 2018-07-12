@@ -73,6 +73,10 @@ my %handlers = (
 	},
 	manufacturer => {
 		'add' => \&manufacturer_add
+	},
+	accessory => {
+		'add' => \&accessory_add,
+		'list' => \&notimplemented
 	}
 );
 

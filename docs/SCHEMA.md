@@ -4,13 +4,12 @@ This documentation is generated automatically from the database schema itself wi
 
 Table to catalog accessories that are not tracked in more specific tables
 
-| COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT                 |
-|-------------------|-------------|--------------------------------|
-| accessory_id      | int(11)     | Unique ID of this accessory    |
-| accessory_type    | varchar(45) | Name of this type of accessory |
-| accessory_type_id | int(11)     | ID of this type of accessory   |
-| manufacturer_id   | int(11)     | ID of the manufacturer         |
-| model             | varchar(45) | Model of the accessory         |
+| COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT               |
+|-------------------|-------------|------------------------------|
+| accessory_id      | int(11)     | Unique ID of this accessory  |
+| accessory_type_id | int(11)     | ID of this type of accessory |
+| manufacturer_id   | int(11)     | ID of the manufacturer       |
+| model             | varchar(45) | Model of the accessory       |
 
 ## ACCESSORY_COMPAT
 
