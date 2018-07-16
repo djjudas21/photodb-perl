@@ -10,7 +10,7 @@ CREATE TABLE `FLASH` (
   `pc_sync` tinyint(1) DEFAULT NULL COMMENT 'Whether the flash has a PC sync socket',
   `hot_shoe` tinyint(1) DEFAULT NULL COMMENT 'Whether the flash has a hot shoe connection',
   `light_stand` tinyint(1) DEFAULT NULL COMMENT 'Whether the flash can be used on a light stand',
-  `battery_type` varchar(45) DEFAULT NULL COMMENT 'Type of battery needed in this flash',
+  `battery_type_id` int(11) DEFAULT NULL COMMENT 'ID of battery type',
   `battery_qty` varchar(45) DEFAULT NULL COMMENT 'Quantity of batteries needed in this flash',
   `manual_control` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash offers manual power control',
   `swivel_head` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash has a horizontal swivel head',
@@ -18,12 +18,15 @@ CREATE TABLE `FLASH` (
   `zoom` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash can zoom',
   `dslr_safe` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash is safe to use with a digital camera',
   `ttl` tinyint(1) DEFAULT NULL COMMENT 'Whether this flash supports TTL metering',
-  `ttl_compatibility` varchar(45) DEFAULT NULL COMMENT 'Compatibility of this flash''s TTL system',
+  `flash_protocol_id` int(11) DEFAULT NULL COMMENT 'ID of flash TTL metering protocol',
   `trigger_voltage` decimal(4,1) DEFAULT NULL COMMENT 'Trigger voltage of the flash, in Volts',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this flash',
-  `ttl_metering` varchar(12) DEFAULT NULL COMMENT 'Flash metering protocol',
   `acquired` date DEFAULT NULL COMMENT 'Date this flash was acquired',
   `cost` varchar(45) DEFAULT NULL COMMENT 'Purchase cost of this flash',
-  PRIMARY KEY (`flash_id`)
+  PRIMARY KEY (`flash_id`),
+  KEY `fk_FLASH_1_idx` (`flash_protocol_id`),
+  KEY `fk_FLASH_2_idx` (`battery_type_id`),
+  CONSTRAINT `fk_FLASH_1` FOREIGN KEY (`flash_protocol_id`) REFERENCES `FLASH_PROTOCOL` (`flash_protocol_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_FLASH_2` FOREIGN KEY (`battery_type_id`) REFERENCES `BATTERY` (`battery_type`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catlog flashes, flashguns and speedlights';
 /*!40101 SET character_set_client = @saved_cs_client */;

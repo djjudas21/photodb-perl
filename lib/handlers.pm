@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -645,6 +645,38 @@ sub enlarger_sell {
 	$data{'lost'} = prompt(&today($db), 'What date was this enlarger sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this enlarger sell for?', 'decimal');
 	&updaterecord($db, \%data, 'ENLARGER', "enlarger_id=$enlarger_id");
+}
+
+sub flash_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'model'} = prompt('', 'What is the model of this flash?', 'text');
+	$data{'guide_number'} = prompt('', 'What is the guide number of this flash?', 'integer');
+	$data{'gn_info'} = prompt('ISO 100', 'What are the conditions of the guide number?', 'text');
+	$data{'battery_powered'} = prompt('yes', 'Is this flash battery-powered?', 'boolean');
+	if ($data{'battery_powered'} == 1) {
+                $data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery");
+		$data{'battery_qty'} = prompt('', 'How many batteries does this flash need?', 'integer');
+	}
+	$data{'pc_sync'} = prompt('yes', 'Does this flash have a PC sync socket?', 'boolean');
+	$data{'hot_shoe'} = prompt('yes', 'Does this flash have a hot shoe connector?', 'boolean');
+	$data{'light_stand'} = prompt('yes', 'Can this flash be fitted onto a light stand?', 'boolean');
+	$data{'manual_control'} = prompt('yes', 'Does this flash have manual power control?', 'boolean');
+	$data{'swivel_head'} = prompt('yes', 'Does this flash have a left/right swivel head?', 'boolean');
+	$data{'tilt_head'} = prompt('yes', 'Does this flash have an up/down tilt head?', 'boolean');
+	$data{'zoom'} = prompt('yes', 'Does this flash have a zoom head?', 'boolean');
+	$data{'dslr_safe'} = prompt('yes', 'Is this flash safe to use on a DSLR?', 'boolean');
+	$data{'ttl'} = prompt('yes', 'Does this flash support TTL metering?', 'boolean');
+	if ($data{'ttl'} == 1) {
+		$data{'flash_protocol_id'} = &listchoices($db, 'flash protocol', "SELECT flash_protocol_id as id, concat(manufacturer, ' ', name) as opt FROM FLASH_PROTOCOL, MANUFACTURER where FLASH_PROTOCOL.manufacturer_id=MANUFACTURER.manufacturer_id");
+	}
+	$data{'trigger_voltage'} = prompt('', 'What is the measured trigger voltage?', 'decimal');
+	$data{'own'} = 1;
+	$data{'acquired'} = prompt(&today($db), 'When was it acquired?', 'date');
+	$data{'cost'} = prompt('', 'What did this flash cost?', 'decimal');
+	my $flashid = &newrecord($db, \%data, 'FLASH');
+	return $flashid;
 }
 
 sub task_run {

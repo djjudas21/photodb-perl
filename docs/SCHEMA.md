@@ -321,7 +321,7 @@ Table to catlog flashes, flashguns and speedlights
 | pc_sync           | tinyint(1)   | Whether the flash has a PC sync socket                      |
 | hot_shoe          | tinyint(1)   | Whether the flash has a hot shoe connection                 |
 | light_stand       | tinyint(1)   | Whether the flash can be used on a light stand              |
-| battery_type      | varchar(45)  | Type of battery needed in this flash                        |
+| battery_type_id   | int(11)      | ID of battery type                                          |
 | battery_qty       | varchar(45)  | Quantity of batteries needed in this flash                  |
 | manual_control    | tinyint(1)   | Whether this flash offers manual power control              |
 | swivel_head       | tinyint(1)   | Whether this flash has a horizontal swivel head             |
@@ -329,10 +329,9 @@ Table to catlog flashes, flashguns and speedlights
 | zoom              | tinyint(1)   | Whether this flash can zoom                                 |
 | dslr_safe         | tinyint(1)   | Whether this flash is safe to use with a digital camera     |
 | ttl               | tinyint(1)   | Whether this flash supports TTL metering                    |
-| ttl_compatibility | varchar(45)  | Compatibility of this flash's TTL system                    |
+| flash_protocol_id | int(11)      | ID of flash TTL metering protocol                           |
 | trigger_voltage   | decimal(4,1) | Trigger voltage of the flash, in Volts                      |
 | own               | tinyint(1)   | Whether we currently own this flash                         |
-| ttl_metering      | varchar(12)  | Flash metering protocol                                     |
 | acquired          | date         | Date this flash was acquired                                |
 | cost              | varchar(45)  | Purchase cost of this flash                                 |
 

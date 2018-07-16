@@ -83,6 +83,9 @@ my %handlers = (
 	enlarger => {
 		'add' => \&enlarger_add,
 		'sell' => \&enlarger_sell
+	},
+	flash => {
+		'add' => \&flash_add
 	}
 );
 
