@@ -86,6 +86,9 @@ my %handlers = (
 	},
 	flash => {
 		'add' => \&flash_add
+	},
+	battery => {
+		'add' => \&battery_add
 	}
 );
 

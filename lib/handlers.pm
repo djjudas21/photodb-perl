@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -123,7 +123,7 @@ sub camera_add {
 	$data{'digital'} = prompt('no', 'Is this a digital camera?', 'boolean');
 	$data{'battery_qty'} = prompt('', 'How many batteries does this camera take?', 'integer');
 	if ($data{'battery_qty'} > 0) {
-		$data{'battery_type'} = &listchoices($db, 'battery type', "select * from choose_battery");
+		$data{'battery_type'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
 	}
 	$data{'notes'} = prompt('', 'Additional notes', 'text');
 	$data{'source'} = prompt('', 'Where was the camera acquired from?', 'text');
@@ -656,7 +656,7 @@ sub flash_add {
 	$data{'gn_info'} = prompt('ISO 100', 'What are the conditions of the guide number?', 'text');
 	$data{'battery_powered'} = prompt('yes', 'Is this flash battery-powered?', 'boolean');
 	if ($data{'battery_powered'} == 1) {
-                $data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery");
+                $data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
 		$data{'battery_qty'} = prompt('', 'How many batteries does this flash need?', 'integer');
 	}
 	$data{'pc_sync'} = prompt('yes', 'Does this flash have a PC sync socket?', 'boolean');
@@ -677,6 +677,17 @@ sub flash_add {
 	$data{'cost'} = prompt('', 'What did this flash cost?', 'decimal');
 	my $flashid = &newrecord($db, \%data, 'FLASH');
 	return $flashid;
+}
+
+sub battery_add {
+	my $db = shift;
+	my %data;
+	$data{'battery_name'} = prompt('', 'What is the name of this battery?', 'text');
+	$data{'voltage'} = prompt('', 'What is the nominal voltage of this battery?', 'decimal');
+	$data{'chemistry'} = prompt('', 'What type of chemistry is this battery based on?', 'text');
+	$data{'other_names'} = prompt('', 'Does this type of battery go by any other names?');
+	my $batteryid = &newrecord($db, \%data, 'BATTERY');
+	return $batteryid;
 }
 
 sub task_run {
