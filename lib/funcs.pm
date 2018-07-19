@@ -9,6 +9,12 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
+$Data::Dumper::Terse = 1;
+$Data::Dumper::Useqq = 1;
+$Data::Dumper::Deparse = 1;
+$Data::Dumper::Quotekeys = 0;
+$Data::Dumper::Sortkeys = 1;
+
 our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round);
 
 # Prompt for an arbitrary value
