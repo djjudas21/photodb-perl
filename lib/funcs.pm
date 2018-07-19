@@ -9,7 +9,7 @@ use Exporter qw(import);
 use Data::Dumper;
 use Config::IniHash;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -339,6 +339,14 @@ sub writeconfig {
 	$inidata{'database'}{'pass'} = prompt('', 'Password for this user', 'text');
 	$inidata{'filesystem'}{'basepath'} = prompt('', 'Path to your scanned images', 'text');
 	WriteINI($inifile, \%inidata);
+}
+
+# Round numbers to any precision
+sub round {
+	my $x = shift;
+	my $pow10 = shift;
+	my $a = 10 ** $pow10;
+	return int(($x * $a) + 0.5) / $a
 }
 
 # This ensures the lib loads smoothly
