@@ -38,7 +38,8 @@ my %handlers = (
 	},
 	mount => {
 		'add' => \&mount_add,
-		'view' => \&mount_view
+		'view' => \&mount_view,
+		'adapt' => \&mount_adapt
 	},
 	lens => {
 		'add' => \&lens_add,

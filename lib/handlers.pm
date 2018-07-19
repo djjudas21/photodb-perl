@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -712,6 +712,18 @@ sub negativesize_add {
 	}
 	my $negativesizeid = &newrecord($db, \%data, 'NEGATIVE_SIZE');
 	return $negativesizeid;
+}
+
+sub mount_adapt {
+	my $db = shift;
+	my %data;
+	$data{'lens_mount'} = &listchoices($db, 'lens-facing mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
+	$data{'camera_mount'} = &listchoices($db, 'camera-facing mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
+	$data{'has_optics'} = prompt('', 'Does this mount adapter have corrective optics?', 'boolean');
+	$data{'infinity_focus'} = prompt('', 'Does this mount adapter have infinity focus?', 'boolean');
+	$data{'notes'} = prompt('', 'Notes', 'text');
+	my $mountadapterid = &newrecord($db, %data, 'MOUNT_ADAPTER');
+	return $mountadapterid;
 }
 
 sub task_run {
