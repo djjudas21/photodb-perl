@@ -14,14 +14,14 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add);
 
 sub film_add {
 	# Add a newly-purchased film
 	my $db = shift;
 	my %data;
 	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", \&format_add);
 	$data{'frames'} = prompt('', 'How many frames?', 'integer');
 	if (prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
 		$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
@@ -90,7 +90,7 @@ sub camera_add {
 	} else {
 		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
 	}
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", \&format_add);
 	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
 	$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
@@ -110,7 +110,7 @@ sub camera_add {
 	$data{'datecode'} = prompt('', 'What is the camera\'s datecode?', 'text');
 	$data{'manufactured'} = prompt('', 'When was the camera manufactured?', 'integer');
 	$data{'own'} = prompt('yes', 'Do you own this camera?', 'boolean');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
 	$data{'shutter_type_id'} = &listchoices($db, 'shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
 	$data{'shutter_model'} = prompt('', 'What is the shutter model?', 'text');
 	$data{'cable_release'} = prompt('', 'Does this camera have a cable release?', 'boolean');
@@ -344,7 +344,7 @@ sub lens_add {
 	$data{'introduced'} = prompt('', 'When was this lens introduced?', 'integer');
 	$data{'discontinued'} = prompt('', 'When was this lens discontinued?', 'integer');
 	$data{'manufactured'} = prompt('', 'When was this lens manufactured?', 'integer');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
 	$data{'acquired'} = prompt(&today($db), 'When was this lens acquired?', 'date');
 	$data{'cost'} = prompt('', 'How much did this lens cost?', 'decimal');
 	$data{'notes'} = prompt('', 'Notes', 'text');
@@ -629,7 +629,7 @@ sub enlarger_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'enlarger'} = prompt('', 'What is the model of this enlarger?', 'text');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE");
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
 	$data{'introduced'} = prompt('', 'What year was this enlarger introduced?', 'integer');
 	$data{'discontinued'} = prompt('', 'What year was this enlarger discontinued?', 'integer');
 	$data{'acquired'} = prompt(&today($db), 'Purchase date', 'date');
@@ -688,6 +688,30 @@ sub battery_add {
 	$data{'other_names'} = prompt('', 'Does this type of battery go by any other names?');
 	my $batteryid = &newrecord($db, \%data, 'BATTERY');
 	return $batteryid;
+}
+
+sub format_add {
+	my $db = shift;
+	my %data;
+	$data{'format'} = prompt('', 'What is the name of this film format?', 'text');
+	$data{'digital'} = prompt('no', 'Is this a digital format?', 'boolean');
+	my $formatid = &newrecord($db, \%data, 'FORMAT');
+	return $formatid;
+}
+
+sub negativesize_add {
+	my $db = shift;
+	my %data;
+	$data{'negative_size'} = prompt('', 'What is the name of this negative size?', 'text');
+	$data{'width'} = prompt('', 'What is the width of this negative size in mm?', 'decimal');
+	$data{'height'} = prompt('', 'What is the height of this negative size in mm?', 'decimal');
+	if ($data{'width'} > 0 && $data{'height'} > 0) {
+		$data{'crop_factor'} = round(sqrt($data{'width'}*$data{'width'} + $data{'height'}*$data{'height'}) / sqrt(36*36 + 24*24), 2);
+		$data{'area'} = $data{'width'} * $data{'height'};
+		$data{'aspect_ratio'} = round($data{'width'} / $data{'height'}, 2);
+	}
+	my $negativesizeid = &newrecord($db, \%data, 'NEGATIVE_SIZE');
+	return $negativesizeid;
 }
 
 sub task_run {

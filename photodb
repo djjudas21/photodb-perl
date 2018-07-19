@@ -89,6 +89,12 @@ my %handlers = (
 	},
 	battery => {
 		'add' => \&battery_add
+	},
+	format => {
+		'add' => \&format_add
+	},
+	negativesize => {
+		'add' => \&negativesize_add
 	}
 );
 
