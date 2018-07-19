@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -731,8 +731,26 @@ sub mount_adapt {
 	$data{'has_optics'} = prompt('', 'Does this mount adapter have corrective optics?', 'boolean');
 	$data{'infinity_focus'} = prompt('', 'Does this mount adapter have infinity focus?', 'boolean');
 	$data{'notes'} = prompt('', 'Notes', 'text');
-	my $mountadapterid = &newrecord($db, %data, 'MOUNT_ADAPTER');
+	my $mountadapterid = &newrecord($db, \%data, 'MOUNT_ADAPTER');
 	return $mountadapterid;
+}
+
+sub lightmeter_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'model'} = prompt('', 'What is the model of this light meter?', 'text');
+	$data{'metering_type'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
+	$data{'reflected'} = prompt('', 'Can this meter take reflected light readings?', 'boolean');
+	$data{'incident'} = prompt('', 'Can this meter take incident light readings?', 'boolean');
+	$data{'spot'} = prompt('', 'Can this meter take spot readings?', 'boolean');
+	$data{'flash'} = prompt('', 'Can this meter take flash readings?', 'boolean');
+	$data{'min_asa'} = prompt('', 'What\'s the lowest ISO/ASA setting this meter supports?', 'integer');
+	$data{'max_asa'} = prompt('', 'What\'s the highest ISO/ASA setting this meter supports?', 'integer');
+	$data{'min_lv'} = prompt('', 'What\'s the lowest light value (LV) reading this meter can give?', 'integer');
+	$data{'max_lv'} = prompt('', 'What\'s the highest light value (LV) reading this meter can give?', 'integer');
+	my $lightmeterid = &newrecord($db, \%data, 'LIGHT_METER');
+	return $lightmeterid;
 }
 
 sub task_run {

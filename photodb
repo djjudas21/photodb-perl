@@ -97,6 +97,9 @@ my %handlers = (
 	},
 	negativesize => {
 		'add' => \&negativesize_add
+	},
+	lightmeter => {
+		'add' => \&lightmeter_add
 	}
 );
 
