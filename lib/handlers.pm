@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -576,6 +576,15 @@ sub filter_add {
 	$data{'qty'} = prompt(1, 'How many of these filters do you have?');
 	my $filterid = &newrecord($db, \%data, 'FILTER');
 	return $filterid;
+}
+
+sub filter_adapt {
+	my $db = shift;
+	my %data;
+	$data{'camera_thread'} = prompt('', 'What diameter thread faces the camera on this filter adapter?', 'decimal');
+	$data{'filter_thread'} = prompt('', 'What diameter thread faces the camera on this filter adapter?', 'decimal');
+	my $filteradapterid = &newrecord($db, \%data, 'FILTER_ADAPTER');
+	return $filteradapterid;
 }
 
 sub manufacturer_add {

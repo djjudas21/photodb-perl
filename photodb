@@ -72,7 +72,8 @@ my %handlers = (
 		'add' => \&teleconverter_add
 	},
 	filter => {
-		'add' => \&filter_add
+		'add' => \&filter_add,
+		'adapt' => \&filter_adapt
 	},
 	manufacturer => {
 		'add' => \&manufacturer_add
