@@ -80,7 +80,8 @@ my %handlers = (
 	},
 	accessory => {
 		'add' => \&accessory_add,
-		'list' => \&notimplemented
+		'list' => \&notimplemented,
+		'type' => \&accessory_type
 	},
 	enlarger => {
 		'add' => \&enlarger_add,

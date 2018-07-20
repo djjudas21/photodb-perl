@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -603,7 +603,7 @@ sub manufacturer_add {
 sub accessory_add {
 	my $db = shift;
 	my %data;
-	$data{'accessory_type_id'} = &listchoices($db, 'accessory type', "select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", 'integer');
+	$data{'accessory_type_id'} = &listchoices($db, 'accessory type', "select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", 'integer', \&accessory_type);
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'model'} = prompt('', 'What is the model of this accessory?', 'text');
 	my $accessoryid = &newrecord($db, \%data, 'ACCESSORY');
@@ -631,6 +631,14 @@ sub accessory_add {
 		}
 	}
 	return $accessoryid;
+}
+
+sub accessory_type {
+	my $db = shift;
+	my %data;
+	$data{'accessory_type'} = prompt('', 'What type of accessory do you want to add?', 'text');
+	my $accessorytypeid = &newrecord($db, \%data, 'ACCESSORY_TYPE');
+	return $accessorytypeid;
 }
 
 sub enlarger_add {
