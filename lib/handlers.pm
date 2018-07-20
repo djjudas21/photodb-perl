@@ -21,7 +21,7 @@ sub film_add {
 	my $db = shift;
 	my %data;
 	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", \&format_add);
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
 	$data{'frames'} = prompt('', 'How many frames?', 'integer');
 	if (prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
 		$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
@@ -90,7 +90,7 @@ sub camera_add {
 	} else {
 		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
 	}
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", \&format_add);
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
 	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
 	$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
