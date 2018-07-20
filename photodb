@@ -102,6 +102,9 @@ my %handlers = (
 	},
 	lightmeter => {
 		'add' => \&lightmeter_add
+	},
+	process => {
+		'add' => \&process_add
 	}
 );
 

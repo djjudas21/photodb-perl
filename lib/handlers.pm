@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -547,7 +547,7 @@ sub filmstock_add {
 	} else {
 		$data{'panchromatic'} = prompt('yes', 'Is this a panchromatic film?', 'boolean');
 	}
-	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS');
+	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS', 'integer', \&process_add);
 	my $filmstockid = &newrecord($db, \%data, 'FILMSTOCK');
 	return $filmstockid;
 }
@@ -576,6 +576,16 @@ sub filter_add {
 	$data{'qty'} = prompt(1, 'How many of these filters do you have?');
 	my $filterid = &newrecord($db, \%data, 'FILTER');
 	return $filterid;
+}
+
+sub process_add {
+	my $db = shift;
+	my %data;
+	$data{'name'} = prompt('', 'What is the name of this film process?', 'text');
+	$data{'colour'} = prompt('', 'Is this a colour process?', 'boolean');
+	$data{'positive'} = prompt('', 'Is this a reversal process?', 'boolean');
+	my $processid = &newrecord($db, \%data, 'PROCESS');
+	return $processid;
 }
 
 sub filter_adapt {
