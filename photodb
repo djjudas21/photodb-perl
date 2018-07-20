@@ -30,7 +30,8 @@ my %handlers = (
 		'display-lens' => \&camera_displaylens,
 		'show-lenses' => \&notimplemented,
 		'sell' => \&camera_sell,
-		'repair' => \&camera_repair
+		'repair' => \&camera_repair,
+		'addbodytype' => \&camera_addbodytype
 	},
 	negative => {
 		'add' => \&negative_add,

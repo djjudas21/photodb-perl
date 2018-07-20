@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -100,7 +100,7 @@ sub camera_add {
 		$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
 	}
-	$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE");
+	$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", \&camera_addbodytype);
 	$data{'weight'} = prompt('', 'What does it weigh? (g)', 'integer');
 	$data{'acquired'} = prompt(&today($db), 'When was it acquired?', 'date');
 	$data{'cost'} = prompt('', 'What did the camera cost?', 'decimal');
@@ -759,6 +759,14 @@ sub lightmeter_add {
 	$data{'max_lv'} = prompt('', 'What\'s the highest light value (LV) reading this meter can give?', 'integer');
 	my $lightmeterid = &newrecord($db, \%data, 'LIGHT_METER');
 	return $lightmeterid;
+}
+
+sub camera_addbodytype {
+	my $db = shift;
+	my %data;
+	$data{'body_type'} = prompt('', 'Enter new camera body type', 'text');
+	my $bodytypeid = &newrecord($db, \%data, 'BODY_TYPE');
+	return $bodytypeid;
 }
 
 sub task_run {
