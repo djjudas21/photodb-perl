@@ -10,5 +10,5 @@ CREATE TABLE `ARCHIVE` (
   PRIMARY KEY (`archive_id`),
   KEY `fk_ARCHIVE_3_idx` (`archive_type_id`),
   CONSTRAINT `fk_ARCHIVE_3` FOREIGN KEY (`archive_type_id`) REFERENCES `ARCHIVE_TYPE` (`archive_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to list all archives that exist for storing physical media	';
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to list all archives that exist for storing physical media';
 /*!40101 SET character_set_client = @saved_cs_client */;
