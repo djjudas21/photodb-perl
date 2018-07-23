@@ -7,6 +7,7 @@ CREATE TABLE `ARCHIVE` (
   `max_width` int(11) DEFAULT NULL COMMENT 'Maximum width of media that this archive can store',
   `max_height` int(11) DEFAULT NULL COMMENT 'Maximum height of media that this archive can store',
   `location` varchar(45) DEFAULT NULL COMMENT 'Location of this archive',
+  `storage` varchar(45) DEFAULT NULL COMMENT 'The type of storage used for this archive, e.g. box, folder, ringbinder, etc',
   PRIMARY KEY (`archive_id`),
   KEY `fk_ARCHIVE_3_idx` (`archive_type_id`),
   CONSTRAINT `fk_ARCHIVE_3` FOREIGN KEY (`archive_type_id`) REFERENCES `ARCHIVE_TYPE` (`archive_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION

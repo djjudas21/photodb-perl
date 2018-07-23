@@ -863,6 +863,7 @@ sub archive_add {
 	$data{'max_width'} = prompt('', 'What is the maximum width of media that this archive can accept (if applicable)?', 'text');
 	$data{'max_height'} = prompt('', 'What is the maximum height of media that this archive can accept (if applicable)?', 'text');
 	$data{'location'} = prompt('', 'What is the location of this archive?', 'text');
+	$data{'storage'} = prompt('', 'What is the storage type of this archive? (e.g. box, folder, ringbinder, etc)', 'text');
 	my $archiveid = &newrecord($db, \%data, 'ARCHIVE');
 	return $archiveid;
 }
