@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add);
+our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -777,6 +777,18 @@ sub camera_addbodytype {
 	$data{'body_type'} = prompt('', 'Enter new camera body type', 'text');
 	my $bodytypeid = &newrecord($db, \%data, 'BODY_TYPE');
 	return $bodytypeid;
+}
+
+sub archive_add {
+	my $db = shift;
+	my %data;
+	$data{'archive_type_id'} = &listchoices($db, 'archive type', "select archive_type_id as id, archive_type as opt from ARCHIVE_TYPE", 'integer');
+	$data{'name'} = prompt('', 'What is the name of this archive?', 'text');
+	$data{'max_width'} = prompt('', 'What is the maximum width of media that this archive can accept (if applicable)?', 'text');
+	$data{'max_height'} = prompt('', 'What is the maximum height of media that this archive can accept (if applicable)?', 'text');
+	$data{'location'} = prompt('', 'What is the location of this archive?', 'text');
+	my $archiveid = &newrecord($db, \%data, 'ARCHIVE');
+	return $archiveid;
 }
 
 sub task_run {
