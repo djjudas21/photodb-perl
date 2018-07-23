@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_archive film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil print_archive paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add);
+our @EXPORT = qw(film_add film_load film_archive film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil print_archive paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add archive_films);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -809,6 +809,24 @@ sub archive_add {
 	$data{'location'} = prompt('', 'What is the location of this archive?', 'text');
 	my $archiveid = &newrecord($db, \%data, 'ARCHIVE');
 	return $archiveid;
+}
+
+sub archive_films {
+	my $db = shift;
+	my %data;
+	my $minfilm = prompt('', 'What is the lowest film ID in the range?', 'integer');
+	my $maxfilm = prompt('', 'What is the highest film ID in the range?', 'integer');
+	if (($minfilm =~ m/^\d+$/) && ($maxfilm =~ m/^\d+$/)) {
+		if ($maxfilm le $minfilm) {
+			print "Highest film ID must be higher than lowest film ID\n";
+			exit;
+		}
+	} else {
+		print "Must provide highest and lowest film IDs\n";
+		exit;
+	}
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
+	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm");
 }
 
 sub task_run {
