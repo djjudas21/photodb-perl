@@ -15,12 +15,12 @@ use queries;
 use tagger;
 
 our @EXPORT = qw(
-	film_add film_load film_archive film_develop film_tag
+	film_add film_load film_archive film_develop film_tag film_locate
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd
 	lens_add lens_sell lens_repair
-	print_add print_tone print_sell print_order print_fulfil print_archive
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate
 	paperstock_add
 	developer_add
 	toner_add
@@ -107,6 +107,19 @@ sub film_tag {
 		prompt('no', 'This will write EXIF tags to ALL scans in the database. Are you sure?', 'boolean') or die "Aborted!\n";
 	}
 	&tag($db, $film_id);
+}
+
+sub film_locate {
+	my $db = shift;
+	my $film_id = prompt('', 'Which film do you want to locate?', 'integer');
+
+	if (my $archiveid = &lookupval($db, "select archive_id from FILM where film_id=$film_id")) {
+		my $archive = &lookupval($db, "select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid");
+		print "Film #${film_id} is in $archive\n";
+	} else {
+		print "The location of film #${film_id} is unknown\n";
+	}
+	exit;
 }
 
 sub camera_add {
@@ -511,13 +524,32 @@ sub print_order {
 
 sub print_archive {
 	# Archive a print for storage
-        my $db = shift;
-        my %data;
-        my $print_id = prompt('', 'Which print did you archive?', 'integer');
+	my $db = shift;
+	my %data;
+	my $print_id = prompt('', 'Which print did you archive?', 'integer');
 	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3", 'integer', \&archive_add);
-        $data{'own'} = 1;
+	$data{'own'} = 1;
 	$data{'location'} = 'Archive',
-        &updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+}
+
+sub print_locate {
+	my $db = shift;
+	my $print_id = prompt('', 'Which print do you want to locate?', 'integer');
+
+	if (my $archiveid = &lookupval($db, "select archive_id from PRINT where print_id=$print_id")) {
+		my $archive = &lookupval($db, "select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid");
+		print "Print #${print_id} is in $archive\n";
+	} elsif (my $location = &lookupval($db, "select location from PRINT where print_id=$print_id")) {
+		if (my $own = &lookupval($db, "select own from PRINT where print_id=$print_id")) {
+			print "Print #${print_id} is in the collection. Location: $location\n";
+		} else {
+			print "Print #${print_id} is not in the collection. Location: $location\n";
+		}
+	} else {
+		print "The location of print #${print_id} is unknown\n";
+	}
+	exit;
 }
 
 sub paperstock_add {
@@ -727,7 +759,7 @@ sub flash_add {
 	$data{'gn_info'} = prompt('ISO 100', 'What are the conditions of the guide number?', 'text');
 	$data{'battery_powered'} = prompt('yes', 'Is this flash battery-powered?', 'boolean');
 	if ($data{'battery_powered'} == 1) {
-                $data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
+		$data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
 		$data{'battery_qty'} = prompt('', 'How many batteries does this flash need?', 'integer');
 	}
 	$data{'pc_sync'} = prompt('yes', 'Does this flash have a PC sync socket?', 'boolean');
