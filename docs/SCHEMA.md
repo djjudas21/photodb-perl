@@ -265,6 +265,7 @@ Table to list films which consist of one or more negatives. A film can be a roll
 | purchase_date     | date         | Date this film was purchased                                          |
 | price             | decimal(4,2) | Price paid for this film                                              |
 | processed_by      | varchar(45)  | Person or place that processed this film                              |
+| archive_id        | int(11)      | ID of the archive to which this film belongs                          |
 
 ## FILMSTOCK
 
@@ -668,6 +669,7 @@ Table to catalog prints made from negatives
 | fine               | tinyint(1)   | Whether this is a fine print                                            |
 | notes              | text         | Freeform notes about this print, e.g. dodging, burning & complex toning |
 | filename           | varchar(100) | The filename of the image scanned from this print                       |
+| archive_id         | int(11)      | ID of the archive to which this print belongs                           |
 
 ## PROCESS
 
