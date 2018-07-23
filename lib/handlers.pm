@@ -14,7 +14,31 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_archive film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil print_archive paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add archive_films);
+our @EXPORT = qw(
+	film_add film_load film_archive film_develop film_tag
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype
+	mount_add mount_view mount_adapt
+	negative_add negative_bulkadd
+	lens_add lens_sell lens_repair
+	print_add print_tone print_sell print_order print_fulfil print_archive
+	paperstock_add
+	developer_add
+	toner_add
+	task_run
+	filmstock_add
+	teleconverter_add
+	filter_add filter_adapt
+	manufacturer_add
+	accessory_add accessory_type
+	enlarger_add enlarger_sell
+	flash_add
+	battery_add
+	format_add
+	negativesize_add
+	lightmeter_add
+	process_add
+	archive_add archive_films
+);
 
 sub film_add {
 	# Add a newly-purchased film
