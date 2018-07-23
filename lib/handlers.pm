@@ -14,7 +14,7 @@ use funcs;
 use queries;
 use tagger;
 
-our @EXPORT = qw(film_add film_load film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add);
+our @EXPORT = qw(film_add film_load film_archive film_develop film_tag camera_add camera_displaylens camera_sell camera_repair mount_add mount_view negative_add negative_bulkadd lens_add lens_sell lens_repair print_add print_tone print_sell print_order print_fulfil print_archive paperstock_add developer_add toner_add task_run filmstock_add teleconverter_add filter_add manufacturer_add accessory_add accessory_type enlarger_add enlarger_sell flash_add battery_add format_add negativesize_add mount_adapt filter_adapt lightmeter_add camera_addbodytype process_add archive_add);
 
 sub film_add {
 	# Add a newly-purchased film
@@ -45,6 +45,15 @@ sub film_load {
 	$data{'date_loaded'} = prompt(&today($db), 'What date was this film loaded?', 'date');
 	$data{'camera_id'} = &listchoices($db, 'camera', "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, FILM as F, MANUFACTURER as M where F.format_id=C.format_id and C.manufacturer_id=M.manufacturer_id and film_id=$film_id and own=1 order by opt");
 	$data{'notes'} = prompt('', 'Notes', 'text');
+	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+}
+
+sub film_archive {
+	# Archive a film for storage
+	my $db = shift;
+	my %data;
+	my $film_id = prompt('', 'Enter ID of film to archive', 'integer');
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
 }
 
@@ -474,6 +483,17 @@ sub print_order {
 	$data{'recipient'} = prompt('', 'Who is the print for?', 'text');
 	$data{'added'} = prompt(&today($db), 'Date that this order was placed', 'date');
 	my $orderid = &newrecord($db, \%data, 'TO_PRINT');
+}
+
+sub print_archive {
+	# Archive a print for storage
+        my $db = shift;
+        my %data;
+        my $print_id = prompt('', 'Which print did you archive?', 'integer');
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3", 'integer', \&archive_add);
+        $data{'own'} = 1;
+	$data{'location'} = 'Archive',
+        &updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
 }
 
 sub paperstock_add {

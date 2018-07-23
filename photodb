@@ -24,7 +24,7 @@ my %handlers = (
 		'load' => \&film_load,
 		'develop' => \&film_develop,
 		'tag' => \&film_tag,
-		'archive' => \&notimplemented,
+		'archive' => \&film_archive,
 		'locate' => \&notimplemented,
 	},
 	camera => {
@@ -55,7 +55,7 @@ my %handlers = (
 		'sell' => \&print_sell,
 		'order' => \&print_order,
 		'fulfil' => \&print_fulfil,
-		'archive' => \&notimplemented,
+		'archive' => \&print_archive,
 		'locate' => \&notimplemented
 	},
 	paperstock => {
