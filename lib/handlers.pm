@@ -826,7 +826,7 @@ sub archive_films {
 		exit;
 	}
 	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
-	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm");
+	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm and archive_id is null");
 }
 
 sub task_run {
