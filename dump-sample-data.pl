@@ -27,6 +27,7 @@ print "\n";
 
 # List of tables that contain useful sample data
 my @tables = (
+	'ARCHIVE_TYPE',
 	'BODY_TYPE',
 	'EXPOSURE_PROGRAM',
 	'FILMSTOCK',

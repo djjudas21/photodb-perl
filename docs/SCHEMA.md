@@ -31,6 +31,28 @@ Table to catalog types of photographic accessory
 | accessory_type_id | int(11)     | Unique ID for this type of accessory |
 | accessory_type    | varchar(45) | Type of accessory                    |
 
+## ARCHIVE
+
+Table to list all archives that exist for storing physical media
+
+| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                      |
+|-----------------|-------------|-----------------------------------------------------|
+| archive_id      | int(11)     | Unique ID of this archive                           |
+| archive_type_id | int(11)     | ID of this type of archive                          |
+| name            | varchar(45) | Name of this archive                                |
+| max_width       | int(11)     | Maximum width of media that this archive can store  |
+| max_height      | int(11)     | Maximum height of media that this archive can store |
+| location        | varchar(45) | Location of this archive                            |
+
+## ARCHIVE_TYPE
+
+Table to list the different types of archive available for materials
+
+| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT               |
+|-----------------|-------------|------------------------------|
+| archive_type_id | int(11)     | Unique ID of archive type    |
+| archive_type    | varchar(45) | Name of this type of archive |
+
 ## BACK
 
 Table to catalog Interchangeable backs and film holders
