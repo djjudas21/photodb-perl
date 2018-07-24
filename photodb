@@ -21,259 +21,259 @@ my $db = &db;
 my %handlers = (
 	'film' => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new film to the database',
 			'handler' => \&film_add,
 		},
 		'load' => {
-			'desc' => '',
+			'desc' => 'Load a film into a camera',
 			'handler' => \&film_load,
 		},
 		'develop' => {
-			'desc' => '',
+			'desc' => 'Develop a film',
 			'handler' => \&film_develop,
 		},
 		'tag' => {
-			'desc' => '',
+			'desc' => 'Write EXIF tags to scans from a film',
 			'handler' => \&film_tag,
 		},
 		'archive' => {
-			'desc' => '',
+			'desc' => 'Put the film in a physical archive',
 			'handler' => \&film_archive,
 		},
 		'locate' => {
-			'desc' => '',
+			'desc' => 'Locate where this film is',
 			'handler' => \&film_locate
 		}
 	},
 	camera => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new camera to the database',
 			'handler' => \&camera_add,
 		},
 		'display-lens' => {
-			'desc' => '',
+			'desc' => 'Associate a camera with a lens for display purposes',
 			'handler' => \&camera_displaylens,
 		},
 		'show-lenses' => {
-			'desc' => '',
+			'desc' => 'Not yet implemented',
 			'handler' => \&notimplemented,
 		},
 		'sell' => {
-			'desc' => '',
+			'desc' => 'Sell a camera',
 			'handler' => \&camera_sell,
 		},
 		'repair' => {
-			'desc' => '',
+			'desc' => 'Repair a camera',
 			'handler' => \&camera_repair,
 		},
 		'addbodytype' => {
-			'desc' => '',
+			'desc' => 'Add a new camera body type',
 			'handler' => \&camera_addbodytype
 		}
 	},
 	negative => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new negative to the database as part of a film',
 			'handler' => \&negative_add,
 		},
 		'bulk-add' => {
-			'desc' => '',
+			'desc' => 'Bulk add multiple negatives to the database as part of a film',
 			'handler' => \&negative_bulkadd
 		}
 	},
 	mount => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new lens mount to the database',
 			'handler' => \&mount_add,
 		},
 		'view' => {
-			'desc' => '',
+			'desc' => 'View compatible cameras and lenses for a mount',
 			'handler' => \&mount_view,
 		},
 		'adapt' => {
-			'desc' => '',
+			'desc' => 'Add a new mount adapter to the database',
 			'handler' => \&mount_adapt
 		}
 	},
 	lens => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new lens to the database',
 			'handler' => \&lens_add,
 		},
 		'sell' => {
-			'desc' => '',
+			'desc' => 'Sell a lens',
 			'handler' => \&lens_sell,
 		},
 		'repair' => {
-			'desc' => '',
+			'desc' => 'Repair a lens',
 			'handler' => \&lens_repair
 		}
 	},
 	print => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new print that has been made from a negative',
 			'handler' => \&print_add,
 		},
 		'tone' => {
-			'desc' => '',
+			'desc' => 'Add toning to a print',
 			'handler' => \&print_tone,
 		},
 		'sell' => {
-			'desc' => '',
+			'desc' => 'Sell a print',
 			'handler' => \&print_sell,
 		},
 		'order' => {
-			'desc' => '',
+			'desc' => 'Register an order for a print',
 			'handler' => \&print_order,
 		},
 		'fulfil' => {
-			'desc' => '',
+			'desc' => 'Fulfil an order for a print',
 			'handler' => \&print_fulfil,
 		},
 		'archive' => {
-			'desc' => '',
+			'desc' => 'Add a print to a physical archive',
 			'handler' => \&print_archive,
 		},
 		'locate' => {
-			'desc' => '',
+			'desc' => 'Locate a print in an archive',
 			'handler' => \&print_locate
 		}
 	},
 	paperstock => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new type of photo paper to the database',
 			'handler' => \&paperstock_add
 		}
 	},
 	developer => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new developer to the database',
 			'handler' => \&developer_add
 		}
 	},
 	toner => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new chemical toner to the database',
 			'handler' => \&toner_add
 		}
 	},
 	task => {
 		'run' => {
-			'desc' => '',
+			'desc' => 'Run a selection of maintenance tasks on the database',
 			'handler' => \&task_run
 		}
 	},
 	filmstock => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new type of filmstock to the database',
 			'handler' => \&filmstock_add
 		}
 	},
 	teleconverter => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new teleconverter to the database',
 			'handler' => \&teleconverter_add
 		}
 	},
 	filter => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new (optical) filter to the database',
 			'handler' => \&filter_add,
 		},
 		'adapt' => {
-			'desc' => '',
+			'desc' => 'Add a filter adapter to the database',
 			'handler' => \&filter_adapt
 		}
 	},
 	manufacturer => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new manufacturer to the database',
 			'handler' => \&manufacturer_add
 		}
 	},
 	accessory => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new accessory to the database',
 			'handler' => \&accessory_add,
 		},
 		'list' => {
-			'desc' => '',
+			'desc' => 'Not yet implemented',
 			'handler' => \&notimplemented,
 		},
 		'type' => {
-			'desc' => '',
+			'desc' => 'Add a new type of accessory to the database',
 			'handler' => \&accessory_type
 		}
 	},
 	enlarger => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new enlarger to the database',
 			'handler' => \&enlarger_add,
 		},
 		'sell' => {
-			'desc' => '',
+			'desc' => 'Sell an enlarger',
 			'handler' => \&enlarger_sell
 		}
 	},
 	flash => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new flash to the database',
 			'handler' => \&flash_add
 		}
 	},
 	battery => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new type of battery to the database',
 			'handler' => \&battery_add
 		}
 	},
 	format => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new film format to the database',
 			'handler' => \&format_add
 		}
 	},
 	negativesize => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a size of negative to the database',
 			'handler' => \&negativesize_add
 		}
 	},
 	lightmeter => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new light meter to the database',
 			'handler' => \&lightmeter_add
 		}
 	},
 	process => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new development process to the database',
 			'handler' => \&process_add
 		}
 	},
 	archive => {
 		'add' => {
-			'desc' => '',
+			'desc' => 'Add a new physical archive for prints or films',
 			'handler' => \&archive_add,
 		},
 		'list' => {
-			'desc' => '',
+			'desc' => 'List the contents of an archive',
 			'handler' => \&archive_list,
 		},
 		'move' => {
-			'desc' => '',
+			'desc' => 'Move an archive to a new location',
 			'handler' => \&archive_move,
 		},
 		'films' => {
-			'desc' => '',
+			'desc' => 'Bulk-add multiple films to an archive',
 			'handler' => \&archive_films,
 		},
 		'seal' => {
-			'desc' => '',
+			'desc' => 'Seal an archive and prevent new items from being added to it',
 			'handler' => \&archive_seal,
 		},
 		'unseal' => {
-			'desc' => '',
+			'desc' => 'Unseal an archive and allow new items to be added to it',
 			'handler' => \&archive_unseal
 		}
 	}
