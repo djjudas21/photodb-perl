@@ -37,7 +37,7 @@ our @EXPORT = qw(
 	negativesize_add
 	lightmeter_add
 	process_add
-	archive_add archive_films
+	archive_add archive_films archive_list
 );
 
 sub film_add {
@@ -884,6 +884,14 @@ sub archive_films {
 	}
 	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
 	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm and archive_id is null");
+}
+
+sub archive_list {
+	my $db = shift;
+	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $archive_name = &lookupval($db, "select name from ARCHIVE where archive_id=$archive_id");
+	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
+        &printlist($db, "items in archive $archive_name", $query);
 }
 
 sub task_run {
