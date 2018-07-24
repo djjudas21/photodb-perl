@@ -222,7 +222,7 @@ sub nosubcommand {
 	print "Photography Database UI\n\n";
 	print "$0 $command <subcommand>\n\n";
 	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
-	print "\t$_\n" for keys %$handlers;
+	print "\t$_\t\t$$handlers{$_}{'desc'}\n" for keys %$handlers;
 	exit;
 }
 
