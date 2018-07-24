@@ -256,7 +256,7 @@ sub listchoices {
 
 	# Count number of allowed options and if there's just one, make it the default
 	my $default;
-	if (scalar(@allowedvals) == 1) {
+	if ($rows == 1) {
 		$default = $allowedvals[0];
 	} else {
 		$default = '';
