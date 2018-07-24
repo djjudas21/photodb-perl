@@ -37,7 +37,7 @@ our @EXPORT = qw(
 	negativesize_add
 	lightmeter_add
 	process_add
-	archive_add archive_films archive_list archive_seal archive_unseal
+	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 );
 
 sub film_add {
@@ -909,6 +909,15 @@ sub archive_unseal {
 	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where sealed = 1", 'integer');
 	$data{'sealed'} = 0;
 	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+}
+
+sub archive_move {
+        my $db = shift;
+        my %data;
+        my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
+        $data{'location'} = prompt($oldlocation, 'What is the new location of this archive?', 'text');
+        &updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
 }
 
 sub task_run {
