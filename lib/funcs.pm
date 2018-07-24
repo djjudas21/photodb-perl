@@ -254,8 +254,16 @@ sub listchoices {
 		print "\t0\tAdd a new $keyword\n";
 	}
 
+	# Count number of allowed options and if there's just one, make it the default
+	my $default;
+	if (scalar(@allowedvals) == 1) {
+		$default = $allowedvals[0];
+	} else {
+		$default = '';
+	}
+
 	# Wait for input
-	my $input = prompt('', "Please select a $keyword", $type);
+	my $input = prompt($default, "Please select a $keyword", $type);
 
 	# Make sure a valid option was chosen
 	if ($input eq '0') {
