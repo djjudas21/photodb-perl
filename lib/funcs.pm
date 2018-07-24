@@ -234,8 +234,6 @@ sub listchoices {
 	my $type = shift || 'integer';
 	my $inserthandler = shift;
 
-	print "Please select a $keyword from the list, or leave blank to skip:\n";
-
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
@@ -258,12 +256,15 @@ sub listchoices {
 	my $default;
 	if ($rows == 1) {
 		$default = $allowedvals[0];
+	} elsif ($rows == 0) {
+		print "No valid $keyword options to choose from\n";
+		exit;
 	} else {
 		$default = '';
 	}
 
 	# Wait for input
-	my $input = prompt($default, "Please select a $keyword", $type);
+	my $input = prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
 
 	# Make sure a valid option was chosen
 	if ($input eq '0') {
