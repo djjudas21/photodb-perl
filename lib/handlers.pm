@@ -37,7 +37,7 @@ our @EXPORT = qw(
 	negativesize_add
 	lightmeter_add
 	process_add
-	archive_add archive_films archive_list
+	archive_add archive_films archive_list archive_seal archive_unseal
 );
 
 sub film_add {
@@ -77,7 +77,7 @@ sub film_archive {
 	my $db = shift;
 	my %data;
 	my $film_id = prompt('', 'Enter ID of film to archive', 'integer');
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", 'integer', \&archive_add);
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
 }
 
@@ -527,7 +527,7 @@ sub print_archive {
 	my $db = shift;
 	my %data;
 	my $print_id = prompt('', 'Which print did you archive?', 'integer');
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0", 'integer', \&archive_add);
 	$data{'own'} = 1;
 	$data{'location'} = 'Archive',
 	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
@@ -864,6 +864,7 @@ sub archive_add {
 	$data{'max_height'} = prompt('', 'What is the maximum height of media that this archive can accept (if applicable)?', 'text');
 	$data{'location'} = prompt('', 'What is the location of this archive?', 'text');
 	$data{'storage'} = prompt('', 'What is the storage type of this archive? (e.g. box, folder, ringbinder, etc)', 'text');
+	$data{'sealed'} = prompt('no', 'Is this archive sealed (closed to new additions)?', 'boolean');
 	my $archiveid = &newrecord($db, \%data, 'ARCHIVE');
 	return $archiveid;
 }
@@ -882,7 +883,7 @@ sub archive_films {
 		print "Must provide highest and lowest film IDs\n";
 		exit;
 	}
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2)", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", 'integer', \&archive_add);
 	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm and archive_id is null");
 }
 
@@ -892,6 +893,22 @@ sub archive_list {
 	my $archive_name = &lookupval($db, "select name from ARCHIVE where archive_id=$archive_id");
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
         &printlist($db, "items in archive $archive_name", $query);
+}
+
+sub archive_seal {
+	my $db = shift;
+	my %data;
+	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where sealed = 0", 'integer');
+	$data{'sealed'} = 1;
+	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+}
+
+sub archive_unseal {
+	my $db = shift;
+	my %data;
+	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where sealed = 1", 'integer');
+	$data{'sealed'} = 0;
+	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
 }
 
 sub task_run {

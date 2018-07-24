@@ -114,7 +114,9 @@ my %handlers = (
 		'add' => \&archive_add,
 		'list' => \&archive_list,
 		'move' => \&notimplemented,
-		'films' => \&archive_films
+		'films' => \&archive_films,
+		'seal' => \&archive_seal,
+		'unseal' => \&archive_unseal
 	}
 );
 

@@ -44,6 +44,7 @@ Table to list all archives that exist for storing physical media
 | max_height      | int(11)     | Maximum height of media that this archive can store                          |
 | location        | varchar(45) | Location of this archive                                                     |
 | storage         | varchar(45) | The type of storage used for this archive, e.g. box, folder, ringbinder, etc |
+| sealed          | tinyint(1)  | Whether or not this archive is sealed (closed to new additions)              |
 
 ## ARCHIVE_TYPE
 
