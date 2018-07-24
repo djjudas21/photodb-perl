@@ -20,103 +20,262 @@ my $db = &db;
 # Define handlers for each command
 my %handlers = (
 	'film' => {
-		'add' => \&film_add,
-		'load' => \&film_load,
-		'develop' => \&film_develop,
-		'tag' => \&film_tag,
-		'archive' => \&film_archive,
-		'locate' => \&film_locate
+		'add' => {
+			'desc' => '',
+			'handler' => \&film_add,
+		},
+		'load' => {
+			'desc' => '',
+			'handler' => \&film_load,
+		},
+		'develop' => {
+			'desc' => '',
+			'handler' => \&film_develop,
+		},
+		'tag' => {
+			'desc' => '',
+			'handler' => \&film_tag,
+		},
+		'archive' => {
+			'desc' => '',
+			'handler' => \&film_archive,
+		},
+		'locate' => {
+			'desc' => '',
+			'handler' => \&film_locate
+		}
 	},
 	camera => {
-		'add' => \&camera_add,
-		'display-lens' => \&camera_displaylens,
-		'show-lenses' => \&notimplemented,
-		'sell' => \&camera_sell,
-		'repair' => \&camera_repair,
-		'addbodytype' => \&camera_addbodytype
+		'add' => {
+			'desc' => '',
+			'handler' => \&camera_add,
+		},
+		'display-lens' => {
+			'desc' => '',
+			'handler' => \&camera_displaylens,
+		},
+		'show-lenses' => {
+			'desc' => '',
+			'handler' => \&notimplemented,
+		},
+		'sell' => {
+			'desc' => '',
+			'handler' => \&camera_sell,
+		},
+		'repair' => {
+			'desc' => '',
+			'handler' => \&camera_repair,
+		},
+		'addbodytype' => {
+			'desc' => '',
+			'handler' => \&camera_addbodytype
+		}
 	},
 	negative => {
-		'add' => \&negative_add,
-		'bulk-add' => \&negative_bulkadd
+		'add' => {
+			'desc' => '',
+			'handler' => \&negative_add,
+		},
+		'bulk-add' => {
+			'desc' => '',
+			'handler' => \&negative_bulkadd
+		}
 	},
 	mount => {
-		'add' => \&mount_add,
-		'view' => \&mount_view,
-		'adapt' => \&mount_adapt
+		'add' => {
+			'desc' => '',
+			'handler' => \&mount_add,
+		},
+		'view' => {
+			'desc' => '',
+			'handler' => \&mount_view,
+		},
+		'adapt' => {
+			'desc' => '',
+			'handler' => \&mount_adapt
+		}
 	},
 	lens => {
-		'add' => \&lens_add,
-		'sell' => \&lens_sell,
-		'repair' => \&lens_repair
+		'add' => {
+			'desc' => '',
+			'handler' => \&lens_add,
+		},
+		'sell' => {
+			'desc' => '',
+			'handler' => \&lens_sell,
+		},
+		'repair' => {
+			'desc' => '',
+			'handler' => \&lens_repair
+		}
 	},
 	print => {
-		'add' => \&print_add,
-		'tone' => \&print_tone,
-		'sell' => \&print_sell,
-		'order' => \&print_order,
-		'fulfil' => \&print_fulfil,
-		'archive' => \&print_archive,
-		'locate' => \&print_locate
+		'add' => {
+			'desc' => '',
+			'handler' => \&print_add,
+		},
+		'tone' => {
+			'desc' => '',
+			'handler' => \&print_tone,
+		},
+		'sell' => {
+			'desc' => '',
+			'handler' => \&print_sell,
+		},
+		'order' => {
+			'desc' => '',
+			'handler' => \&print_order,
+		},
+		'fulfil' => {
+			'desc' => '',
+			'handler' => \&print_fulfil,
+		},
+		'archive' => {
+			'desc' => '',
+			'handler' => \&print_archive,
+		},
+		'locate' => {
+			'desc' => '',
+			'handler' => \&print_locate
+		}
 	},
 	paperstock => {
-		'add' => \&paperstock_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&paperstock_add
+		}
 	},
 	developer => {
-		'add' => \&developer_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&developer_add
+		}
 	},
 	toner => {
-		'add' => \&toner_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&toner_add
+		}
 	},
 	task => {
-		'run' => \&task_run
+		'run' => {
+			'desc' => '',
+			'handler' => \&task_run
+		}
 	},
 	filmstock => {
-		'add' => \&filmstock_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&filmstock_add
+		}
 	},
 	teleconverter => {
-		'add' => \&teleconverter_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&teleconverter_add
+		}
 	},
 	filter => {
-		'add' => \&filter_add,
-		'adapt' => \&filter_adapt
+		'add' => {
+			'desc' => '',
+			'handler' => \&filter_add,
+		},
+		'adapt' => {
+			'desc' => '',
+			'handler' => \&filter_adapt
+		}
 	},
 	manufacturer => {
-		'add' => \&manufacturer_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&manufacturer_add
+		}
 	},
 	accessory => {
-		'add' => \&accessory_add,
-		'list' => \&notimplemented,
-		'type' => \&accessory_type
+		'add' => {
+			'desc' => '',
+			'handler' => \&accessory_add,
+		},
+		'list' => {
+			'desc' => '',
+			'handler' => \&notimplemented,
+		},
+		'type' => {
+			'desc' => '',
+			'handler' => \&accessory_type
+		}
 	},
 	enlarger => {
-		'add' => \&enlarger_add,
-		'sell' => \&enlarger_sell
+		'add' => {
+			'desc' => '',
+			'handler' => \&enlarger_add,
+		},
+		'sell' => {
+			'desc' => '',
+			'handler' => \&enlarger_sell
+		}
 	},
 	flash => {
-		'add' => \&flash_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&flash_add
+		}
 	},
 	battery => {
-		'add' => \&battery_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&battery_add
+		}
 	},
 	format => {
-		'add' => \&format_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&format_add
+		}
 	},
 	negativesize => {
-		'add' => \&negativesize_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&negativesize_add
+		}
 	},
 	lightmeter => {
-		'add' => \&lightmeter_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&lightmeter_add
+		}
 	},
 	process => {
-		'add' => \&process_add
+		'add' => {
+			'desc' => '',
+			'handler' => \&process_add
+		}
 	},
 	archive => {
-		'add' => \&archive_add,
-		'list' => \&archive_list,
-		'move' => \&archive_move,
-		'films' => \&archive_films,
-		'seal' => \&archive_seal,
-		'unseal' => \&archive_unseal
+		'add' => {
+			'desc' => '',
+			'handler' => \&archive_add,
+		},
+		'list' => {
+			'desc' => '',
+			'handler' => \&archive_list,
+		},
+		'move' => {
+			'desc' => '',
+			'handler' => \&archive_move,
+		},
+		'films' => {
+			'desc' => '',
+			'handler' => \&archive_films,
+		},
+		'seal' => {
+			'desc' => '',
+			'handler' => \&archive_seal,
+		},
+		'unseal' => {
+			'desc' => '',
+			'handler' => \&archive_unseal
+		}
 	}
 );
 
@@ -133,4 +292,4 @@ if (!exists $handlers{$command}{$subcommand}) {
 }
 
 # Execute chosen handler
-$handlers{$command}{$subcommand}->($db);
+$handlers{$command}{$subcommand}{'handler'}->($db);
