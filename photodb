@@ -23,7 +23,9 @@ my %handlers = (
 		'add' => \&film_add,
 		'load' => \&film_load,
 		'develop' => \&film_develop,
-		'tag' => \&film_tag
+		'tag' => \&film_tag,
+		'archive' => \&film_archive,
+		'locate' => \&film_locate
 	},
 	camera => {
 		'add' => \&camera_add,
@@ -52,7 +54,9 @@ my %handlers = (
 		'tone' => \&print_tone,
 		'sell' => \&print_sell,
 		'order' => \&print_order,
-		'fulfil' => \&print_fulfil
+		'fulfil' => \&print_fulfil,
+		'archive' => \&print_archive,
+		'locate' => \&print_locate
 	},
 	paperstock => {
 		'add' => \&paperstock_add
@@ -105,6 +109,14 @@ my %handlers = (
 	},
 	process => {
 		'add' => \&process_add
+	},
+	archive => {
+		'add' => \&archive_add,
+		'list' => \&archive_list,
+		'move' => \&archive_move,
+		'films' => \&archive_films,
+		'seal' => \&archive_seal,
+		'unseal' => \&archive_unseal
 	}
 );
 

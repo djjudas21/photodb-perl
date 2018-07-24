@@ -31,6 +31,30 @@ Table to catalog types of photographic accessory
 | accessory_type_id | int(11)     | Unique ID for this type of accessory |
 | accessory_type    | varchar(45) | Type of accessory                    |
 
+## ARCHIVE
+
+Table to list all archives that exist for storing physical media
+
+| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                                               |
+|-----------------|-------------|------------------------------------------------------------------------------|
+| archive_id      | int(11)     | Unique ID of this archive                                                    |
+| archive_type_id | int(11)     | ID of this type of archive                                                   |
+| name            | varchar(45) | Name of this archive                                                         |
+| max_width       | int(11)     | Maximum width of media that this archive can store                           |
+| max_height      | int(11)     | Maximum height of media that this archive can store                          |
+| location        | varchar(45) | Location of this archive                                                     |
+| storage         | varchar(45) | The type of storage used for this archive, e.g. box, folder, ringbinder, etc |
+| sealed          | tinyint(1)  | Whether or not this archive is sealed (closed to new additions)              |
+
+## ARCHIVE_TYPE
+
+Table to list the different types of archive available for materials
+
+| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT               |
+|-----------------|-------------|------------------------------|
+| archive_type_id | int(11)     | Unique ID of archive type    |
+| archive_type    | varchar(45) | Name of this type of archive |
+
 ## BACK
 
 Table to catalog Interchangeable backs and film holders
@@ -243,6 +267,7 @@ Table to list films which consist of one or more negatives. A film can be a roll
 | purchase_date     | date         | Date this film was purchased                                          |
 | price             | decimal(4,2) | Price paid for this film                                              |
 | processed_by      | varchar(45)  | Person or place that processed this film                              |
+| archive_id        | int(11)      | ID of the archive to which this film belongs                          |
 
 ## FILMSTOCK
 
@@ -646,6 +671,7 @@ Table to catalog prints made from negatives
 | fine               | tinyint(1)   | Whether this is a fine print                                            |
 | notes              | text         | Freeform notes about this print, e.g. dodging, burning & complex toning |
 | filename           | varchar(100) | The filename of the image scanned from this print                       |
+| archive_id         | int(11)      | ID of the archive to which this print belongs                           |
 
 ## PROCESS
 

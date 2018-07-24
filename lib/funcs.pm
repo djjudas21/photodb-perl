@@ -158,7 +158,9 @@ sub updaterecord {
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
-	$sth->execute(@bind);
+	my $rows = $sth->execute(@bind);
+	$rows = 0 if ($rows eq  '0E0');
+	print "Updated $rows rows\n";
 }
 
 # Insert a record into any table
