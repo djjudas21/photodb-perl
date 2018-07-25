@@ -211,7 +211,7 @@ sub nocommand {
 	print "Photography Database UI\n\n";
 	print "$0 <command> <subcommand>\n\n";
 	print "Please enter a valid command. Valid commands are:\n";
-	print "\t$_\n" for keys %$handlers;
+	print "\t$_\n" for sort keys %$handlers;
 	exit;
 }
 
@@ -222,7 +222,7 @@ sub nosubcommand {
 	print "Photography Database UI\n\n";
 	print "$0 $command <subcommand>\n\n";
 	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
-	print "\t" . &pad($_) . $$handlers{$_}{'desc'} . "\n" for keys %$handlers;
+	print "\t" . &pad($_) . $$handlers{$_}{'desc'} . "\n" for sort keys %$handlers;
 	exit;
 }
 
