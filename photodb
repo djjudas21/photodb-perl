@@ -66,8 +66,8 @@ my %handlers = (
 		'run' => { 'handler' => \&task_run, 'desc' => 'Run a selection of maintenance tasks on the database' }
 	},
 	accessory => {
-		'add'           => { 'handler' => \&accessory_add,  'desc' => 'Add a new accessory to the database' },
-		'type'          => { 'handler' => \&accessory_type, 'desc' => 'Add a new type of accessory to the database' },
+		'add'           => { 'handler' => \&accessory_add,  'desc' => 'Add a new "other" accessory to the database' },
+		'type'          => { 'handler' => \&accessory_type, 'desc' => 'Add a new type of "other" accessory to the database' },
 		'flash'         => { 'handler' => \&flash_add, 'desc' => 'Add a new flash to the database' },
 		'battery'       => { 'handler' => \&battery_add, 'desc' => 'Add a new type of battery to the database' },
 		'meter'         => { 'handler' => \&lightmeter_add, 'desc' => 'Add a new light meter to the database' },
