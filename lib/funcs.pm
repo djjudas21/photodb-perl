@@ -15,7 +15,7 @@ $Data::Dumper::Deparse = 1;
 $Data::Dumper::Quotekeys = 0;
 $Data::Dumper::Sortkeys = 1;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -364,6 +364,15 @@ sub round {
 	my $pow10 = shift;
 	my $a = 10 ** $pow10;
 	return int(($x * $a) + 0.5) / $a
+}
+
+# Pad a string with spaces up to a fixed length
+sub pad {
+	my $string = shift;
+	my $totallength = shift || 16;
+	my $lengthofstring = length($string);
+	my $pad = $totallength - $lengthofstring;
+	my $newstring = $string . ' ' x $pad;
 }
 
 # This ensures the lib loads smoothly
