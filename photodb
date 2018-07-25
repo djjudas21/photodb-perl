@@ -58,20 +58,14 @@ my %handlers = (
 		'archive' => { 'handler' => \&print_archive, 'desc' => 'Add a print to a physical archive' },
 		'locate'  => { 'handler' => \&print_locate,  'desc' => 'Locate a print in an archive' }
 	},
-	paperstock => {
-		'add' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' }
-	},
-	developer => {
-		'add' => { 'handler' => \&developer_add, 'desc' => 'Add a new developer to the database' }
-	},
-	toner => {
-		'add' => { 'handler' => \&toner_add, 'desc' => 'Add a new chemical toner to the database' }
+	material => {
+		'paperstock' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' },
+		'developer'  => { 'handler' => \&developer_add,  'desc' => 'Add a new developer to the database' },
+		'toner'      => { 'handler' => \&toner_add,      'desc' => 'Add a new chemical toner to the database' },
+		'filmstock'  => { 'handler' => \&filmstock_add,  'desc' => 'Add a new type of filmstock to the database' }
 	},
 	task => {
 		'run' => { 'handler' => \&task_run, 'desc' => 'Run a selection of maintenance tasks on the database' }
-	},
-	filmstock => {
-		'add' => { 'handler' => \&filmstock_add, 'desc' => 'Add a new type of filmstock to the database' }
 	},
 	manufacturer => {
 		'add' => { 'handler' => \&manufacturer_add, 'desc' => 'Add a new manufacturer to the database' }
