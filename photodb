@@ -98,17 +98,8 @@ my %handlers = (
 	battery => {
 		'add' => { 'handler' => \&battery_add, 'desc' => 'Add a new type of battery to the database' }
 	},
-	format => {
-		'add' => { 'handler' => \&format_add, 'desc' => 'Add a new film format to the database' }
-	},
-	negativesize => {
-		'add' => { 'handler' => \&negativesize_add, 'desc' => 'Add a size of negative to the database' }
-	},
 	lightmeter => {
 		'add' => { 'handler' => \&lightmeter_add, 'desc' => 'Add a new light meter to the database' }
-	},
-	process => {
-		'add' => { 'handler' => \&process_add, 'desc' => 'Add a new development process to the database' }
 	},
 	archive => {
 		'add'    => { 'handler' => \&archive_add,    'desc' => 'Add a new physical archive for prints or films' },
@@ -117,6 +108,11 @@ my %handlers = (
 		'films'  => { 'handler' => \&archive_films,  'desc' => 'Bulk-add multiple films to an archive' },
 		'seal'   => { 'handler' => \&archive_seal,   'desc' => 'Seal an archive and prevent new items from being added to it' },
 		'unseal' => { 'handler' => \&archive_unseal, 'desc' => 'Unseal an archive and allow new items to be added to it' }
+	},
+	data => {
+		'formatadd'  => { 'handler' => \&format_add,       'desc' => 'Add a new film format to the database' },
+		'negsizeadd' => { 'handler' => \&negativesize_add, 'desc' => 'Add a size of negative to the database' },
+		'processadd' => { 'handler' => \&process_add,      'desc' => 'Add a new development process to the database' }
 	}
 );
 
