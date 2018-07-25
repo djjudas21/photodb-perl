@@ -82,32 +82,66 @@ robust upgrade path after the first tagged release of this project.
 
 ## Install application frontend
 
-### Install dependencies
+There are several different ways to install the application. Choose your favourite.
 
-The application is written in Perl so we need to install some Perl modules.
+### On Fedora, with yum
 
-Fedora:
+1. Set up a new yum repo to provide one package that isn't packaged by Fedora
 ```
-# Set up a new yum repo to provide one package
 curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.rpm.sh | sudo bash
-
-# Install all of the deps in one go
+```
+2. Install all of the deps in one go
+```
 sudo dnf install "perl(Config::IniHash)" "perl(Data::Dumper)" "perl(DBD::mysql)" "perl(DBI)" \
 "perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(Image::ExifTool::Location)" \
 "perl(SQL::Abstract)" "perl(strict)" "perl(Switch)" "perl(Term::ReadKey)" "perl(warnings)"
 ```
 
-Ubuntu:
+3. Check out the PhotoDB application code directly from git
 
 ```
-# Set up a new apt repo to provide one package
-curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
+git clone https://github.com/djjudas21/photography-database.git
+```
 
-# Install all of the deps in one go
+### On Ubuntu or Debian, with apt
+
+1. Set up a new apt repo to provide one package that isn't packaged by Ubuntu
+```
+curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
+```
+
+2. Install all of the deps in one go
+```
 sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
 libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl libswitch-perl \
 libterm-readkey-perl libimage-exiftool-location-perl
 ```
+
+3. Check out the PhotoDB application code directly from git
+
+```
+git clone https://github.com/djjudas21/photography-database.git
+```
+
+### On any Linux, with cpanm
+
+1. Install cpanm with your package manager or directly from the repo
+
+2. Check out the PhotoDB application code directly from git
+
+```
+git clone https://github.com/djjudas21/photography-database.git
+```
+
+3. Install dependencies
+```
+cd photography-database
+cpanm install .
+```
+
+### Anywhere, with Docker
+
+
 
 ### Check out the code
 
