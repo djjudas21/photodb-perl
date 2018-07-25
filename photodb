@@ -92,7 +92,7 @@ my %handlers = (
 		'format'       => { 'handler' => \&format_add,         'desc' => 'Add a new film format to the database' },
 		'negsize'      => { 'handler' => \&negativesize_add,   'desc' => 'Add a size of negative to the database' },
 		'process'      => { 'handler' => \&process_add,        'desc' => 'Add a new development process to the database' },
-		'manufacturer' => { 'handler' => \&manufacturer_add,   'desc' => 'Add a new manufacturer to the database' }
+		'manufacturer' => { 'handler' => \&manufacturer_add,   'desc' => 'Add a new manufacturer to the database' },
 		'bodytype'     => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' }
 	}
 );
