@@ -73,11 +73,11 @@ my %handlers = (
 	accessory => {
 		'add'              => { 'handler' => \&accessory_add,  'desc' => 'Add a new accessory to the database' },
 		'list'             => { 'handler' => \&notimplemented, 'desc' => 'Not yet implemented' },
-		'type'             => { 'handler' => \&accessory_type, 'desc' => 'Add a new type of accessory to the database' }
-		'flashadd'         => { 'handler' => \&flash_add, 'desc' => 'Add a new flash to the database' }
-		'batteryadd'       => { 'handler' => \&battery_add, 'desc' => 'Add a new type of battery to the database' }
-		'meteradd'         => { 'handler' => \&lightmeter_add, 'desc' => 'Add a new light meter to the database' }
-		'teleconverteradd' => { 'handler' => \&teleconverter_add, 'desc' => 'Add a new teleconverter to the database' }
+		'type'             => { 'handler' => \&accessory_type, 'desc' => 'Add a new type of accessory to the database' },
+		'flashadd'         => { 'handler' => \&flash_add, 'desc' => 'Add a new flash to the database' },
+		'batteryadd'       => { 'handler' => \&battery_add, 'desc' => 'Add a new type of battery to the database' },
+		'meteradd'         => { 'handler' => \&lightmeter_add, 'desc' => 'Add a new light meter to the database' },
+		'teleconverteradd' => { 'handler' => \&teleconverter_add, 'desc' => 'Add a new teleconverter to the database' },
 		'filteradd'        => { 'handler' => \&filter_add,   'desc' => 'Add a new (optical) filter to the database' },
 		'filteradapteradd' => { 'handler' => \&filter_adapt, 'desc' => 'Add a filter adapter to the database' }
 	},
