@@ -175,7 +175,7 @@ Run PhotoDB on any platform, with Docker
 
 1. Fetch the Docker image
 ```
-docker pull <IMAGENOTREADYYET>
+docker pull djjudas21/photodb
 ```
 2. Run the image
 ```
