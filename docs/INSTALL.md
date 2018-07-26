@@ -10,6 +10,11 @@
     * [Import sample data](#import-sample-data)
     * [Upgrading](#upgrading)
 3. [Install application frontend](#install-application-frontend)
+4. [Configure database connection](#configure-database-connection)
+    * [Fedora](#fedora)
+    * [Ubuntu or Debian](#ubuntu-or-debian)
+    * [Other Linux](#other-linux)
+    * [Docker](#docker)
 
 ## Requirements
 
@@ -82,49 +87,102 @@ robust upgrade path after the first tagged release of this project.
 
 ## Install application frontend
 
-### Install dependencies
+There are several different ways to install the application. Choose your favourite.
 
-The application is written in Perl so we need to install some Perl modules.
+### Fedora
 
-Fedora:
+Run on Fedora or compatible RPM-based Linux, and install dependencies with dnf/yum
+
+1. Set up a new yum repo to provide one package that isn't packaged by Fedora
 ```
-# Set up a new yum repo to provide one package
 curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.rpm.sh | sudo bash
-
-# Install all of the deps in one go
+```
+2. Install all of the deps in one go
+```
 sudo dnf install "perl(Config::IniHash)" "perl(Data::Dumper)" "perl(DBD::mysql)" "perl(DBI)" \
 "perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(Image::ExifTool::Location)" \
 "perl(SQL::Abstract)" "perl(strict)" "perl(Switch)" "perl(Term::ReadKey)" "perl(warnings)"
 ```
 
-Ubuntu:
-
-```
-# Set up a new apt repo to provide one package
-curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
-
-# Install all of the deps in one go
-sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
-libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl libswitch-perl \
-libterm-readkey-perl libimage-exiftool-location-perl
-```
-
-### Check out the code
-
-Check out the application code directly from git
+3. Check out the PhotoDB application code directly from git
 
 ```
 git clone https://github.com/djjudas21/photography-database.git
 ```
 
-You can run the application directly from its current location but it is recommended to symlink it
+4. You can run the application directly from its current location but it is recommended to symlink it
+into your path, for ease of use.
+```
+ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
+```
+
+### Ubuntu or Debian
+
+Run on Ubuntu or Debian compatible DEB-based Linux, and install dependencies with apt
+
+1. Set up a new apt repo to provide one package that isn't packaged by Ubuntu
+```
+curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
+```
+
+2. Install all of the deps in one go
+```
+sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
+libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl libswitch-perl \
+libterm-readkey-perl libimage-exiftool-location-perl
+```
+
+3. Check out the PhotoDB application code directly from git
+
+```
+git clone https://github.com/djjudas21/photography-database.git
+```
+
+4. You can run the application directly from its current location but it is recommended to symlink it
+into your path, for ease of use.
+```
+ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
+```
+
+### Other Linux
+
+Run on any Linux distribution and install dependencies with cpanm
+
+1. Install cpanm with your package manager or directly from the repo
+
+2. Check out the PhotoDB application code directly from git
+
+```
+git clone https://github.com/djjudas21/photography-database.git
+```
+
+3. Install dependencies
+```
+cd photography-database
+cpanm install .
+```
+
+4. You can run the application directly from its current location but it is recommended to symlink it
 into your path, for ease of use.
 
 ```
 ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
 ```
 
-### Configure database connection
+### Docker
+
+Run PhotoDB on any platform, with Docker
+
+1. Fetch the Docker image
+```
+docker pull djjudas21/photodb
+```
+2. Run the image
+```
+docker run -it --rm photodb photodb
+```
+
+## Configure database connection
 
 There are three methods for connecting to the database:
 1. Database and application on same computer
@@ -135,7 +193,7 @@ The app and accessory scripts need to know how to connect to the database. The f
 PhotoDB, you will be prompted to enter connection details for the database backend. If you need to
 edit the config in future, the config file is created at `/etc/photodb.ini`.
 
-#### Tunnelling
+### Tunnelling
 
 If the database is on a remote server and does not have the MySQL port (3306) open to receive connections,
 you will need to set up a tunnel. Run the command below, substituting in the correct hostname and
