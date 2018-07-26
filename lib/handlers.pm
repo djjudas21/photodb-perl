@@ -38,7 +38,7 @@ our @EXPORT = qw(
 	lightmeter_add
 	process_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
-	shuttertype_add focustype_add flashprotocol_add meteringtype_add
+	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 );
 
 sub film_add {
@@ -976,6 +976,19 @@ sub meteringtype_add {
 	my %data;
 	$data{'metering'} = prompt('', 'What type of metering system do you want to add?', 'text');
 	my $id = &newrecord($db, \%data, 'METERING_TYPE');
+	return $id;
+}
+
+sub shutterspeed_add {
+	my $db = shift;
+	my %data;
+	$data{'shutter_speed'} = prompt('', 'What shutter speed do you want to add?', 'text');
+	if ($data{'shutter_speed'} =~ m/1\/(\d+)/) {
+		$data{'duration'} = 1 / $1;
+	} elsif ($data{'shutter_speed'} =~ m/((0\.)?\d+)/) {
+		$data{'duration'} = $1;
+	}
+	my $id = &newrecord($db, \%data, 'SHUTTER_SPEED');
 	return $id;
 }
 
