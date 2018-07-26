@@ -668,7 +668,7 @@ sub filter_adapt {
 	my $db = shift;
 	my %data;
 	$data{'camera_thread'} = prompt('', 'What diameter thread faces the camera on this filter adapter?', 'decimal');
-	$data{'filter_thread'} = prompt('', 'What diameter thread faces the camera on this filter adapter?', 'decimal');
+	$data{'filter_thread'} = prompt('', 'What diameter thread faces the filter on this filter adapter?', 'decimal');
 	my $filteradapterid = &newrecord($db, \%data, 'FILTER_ADAPTER');
 	return $filteradapterid;
 }
