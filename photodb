@@ -89,11 +89,15 @@ my %handlers = (
 		'unseal' => { 'handler' => \&archive_unseal, 'desc' => 'Unseal an archive and allow new items to be added to it' }
 	},
 	data => {
-		'format'       => { 'handler' => \&format_add,         'desc' => 'Add a new film format to the database' },
-		'negsize'      => { 'handler' => \&negativesize_add,   'desc' => 'Add a size of negative to the database' },
-		'process'      => { 'handler' => \&process_add,        'desc' => 'Add a new development process to the database' },
-		'manufacturer' => { 'handler' => \&manufacturer_add,   'desc' => 'Add a new manufacturer to the database' },
-		'bodytype'     => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' }
+		'format'        => { 'handler' => \&format_add,         'desc' => 'Add a new film format to the database' },
+		'negsize'       => { 'handler' => \&negativesize_add,   'desc' => 'Add a size of negative to the database' },
+		'process'       => { 'handler' => \&process_add,        'desc' => 'Add a new development process to the database' },
+		'manufacturer'  => { 'handler' => \&manufacturer_add,   'desc' => 'Add a new manufacturer to the database' },
+		'bodytype'      => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' },
+		'shuttertype'   => { 'handler' => \&shuttertype_add,    'desc' => 'Add a new type of shutter to the database' },
+		'focustype'     => { 'handler' => \&focustype_add,      'desc' => 'Add a new type of focus system to the database' },
+		'flashprotocol' => { 'handler' => \&flashprotocol_add,  'desc' => 'Add a new flash protocol to the database' },
+		'meteringtype'  => { 'handler' => \&meteringtype_add,   'desc' => 'Add a new type of metering system to the database' },
 	}
 );
 

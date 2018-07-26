@@ -38,6 +38,7 @@ our @EXPORT = qw(
 	lightmeter_add
 	process_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
+	shuttertype_add focustype_add flashprotocol_add meteringtype_add
 );
 
 sub film_add {
@@ -137,12 +138,12 @@ sub camera_add {
 		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
 	}
 	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
-	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE");
+	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE", 'integer', \&focustype_add);
 	$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
 		$data{'coupled_metering'} = prompt('', 'Is the metering coupled?', 'boolean');
 		$data{'metering_mode_id'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
-		$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
+		$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
 		$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
 	}
@@ -156,8 +157,8 @@ sub camera_add {
 	$data{'datecode'} = prompt('', 'What is the camera\'s datecode?', 'text');
 	$data{'manufactured'} = prompt('', 'When was the camera manufactured?', 'integer');
 	$data{'own'} = prompt('yes', 'Do you own this camera?', 'boolean');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
-	$data{'shutter_type_id'} = &listchoices($db, 'shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE");
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer', \&negativesize_add);
+	$data{'shutter_type_id'} = &listchoices($db, 'shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE", 'integer', \&shuttertype_add);
 	$data{'shutter_model'} = prompt('', 'What is the shutter model?', 'text');
 	$data{'cable_release'} = prompt('', 'Does this camera have a cable release?', 'boolean');
 	$data{'viewfinder_coverage'} = prompt('', 'What is the viewfinder coverage?', 'integer');
@@ -192,7 +193,7 @@ sub camera_add {
 	if ($data{'int_flash'} == 1 || $data{'ext_flash'} == 1) {
 		$data{'coldshoe'} = prompt('', 'Does the camera have a cold/accessory shoe?', 'boolean');
 		$data{'x_sync'} = prompt('', 'What\'s the X-sync speed?', 'text');
-		$data{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL");
+		$data{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL", 'integer', \&flashprotocol_add);
 	}
 	$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
 	$data{'oem_case'} = prompt('', 'Do you have the original case for this camera?', 'boolean');
@@ -834,7 +835,7 @@ sub lightmeter_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'model'} = prompt('', 'What is the model of this light meter?', 'text');
-	$data{'metering_type'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE");
+	$data{'metering_type'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
 	$data{'reflected'} = prompt('', 'Can this meter take reflected light readings?', 'boolean');
 	$data{'incident'} = prompt('', 'Can this meter take incident light readings?', 'boolean');
 	$data{'spot'} = prompt('', 'Can this meter take spot readings?', 'boolean');
@@ -892,7 +893,7 @@ sub archive_list {
 	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
 	my $archive_name = &lookupval($db, "select name from ARCHIVE where archive_id=$archive_id");
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
-        &printlist($db, "items in archive $archive_name", $query);
+	&printlist($db, "items in archive $archive_name", $query);
 }
 
 sub archive_seal {
@@ -912,12 +913,45 @@ sub archive_unseal {
 }
 
 sub archive_move {
-        my $db = shift;
-        my %data;
-        my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $db = shift;
+	my %data;
+	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
 	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
-        $data{'location'} = prompt($oldlocation, 'What is the new location of this archive?', 'text');
-        &updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+	$data{'location'} = prompt($oldlocation, 'What is the new location of this archive?', 'text');
+	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+}
+
+sub shuttertype_add {
+	my $db = shift;
+	my %data;
+	$data{'shutter_type'} = prompt('', 'What type of shutter do you want to add?', 'text');
+	my $id = &newrecord($db, \%data, 'SHUTTER_TYPE');
+	return $id;
+}
+
+sub focustype_add {
+	my $db = shift;
+	my %data;
+	$data{'focus_type'} = prompt('', 'What type of focus system do you want to add?', 'text');
+	my $id = &newrecord($db, \%data, 'FOCUS_TYPE');
+	return $id;
+}
+
+sub flashprotocol_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'name'} = prompt('', 'What flash protocol do you want to add?', 'text');
+	my $id = &newrecord($db, \%data, 'FLASH_PROTOCOL');
+	return $id;
+}
+
+sub meteringtype_add {
+	my $db = shift;
+	my %data;
+	$data{'metering'} = prompt('', 'What type of metering system do you want to add?', 'text');
+	my $id = &newrecord($db, \%data, 'METERING_TYPE');
+	return $id;
 }
 
 sub task_run {
