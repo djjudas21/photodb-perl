@@ -55,21 +55,6 @@ Table to list the different types of archive available for materials
 | archive_type_id | int(11)     | Unique ID of archive type    |
 | archive_type    | varchar(45) | Name of this type of archive |
 
-## BACK
-
-Table to catalog Interchangeable backs and film holders
-
-| COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT                                   |
-|------------------|-------------|--------------------------------------------------|
-| back_id          | int(11)     | Unique ID for the film back                      |
-| manufacturer_id  | int(11)     | Denotes the manufacturer of the camera           |
-| format_id        | int(11)     | Denotes the film format that the back accepts    |
-| negative_size_id | int(11)     | Denotes the negative size that the back produces |
-| back_mount_id    | int(11)     |                                                  |
-| model            | varchar(45) | Model name of the film back                      |
-| qty_shots        | int(11)     | Number of exposures this back can hold           |
-| qty_backs        | int(11)     | Quantity of backs like this that you own         |
-
 ## BATTERY
 
 Table to catalog of types of battery
