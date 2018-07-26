@@ -421,17 +421,17 @@ sub lens_add {
 	$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
 	my $lensid = &newrecord($db, \%data, 'LENS');
 
-        if (prompt('yes', 'Add accessory compatibility for this lens?', 'boolean')) {
-                while (1) {
-                        my %compatdata;
-                        $compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
-                        $compatdata{'lens_id'} = $lensid;
-                        &newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
-                        if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
-                                last;
-                        }
-                }
-        }
+	if (prompt('yes', 'Add accessory compatibility for this lens?', 'boolean')) {
+		while (1) {
+			my %compatdata;
+			$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
+			$compatdata{'lens_id'} = $lensid;
+			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
+				last;
+			}
+		}
+	}
 	return $lensid;
 }
 
@@ -716,6 +716,8 @@ sub accessory_add {
 	$data{'accessory_type_id'} = &listchoices($db, 'accessory type', "select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", 'integer', \&accessory_type);
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'model'} = prompt('', 'What is the model of this accessory?', 'text');
+	$data{'acquired'} = prompt(&today($db), 'When was this accessory acquired?', 'date');
+	$data{'cost'} = prompt('', 'What did this accessory cost?', 'decimal');
 	my $accessoryid = &newrecord($db, \%data, 'ACCESSORY');
 
 	if (prompt('yes', 'Add camera compatibility info for this accessory?', 'boolean')) {

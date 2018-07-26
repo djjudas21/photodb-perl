@@ -5,6 +5,10 @@ CREATE TABLE `ACCESSORY` (
   `accessory_type_id` int(11) DEFAULT NULL COMMENT 'ID of this type of accessory',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer',
   `model` varchar(45) DEFAULT NULL COMMENT 'Model of the accessory',
+  `acquired` date DEFAULT NULL COMMENT 'Date that this accessory was acquired',
+  `cost` decimal(5,2) DEFAULT NULL COMMENT 'Purchase cost of the accessory',
+  `lost` date DEFAULT NULL COMMENT 'Date that this accessory was lost',
+  `lost_price` decimal(5,2) DEFAULT NULL COMMENT 'Sale price of the accessory',
   PRIMARY KEY (`accessory_id`),
   KEY `fk_ACCESSORY_1_idx` (`accessory_type_id`),
   CONSTRAINT `fk_ACCESSORY_1` FOREIGN KEY (`accessory_type_id`) REFERENCES `ACCESSORY_TYPE` (`accessory_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
