@@ -166,17 +166,6 @@ Table to list film and paper developers
 | for_film        | tinyint(1)  | Whether this developer can be used with film                        |
 | chemistry       | varchar(45) | The key chemistry on which this developer is based (e.g. phenidone) |
 
-## DEV_BATCH
-
-Table to catalog batches of developer that have been prepared
-
-| COLUMN_NAME  | COLUMN_TYPE | COLUMN_COMMENT                                                   |
-|--------------|-------------|------------------------------------------------------------------|
-| dev_batch_id | int(11)     | Unique developer batch ID                                        |
-| developer_id | int(11)     | Denotes the developer used to make this batch                    |
-| dilution     | varchar(45) | The dilution of the developer in this batch (e.g. 1|0, 1|1, etc) |
-| prepared     | date        | Date that this batch was prepared                                |
-
 ## DISPLAYLENS
 
 Table to record which cameras should be displayed with which lens
