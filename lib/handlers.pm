@@ -235,6 +235,18 @@ sub camera_add {
 			}
 		}
 	}
+
+	if (prompt('yes', 'Add accessory compatibility for this camera?', 'boolean')) {
+		while (1) {
+			my %compatdata;
+			$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
+			$compatdata{'camera_id'} = $cameraid;
+			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
+				last;
+			}
+		}
+	}
 	return $cameraid;
 }
 
@@ -408,6 +420,18 @@ sub lens_add {
 	$data{'formula'} = prompt('', 'Does this lens have a named optical formula?', 'text');
 	$data{'shutter_model'} = prompt('', 'What shutter does this lens incorporate?', 'text');
 	my $lensid = &newrecord($db, \%data, 'LENS');
+
+        if (prompt('yes', 'Add accessory compatibility for this lens?', 'boolean')) {
+                while (1) {
+                        my %compatdata;
+                        $compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
+                        $compatdata{'lens_id'} = $lensid;
+                        &newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+                        if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
+                                last;
+                        }
+                }
+        }
 	return $lensid;
 }
 
