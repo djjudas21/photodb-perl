@@ -363,19 +363,6 @@ Table to catalogue different film formats. These are distinct from negative size
 | format      | varchar(45) | The name of this film/sensor format |
 | digital     | tinyint(1)  | Whether this is a digital format    |
 
-## HOOD
-
-Table to catalog lens hoods
-
-| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                                  |
-|-----------------|-------------|-------------------------------------------------|
-| hood_id         | int(11)     | Unique hood ID                                  |
-| model           | varchar(45) | Modal name of lens hood                         |
-| qty             | smallint(6) | Number of lens hoods in the collection          |
-| manufacturer_id | int(11)     | Manufacturer ID of lens hood                    |
-| type            | varchar(15) | Type of lens hood, e.g. petal, circular, square |
-| mounting        | varchar(15) | How the lens hood attaches to the lens          |
-
 ## LENS
 
 Table to catalog lenses
@@ -418,7 +405,6 @@ Table to catalog lenses
 | source                 | varchar(150) | Place where the lens was acquired from                                                                                                       |
 | coating                | varchar(45)  | Notes about the lens coating type                                                                                                            |
 | hood                   | varchar(45)  | Model number of the compatible lens hood                                                                                                     |
-| hood_id                | int(11)      | ID of the hood in the HOOD table                                                                                                             |
 | exif_lenstype          | varchar(45)  | EXIF LensID integer, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ |
 | rectilinear            | tinyint(1)   | Whether this is a rectilinear lens                                                                                                           |
 | length                 | int(11)      | Length of lens in mm                                                                                                                         |

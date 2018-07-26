@@ -399,7 +399,6 @@ sub lens_add {
 	$data{'source'} = prompt('', 'Where was this lens sourced from?', 'text');
 	$data{'coating'} = prompt('', 'What coating does this lens have?', 'text');
 	$data{'hood'} = prompt('', 'What is the model number of the suitable hood for this lens?', 'text');
-	$data{'hood_id'} = &listchoices($db, 'lens hood', "select hood_id as id, model as opt from HOOD");
 	$data{'exif_lenstype'} = prompt('', 'EXIF lens type code', 'text');
 	$data{'rectilinear'} = prompt('yes', 'Is this a rectilinear lens?', 'boolean');
 	$data{'length'} = prompt('', 'How long is this lens? (mm)', 'integer');
