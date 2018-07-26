@@ -1,4 +1,5 @@
 FROM perl:latest
+LABEL maintainer="Jonathan Gazeley <me@jonathangazeley.com>"
 
 # set perl environment variables
 ENV PERL_PATH=/opt/photodb
