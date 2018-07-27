@@ -295,6 +295,8 @@ sub camera_repair {
 sub camera_stats {
 	my $db = shift;
 	my $camera_id = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
+	print "\tShowing statistics for $camera\n";
 	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
 	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
 	if ($total_shots > 0) {
@@ -470,6 +472,8 @@ sub lens_repair {
 sub lens_stats {
 	my $db = shift;
 	my $lens_id = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lens = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id");
+	print "\tShowing statistics for $lens\n";
 	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
 	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
 	if ($total_shots > 0) {
