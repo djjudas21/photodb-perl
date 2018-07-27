@@ -487,7 +487,7 @@ sub lens_stats {
 		my $minf = &lookupval($db, "select min_focal_length from LENS where lens_id=$lens_id");
 		my $maxf = &lookupval($db, "select max_focal_length from LENS where lens_id=$lens_id");
 		my $meanf = &lookupval($db, "select avg(focal_length) from NEGATIVE where lens_id=$lens_id");
-		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used it ${meanf}mm\n";
+		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
 }
 
