@@ -19,7 +19,7 @@ our @EXPORT = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd
-	lens_add lens_sell lens_repair
+	lens_add lens_sell lens_repair lens_stats
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate
 	paperstock_add
 	developer_add
@@ -454,6 +454,26 @@ sub lens_repair {
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
 	my $repair_id = &newrecord($db, \%data, 'REPAIR');
 	return $repair_id;
+}
+
+sub lens_stats {
+	my $db = shift;
+	my $lens_id = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
+	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
+	if ($total_shots > 0) {
+		my $percentage = round(100 * $total_shots_with_lens / $total_shots);
+		print "\tThis lens has been used to take $total_shots_with_lens frames, which is ${percentage}% of the frames in your collection\n";
+	}
+	my $maxaperture = &lookupval($db, "select max_aperture from LENS where lens_id=$lens_id");
+	my $modeaperture = &lookupval($db, "select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1");
+	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
+	if (&lookupval($db, "select zoom from LENS where lens_id=$lens_id")) {
+		my $minf = &lookupval($db, "select min_focal_length from LENS where lens_id=$lens_id");
+		my $maxf = &lookupval($db, "select max_focal_length from LENS where lens_id=$lens_id");
+		my $meanf = &lookupval($db, "select avg(focal_length) from NEGATIVE where lens_id=$lens_id");
+		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used it ${meanf}mm\n";
+	}
 }
 
 sub print_add {
