@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd
 	lens_add lens_sell lens_repair lens_stats
@@ -290,6 +290,17 @@ sub camera_repair {
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
 	my $repair_id = &newrecord($db, \%data, 'REPAIR');
 	return $repair_id;
+}
+
+sub camera_stats {
+	my $db = shift;
+	my $camera_id = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
+	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
+	if ($total_shots > 0) {
+		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
+		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
+	}
 }
 
 sub negative_add {

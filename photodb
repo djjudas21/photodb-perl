@@ -32,7 +32,8 @@ my %handlers = (
 		'display-lens' => { 'handler' => \&camera_displaylens, 'desc' => 'Associate a camera with a lens for display purposes' },
 		'show-lenses'  => { 'handler' => \&notimplemented,     'desc' => 'Not yet implemented' },
 		'sell'         => { 'handler' => \&camera_sell,        'desc' => 'Sell a camera' },
-		'repair'       => { 'handler' => \&camera_repair,      'desc' => 'Repair a camera' }
+		'repair'       => { 'handler' => \&camera_repair,      'desc' => 'Repair a camera' },
+		'stats'        => { 'handler' => \&camera_stats,       'desc' => 'Show statistics about a camera' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
