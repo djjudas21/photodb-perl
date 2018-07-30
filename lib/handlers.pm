@@ -16,10 +16,10 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats
 	mount_add mount_view mount_adapt
-	negative_add negative_bulkadd
-	lens_add lens_sell lens_repair
+	negative_add negative_bulkadd negative_stats
+	lens_add lens_sell lens_repair lens_stats
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate
 	paperstock_add
 	developer_add
@@ -292,6 +292,19 @@ sub camera_repair {
 	return $repair_id;
 }
 
+sub camera_stats {
+	my $db = shift;
+	my $camera_id = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
+	print "\tShowing statistics for $camera\n";
+	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
+	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
+	if ($total_shots > 0) {
+		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
+		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
+	}
+}
+
 sub negative_add {
 	# Add a single neg to a film
 	my $db = shift;
@@ -366,6 +379,15 @@ sub negative_bulkadd {
 	}
 
 	print "Inserted $num negatives into film #$data{'film_id'}\n";
+}
+
+sub negative_stats {
+	my $db = shift;
+	my $film_id = prompt('', 'Film ID to print from', 'integer');
+	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
+	print "\tThis negative has been printed $noprints times\n";
 }
 
 sub lens_add {
@@ -454,6 +476,28 @@ sub lens_repair {
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
 	my $repair_id = &newrecord($db, \%data, 'REPAIR');
 	return $repair_id;
+}
+
+sub lens_stats {
+	my $db = shift;
+	my $lens_id = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lens = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id");
+	print "\tShowing statistics for $lens\n";
+	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
+	my $total_shots = &lookupval($db, "select count(*) from NEGATIVE");
+	if ($total_shots > 0) {
+		my $percentage = round(100 * $total_shots_with_lens / $total_shots);
+		print "\tThis lens has been used to take $total_shots_with_lens frames, which is ${percentage}% of the frames in your collection\n";
+	}
+	my $maxaperture = &lookupval($db, "select max_aperture from LENS where lens_id=$lens_id");
+	my $modeaperture = &lookupval($db, "select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1");
+	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
+	if (&lookupval($db, "select zoom from LENS where lens_id=$lens_id")) {
+		my $minf = &lookupval($db, "select min_focal_length from LENS where lens_id=$lens_id");
+		my $maxf = &lookupval($db, "select max_focal_length from LENS where lens_id=$lens_id");
+		my $meanf = &lookupval($db, "select avg(focal_length) from NEGATIVE where lens_id=$lens_id");
+		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
+	}
 }
 
 sub print_add {

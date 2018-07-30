@@ -361,7 +361,7 @@ sub writeconfig {
 # Round numbers to any precision
 sub round {
 	my $x = shift;
-	my $pow10 = shift;
+	my $pow10 = shift || 0;
 	my $a = 10 ** $pow10;
 	return int(($x * $a) + 0.5) / $a
 }

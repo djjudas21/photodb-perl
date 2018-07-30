@@ -32,11 +32,13 @@ my %handlers = (
 		'display-lens' => { 'handler' => \&camera_displaylens, 'desc' => 'Associate a camera with a lens for display purposes' },
 		'show-lenses'  => { 'handler' => \&notimplemented,     'desc' => 'Not yet implemented' },
 		'sell'         => { 'handler' => \&camera_sell,        'desc' => 'Sell a camera' },
-		'repair'       => { 'handler' => \&camera_repair,      'desc' => 'Repair a camera' }
+		'repair'       => { 'handler' => \&camera_repair,      'desc' => 'Repair a camera' },
+		'stats'        => { 'handler' => \&camera_stats,       'desc' => 'Show statistics about a camera' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
-		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' }
+		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
+		'stats'    => { 'handler' => \&negative_stats,   'desc' => 'Show statistics about a negative' },
 	},
 	mount => {
 		'add'   => { 'handler' => \&mount_add,   'desc' => 'Add a new lens mount to the database' },
@@ -45,7 +47,8 @@ my %handlers = (
 	lens => {
 		'add'    => { 'handler' => \&lens_add,    'desc' => 'Add a new lens to the database' },
 		'sell'   => { 'handler' => \&lens_sell,   'desc' => 'Sell a lens' },
-		'repair' => { 'handler' => \&lens_repair, 'desc' => 'Repair a lens' }
+		'repair' => { 'handler' => \&lens_repair, 'desc' => 'Repair a lens' },
+		'stats'  => { 'handler' => \&lens_stats,  'desc' => 'Show statistics about a lens' }
 	},
 	print => {
 		'add'     => { 'handler' => \&print_add,     'desc' => 'Add a new print that has been made from a negative' },
