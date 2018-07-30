@@ -4,12 +4,16 @@ This documentation is generated automatically from the database schema itself wi
 
 Table to catalog accessories that are not tracked in more specific tables
 
-| COLUMN_NAME       | COLUMN_TYPE | COLUMN_COMMENT               |
-|-------------------|-------------|------------------------------|
-| accessory_id      | int(11)     | Unique ID of this accessory  |
-| accessory_type_id | int(11)     | ID of this type of accessory |
-| manufacturer_id   | int(11)     | ID of the manufacturer       |
-| model             | varchar(45) | Model of the accessory       |
+| COLUMN_NAME       | COLUMN_TYPE  | COLUMN_COMMENT                        |
+|-------------------|--------------|---------------------------------------|
+| accessory_id      | int(11)      | Unique ID of this accessory           |
+| accessory_type_id | int(11)      | ID of this type of accessory          |
+| manufacturer_id   | int(11)      | ID of the manufacturer                |
+| model             | varchar(45)  | Model of the accessory                |
+| acquired          | date         | Date that this accessory was acquired |
+| cost              | decimal(5,2) | Purchase cost of the accessory        |
+| lost              | date         | Date that this accessory was lost     |
+| lost_price        | decimal(5,2) | Sale price of the accessory           |
 
 ## ACCESSORY_COMPAT
 
@@ -590,14 +594,14 @@ Table to catalog different paper stocks available
 | colour          | tinyint(1)  | Whether this is a colour paper             |
 | finish          | varchar(45) | The finish of the paper surface            |
 
-## PHOTOGRAPHER
+## PERSON
 
 Table to catalog photographers
 
-| COLUMN_NAME     | COLUMN_TYPE | COLUMN_COMMENT                 |
-|-----------------|-------------|--------------------------------|
-| photographer_id | int(11)     | Unique ID for the photographer |
-| name            | varchar(45) | Name of the photographer       |
+| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT           |
+|-------------|-------------|--------------------------|
+| person_id   | int(11)     | Unique ID for the person |
+| name        | varchar(45) | Name of the photographer |
 
 ## PRINT
 
