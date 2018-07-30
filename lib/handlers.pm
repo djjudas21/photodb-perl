@@ -37,6 +37,7 @@ our @EXPORT = qw(
 	negativesize_add
 	lightmeter_add
 	process_add
+	person_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 );
@@ -90,7 +91,7 @@ sub film_develop {
 	$data{'date'} = prompt(&today($db), 'What date was this film processed?', 'date');
 	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1", 'integer', \&developer_add);
 	$data{'directory'} = prompt('', 'What directory are these scans in?', 'text');
-	$data{'photographer_id'} = &listchoices($db, 'photographer', "select person_id as id, name as opt from PERSON");
+	$data{'photographer_id'} = &listchoices($db, 'photographer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
 	$data{'dev_uses'} = prompt('', 'How many previous uses has the developer had?', 'integer');
 	$data{'dev_time'} = prompt('', 'How long was the film developed for?', 'hh:mm:ss');
 	$data{'dev_temp'} = prompt('', 'What temperature was the developer?', 'decimal');
@@ -1033,6 +1034,14 @@ sub shutterspeed_add {
 		$data{'duration'} = $1;
 	}
 	my $id = &newrecord($db, \%data, 'SHUTTER_SPEED');
+	return $id;
+}
+
+sub person_add {
+	my $db = shift;
+	my %data;
+	$data{'name'} = prompt('', 'What is this person\'s name?', 'text');
+	my $id = &newrecord($db, \%data, 'PERSON');
 	return $id;
 }
 

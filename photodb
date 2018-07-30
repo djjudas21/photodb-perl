@@ -91,6 +91,9 @@ my %handlers = (
 		'seal'   => { 'handler' => \&archive_seal,   'desc' => 'Seal an archive and prevent new items from being added to it' },
 		'unseal' => { 'handler' => \&archive_unseal, 'desc' => 'Unseal an archive and allow new items to be added to it' }
 	},
+	person => {
+		'add' => { 'handler' => \&person_add, 'desc' => 'Add a new person to the database' },
+	},
 	data => {
 		'format'        => { 'handler' => \&format_add,         'desc' => 'Add a new film format to the database' },
 		'negsize'       => { 'handler' => \&negativesize_add,   'desc' => 'Add a size of negative to the database' },
