@@ -565,6 +565,7 @@ Table to catalog negatives (which includes positives/slide too). Negatives are c
 | flash            | tinyint(1)   | Whether flash was used                                        |
 | metering_mode    | int(11)      | MeteringMode ID as defined in EXIF spec                       |
 | exposure_program | int(11)      | ExposureProgram ID as defined in EXIF spec                    |
+| photographer_id  | int(11)      | ID of person who took this photograph                         |
 
 ## NEGATIVE_SIZE
 
@@ -636,6 +637,7 @@ Table to catalog prints made from negatives
 | notes              | text         | Freeform notes about this print, e.g. dodging, burning & complex toning |
 | filename           | varchar(100) | The filename of the image scanned from this print                       |
 | archive_id         | int(11)      | ID of the archive to which this print belongs                           |
+| printer_id         | int(11)      | ID of the person who made this print                                    |
 
 ## PROCESS
 

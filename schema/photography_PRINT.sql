@@ -28,6 +28,7 @@ CREATE TABLE `PRINT` (
   `notes` text COMMENT 'Freeform notes about this print, e.g. dodging, burning & complex toning',
   `filename` varchar(100) DEFAULT NULL COMMENT 'The filename of the image scanned from this print',
   `archive_id` int(11) DEFAULT NULL COMMENT 'ID of the archive to which this print belongs',
+  `printer_id` int(11) DEFAULT NULL COMMENT 'ID of the person who made this print',
   PRIMARY KEY (`print_id`),
   KEY `fk_PRINT_1` (`paper_stock_id`),
   KEY `fk_PRINT_2` (`negative_id`),
@@ -36,12 +37,14 @@ CREATE TABLE `PRINT` (
   KEY `fk_PRINT_6` (`developer_id`),
   KEY `fk_PRINT_5_idx` (`lens_id`),
   KEY `fk_PRINT_7_idx` (`archive_id`),
+  KEY `fk_PRINT_8_idx` (`printer_id`),
   CONSTRAINT `fk_PRINT_1` FOREIGN KEY (`paper_stock_id`) REFERENCES `PAPER_STOCK` (`paper_stock_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_2` FOREIGN KEY (`negative_id`) REFERENCES `NEGATIVE` (`negative_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_3` FOREIGN KEY (`toner_id`) REFERENCES `TONER` (`toner_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_4` FOREIGN KEY (`enlarger_id`) REFERENCES `ENLARGER` (`enlarger_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_5` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_6` FOREIGN KEY (`developer_id`) REFERENCES `DEVELOPER` (`developer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_PRINT_7` FOREIGN KEY (`archive_id`) REFERENCES `ARCHIVE` (`archive_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_PRINT_7` FOREIGN KEY (`archive_id`) REFERENCES `ARCHIVE` (`archive_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_PRINT_8` FOREIGN KEY (`printer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog prints made from negatives';
 /*!40101 SET character_set_client = @saved_cs_client */;

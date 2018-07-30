@@ -327,6 +327,7 @@ sub negative_add {
 	$data{'flash'} = prompt('no', 'Was flash used?', 'boolean');
 	$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
 	$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
+	$data{'photographer_id'} = &listchoices($db, 'photographer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
 	my $negativeid = &newrecord($db, \%data, 'NEGATIVE');
 	return $negativeid;
 }
@@ -527,6 +528,7 @@ sub print_add {
 	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1", 'integer', \&developer_add);
 	$data{'fine'} = prompt('', 'Is this a fine print?', 'boolean');
 	$data{'notes'} = prompt('', 'Notes', 'text');
+	$data{'printer_id'} = &listchoices($db, 'printer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
 	my $printid = &newrecord($db, \%data, 'PRINT');
 
 	# Mark is as complete in the todo list
