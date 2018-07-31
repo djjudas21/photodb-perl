@@ -489,7 +489,7 @@ sub lens_accessory {
 sub lens_sell {
 	my $db = shift;
 	my %data;
-	my $lensid = shift || &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lensid = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	$data{'own'} = 0;
 	$data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
