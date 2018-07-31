@@ -28,12 +28,13 @@ my %handlers = (
 		'locate'  => { 'handler' => \&film_locate,  'desc' => 'Locate where this film is' }
 	},
 	camera => {
-		'add'          => { 'handler' => \&camera_add,         'desc' => 'Add a new camera to the database' },
-		'display-lens' => { 'handler' => \&camera_displaylens, 'desc' => 'Associate a camera with a lens for display purposes' },
-		'show-lenses'  => { 'handler' => \&notimplemented,     'desc' => 'Not yet implemented' },
-		'sell'         => { 'handler' => \&camera_sell,        'desc' => 'Sell a camera' },
-		'repair'       => { 'handler' => \&camera_repair,      'desc' => 'Repair a camera' },
-		'stats'        => { 'handler' => \&camera_stats,       'desc' => 'Show statistics about a camera' },
+		'add'             => { 'handler' => \&camera_add,             'desc' => 'Add a new camera to the database' },
+		'display-lens'    => { 'handler' => \&camera_displaylens,     'desc' => 'Associate a camera with a lens for display purposes' },
+		'show-lenses'     => { 'handler' => \&notimplemented,         'desc' => 'Not yet implemented' },
+		'sell'            => { 'handler' => \&camera_sell,            'desc' => 'Sell a camera' },
+		'repair'          => { 'handler' => \&camera_repair,          'desc' => 'Repair a camera' },
+		'stats'           => { 'handler' => \&camera_stats,           'desc' => 'Show statistics about a camera' },
+		'exposureprogram' => { 'handler' => \&camera_exposureprogram, 'desc' => 'Add exposure program info about a camera' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },

@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats
@@ -205,26 +205,7 @@ sub camera_add {
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
 	if (prompt('yes', 'Add exposure programs for this camera?', 'boolean')) {
-		if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-		}
-		if (my $p = prompt('', 'Does it have program/auto exposure?', 'boolean')) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '2');
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-		}
-		if (my $av = prompt('', 'Does it have aperture priority exposure?', 'boolean')) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '3');
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-		}
-		if (my $tv = prompt('', 'Does it have shutter priority exposure?', 'boolean')) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '4');
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-		}
-		if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-		}
+		&camera_exposureprogram($db, $cameraid);
 	}
 
 	if (prompt('yes', 'Add shutter speeds for this camera?', 'boolean')) {
@@ -252,6 +233,32 @@ sub camera_add {
 	}
 	return $cameraid;
 }
+
+sub camera_exposureprogram {
+	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
+		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
+		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+	if (my $p = prompt('', 'Does it have program/auto exposure?', 'boolean')) {
+		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '2');
+		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+	if (my $av = prompt('', 'Does it have aperture priority exposure?', 'boolean')) {
+		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '3');
+		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+	if (my $tv = prompt('', 'Does it have shutter priority exposure?', 'boolean')) {
+		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '4');
+		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+	if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
+		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
+		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+}
+
 
 sub camera_displaylens {
 	my $db = shift;
