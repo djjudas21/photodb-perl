@@ -67,8 +67,8 @@ sub film_add {
 sub film_load {
 	# Load a film into a camera
 	my $db = shift;
+	my $film_id = shift || &listchoices($db, 'film', "select * from choose_film_to_load");
 	my %data;
-	my $film_id = &listchoices($db, 'film', "select * from choose_film_to_load");
 	$data{'exposed_at'} = prompt(&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), 'What ISO?', 'integer');
 	$data{'date_loaded'} = prompt(&today($db), 'What date was this film loaded?', 'date');
 	$data{'camera_id'} = &listchoices($db, 'camera', "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, FILM as F, MANUFACTURER as M where F.format_id=C.format_id and C.manufacturer_id=M.manufacturer_id and film_id=$film_id and own=1 order by opt");
@@ -79,8 +79,8 @@ sub film_load {
 sub film_archive {
 	# Archive a film for storage
 	my $db = shift;
+	my $film_id = shift || prompt('', 'Enter ID of film to archive', 'integer');
 	my %data;
-	my $film_id = prompt('', 'Enter ID of film to archive', 'integer');
 	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", 'integer', \&archive_add);
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
 }
@@ -88,8 +88,8 @@ sub film_archive {
 sub film_develop {
 	# Develop a film
 	my $db = shift;
+	my $film_id = shift || &listchoices($db, 'film', "select * from choose_film_to_develop");
 	my %data;
-	my $film_id = &listchoices($db, 'film', "select * from choose_film_to_develop");
 	$data{'date'} = prompt(&today($db), 'What date was this film processed?', 'date');
 	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1", 'integer', \&developer_add);
 	$data{'directory'} = prompt('', 'What directory are these scans in?', 'text');
@@ -106,7 +106,7 @@ sub film_develop {
 sub film_tag {
 	# Write EXIF tags to a film
 	my $db = shift;
-	my $film_id = prompt('', 'Which film do you want to write EXIF tags to?', 'integer');
+	my $film_id = shift || prompt('', 'Which film do you want to write EXIF tags to?', 'integer');
 	if ($film_id eq '') {
 		prompt('no', 'This will write EXIF tags to ALL scans in the database. Are you sure?', 'boolean') or die "Aborted!\n";
 	}
@@ -115,7 +115,7 @@ sub film_tag {
 
 sub film_locate {
 	my $db = shift;
-	my $film_id = prompt('', 'Which film do you want to locate?', 'integer');
+	my $film_id = shift || prompt('', 'Which film do you want to locate?', 'integer');
 
 	if (my $archiveid = &lookupval($db, "select archive_id from FILM where film_id=$film_id")) {
 		my $archive = &lookupval($db, "select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid");
@@ -275,7 +275,7 @@ sub camera_exposureprogram {
 sub camera_displaylens {
 	my $db = shift;
 	my %data;
-	$data{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)");
+	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)");
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{'camera_id'}");
 	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)");
 	my $displaylensid = &newrecord($db, \%data, 'DISPLAYLENS');
@@ -284,8 +284,8 @@ sub camera_displaylens {
 
 sub camera_sell {
 	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	my %data;
-	my $cameraid = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	$data{'own'} = 0;
 	$data{'lost'} = prompt(&today($db), 'What date was this camera sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this camera sell for?', 'decimal');
@@ -306,7 +306,7 @@ sub camera_sell {
 sub camera_repair {
 	my $db = shift;
 	my %data;
-	$data{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	$data{'date'} = prompt(&today($db), 'What date was this camera repaired?', 'date');
 	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
@@ -357,7 +357,7 @@ sub negative_bulkadd {
 	my $db = shift;
 	# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
 	my %data;
-	$data{'film_id'} = prompt('', 'Bulk add negatives to which film?', 'integer');
+	$data{'film_id'} = shift || prompt('', 'Bulk add negatives to which film?', 'integer');
 	my $num = prompt('', 'How many frames to add?', 'integer');
 	if (prompt('no', "Add any other attributes to all $num negatives?", 'boolean')) {
 		$data{'description'} = prompt('', 'Caption', 'text');
@@ -483,7 +483,7 @@ sub lens_add {
 sub lens_sell {
 	my $db = shift;
 	my %data;
-	my $lensid = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lensid = shift || &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	$data{'own'} = 0;
 	$data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
@@ -493,7 +493,7 @@ sub lens_sell {
 sub lens_repair {
 	my $db = shift;
 	my %data;
-	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'lens_id'} = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
 	$data{'date'} = prompt(&today($db), 'What date was this lens repaired?', 'date');
 	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
@@ -575,7 +575,7 @@ sub print_fulfil {
 sub print_tone {
 	my $db = shift;
 	my %data;
-	my $print_id = prompt('', 'Which print did you tone?', 'integer');
+	my $print_id = shift || prompt('', 'Which print did you tone?', 'integer');
 	$data{'bleach_time'} = prompt('00:00:00', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
 	$data{'toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER", 'integer', \&toner_add);
 	my $dilution1 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'toner_id'}");
@@ -593,7 +593,7 @@ sub print_tone {
 sub print_sell {
 	my $db = shift;
 	my %data;
-	my $print_id = prompt('', 'Which print did you sell?', 'integer');
+	my $print_id = shift || prompt('', 'Which print did you sell?', 'integer');
 	$data{'own'} = 0;
 	$data{'location'} = prompt('', 'What happened to the print?', 'text');
 	$data{'sold_price'} = prompt('', 'What price was the print sold for?', 'decimal');
@@ -618,7 +618,7 @@ sub print_archive {
 	# Archive a print for storage
 	my $db = shift;
 	my %data;
-	my $print_id = prompt('', 'Which print did you archive?', 'integer');
+	my $print_id = shift || prompt('', 'Which print did you archive?', 'integer');
 	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0", 'integer', \&archive_add);
 	$data{'own'} = 1;
 	$data{'location'} = 'Archive',
@@ -838,7 +838,7 @@ sub enlarger_add {
 sub enlarger_sell {
 	my $db = shift;
 	my %data;
-	my $enlarger_id = &listchoices($db, 'enlarger', "select * from choose_enlarger");
+	my $enlarger_id = shift || &listchoices($db, 'enlarger', "select * from choose_enlarger");
 	$data{'lost'} = prompt(&today($db), 'What date was this enlarger sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this enlarger sell for?', 'decimal');
 	&updaterecord($db, \%data, 'ENLARGER', "enlarger_id=$enlarger_id");
@@ -1008,7 +1008,7 @@ sub archive_unseal {
 sub archive_move {
 	my $db = shift;
 	my %data;
-	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $archive_id = shift || &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
 	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
 	$data{'location'} = prompt($oldlocation, 'What is the new location of this archive?', 'text');
 	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
