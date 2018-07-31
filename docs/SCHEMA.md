@@ -491,27 +491,6 @@ Table to catalog different metering technologies and cell types
 | metering_type_id | int(11)     | Unique ID of the metering type            |
 | metering         | varchar(45) | Name of the metering type (e.g. Selenium) |
 
-## MOTION_PICTURE_FILM
-
-Table to catalog motion picture films (movies)
-
-| COLUMN_NAME    | COLUMN_TYPE | COLUMN_COMMENT                                     |
-|----------------|-------------|----------------------------------------------------|
-| mp_film_id     | int(11)     | Unique ID for this motion picture film / movie     |
-| title          | varchar(45) | Title of this movie                                |
-| camera_id      | int(11)     | ID of the camera used to shoot this movie          |
-| lens_id        | int(11)     | ID of the lens used to shoot this movie            |
-| format_id      | int(11)     | ID of the film format on which this movie was shot |
-| sound          | tinyint(1)  | Whether this movie has sound                       |
-| fps            | int(11)     | Frame rate of this movie, in fps                   |
-| filmstock_id   | int(11)     | ID of the filmstock used to shoot this movie       |
-| feet           | int(11)     | Length of this movie in feet                       |
-| date_loaded    | date        | Date that the filmstock was loaded into a camera   |
-| date_shot      | date        | Date on which this movie was shot                  |
-| date_processed | date        | Date on which this movie was processed             |
-| process_id     | int(11)     | ID of the process used to develop this film        |
-| description    | varchar(45) | Freeform text description of this movie            |
-
 ## MOUNT
 
 Table to catalog different lens mount standards. This is mostly used for camera lens mounts, but can also be used for enlarger and projector lenses.
@@ -539,6 +518,27 @@ Table to catalog adapters to mount lenses on other cameras
 | has_optics       | tinyint(1)  | Whether this adapter includes optical elements          |
 | infinity_focus   | tinyint(1)  | Whether this adapter allows infinity focus              |
 | notes            | varchar(45) | Freeform notes                                          |
+
+## MOVIE
+
+Table to catalog motion picture films (movies)
+
+| COLUMN_NAME    | COLUMN_TYPE | COLUMN_COMMENT                                     |
+|----------------|-------------|----------------------------------------------------|
+| movie_id       | int(11)     | Unique ID for this motion picture film / movie     |
+| title          | varchar(45) | Title of this movie                                |
+| camera_id      | int(11)     | ID of the camera used to shoot this movie          |
+| lens_id        | int(11)     | ID of the lens used to shoot this movie            |
+| format_id      | int(11)     | ID of the film format on which this movie was shot |
+| sound          | tinyint(1)  | Whether this movie has sound                       |
+| fps            | int(11)     | Frame rate of this movie, in fps                   |
+| filmstock_id   | int(11)     | ID of the filmstock used to shoot this movie       |
+| feet           | int(11)     | Length of this movie in feet                       |
+| date_loaded    | date        | Date that the filmstock was loaded into a camera   |
+| date_shot      | date        | Date on which this movie was shot                  |
+| date_processed | date        | Date on which this movie was processed             |
+| process_id     | int(11)     | ID of the process used to develop this film        |
+| description    | varchar(45) | Freeform text description of this movie            |
 
 ## NEGATIVE
 

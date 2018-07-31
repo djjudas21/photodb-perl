@@ -39,6 +39,7 @@ our @EXPORT = qw(
 	process_add
 	person_add
 	projector_add
+	movie_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 );
@@ -1059,6 +1060,29 @@ sub projector_add {
 	$data{'cine'} = prompt('', 'Is this a cine/movie projector?', 'boolean');
 	my $id = &newrecord($db, \%data, 'PROJECTOR');
 	return $id;
+}
+
+sub movie_add {
+	my $db = shift;
+	my %data;
+	$data{'title'} = prompt('', 'What is the title of this movie?', 'text');
+	$data{'camera_id'} = &listchoices($db, 'camera', "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and video=1 and digital=0 order by opt");
+	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id = $data{'camera_id'}")) {
+		$data{'lens_id'} = &lookupval($db, "select lens_id from CAMERA where camera_id = $data{'camera_id'}");
+	} else {
+		$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	}
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
+	$data{'sound'} = prompt('', 'Does this movie have sound?', 'boolean');
+	$data{'fps'} = prompt('', 'What is the fraterate of this movie in fps?', 'integer');
+	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
+	$data{'feet'} = prompt('', 'What is the length of this movie in feet?', 'integer');
+	$data{'date_loaded'} = prompt(&today($db), 'What date was the film loaded?', 'date');
+	$data{'date_shot'} = prompt(&today($db), 'What date was the movie shot?', 'date');
+	$data{'date_processed'} = prompt(&today($db), 'What date was the movie processed?', 'date');
+	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS', 'integer', \&process_add);
+	$data{'description'} = prompt('', 'Please enter a description of the movie', 'text');
+	my $id = &newrecord($db, \%data, 'MOVIE');
 }
 
 sub task_run {
