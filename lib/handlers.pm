@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats
@@ -209,15 +209,7 @@ sub camera_add {
 	}
 
 	if (prompt('yes', 'Add shutter speeds for this camera?', 'boolean')) {
-		while (1) {
-			my %shutterdata;
-			$shutterdata{'shutter_speed'} = prompt('', 'Enter shutter speed', 'text');
-			$shutterdata{'camera_id'} = $cameraid;
-			&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
-			if (!prompt('yes', 'Add another shutter speed?', 'boolean')) {
-				last;
-			}
-		}
+		&camera_shutterspeeds($db, $cameraid);
 	}
 
 	if (prompt('yes', 'Add accessory compatibility for this camera?', 'boolean')) {
@@ -232,6 +224,20 @@ sub camera_add {
 		}
 	}
 	return $cameraid;
+}
+
+sub camera_shutterspeeds {
+	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	while (1) {
+		my %shutterdata;
+		$shutterdata{'shutter_speed'} = prompt('', 'Enter shutter speed', 'text');
+		$shutterdata{'camera_id'} = $cameraid;
+		&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
+		if (!prompt('yes', 'Add another shutter speed?', 'boolean')) {
+			last;
+		}
+	}
 }
 
 sub camera_exposureprogram {
