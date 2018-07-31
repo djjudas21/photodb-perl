@@ -61,6 +61,9 @@ sub film_add {
 	$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
 	$data{'price'} = prompt('', 'Purchase price', 'decimal');
 	my $filmid = &newrecord($db, \%data, 'FILM');
+	if (prompt('no', 'Load this film into a camera now?', 'boolean')) {
+		&film_load($db, $filmid);
+	}
 	return $filmid;
 }
 
@@ -101,6 +104,9 @@ sub film_develop {
 	$data{'development_notes'} = prompt('', 'Any other development notes', 'text');
 	$data{'processed_by'} = prompt('', 'Who developed the film?', 'text');
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+	if (prompt('no', 'Archive this film now?', 'boolean')) {
+		&film_archive($db, $film_id);
+	}
 }
 
 sub film_tag {
@@ -215,6 +221,10 @@ sub camera_add {
 	if (prompt('yes', 'Add accessory compatibility for this camera?', 'boolean')) {
 		&camera_accessory($db, $cameraid);
 	}
+
+	if (prompt('yes', 'Add a display lens for this camera?', 'boolean')) {
+		&camera_displaylens($db, $cameraid);
+	}
 	return $cameraid;
 }
 
@@ -270,7 +280,6 @@ sub camera_exposureprogram {
 		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
 	}
 }
-
 
 sub camera_displaylens {
 	my $db = shift;
@@ -564,6 +573,14 @@ sub print_add {
 		$data2{'printed'} = 1;
 		$data2{'print_id'} = $printid;
 		&updaterecord($db, \%data2, 'TO_PRINT', "id=$todo_id");
+	}
+
+	if (prompt('no', 'Did you tone this print?', 'boolean')) {
+		&print_tone($db, $printid);
+	}
+
+	if (prompt('no', 'Archive this print?', 'boolean')) {
+		&print_archive($db, $printid);
 	}
 
 	return $printid;
