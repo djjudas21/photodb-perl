@@ -38,6 +38,7 @@ our @EXPORT = qw(
 	lightmeter_add
 	process_add
 	person_add
+	projector_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 );
@@ -1044,6 +1045,19 @@ sub person_add {
 	my %data;
 	$data{'name'} = prompt('', 'What is this person\'s name?', 'text');
 	my $id = &newrecord($db, \%data, 'PERSON');
+	return $id;
+}
+
+sub projector_add {
+	my $db = shift;
+	my %data;
+	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'model'} = prompt('', 'What is the model of this projector?', 'text');
+	$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Projector'", 'integer', \&mount_add);
+	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer', \&negativesize_add);
+	$data{'own'} = 1;
+	$data{'cine'} = prompt('', 'Is this a cine/movie projector?', 'boolean');
+	my $id = &newrecord($db, \%data, 'PROJECTOR');
 	return $id;
 }
 

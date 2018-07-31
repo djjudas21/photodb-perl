@@ -78,6 +78,7 @@ my %handlers = (
 		'filter'        => { 'handler' => \&filter_add,        'desc' => 'Add a new (optical) filter to the database' },
 		'filteradapter' => { 'handler' => \&filter_adapt,      'desc' => 'Add a filter adapter to the database' },
 		'mountadapter'  => { 'handler' => \&mount_adapt,       'desc' => 'Add a new mount adapter to the database' },
+		'projector'     => { 'handler' => \&projector_add,     'desc' => 'Add a new projector to the database' },
 	},
 	enlarger => {
 		'add'  => { 'handler' => \&enlarger_add,  'desc' => 'Add a new enlarger to the database' },
