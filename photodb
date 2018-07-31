@@ -51,10 +51,11 @@ my %handlers = (
 		'view'  => { 'handler' => \&mount_view,  'desc' => 'View compatible cameras and lenses for a mount' },
 	},
 	lens => {
-		'add'    => { 'handler' => \&lens_add,    'desc' => 'Add a new lens to the database' },
-		'sell'   => { 'handler' => \&lens_sell,   'desc' => 'Sell a lens' },
-		'repair' => { 'handler' => \&lens_repair, 'desc' => 'Repair a lens' },
-		'stats'  => { 'handler' => \&lens_stats,  'desc' => 'Show statistics about a lens' }
+		'add'       => { 'handler' => \&lens_add,       'desc' => 'Add a new lens to the database' },
+		'sell'      => { 'handler' => \&lens_sell,      'desc' => 'Sell a lens' },
+		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
+		'stats'     => { 'handler' => \&lens_stats,     'desc' => 'Show statistics about a lens' },
+		'accessory' => { 'handler' => \&lens_accessory, 'desc' => 'Add accessory compatibility info to a lens' },
 	},
 	print => {
 		'add'     => { 'handler' => \&print_add,     'desc' => 'Add a new print that has been made from a negative' },

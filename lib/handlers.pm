@@ -19,7 +19,7 @@ our @EXPORT = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
-	lens_add lens_sell lens_repair lens_stats
+	lens_add lens_sell lens_repair lens_stats lens_accessory
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate
 	paperstock_add
 	developer_add
@@ -467,17 +467,23 @@ sub lens_add {
 	my $lensid = &newrecord($db, \%data, 'LENS');
 
 	if (prompt('yes', 'Add accessory compatibility for this lens?', 'boolean')) {
-		while (1) {
-			my %compatdata;
-			$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
-			$compatdata{'lens_id'} = $lensid;
-			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
-			if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
-				last;
-			}
-		}
+		&lens_accessory($db, $lensid);
 	}
 	return $lensid;
+}
+
+sub lens_accessory {
+	my $db = shift;
+	my $lensid = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	while (1) {
+		my %compatdata;
+		$compatdata{'accessory_id'} = &listchoices($db, 'accessory', 'select * from choose_accessory', 'integer');
+		$compatdata{'lens_id'} = $lensid;
+		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+		if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
+			last;
+		}
+	}
 }
 
 sub lens_sell {
