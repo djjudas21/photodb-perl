@@ -474,7 +474,7 @@ sub lens_add {
 
 sub lens_accessory {
 	my $db = shift;
-	my $lensid = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lensid = shift || &listchoices($db, 'lens', "select * from choose_lens");
 	while (1) {
 		my %compatdata;
 		$compatdata{'accessory_id'} = &listchoices($db, 'accessory', 'select * from choose_accessory', 'integer');
@@ -489,7 +489,7 @@ sub lens_accessory {
 sub lens_sell {
 	my $db = shift;
 	my %data;
-	my $lensid = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lensid = shift || &listchoices($db, 'lens', "select * from choose_lens");
 	$data{'own'} = 0;
 	$data{'lost'} = prompt(&today($db), 'What date was this lens sold?', 'date');
 	$data{'lost_price'} = prompt('', 'How much did this lens sell for?', 'decimal');
@@ -499,7 +499,7 @@ sub lens_sell {
 sub lens_repair {
 	my $db = shift;
 	my %data;
-	$data{'lens_id'} = shift || &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'lens_id'} = shift || &listchoices($db, 'lens', "select * from choose_lens");
 	$data{'date'} = prompt(&today($db), 'What date was this lens repaired?', 'date');
 	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
@@ -509,7 +509,7 @@ sub lens_repair {
 
 sub lens_stats {
 	my $db = shift;
-	my $lens_id = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
 	my $lens = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id");
 	print "\tShowing statistics for $lens\n";
 	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
@@ -809,7 +809,7 @@ sub accessory_add {
 		while (1) {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
-			$compatdata{'lens_id'} = &listchoices($db, 'camera', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+			$compatdata{'lens_id'} = &listchoices($db, 'camera', "select * from choose_lens");
 			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 			if (!prompt('yes', 'Add another compatible lens?', 'boolean')) {
 				last;
@@ -1095,7 +1095,7 @@ sub movie_add {
 	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id = $data{'camera_id'}")) {
 		$data{'lens_id'} = &lookupval($db, "select lens_id from CAMERA where camera_id = $data{'camera_id'}");
 	} else {
-		$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where own=1 and fixed_mount=0 and LENS.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+		$data{'lens_id'} = &listchoices($db, 'lens', "select * from choose_lens");
 	}
 	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
 	$data{'sound'} = prompt('', 'Does this movie have sound?', 'boolean');
