@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats
@@ -213,17 +213,23 @@ sub camera_add {
 	}
 
 	if (prompt('yes', 'Add accessory compatibility for this camera?', 'boolean')) {
-		while (1) {
-			my %compatdata;
-			$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
-			$compatdata{'camera_id'} = $cameraid;
-			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
-			if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
-				last;
-			}
-		}
+		&camera_accessory($db, $cameraid);
 	}
 	return $cameraid;
+}
+
+sub camera_accessory {
+	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	while (1) {
+		my %compatdata;
+		$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
+		$compatdata{'camera_id'} = $cameraid;
+		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+		if (!prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
+			last;
+		}
+	}
 }
 
 sub camera_shutterspeeds {
