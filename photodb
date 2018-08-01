@@ -25,7 +25,8 @@ my %handlers = (
 		'develop' => { 'handler' => \&film_develop, 'desc' => 'Develop a film' },
 		'tag'     => { 'handler' => \&film_tag,     'desc' => 'Write EXIF tags to scans from a film' },
 		'archive' => { 'handler' => \&film_archive, 'desc' => 'Put the film in a physical archive' },
-		'locate'  => { 'handler' => \&film_locate,  'desc' => 'Locate where this film is' }
+		'locate'  => { 'handler' => \&film_locate,  'desc' => 'Locate where this film is' },
+		'bulk'    => { 'handler' => \&film_bulk,    'desc' => 'Add a new bulk film to the database' },
 	},
 	camera => {
 		'add'             => { 'handler' => \&camera_add,             'desc' => 'Add a new camera to the database' },

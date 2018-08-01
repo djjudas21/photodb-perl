@@ -15,7 +15,7 @@ use queries;
 use tagger;
 
 our @EXPORT = qw(
-	film_add film_load film_archive film_develop film_tag film_locate
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
@@ -130,6 +130,20 @@ sub film_locate {
 		print "The location of film #${film_id} is unknown\n";
 	}
 	exit;
+}
+
+sub film_bulk {
+	my $db = shift;
+	my %data;
+	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
+	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
+	$data{'batch'} = prompt('', 'Film batch number', 'text');
+	$data{'expiry'} = prompt('', 'Film expiry date', 'date');
+	$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
+	$data{'cost'} = prompt('', 'Purchase price', 'decimal');
+	$data{'source'} = prompt('', 'Where was this bulk film purchased from?', 'text');
+	my $filmid = &newrecord($db, \%data, 'FILM_BULK');
+	return $filmid;
 }
 
 sub camera_add {
