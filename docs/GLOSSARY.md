@@ -44,6 +44,6 @@ the terminology is confusing and can be slightly different from what you might e
 * **repair**
 * **shutter speed**
 * **shutter type**
-* **tag** An EXIF metadata tag in a digital JPG file
+* **tag** An EXIF metadata tag in a digital JPG file. Not to be confused with a hashtag, or tagging a person in a picture.
 * **teleconverter** An auxiliary lens for increasing the focal length of a camera lens. Sometimes called a _doubler_ or an _extender_.
 * **toner** A chemical toner to change the colour or archival properties of a print.
