@@ -48,17 +48,25 @@ sub film_add {
 	# Add a newly-purchased film
 	my $db = shift;
 	my %data;
-	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
-	$data{'frames'} = prompt('', 'How many frames?', 'integer');
 	if (prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
-		$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_id");
+		# These are filled in only for bulk-loaded films
+		$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_film");
 		$data{'film_bulk_loaded'} = prompt(&today($db), 'When was the film bulk-loaded?');
+		# These are deduced automagically for bulk-loaded films
+		$data{'film_batch'} = &lookupval($db, "select batch from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
+		$data{'film_expiry'} = &lookupval($db, "select expiry from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
+		$data{'purchase_date'} = &lookupval($db, "select purchase_date from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
+		$data{'filmstock_id'} = &lookupval($db, "select filmstock_id from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
+		$data{'format_id'} = &lookupval($db, "select format_id from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
 	} else {
+		# These are filled in only for standalone films
 		$data{'film_batch'} = prompt('', 'Film batch number', 'text');
 		$data{'film_expiry'} = prompt('', 'Film expiry date', 'date');
+		$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
+		$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
+		$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
 	}
-	$data{'purchase_date'} = prompt(&today($db), 'Purchase date', 'date');
+	$data{'frames'} = prompt('', 'How many frames?', 'integer');
 	$data{'price'} = prompt('', 'Purchase price', 'decimal');
 	my $filmid = &newrecord($db, \%data, 'FILM');
 	if (prompt('no', 'Load this film into a camera now?', 'boolean')) {
