@@ -252,7 +252,7 @@ sub camera_add {
 
 sub camera_accessory {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	while (1) {
 		my %compatdata;
 		$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
@@ -266,7 +266,7 @@ sub camera_accessory {
 
 sub camera_shutterspeeds {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	while (1) {
 		my %shutterdata;
 		$shutterdata{'shutter_speed'} = prompt('', 'Enter shutter speed', 'text');
@@ -280,7 +280,7 @@ sub camera_shutterspeeds {
 
 sub camera_exposureprogram {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id");
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
 		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
 		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
@@ -315,7 +315,7 @@ sub camera_displaylens {
 
 sub camera_sell {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	my %data;
 	$data{'own'} = 0;
 	$data{'lost'} = prompt(&today($db), 'What date was this camera sold?', 'date');
@@ -337,7 +337,7 @@ sub camera_sell {
 sub camera_repair {
 	my $db = shift;
 	my %data;
-	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	$data{'date'} = prompt(&today($db), 'What date was this camera repaired?', 'date');
 	$data{'summary'} = prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = prompt('', 'Longer description of repair', 'text');
@@ -347,7 +347,7 @@ sub camera_repair {
 
 sub camera_stats {
 	my $db = shift;
-	my $camera_id = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
 	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
 	print "\tShowing statistics for $camera\n";
 	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
@@ -886,7 +886,7 @@ sub accessory_add {
 		while (1) {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
-			$compatdata{'camera_id'} = &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id order by opt");
+			$compatdata{'camera_id'} = &listchoices($db, 'camera', "select * from choose_camera");
 			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 			if (!prompt('yes', 'Add another compatible camera?', 'boolean')) {
 				last;
