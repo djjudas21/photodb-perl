@@ -20,7 +20,7 @@ our @EXPORT = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats lens_accessory
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint
 	paperstock_add
 	developer_add
 	toner_add
@@ -665,6 +665,55 @@ sub print_locate {
 		print "The location of print #${print_id} is unknown\n";
 	}
 	exit;
+}
+
+sub print_reprint {
+	my $db = shift;
+	my $print_id = prompt('', 'Which print do you want to reprint?', 'integer');
+	my $negative = &lookupval($db, "select concat(film_id, '/', frame) as negative from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id");
+	my $caption = &lookupval($db, "select description from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id");
+	print "\tPrint #${print_id} was made from Negative $negative \"$caption\"\n";
+
+	my $size = &lookupval($db, "select concat(width,'x',height,'\"') as size from PRINT where print_id = $print_id");
+	my $paper = &lookupval($db, "select concat(manufacturer, ' ', PAPER_STOCK.name) as paper from PRINT, PAPER_STOCK, MANUFACTURER where print_id = $print_id and PRINT.paper_stock_id = PAPER_STOCK.paper_stock_id and PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+	print "\tIt was made on $paper at size $size\n";
+
+	# enlarger, lens
+	my $enlarger = &lookupval($db, "select concat(manufacturer, ' ', enlarger) as enlarger from PRINT, ENLARGER, MANUFACTURER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id and ENLARGER.manufacturer_id = MANUFACTURER.manufacturer_id");
+	my $lens = &lookupval($db, "select concat(manufacturer, ' ', model) as lens from PRINT, LENS, MANUFACTURER where print_id=$print_id and PRINT.lens_id=LENS.lens_id and LENS.manufacturer_id = MANUFACTURER.manufacturer_id");
+	print "\tIt was made with the $enlarger enlarger and $lens lens\n";
+	if (&lookupval($db, "select ENLARGER.lost from PRINT, ENLARGER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id")) {
+		print "\tYou no longer own the $enlarger, so the exposure information may be useless!\n";
+	}
+
+	# time & aperture
+	my $time = &lookupval($db, "select exposure_time from PRINT where print_id=$print_id");
+	my $aperture = &lookupval($db, "select aperture from PRINT where print_id=$print_id");
+	print "\tExposure was ${time}s at f/${aperture}\n";
+
+	# multigrade filter
+	if (my $grade = &lookupval($db, "select filtration_grade from PRINT where print_id=$print_id")) {
+		print "\tFiltration grade was $grade\n";
+	} else {
+		print "\tPrint was unfiltered\n";
+	}
+	# toner
+	if (&lookupval($db, "select toner_id from PRINT where print_id=$print_id")) {
+		# at least one toner
+		my $firsttoner = &lookupval($db, "select concat(manufacturer, ' ', toner, if(toner_dilution is not null, concat(' (', toner_dilution, ')'), ''), if(toner_time is not null, concat(' for ', toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id");
+		if (&lookupval($db, "select 2nd_toner_id from PRINT where print_id=$print_id")) {
+			# 2 toners
+			my $secondtoner = &lookupval($db, "select concat(manufacturer, ' ', toner, if(2nd_toner_dilution is not null, concat(' (', 2nd_toner_dilution, ')'), ''), if(2nd_toner_time is not null, concat(' for ', 2nd_toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.2nd_toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id");
+			print "\tToned frst in $firsttoner\n";
+			print "\tThen toned in $secondtoner\n";
+		} else {
+			# 1 toner
+			print "\tToned in $firsttoner\n";
+		}
+	} else {
+		# no toner
+		print "\tPrint was not toned\n";
+	}
 }
 
 sub paperstock_add {

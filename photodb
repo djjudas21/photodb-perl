@@ -64,7 +64,8 @@ my %handlers = (
 		'order'   => { 'handler' => \&print_order,   'desc' => 'Register an order for a print' },
 		'fulfil'  => { 'handler' => \&print_fulfil,  'desc' => 'Fulfil an order for a print' },
 		'archive' => { 'handler' => \&print_archive, 'desc' => 'Add a print to a physical archive' },
-		'locate'  => { 'handler' => \&print_locate,  'desc' => 'Locate a print in an archive' }
+		'locate'  => { 'handler' => \&print_locate,  'desc' => 'Locate a print in an archive' },
+		'reprint' => { 'handler' => \&print_reprint, 'desc' => 'Show details for making another print the same' },
 	},
 	material => {
 		'paperstock' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' },
