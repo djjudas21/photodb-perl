@@ -438,17 +438,6 @@ Table to catalog light meters
 | min_lv          | int(11)     | Minimum light value (LV/EV) that this meter is capable of handling |
 | max_lv          | int(11)     | Maximum light value (LV/EV) that this meter is capable of handling |
 
-## LOCATION
-
-Table to record commonly-used locations
-
-| COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT            |
-|-------------|--------------|---------------------------|
-| loc_id      | int(11)      | Unique ID of a location   |
-| description | varchar(45)  | Name of the location      |
-| latitude    | decimal(9,6) | Latitude of the location  |
-| longitude   | decimal(9,6) | Longitude of the location |
-
 ## MANUFACTURER
 
 Table to catalog manufacturers of equipment and consumables
