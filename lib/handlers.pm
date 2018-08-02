@@ -178,7 +178,7 @@ sub camera_add {
 		$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
 	}
-	$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", \&camera_addbodytype);
+	$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", 'integer', \&camera_addbodytype);
 	$data{'weight'} = prompt('', 'What does it weigh? (g)', 'integer');
 	$data{'acquired'} = prompt(&today($db), 'When was it acquired?', 'date');
 	$data{'cost'} = prompt('', 'What did the camera cost?', 'decimal');
