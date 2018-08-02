@@ -363,6 +363,14 @@ sub negative_add {
 	my $db = shift;
 	my %data;
 	$data{'film_id'} = prompt('', 'Which film does this negative belong to?', 'integer');
+	if (!&lookupval($db, "select camera_id from FILM where film_id=$data{'film_id'}")) {
+		print "Film must be loaded into a camera before you can add negatives\n";
+		if (&prompt('yes', 'Load film into a camera now?', 'boolean')) {
+			&film_load($db, $data{'film_id'});
+		} else {
+			exit;
+		}
+	}
 	$data{'frame'} = prompt('', 'Frame number', 'text');
 	$data{'description'} = prompt('', 'Caption', 'text');
 	$data{'date'} = prompt(&today($db), 'What date was this negative taken?', 'date');
