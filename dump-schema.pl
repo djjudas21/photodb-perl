@@ -34,20 +34,45 @@ my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 # Delete all existing *.sql files in the schema subdir
 unlink <schema/*.sql>;
 
-# Dump each table to its own file
+# Dump each table schema to its own file
 while (my @row= $sqlQuery->fetchrow_array()) {
   my $table = $row[0];
-  print "Dumping $table\n";
+  print "Dumping schema for $table\n";
   &dumptable($table);
 }
 
 # Disconnect from the database 
 $sqlQuery->finish;
 
+# List of tables that contain useful sample data
+my @tables = (
+        'ACCESSORY_TYPE',
+        'ARCHIVE_TYPE',
+        'BODY_TYPE',
+        'EXPOSURE_PROGRAM',
+        'FILMSTOCK',
+        'FORMAT',
+        'LENS_TYPE',
+        'MANUFACTURER',
+        'METERING_MODE',
+        'METERING_TYPE',
+        'MOUNT',
+        'NEGATIVE_SIZE',
+        'PROCESS',
+        'SHUTTER_SPEED',
+        'SHUTTER_TYPE'
+);
+
+# Dump sample data from specific tables
+foreach my $table (@tables) {
+  print "Dumping data from $table\n";
+  &dumpdata($table);
+}
+
 # Dump functions too
 &dumpfuncs;
 
-# Function to do the dump
+# Dump schema only
 sub dumptable {
 	my $table = shift;
 	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`
@@ -56,4 +81,10 @@ sub dumptable {
 # Dump functions
 sub dumpfuncs {
 	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" > schema/${database}_functions.sql`;
+}
+
+# Dump table data
+sub dumpdata {
+        my $table = shift;
+        `mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`
 }
