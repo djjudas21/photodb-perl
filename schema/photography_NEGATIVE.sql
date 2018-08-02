@@ -30,6 +30,7 @@ CREATE TABLE `NEGATIVE` (
   KEY `fk_NEGATIVE_6_idx` (`metering_mode`),
   KEY `fk_NEGATIVE_7_idx` (`exposure_program`),
   KEY `fk_NEGATIVE_8_idx` (`photographer_id`),
+  KEY `fk_NEGATIVE_9_idx` (`shutter_speed`),
   CONSTRAINT `fk_NEGATIVE_1` FOREIGN KEY (`film_id`) REFERENCES `FILM` (`film_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_NEGATIVE_2` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_NEGATIVE_3` FOREIGN KEY (`filter_id`) REFERENCES `FILTER` (`filter_id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -37,6 +38,7 @@ CREATE TABLE `NEGATIVE` (
   CONSTRAINT `fk_NEGATIVE_5` FOREIGN KEY (`mount_adapter_id`) REFERENCES `MOUNT_ADAPTER` (`mount_adapter_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_NEGATIVE_6` FOREIGN KEY (`metering_mode`) REFERENCES `METERING_MODE` (`metering_mode_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_NEGATIVE_7` FOREIGN KEY (`exposure_program`) REFERENCES `EXPOSURE_PROGRAM` (`exposure_program_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_NEGATIVE_8` FOREIGN KEY (`photographer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_NEGATIVE_8` FOREIGN KEY (`photographer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_NEGATIVE_9` FOREIGN KEY (`shutter_speed`) REFERENCES `SHUTTER_SPEED` (`shutter_speed`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -269,7 +269,7 @@ sub camera_shutterspeeds {
 	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	while (1) {
 		my %shutterdata;
-		$shutterdata{'shutter_speed'} = prompt('', 'Enter shutter speed', 'text');
+		$shutterdata{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", 'text', \&shutterspeed_add);
 		$shutterdata{'camera_id'} = $cameraid;
 		&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
 		if (!prompt('yes', 'Add another shutter speed?', 'boolean')) {
@@ -367,7 +367,7 @@ sub negative_add {
 	$data{'description'} = prompt('', 'Caption', 'text');
 	$data{'date'} = prompt(&today($db), 'What date was this negative taken?', 'date');
 	$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
-	$data{'shutter_speed'} = prompt('', 'Shutter speed', 'text');
+	$data{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration");
 	$data{'aperture'} = prompt('', 'Aperture', 'decimal');
 	$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter", 'integer', \&filter_add);
 	$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", 'integer', \&teleconverter_add);
@@ -394,7 +394,7 @@ sub negative_bulkadd {
 		$data{'description'} = prompt('', 'Caption', 'text');
 		$data{'date'} = prompt(&today($db), 'What date was this negative taken?', 'date');
 		$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
-		$data{'shutter_speed'} = prompt('', 'Shutter speed', 'text');
+		$data{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT SP.shutter_speed FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration");
 		$data{'aperture'} = prompt('', 'Aperture', 'decimal');
 		$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter", 'integer', \&filter_add);
 		$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", 'integer', \&teleconverter_add);
