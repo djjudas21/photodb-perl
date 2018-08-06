@@ -115,6 +115,9 @@ my %handlers = (
 		'focustype'     => { 'handler' => \&focustype_add,      'desc' => 'Add a new type of focus system to the database' },
 		'flashprotocol' => { 'handler' => \&flashprotocol_add,  'desc' => 'Add a new flash protocol to the database' },
 		'meteringtype'  => { 'handler' => \&meteringtype_add,   'desc' => 'Add a new type of metering system to the database' },
+	},
+	audit => {
+		'shutterspeeds' => { 'handler' => \&audit_shutterspeeds, 'desc' => 'Audit cameras without shutter speed data' },
 	}
 );
 
