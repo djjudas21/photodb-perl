@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats lens_accessory
@@ -301,6 +301,18 @@ sub camera_exposureprogram {
 	if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
 		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
 		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	}
+}
+
+sub camera_meteringmode {
+	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $meteringmodes = &lookupcol($db, 'select * from METERING_MODE');
+	foreach my $meteringmode (@$meteringmodes) {
+		if (prompt('', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
+			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
+			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+		}
 	}
 }
 

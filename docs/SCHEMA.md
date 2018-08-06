@@ -461,6 +461,15 @@ Metering modes as defined by EXIF tag MeteringMode
 | metering_mode_id | int(11)     | ID of metering mode as defined by EXIF tag MeteringMode   |
 | metering_mode    | varchar(45) | Name of metering mode as defined by EXIF tag MeteringMode |
 
+## METERING_MODE_AVAILABLE
+
+Table to associate cameras with available metering modes
+
+| COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT      |
+|------------------|-------------|---------------------|
+| camera_id        | int(11)     | ID of camera        |
+| metering_mode_id | int(11)     | ID of metering mode |
+
 ## METERING_TYPE
 
 Table to catalog different metering technologies and cell types

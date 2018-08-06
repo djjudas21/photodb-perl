@@ -15,7 +15,7 @@ $Data::Dumper::Deparse = 1;
 $Data::Dumper::Quotekeys = 0;
 $Data::Dumper::Sortkeys = 1;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -280,7 +280,7 @@ sub listchoices {
 	}
 }
 
-# List arbitrary choices and return ID of the selected one
+# List arbitrary rows
 sub printlist {
 	my $db = shift;
 	my $msg = shift;
@@ -297,6 +297,23 @@ sub printlist {
 	while ($ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
+}
+
+# Return values from an arbitrary column from database as an arrayref
+sub lookupcol {
+	my $db = shift;
+	my $query = shift;
+
+	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute();
+
+	$sth->execute();
+	my $ref;
+	my @array;
+	while ($ref = $sth->fetchrow_hashref) {
+		push(@array, $ref);
+	}
+	return \@array;
 }
 
 # Return arbitrary value from database
