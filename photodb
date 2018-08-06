@@ -117,7 +117,8 @@ my %handlers = (
 		'meteringtype'  => { 'handler' => \&meteringtype_add,   'desc' => 'Add a new type of metering system to the database' },
 	},
 	audit => {
-		'shutterspeeds' => { 'handler' => \&audit_shutterspeeds, 'desc' => 'Audit cameras without shutter speed data' },
+		'shutterspeeds'    => { 'handler' => \&audit_shutterspeeds,    'desc' => 'Audit cameras without shutter speed data' },
+		'exposureprograms' => { 'handler' => \&audit_exposureprograms, 'desc' => 'Audit cameras without exposure program data' },
 	}
 );
 
