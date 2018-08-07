@@ -42,7 +42,7 @@ our @EXPORT = qw(
 	movie_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
-	audit_shutterspeeds audit_exposureprograms
+	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
 );
 
 sub film_add {
@@ -1231,6 +1231,13 @@ sub audit_exposureprograms {
 	my %data;
 	my $cameraid = &listchoices($db, 'camera without exposure program data', "select * from choose_camera_without_exposure_programs");
 	 &camera_exposureprogram($db, $cameraid);
+}
+
+sub audit_meteringmodes {
+	my $db = shift;
+	my %data;
+	my $cameraid = &listchoices($db, 'camera without metering mode data', "select * from choose_camera_without_metering_data");
+	&camera_meteringmode($db, $cameraid);
 }
 
 sub task_run {
