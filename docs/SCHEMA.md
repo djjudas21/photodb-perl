@@ -123,8 +123,8 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
 | lost                | date         | Date on which the camera was lost/sold/etc                                   |
 | lost_price          | decimal(6,2) | Price at which the camera was sold                                           |
 | source              | varchar(150) | Where the camera was acquired from                                           |
-| min_shutter         | varchar(6)   | Fastest available shutter speed, expressed like 1/400                        |
-| max_shutter         | varchar(6)   | Slowest available shutter speed, expressed like 30"                          |
+| min_shutter         | varchar(10)  | Fastest available shutter speed, expressed like 1/400                        |
+| max_shutter         | varchar(10)  | Slowest available shutter speed, expressed like 30 (no ")                    |
 | bulb                | tinyint(1)   | Whether the camera supports bulb (B) exposure                                |
 | time                | tinyint(1)   | Whether the camera supports time (T) exposure                                |
 | min_iso             | int(11)      | Minimum ISO the camera will accept for metering                              |
@@ -460,6 +460,15 @@ Metering modes as defined by EXIF tag MeteringMode
 |------------------|-------------|-----------------------------------------------------------|
 | metering_mode_id | int(11)     | ID of metering mode as defined by EXIF tag MeteringMode   |
 | metering_mode    | varchar(45) | Name of metering mode as defined by EXIF tag MeteringMode |
+
+## METERING_MODE_AVAILABLE
+
+Table to associate cameras with available metering modes
+
+| COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT      |
+|------------------|-------------|---------------------|
+| camera_id        | int(11)     | ID of camera        |
+| metering_mode_id | int(11)     | ID of metering mode |
 
 ## METERING_TYPE
 

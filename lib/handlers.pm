@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
 	lens_add lens_sell lens_repair lens_stats lens_accessory
@@ -42,6 +42,7 @@ our @EXPORT = qw(
 	movie_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
+	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
 );
 
 sub film_add {
@@ -173,7 +174,6 @@ sub camera_add {
 	$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
 		$data{'coupled_metering'} = prompt('', 'Is the metering coupled?', 'boolean');
-		$data{'metering_mode_id'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
 		$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
 		$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
@@ -236,6 +236,15 @@ sub camera_add {
 		&camera_exposureprogram($db, $cameraid);
 	}
 
+	if (prompt('yes', 'Add metering modes for this camera?', 'boolean')) {
+		if ($data{'metering'}) {
+			&camera_meteringmode($db, $cameraid);
+		} else {
+			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => 0);
+			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+		}
+	}
+
 	if (prompt('yes', 'Add shutter speeds for this camera?', 'boolean')) {
 		&camera_shutterspeeds($db, $cameraid);
 	}
@@ -281,25 +290,31 @@ sub camera_shutterspeeds {
 sub camera_exposureprogram {
 	my $db = shift;
 	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
-	if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	my $exposureprograms = &lookupcol($db, 'select * from EXPOSURE_PROGRAM');
+	foreach my $exposureprogram (@$exposureprograms) {
+		# Skip 'creative' AE modes
+		next if $exposureprogram->{exposure_program_id} == 5;
+		next if $exposureprogram->{exposure_program_id} == 6;
+		next if $exposureprogram->{exposure_program_id} == 7;
+		next if $exposureprogram->{exposure_program_id} == 8;
+		if (prompt('no', "Does this camera have $exposureprogram->{exposure_program} exposure program?", 'boolean')) {
+			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
+			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+			last if $exposureprogram->{exposure_program_id} == 0;
+		}
 	}
-	if (my $p = prompt('', 'Does it have program/auto exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '2');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $av = prompt('', 'Does it have aperture priority exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '3');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $tv = prompt('', 'Does it have shutter priority exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '4');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+}
+
+sub camera_meteringmode {
+	my $db = shift;
+	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $meteringmodes = &lookupcol($db, 'select * from METERING_MODE');
+	foreach my $meteringmode (@$meteringmodes) {
+		if (prompt('no', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
+			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
+			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+			last if $meteringmode->{metering_mode_id} == 0;
+		}
 	}
 }
 
@@ -1206,6 +1221,27 @@ sub movie_add {
 	my $id = &newrecord($db, \%data, 'MOVIE');
 }
 
+sub audit_shutterspeeds {
+	my $db = shift;
+	my %data;
+	my $cameraid = &listchoices($db, 'camera without shutter speed data', "select * from choose_camera_without_shutter_data");
+	 &camera_shutterspeeds($db, $cameraid);
+}
+
+sub audit_exposureprograms {
+	my $db = shift;
+	my %data;
+	my $cameraid = &listchoices($db, 'camera without exposure program data', "select * from choose_camera_without_exposure_programs");
+	 &camera_exposureprogram($db, $cameraid);
+}
+
+sub audit_meteringmodes {
+	my $db = shift;
+	my %data;
+	my $cameraid = &listchoices($db, 'camera without metering mode data', "select * from choose_camera_without_metering_data");
+	&camera_meteringmode($db, $cameraid);
+}
+
 sub task_run {
 	my $db = shift;
 	my @tasks;
@@ -1244,18 +1280,29 @@ sub task_run {
 
 	push @tasks, {
 		desc => 'Set metering mode for negatives taken with cameras with only one metering mode',
-		query => 'update
+		query => 'UPDATE
 			NEGATIVE,
 			FILM,
-			CAMERA
+			CAMERA,
+			METERING_MODE_AVAILABLE,
+			(SELECT
+				CAMERA.camera_id
+			FROM
+				CAMERA, METERING_MODE_AVAILABLE
+			where
+				CAMERA.camera_id = METERING_MODE_AVAILABLE.camera_id
+			group by camera_id
+			having count(METERING_MODE_AVAILABLE.metering_mode_id) = 1
+			) as VALIDCAMERA
 		set
-			NEGATIVE.metering_mode=CAMERA.metering_mode_id
+			NEGATIVE.metering_mode = METERING_MODE_AVAILABLE.metering_mode_id
 		where
-			NEGATIVE.film_id=FILM.film_id
+			CAMERA.camera_id = METERING_MODE_AVAILABLE.camera_id
+			and METERING_MODE_AVAILABLE.metering_mode_id <> 0
+			and NEGATIVE.film_id=FILM.film_id
 			and FILM.camera_id=CAMERA.camera_id
-			and CAMERA.metering_mode_id is not null
-			and CAMERA.metering_mode_id != 4
-			and CAMERA.metering_mode_id != 5'
+			and CAMERA.camera_id = VALIDCAMERA.camera_id
+			and NEGATIVE.metering_mode is null'
 	};
 
 	push @tasks, {
@@ -1278,6 +1325,7 @@ sub task_run {
 			NEGATIVE.exposure_program = EXPOSURE_PROGRAM_AVAILABLE.exposure_program_id
 		where
 			CAMERA.camera_id = EXPOSURE_PROGRAM_AVAILABLE.camera_id
+			and EXPOSURE_PROGRAM_AVAILABLE.exposure_program_id <> 0
 			and NEGATIVE.film_id=FILM.film_id
 			and FILM.camera_id=CAMERA.camera_id
 			and CAMERA.camera_id = VALIDCAMERA.camera_id
