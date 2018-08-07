@@ -174,7 +174,6 @@ sub camera_add {
 	$data{'metering'} = prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
 		$data{'coupled_metering'} = prompt('', 'Is the metering coupled?', 'boolean');
-		$data{'metering_mode_id'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
 		$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
 		$data{'meter_min_ev'} = prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
@@ -235,6 +234,15 @@ sub camera_add {
 	# Now we have a camera ID, we can insert rows in auxiliary tables
 	if (prompt('yes', 'Add exposure programs for this camera?', 'boolean')) {
 		&camera_exposureprogram($db, $cameraid);
+	}
+
+	if (prompt('yes', 'Add metering modes for this camera?', 'boolean')) {
+		if ($data{'metering'}) {
+			&camera_meteringmode($db, $cameraid);
+		} else {
+			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => 0);
+			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+		}
 	}
 
 	if (prompt('yes', 'Add shutter speeds for this camera?', 'boolean')) {
