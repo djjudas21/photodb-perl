@@ -1320,6 +1320,7 @@ sub task_run {
 			NEGATIVE.exposure_program = EXPOSURE_PROGRAM_AVAILABLE.exposure_program_id
 		where
 			CAMERA.camera_id = EXPOSURE_PROGRAM_AVAILABLE.camera_id
+			and EXPOSURE_PROGRAM_AVAILABLE.exposure_program_id <> 0
 			and NEGATIVE.film_id=FILM.film_id
 			and FILM.camera_id=CAMERA.camera_id
 			and CAMERA.camera_id = VALIDCAMERA.camera_id
