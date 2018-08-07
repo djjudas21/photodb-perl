@@ -386,7 +386,7 @@ sub round {
 # Pad a string with spaces up to a fixed length
 sub pad {
 	my $string = shift;
-	my $totallength = shift || 16;
+	my $totallength = shift || 18;
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
