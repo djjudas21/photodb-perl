@@ -290,25 +290,18 @@ sub camera_shutterspeeds {
 sub camera_exposureprogram {
 	my $db = shift;
 	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
-	if (my $m = prompt('', 'Does it have manual exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '1');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $p = prompt('', 'Does it have program/auto exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '2');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $av = prompt('', 'Does it have aperture priority exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '3');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $tv = prompt('', 'Does it have shutter priority exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '4');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
-	}
-	if (my $tv = prompt('', 'Does it have bulb exposure?', 'boolean')) {
-		my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => '9');
-		&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+	my $exposureprograms = &lookupcol($db, 'select * from EXPOSURE_PROGRAM');
+	foreach my $exposureprogram (@$exposureprograms) {
+		# Skip 'creative' AE modes
+		next if $exposureprogram->{exposure_program_id} == 5;
+		next if $exposureprogram->{exposure_program_id} == 6;
+		next if $exposureprogram->{exposure_program_id} == 7;
+		next if $exposureprogram->{exposure_program_id} == 8;
+		if (prompt('', "Does this camera have $exposureprogram->{exposure_program} exposure program?", 'boolean')) {
+			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
+			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+			last if $exposureprogram->{exposure_program_id} == 0;
+		}
 	}
 }
 
