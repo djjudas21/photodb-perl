@@ -1286,18 +1286,29 @@ sub task_run {
 
 	push @tasks, {
 		desc => 'Set metering mode for negatives taken with cameras with only one metering mode',
-		query => 'update
+		query => 'UPDATE
 			NEGATIVE,
 			FILM,
-			CAMERA
+			CAMERA,
+			METERING_MODE_AVAILABLE,
+			(SELECT
+				CAMERA.camera_id
+			FROM
+				CAMERA, METERING_MODE_AVAILABLE
+			where
+				CAMERA.camera_id = METERING_MODE_AVAILABLE.camera_id
+			group by camera_id
+			having count(METERING_MODE_AVAILABLE.metering_mode_id) = 1
+			) as VALIDCAMERA
 		set
-			NEGATIVE.metering_mode=CAMERA.metering_mode_id
+			NEGATIVE.metering_mode = METERING_MODE_AVAILABLE.metering_mode_id
 		where
-			NEGATIVE.film_id=FILM.film_id
+			CAMERA.camera_id = METERING_MODE_AVAILABLE.camera_id
+			and METERING_MODE_AVAILABLE.metering_mode_id <> 0
+			and NEGATIVE.film_id=FILM.film_id
 			and FILM.camera_id=CAMERA.camera_id
-			and CAMERA.metering_mode_id is not null
-			and CAMERA.metering_mode_id != 4
-			and CAMERA.metering_mode_id != 5'
+			and CAMERA.camera_id = VALIDCAMERA.camera_id
+			and NEGATIVE.metering_mode is null'
 	};
 
 	push @tasks, {
