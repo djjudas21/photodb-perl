@@ -297,7 +297,7 @@ sub camera_exposureprogram {
 		next if $exposureprogram->{exposure_program_id} == 6;
 		next if $exposureprogram->{exposure_program_id} == 7;
 		next if $exposureprogram->{exposure_program_id} == 8;
-		if (prompt('', "Does this camera have $exposureprogram->{exposure_program} exposure program?", 'boolean')) {
+		if (prompt('no', "Does this camera have $exposureprogram->{exposure_program} exposure program?", 'boolean')) {
 			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
 			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
 			last if $exposureprogram->{exposure_program_id} == 0;
@@ -310,7 +310,7 @@ sub camera_meteringmode {
 	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
 	my $meteringmodes = &lookupcol($db, 'select * from METERING_MODE');
 	foreach my $meteringmode (@$meteringmodes) {
-		if (prompt('', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
+		if (prompt('no', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
 			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
 			last if $meteringmode->{metering_mode_id} == 0;
