@@ -313,6 +313,7 @@ sub camera_meteringmode {
 		if (prompt('', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
 			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+			last if $meteringmode->{metering_mode_id} == 0;
 		}
 	}
 }
