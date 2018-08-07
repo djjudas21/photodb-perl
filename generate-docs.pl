@@ -7,7 +7,7 @@ use Term::ReadKey;
 use DBI;
 
 # Set some sane defaults
-my $hostname = 'localhost';
+my $hostname = '127.0.0.1';
 my $database = 'photography';
 my $username = getlogin;
 
