@@ -360,6 +360,13 @@ sub camera_repair {
 	return $repair_id;
 }
 
+sub camera_info {
+	my $db = shift;
+	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
+	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
+}
+
+
 sub camera_stats {
 	my $db = shift;
 	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
@@ -1223,21 +1230,18 @@ sub movie_add {
 
 sub audit_shutterspeeds {
 	my $db = shift;
-	my %data;
 	my $cameraid = &listchoices($db, 'camera without shutter speed data', "select * from choose_camera_without_shutter_data");
 	 &camera_shutterspeeds($db, $cameraid);
 }
 
 sub audit_exposureprograms {
 	my $db = shift;
-	my %data;
 	my $cameraid = &listchoices($db, 'camera without exposure program data', "select * from choose_camera_without_exposure_programs");
 	 &camera_exposureprogram($db, $cameraid);
 }
 
 sub audit_meteringmodes {
 	my $db = shift;
-	my %data;
 	my $cameraid = &listchoices($db, 'camera without metering mode data', "select * from choose_camera_without_metering_data");
 	&camera_meteringmode($db, $cameraid);
 }
