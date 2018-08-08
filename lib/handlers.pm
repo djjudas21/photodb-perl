@@ -363,7 +363,7 @@ sub camera_repair {
 sub camera_info {
 	my $db = shift;
 	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
-	my $cameradata = &lookupcol($db, "select * from camera_summary where camera_id=$camera_id");
+	my $cameradata = &lookupcol($db, "select * from camera_summary where `Camera ID`=$camera_id");
 	print Dumper($cameradata);
 }
 
@@ -593,7 +593,7 @@ sub lens_stats {
 sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
-	my $lensdata = &lookupcol($db, "select * from lens_summary where lens_id=$lens_id");
+	my $lensdata = &lookupcol($db, "select * from lens_summary where `Lens ID`=$lens_id");
 	print Dumper($lensdata);
 }
 
