@@ -19,7 +19,7 @@ our @EXPORT = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats
-	lens_add lens_sell lens_repair lens_stats lens_accessory
+	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint
 	paperstock_add
 	developer_add
@@ -588,6 +588,13 @@ sub lens_stats {
 		my $meanf = &lookupval($db, "select avg(focal_length) from NEGATIVE where lens_id=$lens_id");
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
+}
+
+sub lens_info {
+	my $db = shift;
+	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
+	my $lensdata = &lookupcol($db, "select * from lens_summary where lens_id=$lens_id");
+	print Dumper($lensdata);
 }
 
 sub print_add {
