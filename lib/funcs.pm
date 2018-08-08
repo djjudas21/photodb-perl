@@ -234,10 +234,9 @@ sub listchoices {
 	my $rows = $sth->execute();
 
 	$sth->execute();
-	my $ref;
 	my @allowedvals;
 
-	while ($ref = $sth->fetchrow_hashref) {
+	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 		# Make a note of what allowed options are
 		push(@allowedvals, $ref->{id});
@@ -288,9 +287,8 @@ sub printlist {
 	my $rows = $sth->execute();
 
 	$sth->execute();
-	my $ref;
 
-	while ($ref = $sth->fetchrow_hashref) {
+	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
 }
@@ -304,9 +302,8 @@ sub lookupcol {
 	my $rows = $sth->execute();
 
 	$sth->execute();
-	my $ref;
 	my @array;
-	while ($ref = $sth->fetchrow_hashref) {
+	while (my $ref = $sth->fetchrow_hashref) {
 		$ref = &thin($ref);
 		push(@array, $ref);
 	}
