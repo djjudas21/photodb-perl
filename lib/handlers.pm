@@ -364,13 +364,8 @@ sub camera_info {
 	my $db = shift;
 	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
 	my $cameradata = &lookupcol($db, "select * from camera_summary where camera_id=$camera_id");
-	$cameradata = @$cameradata[0];
-	foreach (keys %$cameradata) {
-		delete $$cameradata{$_} unless (defined $$cameradata{$_} and $$cameradata{$_} ne '');
-	}
 	print Dumper($cameradata);
 }
-
 
 sub camera_stats {
 	my $db = shift;

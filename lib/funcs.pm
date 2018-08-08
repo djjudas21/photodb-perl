@@ -15,7 +15,7 @@ $Data::Dumper::Deparse = 1;
 $Data::Dumper::Quotekeys = 0;
 $Data::Dumper::Sortkeys = 1;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -141,9 +141,7 @@ sub updaterecord {
 	}
 
 	# Delete empty strings from data hash
-	foreach (keys %$data) {
-		delete $$data{$_} unless (defined $$data{$_} and $$data{$_} ne '');
-	}
+	$data = &thin($data);
 
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n";
@@ -174,9 +172,7 @@ sub newrecord {
 	my $table = shift;
 
 	# Delete empty strings from data hash
-	foreach (keys %$data) {
-		delete $$data{$_} unless (defined $$data{$_} and $$data{$_} ne '');
-	}
+	$data = &thin($data);
 
 	# Dump data for debugging
 	print "\n\nThis is what I will insert into $table:\n";
@@ -311,9 +307,19 @@ sub lookupcol {
 	my $ref;
 	my @array;
 	while ($ref = $sth->fetchrow_hashref) {
+		$ref = &thin($ref);
 		push(@array, $ref);
 	}
 	return \@array;
+}
+
+# Thin out keys will null values from a sparse hash
+sub thin {
+	my $data = shift;
+	foreach (keys %$data) {
+		delete $$data{$_} unless (defined $$data{$_} and $$data{$_} ne '');
+	}
+	return \%$data;
 }
 
 # Return arbitrary value from database
