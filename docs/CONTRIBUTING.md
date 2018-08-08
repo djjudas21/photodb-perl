@@ -10,6 +10,12 @@ multiple database tables at once.
 * Documentation should be kept up to date with the project. Database schema docs are generated automatically but application usage documentation needs to be written by hand.
 * CI tests need to be passing before a pull request will be accepted. At the moment this is just a syntax check but I hope to expand the tests in the future.
 
+## Database conventions
+
+* Tables should be given names in UPPERCASE
+* Views should be given names in LOWERCASE
+* Views whose name starts `choose_` are specifically for use with the `listchoices()` function
+
 ### Altering the schema
 
 This section describes how to alter the schema, and document the changes.
