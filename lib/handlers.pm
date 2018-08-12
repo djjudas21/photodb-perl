@@ -18,7 +18,7 @@ our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info
 	mount_add mount_view mount_adapt
-	negative_add negative_bulkadd negative_stats
+	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint
 	paperstock_add
@@ -472,6 +472,14 @@ sub negative_stats {
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
 	print "\tThis negative has been printed $noprints times\n";
+}
+
+sub negative_prints {
+	my $db = shift;
+	my $film_id = prompt('', 'Film ID to print from', 'integer');
+	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	&printlist($db, "prints from negative $neg_id", "select print_id as id, concat(date, ' ', height, 'x', width, '\"', ' - ', if(own, ifnull(archive_id, 'Location unknown'), ifnull(location, 'Location unknown')))  as opt from PRINT where negative_id=$neg_id");
 }
 
 sub lens_add {
