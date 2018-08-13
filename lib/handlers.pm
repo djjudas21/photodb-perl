@@ -479,7 +479,7 @@ sub negative_prints {
 	my $film_id = prompt('', 'Film ID to print from', 'integer');
 	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
-	&printlist($db, "prints from negative $neg_id", "select print_id as id, concat(date, ' ', height, 'x', width, '\"', ' - ', if(own, ifnull(archive_id, 'Location unknown'), ifnull(location, 'Location unknown')))  as opt from PRINT where negative_id=$neg_id");
+	&printlist($db, "prints from negative $neg_id", "select print_id as id, concat(date, ' ', height, 'x', width, '\"', ' - ', if(own, ifnull(archive_id, 'Location unknown'), ifnull(location, 'Location unknown'))) as opt from PRINT where negative_id=$neg_id");
 }
 
 sub lens_add {
@@ -1387,7 +1387,7 @@ sub task_run {
 
 	my $sql = $tasks[$input]{'query'};
 	my $rows = &updatedata($db, $sql);
-	$rows = 0 if ($rows eq  '0E0');
+	$rows = 0 if ($rows eq '0E0');
 	print "Updated $rows rows\n";
 }
 
