@@ -1351,7 +1351,34 @@ sub task_run {
 			and NEGATIVE.exposure_program is null'
 	};
 
-       for my $i (0 .. $#tasks) {
+	push @tasks, {
+		desc => 'Set fixed lenses as lost when their camera is lost',
+		query => 'update
+			LENS,
+			CAMERA
+		set
+			LENS.own=0,
+			LENS.lost=CAMERA.lost
+		where
+			LENS.lens_id=CAMERA.lens_id
+			and CAMERA.own=0
+			and CAMERA.fixed_mount=1'
+	};
+
+	push @tasks, {
+		desc => 'Set crop factor, area, and aspect ratio for negative sizes that lack it',
+		query => 'update
+			NEGATIVE_SIZE
+		set
+			crop_factor = round(sqrt(24*24 + 36*36)/sqrt(width*width + height*height),2),
+			area = width*height,
+			aspect_ratio = round(width/height, 2)
+		where
+			width is not null
+			and height is not null'
+	};
+
+	for my $i (0 .. $#tasks) {
 		print "\t$i\t$tasks[$i]{'desc'}\n";
 	}
 
