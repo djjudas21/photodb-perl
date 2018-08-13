@@ -1263,13 +1263,12 @@ sub audit_meteringmodes {
 
 sub task_run {
 	my $db = shift;
-	my @tasks;
-	push @tasks, {
+	my @tasks = (
+	{
 		desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',
 		query => $queries::set_lens_id
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Update lens focal length per negative',
 		query => 'update
 			NEGATIVE left join TELECONVERTER on(NEGATIVE.teleconverter_id=TELECONVERTER.teleconverter_id),
@@ -1281,9 +1280,8 @@ sub task_run {
 			and LENS.zoom = 0
 			and LENS.min_focal_length is not null
 			and NEGATIVE.focal_length is null'
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Update dates of fixed lenses',
 		query => 'update
 			LENS,
@@ -1295,9 +1293,8 @@ sub task_run {
 			and CAMERA.fixed_mount = 1
 			and CAMERA.acquired is not null
 			and LENS.acquired!=CAMERA.acquired'
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Set metering mode for negatives taken with cameras with only one metering mode',
 		query => 'UPDATE
 			NEGATIVE,
@@ -1322,9 +1319,8 @@ sub task_run {
 			and FILM.camera_id=CAMERA.camera_id
 			and CAMERA.camera_id = VALIDCAMERA.camera_id
 			and NEGATIVE.metering_mode is null'
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Set exposure program for negatives taken with cameras with only one exposure program',
 		query => 'UPDATE
 			NEGATIVE,
@@ -1349,9 +1345,8 @@ sub task_run {
 			and FILM.camera_id=CAMERA.camera_id
 			and CAMERA.camera_id = VALIDCAMERA.camera_id
 			and NEGATIVE.exposure_program is null'
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Set fixed lenses as lost when their camera is lost',
 		query => 'update
 			LENS,
@@ -1363,9 +1358,8 @@ sub task_run {
 			LENS.lens_id=CAMERA.lens_id
 			and CAMERA.own=0
 			and CAMERA.fixed_mount=1'
-	};
-
-	push @tasks, {
+	},
+	{
 		desc => 'Set crop factor, area, and aspect ratio for negative sizes that lack it',
 		query => 'update
 			NEGATIVE_SIZE
@@ -1376,7 +1370,8 @@ sub task_run {
 		where
 			width is not null
 			and height is not null'
-	};
+	},
+	);
 
 	for my $i (0 .. $#tasks) {
 		print "\t$i\t$tasks[$i]{'desc'}\n";
