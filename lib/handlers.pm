@@ -479,7 +479,7 @@ sub negative_prints {
 	my $film_id = prompt('', 'Film ID to print from', 'integer');
 	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
-	&printlist($db, "prints from negative $neg_id", "select print_id as id, concat(date, ' ', height, 'x', width, '\"', ' - ', if(own, ifnull(archive_id, 'Location unknown'), ifnull(location, 'Location unknown'))) as opt from PRINT where negative_id=$neg_id");
+	&printlist($db, "prints from negative $neg_id", "select id, opt from print_locations where negative_id=$neg_id");
 }
 
 sub lens_add {
