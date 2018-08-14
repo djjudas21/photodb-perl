@@ -126,6 +126,7 @@ Add a new chemical toner to the database
 Add a new type of filmstock to the database
 
 ## `accessory`
+The `accessory` command provides subcommands for adding photographic accessories to the database.
 ### `accessory add`
 Add a new "other" accessory to the database
 ### `accessory type`
