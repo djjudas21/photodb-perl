@@ -15,7 +15,7 @@ $Data::Dumper::Deparse = 1;
 $Data::Dumper::Quotekeys = 0;
 $Data::Dumper::Sortkeys = 1;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -393,6 +393,37 @@ sub pad {
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
+}
+
+# Get a negative ID either from the neg ID or the film/frame ID
+sub resolvenegid {
+	my $db = shift;
+	my $string = shift;
+	if ($string =~ m/^\d+$/) {
+		# All digits - already a NegID
+		return $string;
+	} elsif ($string =~ m/^(\d+)\/([a-z0-9]+)$/i) {
+		# 999/99A - a film/frame ID
+		my $film_id = $1;
+		my $frame = $2;
+		my $neg_id = &lookupval($db, "select lookupneg($film_id, $frame)");
+		return $neg_id;
+	} else {
+		# Could not resolve
+		die "Could not resolve $string to a negative ID\n";
+	}
+}
+
+sub chooseneg {
+	my $db = shift;
+	my $film_id = prompt('', 'Enter Film ID', 'integer');
+	my $frame = &listchoices($db, 'frame', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	if ($neg_id =~ m/^\d+$/) {
+		return $neg_id;
+	} else {
+		die "Could not find a negative ID for film $film_id and frame $frame\n";
+	}
 }
 
 # This ensures the lib loads smoothly

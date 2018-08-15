@@ -467,18 +467,14 @@ sub negative_bulkadd {
 
 sub negative_stats {
 	my $db = shift;
-	my $film_id = prompt('', 'Film ID to print from', 'integer');
-	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id = &chooseneg($db);
 	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
 	print "\tThis negative has been printed $noprints times\n";
 }
 
 sub negative_prints {
 	my $db = shift;
-	my $film_id = prompt('', 'Film ID to print from', 'integer');
-	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id = &chooseneg($db);
 	&printlist($db, "prints from negative $neg_id", "select id, opt from print_locations where negative_id=$neg_id");
 }
 
@@ -613,9 +609,7 @@ sub print_add {
 	if ($todo_id) {
 		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
 	} else {
-		my $film_id = prompt('', 'Film ID to print from', 'integer');
-		my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-		$neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+		$neg_id = &chooseneg($db);
 	}
 	$data{'negative_id'} = prompt($neg_id, 'Negative ID to print from', 'integer');
 	$data{'date'} = prompt(&today($db), 'Date that the print was made', 'date');
@@ -693,9 +687,7 @@ sub print_sell {
 sub print_order {
 	my $db = shift;
 	my %data;
-	my $film_id = prompt('', 'Film ID to print from', 'integer');
-	my $frame = &listchoices($db, 'Frame to print from', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id = &chooseneg($db);
 	$data{'negative_id'} = prompt($neg_id, 'Negative ID to print from', 'integer');
 	$data{'height'} = prompt('', 'Height of the print (inches)', 'integer');
 	$data{'width'} = prompt('', 'Width of the print (inches)', 'integer');
