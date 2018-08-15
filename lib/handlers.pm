@@ -1266,7 +1266,6 @@ sub task_run {
 
 	my $sql = $tasks[$input]{'query'};
 	my $rows = &updatedata($db, $sql);
-	$rows = 0 if ($rows eq '0E0');
 	print "Updated $rows rows\n";
 }
 

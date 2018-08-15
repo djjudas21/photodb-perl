@@ -339,6 +339,7 @@ sub updatedata {
 	my $query = shift;
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
+	$rows = 0 if ($rows eq '0E0');
 	return $rows;
 }
 
