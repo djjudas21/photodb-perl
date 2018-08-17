@@ -15,7 +15,7 @@ use queries;
 use tagger;
 
 our @EXPORT = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
@@ -153,6 +153,12 @@ sub film_bulk {
 	$data{'source'} = prompt('', 'Where was this bulk film purchased from?', 'text');
 	my $filmid = &newrecord($db, \%data, 'FILM_BULK');
 	return $filmid;
+}
+
+sub film_annotate {
+	my $db = shift;
+	my $film_id = prompt('', 'Which film do you want to annotate?', 'integer');
+	&annotatefilm($db, $film_id);
 }
 
 sub camera_add {

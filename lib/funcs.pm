@@ -15,7 +15,7 @@ $Data::Dumper::Deparse = 1;
 $Data::Dumper::Quotekeys = 0;
 $Data::Dumper::Sortkeys = 1;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -424,6 +424,69 @@ sub chooseneg {
 		return $neg_id;
 	} else {
 		die "Could not find a negative ID for film $film_id and frame $frame\n";
+	}
+}
+
+# Write out a text file in the film directory
+sub annotatefilm {
+	my $db = shift;
+	my $film_id = shift;
+
+	my $inidata = ReadINI(&ini);
+	my $path = $$inidata{'filesystem'}{'basepath'};
+	if (defined($path) && $path ne '' && -d $path) {
+		my $filmdir = &lookupval($db, "select directory from FILM where film_id=$film_id");
+		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
+			# proceed
+			my $filename = "$path/$filmdir/details.txt";
+
+			my $sth = $db->prepare('SELECT * FROM photography.film_info where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
+			my $rows = $sth->execute($film_id);
+			my @output;
+
+			while (my $ref = $sth->fetchrow_hashref) {
+				$ref = &thin($ref);
+				# Print the film header and remove it from the hash
+				push(@output, "Film #$ref->{'Film ID'} \"$ref->{'Title'}\"\n\n");
+				delete $ref->{'Film ID'};
+				delete $ref->{'Title'};
+
+				# Print remaining key-value pairs for the film
+				foreach (sort keys %$ref) {
+					push(@output, "$_: $ref->{$_}\n");
+				}
+			}
+
+			# Now work out the negative details
+			my $sth2 = $db->prepare('SELECT * FROM photography.negative_info where film_id=?') or die "Couldn't prepare statement: " . $db->errstr;
+			my $rows2 = $sth2->execute($film_id);
+
+			# Print a block for each negative
+			while (my $ref = $sth2->fetchrow_hashref) {
+				$ref = &thin($ref);
+				delete $ref->{'film_id'};
+				# Print the negative header and remove it from the hash
+				push(@output, "\n");
+				push(@output, "Frame $ref->{'Frame'} \"$ref->{'Caption'}\"\n");
+				delete $ref->{'Frame'};
+				delete $ref->{'Caption'};
+
+				# Print remaining key-value pairs for the negative
+				foreach (sort keys %$ref) {
+					push(@output, "\t$_: $ref->{$_}\n");
+				}
+			}
+			# Write the compiled array out to a file
+			open my $fh, '>', $filename or die "Cannot open $filename: $!";
+			foreach (@output) {
+				print $fh $_;
+			}
+			close $fh;
+		} else {
+			die "Film directory $path/$filmdir not found\n";
+		}
+	} else {
+		die "Path $path not found\n";
 	}
 }
 

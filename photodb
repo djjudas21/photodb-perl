@@ -20,13 +20,14 @@ my $db = &db;
 # Define handlers for each command
 my %handlers = (
 	film => {
-		'add'     => { 'handler' => \&film_add,     'desc' => 'Add a new film to the database' },
-		'load'    => { 'handler' => \&film_load,    'desc' => 'Load a film into a camera' },
-		'develop' => { 'handler' => \&film_develop, 'desc' => 'Develop a film' },
-		'tag'     => { 'handler' => \&film_tag,     'desc' => 'Write EXIF tags to scans from a film' },
-		'archive' => { 'handler' => \&film_archive, 'desc' => 'Put the film in a physical archive' },
-		'locate'  => { 'handler' => \&film_locate,  'desc' => 'Locate where this film is' },
-		'bulk'    => { 'handler' => \&film_bulk,    'desc' => 'Add a new bulk film to the database' },
+		'add'      => { 'handler' => \&film_add,      'desc' => 'Add a new film to the database' },
+		'load'     => { 'handler' => \&film_load,     'desc' => 'Load a film into a camera' },
+		'develop'  => { 'handler' => \&film_develop,  'desc' => 'Develop a film' },
+		'tag'      => { 'handler' => \&film_tag,      'desc' => 'Write EXIF tags to scans from a film' },
+		'archive'  => { 'handler' => \&film_archive,  'desc' => 'Put the film in a physical archive' },
+		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
+		'bulk'     => { 'handler' => \&film_bulk,     'desc' => 'Add a new bulk film to the database' },
+		'annotate' => { 'handler' => \&film_annotate, 'desc' => 'Write out a text file with the scans from the film' },
 	},
 	camera => {
 		'add'             => { 'handler' => \&camera_add,             'desc' => 'Add a new camera to the database' },

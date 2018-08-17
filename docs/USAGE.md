@@ -29,6 +29,8 @@ Put the film in a physical archive
 Locate where this film is
 ### `film bulk`
 Add a new bulk film to the database
+### `film annotate`
+Create a text file in the film scan directory with summary info about the film & negatives
 
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
