@@ -182,6 +182,14 @@ docker pull djjudas21/photodb
 docker run -it --rm photodb photodb
 ```
 
+### Set up autocomplete
+
+PhotoDB ships with Bash completion. Enable it by
+
+```
+echo "source photodb-completion.bash" >> ~/.bash_profile
+```
+
 ## Configure database connection
 
 There are three methods for connecting to the database:
