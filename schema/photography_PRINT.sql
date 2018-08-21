@@ -13,20 +13,20 @@ CREATE TABLE `PRINT` (
   `development_time` int(11) DEFAULT NULL COMMENT 'Development time of this print in seconds',
   `bleach_time` time DEFAULT NULL COMMENT 'Duration of bleaching',
   `toner_id` int(11) DEFAULT NULL COMMENT 'ID of the first toner used to make this print',
-  `toner_dilution` varchar(6) DEFAULT NULL COMMENT 'Dilution of the first toner used to make this print',
+  `toner_dilution` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `toner_time` time DEFAULT NULL COMMENT 'Duration of first toning',
   `2nd_toner_id` int(11) DEFAULT NULL COMMENT 'ID of the second toner used to make this print',
-  `2nd_toner_dilution` varchar(6) DEFAULT NULL COMMENT 'Dilution of the second toner used to make this print',
+  `2nd_toner_dilution` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `2nd_toner_time` time DEFAULT NULL COMMENT 'Duration of second toning',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this print',
-  `location` varchar(45) DEFAULT NULL COMMENT 'The place where this print is currently',
+  `location` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sold_price` decimal(5,2) DEFAULT NULL COMMENT 'Sale price of the print',
   `enlarger_id` int(11) DEFAULT NULL COMMENT 'ID of the enlarger used to make this print',
   `lens_id` int(11) DEFAULT NULL COMMENT 'ID of the lens used to make this print',
   `developer_id` int(11) DEFAULT NULL COMMENT 'ID of the developer used to develop this print',
   `fine` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a fine print',
-  `notes` text COMMENT 'Freeform notes about this print, e.g. dodging, burning & complex toning',
-  `filename` varchar(100) DEFAULT NULL COMMENT 'The filename of the image scanned from this print',
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `filename` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `archive_id` int(11) DEFAULT NULL COMMENT 'ID of the archive to which this print belongs',
   `printer_id` int(11) DEFAULT NULL COMMENT 'ID of the person who made this print',
   PRIMARY KEY (`print_id`),
@@ -46,5 +46,5 @@ CREATE TABLE `PRINT` (
   CONSTRAINT `fk_PRINT_6` FOREIGN KEY (`developer_id`) REFERENCES `DEVELOPER` (`developer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_PRINT_7` FOREIGN KEY (`archive_id`) REFERENCES `ARCHIVE` (`archive_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_PRINT_8` FOREIGN KEY (`printer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog prints made from negatives';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog prints made from negatives';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -7,5 +7,5 @@ CREATE TABLE `METERING_MODE_AVAILABLE` (
   KEY `fk_METERING_MODE_AVAILABLE_2_idx` (`metering_mode_id`),
   CONSTRAINT `fk_METERING_MODE_AVAILABLE_1` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_METERING_MODE_AVAILABLE_2` FOREIGN KEY (`metering_mode_id`) REFERENCES `METERING_MODE` (`metering_mode_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to associate cameras with available metering modes';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to associate cameras with available metering modes';
 /*!40101 SET character_set_client = @saved_cs_client */;

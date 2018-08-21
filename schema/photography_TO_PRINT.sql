@@ -7,10 +7,10 @@ CREATE TABLE `TO_PRINT` (
   `height` int(11) DEFAULT NULL COMMENT 'Height of print to be made',
   `printed` tinyint(1) DEFAULT '0' COMMENT 'Whether the print has been made',
   `print_id` int(11) DEFAULT NULL COMMENT 'ID of print made',
-  `recipient` varchar(45) DEFAULT NULL COMMENT 'Recipient of the print',
+  `recipient` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `added` date DEFAULT NULL COMMENT 'Date that record was added',
   PRIMARY KEY (`id`),
   KEY `fk_TO_PRINT_1_idx` (`negative_id`),
   CONSTRAINT `fk_TO_PRINT_1` FOREIGN KEY (`negative_id`) REFERENCES `NEGATIVE` (`negative_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalogue negatives that should be printed';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalogue negatives that should be printed';
 /*!40101 SET character_set_client = @saved_cs_client */;
