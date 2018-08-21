@@ -5,7 +5,7 @@ CREATE TABLE `TELECONVERTER` (
   `mount_id` int(11) DEFAULT NULL COMMENT 'ID of the lens mount used by this teleconverter',
   `factor` decimal(4,2) DEFAULT NULL COMMENT 'Magnification factor of this teleconverter (numerical part only, e.g. 1.4)',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer of this teleconverter',
-  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Model name of this teleconverter',
   `elements` tinyint(4) DEFAULT NULL COMMENT 'Number of optical elements used in this teleconverter',
   `groups` tinyint(4) DEFAULT NULL COMMENT 'Number of optical groups used in this teleconverter',
   `multicoated` tinyint(1) DEFAULT NULL COMMENT 'Whether this teleconverter is multi-coated',

@@ -314,7 +314,7 @@ Table to catlog flashes, flashguns and speedlights
 | hot_shoe          | tinyint(1)   | Whether the flash has a hot shoe connection                 |
 | light_stand       | tinyint(1)   | Whether the flash can be used on a light stand              |
 | battery_type_id   | int(11)      | ID of battery type                                          |
-| battery_qty       | varchar(45)  | Quantity of batteries needed in this flash                  |
+| battery_qty       | int(11)      | Quantity of batteries needed in this flash                  |
 | manual_control    | tinyint(1)   | Whether this flash offers manual power control              |
 | swivel_head       | tinyint(1)   | Whether this flash has a horizontal swivel head             |
 | tilt_head         | tinyint(1)   | Whether this flash has a vertical tilt head                 |
@@ -325,7 +325,7 @@ Table to catlog flashes, flashguns and speedlights
 | trigger_voltage   | decimal(4,1) | Trigger voltage of the flash, in Volts                      |
 | own               | tinyint(1)   | Whether we currently own this flash                         |
 | acquired          | date         | Date this flash was acquired                                |
-| cost              | varchar(45)  | Purchase cost of this flash                                 |
+| cost              | decimal(5,2) | Purchase cost of this flash                                 |
 
 ## FLASH_PROTOCOL
 
@@ -360,52 +360,52 @@ Table to catalogue different film formats. These are distinct from negative size
 
 Table to catalog lenses
 
-| COLUMN_NAME            | COLUMN_TYPE  | COLUMN_COMMENT                                                                                                                               |
-|------------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| lens_id                | int(11)      | Unique ID for this lens                                                                                                                      |
-| mount_id               | int(11)      | Denotes the ID of the lens mount, if this is an interchangeable lens                                                                         |
-| zoom                   | tinyint(1)   | Whether this is a zoom lens                                                                                                                  |
-| min_focal_length       | int(11)      | Shortest focal length of this lens, in mm                                                                                                    |
-| max_focal_length       | int(11)      | Longest focal length of this lens, in mm                                                                                                     |
-| manufacturer_id        | int(11)      | ID of the manufacturer of this lens                                                                                                          |
-| model                  | varchar(45)  | Model name of this lens                                                                                                                      |
-| closest_focus          | int(11)      | The closest focus possible with this lens, in cm                                                                                             |
-| max_aperture           | decimal(4,1) | Maximum (widest) aperture available on this lens (numerical part only, e.g. 2.8)                                                             |
-| min_aperture           | decimal(4,1) | Minimum (narrowest) aperture available on this lens (numerical part only, e.g. 22)                                                           |
-| elements               | int(11)      | Number of optical lens elements                                                                                                              |
-| groups                 | int(11)      | Number of optical groups                                                                                                                     |
-| weight                 | int(11)      | Weight of this lens, in grammes (g)                                                                                                          |
-| nominal_min_angle_diag | int(11)      | Nominal minimum diagonal field of view from manufacturer's specs                                                                             |
-| nominal_max_angle_diag | int(11)      | Nominal maximum diagonal field of view from manufacturer's specs                                                                             |
-| aperture_blades        | int(11)      | Number of aperture blades                                                                                                                    |
-| autofocus              | tinyint(1)   | Whether this lens has autofocus capability                                                                                                   |
-| filter_thread          | decimal(4,1) | Diameter of lens filter thread, in mm                                                                                                        |
-| magnification          | decimal(5,3) | Maximum magnification ratio of the lens, expressed like 0.765                                                                                |
-| url                    | varchar(145) | URL to more information about this lens                                                                                                      |
-| serial                 | varchar(45)  | Serial number of this lens                                                                                                                   |
-| date_code              | varchar(45)  | Date code of this lens, if different from the serial number                                                                                  |
-| introduced             | smallint(6)  | Year in which this lens model was introduced                                                                                                 |
-| discontinued           | smallint(6)  | Year in which this lens model was discontinued                                                                                               |
-| manufactured           | smallint(6)  | Year in which this specific lens was manufactured                                                                                            |
-| negative_size_id       | int(11)      | ID of the negative size which this lens is designed for                                                                                      |
-| acquired               | date         | Date on which this lens was acquired                                                                                                         |
-| cost                   | decimal(6,2) | Price paid for this lens in local currency units                                                                                             |
-| fixed_mount            | tinyint(1)   | Whether this is a fixed lens (i.e. on a compact camera)                                                                                      |
-| notes                  | text         | Freeform notes field                                                                                                                         |
-| own                    | tinyint(1)   | Whether we currently own this lens                                                                                                           |
-| lost                   | date         | Date on which lens was lost/sold/disposed                                                                                                    |
-| lost_price             | decimal(6,2) | Price for which the lens was sold                                                                                                            |
-| source                 | varchar(150) | Place where the lens was acquired from                                                                                                       |
-| coating                | varchar(45)  | Notes about the lens coating type                                                                                                            |
-| hood                   | varchar(45)  | Model number of the compatible lens hood                                                                                                     |
-| exif_lenstype          | varchar(45)  | EXIF LensID integer, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ |
-| rectilinear            | tinyint(1)   | Whether this is a rectilinear lens                                                                                                           |
-| length                 | int(11)      | Length of lens in mm                                                                                                                         |
-| diameter               | int(11)      | Width of lens in mm                                                                                                                          |
-| condition_id           | int(11)      | Denotes the cosmetic condition of the camera                                                                                                 |
-| image_circle           | int(11)      | Diameter of image circle projected by lens, in mm                                                                                            |
-| formula                | varchar(45)  | Name of the type of lens formula (e.g. Tessar)                                                                                               |
-| shutter_model          | varchar(45)  | Name of the integrated shutter, if any                                                                                                       |
+| COLUMN_NAME            | COLUMN_TYPE  | COLUMN_COMMENT                                                                                                                              |
+|------------------------|--------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| lens_id                | int(11)      | Unique ID for this lens                                                                                                                     |
+| mount_id               | int(11)      | Denotes the ID of the lens mount, if this is an interchangeable lens                                                                        |
+| zoom                   | tinyint(1)   | Whether this is a zoom lens                                                                                                                 |
+| min_focal_length       | int(11)      | Shortest focal length of this lens, in mm                                                                                                   |
+| max_focal_length       | int(11)      | Longest focal length of this lens, in mm                                                                                                    |
+| manufacturer_id        | int(11)      | ID of the manufacturer of this lens                                                                                                         |
+| model                  | varchar(45)  | Model name of this lens                                                                                                                     |
+| closest_focus          | int(11)      | The closest focus possible with this lens, in cm                                                                                            |
+| max_aperture           | decimal(4,1) | Maximum (widest) aperture available on this lens (numerical part only, e.g. 2.8)                                                            |
+| min_aperture           | decimal(4,1) | Minimum (narrowest) aperture available on this lens (numerical part only, e.g. 22)                                                          |
+| elements               | int(11)      | Number of optical lens elements                                                                                                             |
+| groups                 | int(11)      | Number of optical groups                                                                                                                    |
+| weight                 | int(11)      | Weight of this lens, in grammes (g)                                                                                                         |
+| nominal_min_angle_diag | int(11)      | Nominal minimum diagonal field of view from manufacturer's specs                                                                            |
+| nominal_max_angle_diag | int(11)      | Nominal maximum diagonal field of view from manufacturer's specs                                                                            |
+| aperture_blades        | int(11)      | Number of aperture blades                                                                                                                   |
+| autofocus              | tinyint(1)   | Whether this lens has autofocus capability                                                                                                  |
+| filter_thread          | decimal(4,1) | Diameter of lens filter thread, in mm                                                                                                       |
+| magnification          | decimal(5,3) | Maximum magnification ratio of the lens, expressed like 0.765                                                                               |
+| url                    | varchar(145) | URL to more information about this lens                                                                                                     |
+| serial                 | varchar(45)  | Serial number of this lens                                                                                                                  |
+| date_code              | varchar(45)  | Date code of this lens, if different from the serial number                                                                                 |
+| introduced             | smallint(6)  | Year in which this lens model was introduced                                                                                                |
+| discontinued           | smallint(6)  | Year in which this lens model was discontinued                                                                                              |
+| manufactured           | smallint(6)  | Year in which this specific lens was manufactured                                                                                           |
+| negative_size_id       | int(11)      | ID of the negative size which this lens is designed for                                                                                     |
+| acquired               | date         | Date on which this lens was acquired                                                                                                        |
+| cost                   | decimal(6,2) | Price paid for this lens in local currency units                                                                                            |
+| fixed_mount            | tinyint(1)   | Whether this is a fixed lens (i.e. on a compact camera)                                                                                     |
+| notes                  | text         | Freeform notes field                                                                                                                        |
+| own                    | tinyint(1)   | Whether we currently own this lens                                                                                                          |
+| lost                   | date         | Date on which lens was lost/sold/disposed                                                                                                   |
+| lost_price             | decimal(6,2) | Price for which the lens was sold                                                                                                           |
+| source                 | varchar(150) | Place where the lens was acquired from                                                                                                      |
+| coating                | varchar(45)  | Notes about the lens coating type                                                                                                           |
+| hood                   | varchar(45)  | Model number of the compatible lens hood                                                                                                    |
+| exif_lenstype          | varchar(45)  | EXIF LensID number, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ |
+| rectilinear            | tinyint(1)   | Whether this is a rectilinear lens                                                                                                          |
+| length                 | int(11)      | Length of lens in mm                                                                                                                        |
+| diameter               | int(11)      | Width of lens in mm                                                                                                                         |
+| condition_id           | int(11)      | Denotes the cosmetic condition of the camera                                                                                                |
+| image_circle           | int(11)      | Diameter of image circle projected by lens, in mm                                                                                           |
+| formula                | varchar(45)  | Name of the type of lens formula (e.g. Tessar)                                                                                              |
+| shutter_model          | varchar(45)  | Name of the integrated shutter, if any                                                                                                      |
 
 ## LENS_TYPE
 
@@ -510,22 +510,22 @@ Table to catalog adapters to mount lenses on other cameras
 
 Table to catalog motion picture films (movies)
 
-| COLUMN_NAME    | COLUMN_TYPE | COLUMN_COMMENT                                     |
-|----------------|-------------|----------------------------------------------------|
-| movie_id       | int(11)     | Unique ID for this motion picture film / movie     |
-| title          | varchar(45) | Title of this movie                                |
-| camera_id      | int(11)     | ID of the camera used to shoot this movie          |
-| lens_id        | int(11)     | ID of the lens used to shoot this movie            |
-| format_id      | int(11)     | ID of the film format on which this movie was shot |
-| sound          | tinyint(1)  | Whether this movie has sound                       |
-| fps            | int(11)     | Frame rate of this movie, in fps                   |
-| filmstock_id   | int(11)     | ID of the filmstock used to shoot this movie       |
-| feet           | int(11)     | Length of this movie in feet                       |
-| date_loaded    | date        | Date that the filmstock was loaded into a camera   |
-| date_shot      | date        | Date on which this movie was shot                  |
-| date_processed | date        | Date on which this movie was processed             |
-| process_id     | int(11)     | ID of the process used to develop this film        |
-| description    | varchar(45) | Freeform text description of this movie            |
+| COLUMN_NAME    | COLUMN_TYPE  | COLUMN_COMMENT                                     |
+|----------------|--------------|----------------------------------------------------|
+| movie_id       | int(11)      | Unique ID for this motion picture film / movie     |
+| title          | varchar(45)  | Title of this movie                                |
+| camera_id      | int(11)      | ID of the camera used to shoot this movie          |
+| lens_id        | int(11)      | ID of the lens used to shoot this movie            |
+| format_id      | int(11)      | ID of the film format on which this movie was shot |
+| sound          | tinyint(1)   | Whether this movie has sound                       |
+| fps            | int(11)      | Frame rate of this movie, in fps                   |
+| filmstock_id   | int(11)      | ID of the filmstock used to shoot this movie       |
+| feet           | int(11)      | Length of this movie in feet                       |
+| date_loaded    | date         | Date that the filmstock was loaded into a camera   |
+| date_shot      | date         | Date on which this movie was shot                  |
+| date_processed | date         | Date on which this movie was processed             |
+| process_id     | int(11)      | ID of the process used to develop this film        |
+| description    | varchar(100) | Table to catalog motion picture films (movies)     |
 
 ## NEGATIVE
 

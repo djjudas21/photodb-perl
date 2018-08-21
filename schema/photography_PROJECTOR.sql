@@ -3,7 +3,7 @@
 CREATE TABLE `PROJECTOR` (
   `projector_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of this projector',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer of this projector',
-  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Model name of this projector',
   `mount_id` int(11) DEFAULT NULL COMMENT 'ID of the lens mount of this projector, if it has interchangeable lenses',
   `negative_size_id` int(11) DEFAULT NULL COMMENT 'ID of the largest negative size that this projector can handle',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this projector',
