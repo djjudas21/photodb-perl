@@ -5,6 +5,10 @@ package funcs;
 use strict;
 use warnings;
 
+use Switch;
+use DBI;
+use DBD::mysql;
+use SQL::Abstract;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;

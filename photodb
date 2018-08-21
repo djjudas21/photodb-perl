@@ -4,16 +4,11 @@
 
 use strict;
 use warnings;
-use Switch;
-use DBI;
-use DBD::mysql;
-use SQL::Abstract;
 binmode(STDOUT, ":utf8");
 binmode(STDIN, ":encoding(utf8)");
 
 use lib 'lib';
 use funcs;
-use queries;
 use handlers;
 use commands;
 
