@@ -14,7 +14,7 @@ BEGIN
     select negative_id into negid
     from NEGATIVE
     where film_id = p_film_id
-		and frame = p_frame;
+		and frame = p_frame collate utf8mb4_general_ci;
 RETURN negid;
 END ;;
 DELIMITER ;
