@@ -626,7 +626,7 @@ sub print_add {
 	$data{'exposure_time'} = prompt('', 'Exposure time (s)', 'integer');
 	$data{'filtration_grade'} = prompt('', 'Filtration grade', 'decimal');
 	$data{'development_time'} = prompt('', 'Development time (s)', 'integer');
-	$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select * from choose_enlarger");
+	$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select * from choose_enlarger", 'integer', \&enlarger_add);
 	$data{'lens_id'} = &listchoices($db, 'enlarger lens', "select * from choose_enlarger_lens");
 	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1", 'integer', \&developer_add);
 	$data{'fine'} = prompt('', 'Is this a fine print?', 'boolean');
