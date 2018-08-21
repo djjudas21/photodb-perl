@@ -4,7 +4,7 @@ CREATE TABLE `ACCESSORY` (
   `accessory_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of this accessory',
   `accessory_type_id` int(11) DEFAULT NULL COMMENT 'ID of this type of accessory',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer',
-  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Model of the accessory',
   `acquired` date DEFAULT NULL COMMENT 'Date that this accessory was acquired',
   `cost` decimal(5,2) DEFAULT NULL COMMENT 'Purchase cost of the accessory',
   `lost` date DEFAULT NULL COMMENT 'Date that this accessory was lost',

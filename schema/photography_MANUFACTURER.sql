@@ -2,10 +2,10 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MANUFACTURER` (
   `manufacturer_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of the manufacturer',
-  `manufacturer` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `city` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `country` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `url` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manufacturer` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Name of the manufacturer',
+  `city` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'City in which the manufacturer is based',
+  `country` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Country in which the manufacturer is based',
+  `url` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'URL to the manufacturer''s main website',
   `founded` smallint(6) DEFAULT NULL COMMENT 'Year in which the manufacturer was founded',
   `dissolved` smallint(6) DEFAULT NULL COMMENT 'Year in which the manufacturer was dissolved',
   PRIMARY KEY (`manufacturer_id`),

@@ -3,7 +3,7 @@
 CREATE TABLE `LIGHT_METER` (
   `light_meter_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID for this light meter',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'Denotes ID of manufacturer of the light meter',
-  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `model` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Model name or number of the light meter',
   `metering_type` int(11) DEFAULT NULL COMMENT 'ID of metering technology used in this light meter',
   `reflected` tinyint(1) DEFAULT NULL COMMENT 'Whether the meter is capable of reflected-light metering',
   `incident` tinyint(1) DEFAULT NULL COMMENT 'Whether the meter is capable of incident-light metering',

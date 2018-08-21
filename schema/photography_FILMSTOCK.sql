@@ -3,7 +3,7 @@
 CREATE TABLE `FILMSTOCK` (
   `filmstock_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID of the filmstock',
   `manufacturer_id` int(11) DEFAULT NULL COMMENT 'ID of the manufacturer of the film',
-  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Name of the film',
   `iso` int(11) DEFAULT NULL COMMENT 'Nominal ISO speed of the film',
   `colour` tinyint(1) DEFAULT NULL COMMENT 'Whether the film is colour',
   `process_id` int(11) DEFAULT NULL COMMENT 'ID of the normal process for this film',
