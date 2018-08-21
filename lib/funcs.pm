@@ -6,14 +6,8 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-use Data::Dumper;
 use Config::IniHash;
-
-$Data::Dumper::Terse = 1;
-$Data::Dumper::Useqq = 1;
-$Data::Dumper::Deparse = 1;
-$Data::Dumper::Quotekeys = 0;
-$Data::Dumper::Sortkeys = 1;
+use YAML;
 
 our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm);
 
@@ -116,8 +110,14 @@ sub db {
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'};mysql_client_found_rows=0", $$connect{'database'}{'user'}, $$connect{'database'}{'pass'})
-		or die "Couldn't connect to database: " . DBI->errstr;
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'}",
+		$$connect{'database'}{'user'},
+		$$connect{'database'}{'pass'},
+		{
+			mysql_client_found_rows => 0,
+			mysql_enable_utf8mb4 => 1,
+		}
+	) or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
 
@@ -145,7 +145,8 @@ sub updaterecord {
 
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n";
-	print Dumper(\$data);
+	print Dump($data);
+	print "\n";
 
 	# Build query
 	my $sql = SQL::Abstract->new;
@@ -176,7 +177,8 @@ sub newrecord {
 
 	# Dump data for debugging
 	print "\n\nThis is what I will insert into $table:\n";
-	print Dumper(\$data);
+	print Dump($data);
+	print "\n";
 
 	# Build query
 	my $sql = SQL::Abstract->new;

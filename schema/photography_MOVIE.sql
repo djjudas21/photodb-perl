@@ -2,7 +2,7 @@
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MOVIE` (
   `movie_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID for this motion picture film / movie',
-  `title` varchar(45) DEFAULT NULL COMMENT 'Title of this movie',
+  `title` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Title of this movie',
   `camera_id` int(11) DEFAULT NULL COMMENT 'ID of the camera used to shoot this movie',
   `lens_id` int(11) DEFAULT NULL COMMENT 'ID of the lens used to shoot this movie',
   `format_id` int(11) DEFAULT NULL COMMENT 'ID of the film format on which this movie was shot',
@@ -14,7 +14,7 @@ CREATE TABLE `MOVIE` (
   `date_shot` date DEFAULT NULL COMMENT 'Date on which this movie was shot',
   `date_processed` date DEFAULT NULL COMMENT 'Date on which this movie was processed',
   `process_id` int(11) DEFAULT NULL COMMENT 'ID of the process used to develop this film',
-  `description` varchar(45) DEFAULT NULL COMMENT 'Freeform text description of this movie',
+  `description` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Table to catalog motion picture films (movies)',
   PRIMARY KEY (`movie_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog motion picture films (movies)';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog motion picture films (movies)';
 /*!40101 SET character_set_client = @saved_cs_client */;

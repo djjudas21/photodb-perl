@@ -37,8 +37,8 @@ CREATE TABLE `CAMERA` (
   `lost` date DEFAULT NULL COMMENT 'Date on which the camera was lost/sold/etc',
   `lost_price` decimal(6,2) DEFAULT NULL COMMENT 'Price at which the camera was sold',
   `source` varchar(150) DEFAULT NULL COMMENT 'Where the camera was acquired from',
-  `min_shutter` varchar(10) DEFAULT NULL COMMENT 'Fastest available shutter speed, expressed like 1/400',
-  `max_shutter` varchar(10) DEFAULT NULL COMMENT 'Slowest available shutter speed, expressed like 30 (no ")',
+  `min_shutter` varchar(10) CHARACTER SET latin1 DEFAULT NULL COMMENT 'Fastest available shutter speed, expressed like 1/400',
+  `max_shutter` varchar(10) CHARACTER SET latin1 DEFAULT NULL COMMENT 'Slowest available shutter speed, expressed like 30 (no ")',
   `bulb` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera supports bulb (B) exposure',
   `time` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera supports time (T) exposure',
   `min_iso` int(11) DEFAULT NULL COMMENT 'Minimum ISO the camera will accept for metering',
@@ -82,5 +82,5 @@ CREATE TABLE `CAMERA` (
   CONSTRAINT `fk_mount` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_negative_size` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_shutter_type` FOREIGN KEY (`shutter_type_id`) REFERENCES `SHUTTER_TYPE` (`shutter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog cameras - both cameras with fixed lenses and cameras with interchangeable lenses';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to catalog cameras - both cameras with fixed lenses and cameras with interchangeable lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;

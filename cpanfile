@@ -1,5 +1,4 @@
 requires 'Config::IniHash';
-requires 'Data::Dumper';
 requires 'DBD::mysql';
 requires 'DBI';
 requires 'Exporter';
@@ -9,3 +8,4 @@ requires 'SQL::Abstract';
 requires 'strict';
 requires 'Switch';
 requires 'warnings';
+requires 'YAML';

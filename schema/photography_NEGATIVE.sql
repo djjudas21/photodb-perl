@@ -7,7 +7,7 @@ CREATE TABLE `NEGATIVE` (
   `description` varchar(145) DEFAULT NULL COMMENT 'Caption of this picture',
   `date` datetime DEFAULT NULL COMMENT 'Date & time on which this picture was taken',
   `lens_id` int(11) DEFAULT NULL COMMENT 'ID of lens used to take this picture',
-  `shutter_speed` varchar(45) DEFAULT NULL COMMENT 'Shutter speed used to take this picture',
+  `shutter_speed` varchar(45) CHARACTER SET latin1 DEFAULT NULL COMMENT 'Shutter speed used to take this picture',
   `aperture` decimal(4,1) DEFAULT NULL COMMENT 'Aperture used to take this picture (numerical part only)',
   `filter_id` int(11) DEFAULT NULL COMMENT 'ID of filter used to take this picture',
   `teleconverter_id` int(11) DEFAULT NULL COMMENT 'ID of teleconverter used to take this picture',
@@ -40,5 +40,5 @@ CREATE TABLE `NEGATIVE` (
   CONSTRAINT `fk_NEGATIVE_7` FOREIGN KEY (`exposure_program`) REFERENCES `EXPOSURE_PROGRAM` (`exposure_program_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_NEGATIVE_8` FOREIGN KEY (`photographer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_NEGATIVE_9` FOREIGN KEY (`shutter_speed`) REFERENCES `SHUTTER_SPEED` (`shutter_speed`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.';
 /*!40101 SET character_set_client = @saved_cs_client */;

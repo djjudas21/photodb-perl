@@ -7,14 +7,14 @@
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `lookupneg`(p_film_id int, p_frame varchar(4)) RETURNS int(11)
+CREATE DEFINER=`jonathan`@`%` FUNCTION `lookupneg`(p_film_id int, p_frame varchar(5)) RETURNS int(11)
     DETERMINISTIC
 BEGIN
 	declare negid int;
     select negative_id into negid
     from NEGATIVE
     where film_id = p_film_id
-		and frame = p_frame;
+		and frame = p_frame collate utf8mb4_general_ci;
 RETURN negid;
 END ;;
 DELIMITER ;

@@ -11,5 +11,5 @@ CREATE TABLE `DISPLAYLENS` (
   KEY `fk_DISPLAYLENS_2_idx` (`lens_id`),
   CONSTRAINT `fk_DISPLAYLENS_1` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_DISPLAYLENS_2` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Table to record which cameras should be displayed with which lens';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to record which cameras should be displayed with which lens';
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -6,8 +6,8 @@ use strict;
 use warnings;
 
 use Exporter qw(import);
-use Data::Dumper;
 use Config::IniHash;
+use YAML;
 
 use lib 'lib';
 use funcs;
@@ -370,7 +370,7 @@ sub camera_info {
 	my $db = shift;
 	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
 	my $cameradata = &lookupcol($db, "select * from camera_summary where `Camera ID`=$camera_id");
-	print Dumper($cameradata);
+	print Dump($cameradata);
 }
 
 sub camera_stats {
@@ -604,7 +604,7 @@ sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
 	my $lensdata = &lookupcol($db, "select * from lens_summary where `Lens ID`=$lens_id");
-	print Dumper($lensdata);
+	print Dump($lensdata);
 }
 
 sub print_add {
