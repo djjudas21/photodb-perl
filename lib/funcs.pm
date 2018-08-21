@@ -116,8 +116,14 @@ sub db {
 		exit;
 	}
 
-	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'};mysql_client_found_rows=0", $$connect{'database'}{'user'}, $$connect{'database'}{'pass'})
-		or die "Couldn't connect to database: " . DBI->errstr;
+	my $dbh = DBI->connect("DBI:mysql:database=$$connect{'database'}{'schema'};host=$$connect{'database'}{'host'}",
+		$$connect{'database'}{'user'},
+		$$connect{'database'}{'pass'},
+		{
+			mysql_client_found_rows => 0,
+			mysql_enable_utf8mb4 => 1,
+		}
+	) or die "Couldn't connect to database: " . DBI->errstr;
 	return $dbh;
 }
 
