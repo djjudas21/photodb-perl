@@ -35,9 +35,9 @@ my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 unlink <schema/*.sql>;
 
 # Dump each table schema to its own file
+print "\nDumping table schemas and views...\n";
 while (my @row= $sqlQuery->fetchrow_array()) {
   my $table = $row[0];
-  print "Dumping schema for $table\n";
   &dumptable($table);
 }
 
@@ -64,8 +64,8 @@ my @tables = (
 );
 
 # Dump sample data from specific tables
+print "\nDumping sample data...\n";
 foreach my $table (@tables) {
-  print "Dumping data from $table\n";
   &dumpdata($table);
 }
 
@@ -75,16 +75,19 @@ foreach my $table (@tables) {
 # Dump schema only
 sub dumptable {
 	my $table = shift;
+	print "\tDumping schema for $table\n";
 	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`
 }
 
 # Dump functions
 sub dumpfuncs {
+	print "\nDumping functions...\n";
 	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" > schema/${database}_functions.sql`;
 }
 
 # Dump table data
 sub dumpdata {
         my $table = shift;
+	print "\tDumping data from $table\n";
         `mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`
 }
