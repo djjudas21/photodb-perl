@@ -115,6 +115,8 @@ Add a print to a physical archive
 Locate a print in an archive
 ### `print reprint`
 Show details for making another print the same
+### `print exhibit`
+Exhibit a print at an exhibition
 
 ## `material`
 The `material` command provides subcommands for adding materials, i.e. film, paper and chemicals to the database.
@@ -211,3 +213,10 @@ Audit cameras without shutter speed data
 Audit cameras without exposure program data
 ### `audit meteringmodes`
 Audit cameras without metering mode data
+
+## `exhibition`
+The `exhibition` command provides a set of subcommands for managing exhibitions.
+### `exhibition add`
+Add a new exhibition to the database
+### `exhibition review`
+View the prints which were exhibited at an exhibition

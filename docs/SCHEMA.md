@@ -196,6 +196,28 @@ Table to list enlargers
 | cost             | decimal(6,2) | Purchase cost of the enlarger                                |
 | lost_price       | decimal(6,2) | Sale price of the enlarger                                   |
 
+## EXHIBIT
+
+Table to record which prints were displayed in which exhibitions
+
+| COLUMN_NAME   | COLUMN_TYPE | COLUMN_COMMENT             |
+|---------------|-------------|----------------------------|
+| exhibit_id    | int(11)     | Unique ID for this exhibit |
+| exhibition_id | int(11)     | ID of the exhibition       |
+| print_id      | int(11)     | ID of the print            |
+
+## EXHIBITION
+
+Table to record exhibition events
+
+| COLUMN_NAME   | COLUMN_TYPE  | COLUMN_COMMENT                |
+|---------------|--------------|-------------------------------|
+| exhibition_id | int(11)      | Unique ID for this exhibition |
+| title         | varchar(45)  | Title of the exhibition       |
+| location      | varchar(100) | Location of the exhibition    |
+| start_date    | date         | Start date of the exhibition  |
+| end_date      | date         | End date of the exhibition    |
+
 ## EXPOSURE_PROGRAM
 
 Exposure programs as defined by EXIF tag ExposureProgram

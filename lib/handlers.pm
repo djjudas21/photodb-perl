@@ -20,7 +20,7 @@ our @EXPORT = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit
 	paperstock_add
 	developer_add
 	toner_add
@@ -43,6 +43,7 @@ our @EXPORT = qw(
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
+	exhibition_add exhibition_review
 );
 
 sub film_add {
@@ -781,6 +782,15 @@ sub print_reprint {
 	}
 }
 
+sub print_exhibit {
+	my $db = shift;
+	my %data;
+	$data{'print_id'} = prompt('', 'Which print do you want to exhibit?', 'integer');
+	$data{'exhibition_id'} = &listchoices($db, 'exhibition', "select exhibition_id as id, title as opt from EXHIBITION", 'integer', \&exhibition_add);
+	my $id = &newrecord($db, \%data, 'EXHIBIT');
+	return $id;
+}
+
 sub paperstock_add {
 	my $db = shift;
 	my %data;
@@ -1257,6 +1267,26 @@ sub audit_meteringmodes {
 	my $db = shift;
 	my $cameraid = &listchoices($db, 'camera without metering mode data', "select * from choose_camera_without_metering_data");
 	&camera_meteringmode($db, $cameraid);
+}
+
+sub exhibition_add {
+	my $db = shift;
+	my %data;
+	$data{'title'} = prompt('', 'What is the title of this exhibition?', 'text');
+	$data{'location'} = prompt('', 'Where is this exhibition?', 'text');
+	$data{'start_date'} = prompt('', 'What date does the exhibition start?', 'date');
+	$data{'end_date'} = prompt('', 'What date does the exhibition end?', 'date');
+	my $id = &newrecord($db, \%data, 'EXHIBITION');
+}
+
+sub exhibition_review {
+	my $db = shift;
+	my $exhibition_id = &listchoices($db, 'exhibition', "select exhibition_id as id, title as opt from EXHIBITION", 'integer');
+	my $title = &lookupval($db, "select title from EXHIBITION where exhibition_id=$exhibition_id");
+
+	my $query = "select PRINT.print_id as id, concat(description, ' (', displaysize(PRINT.width, PRINT.height), ')') as opt from NEGATIVE join PRINT on PRINT.negative_id=NEGATIVE.negative_id join EXHIBIT on EXHIBIT.print_id=PRINT.print_id join EXHIBITION on EXHIBITION.exhibition_id=EXHIBIT.exhibition_id where EXHIBITION.exhibition_id=$exhibition_id";
+
+	  &printlist($db, "prints exhibited at $title", $query);
 }
 
 sub task_run {
