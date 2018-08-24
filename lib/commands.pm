@@ -64,6 +64,7 @@ our %handlers = (
 		'archive' => { 'handler' => \&print_archive, 'desc' => 'Add a print to a physical archive' },
 		'locate'  => { 'handler' => \&print_locate,  'desc' => 'Locate a print in an archive' },
 		'reprint' => { 'handler' => \&print_reprint, 'desc' => 'Show details for making another print the same' },
+		'exhibit' => { 'handler' => \&print_exhibit, 'desc' => 'Exhibit a print in an exhibition' },
 	},
 	material => {
 		'paperstock' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' },
@@ -117,5 +118,9 @@ our %handlers = (
 		'shutterspeeds'    => { 'handler' => \&audit_shutterspeeds,    'desc' => 'Audit cameras without shutter speed data' },
 		'exposureprograms' => { 'handler' => \&audit_exposureprograms, 'desc' => 'Audit cameras without exposure program data' },
 		'meteringmodes'    => { 'handler' => \&audit_meteringmodes,    'desc' => 'Audit cameras without metering mode data' },
-	}
+	},
+	exhibition => {
+		'add'    => { 'handler' => \&exhibition_add,    'desc' => 'Add a new exhibition to the database' },
+		'review' => { 'handler' => \&exhibition_review, 'desc' => 'Review which prints were exhibited at an exhibition' },
+	},
 );
