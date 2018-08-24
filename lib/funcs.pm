@@ -251,6 +251,7 @@ sub listchoices {
 	# Add option to insert a new row, if applicable
 	if ($inserthandler) {
 		print "\t0\tAdd a new $keyword\n";
+		push(@allowedvals, '0');
 	}
 
 	# Count number of allowed options and if there's just one, make it the default
@@ -264,20 +265,20 @@ sub listchoices {
 		$default = '';
 	}
 
-	# Wait for input
-	my $input = prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
+	# Loop until we get valid input
+	my $input;
+	do {
+		$input = prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
+	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
-	# Make sure a valid option was chosen
+	# Spawn a new handler if that's what the user chose
+	# Otherwise return what we got
 	if ($input eq '0') {
-		# Spawn a new handler if that's what the user chose
 		my $id = $inserthandler->($db);
 		return $id;
-	}
-	elsif (grep(/^$input$/, @allowedvals) || $input eq '') {
+	} else {
 		# Return input
 		return $input;
-	} else {
-		die("Must choose valid option\n");
 	}
 }
 
