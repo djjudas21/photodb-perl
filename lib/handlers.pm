@@ -855,7 +855,7 @@ sub filmstock_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'name'} = prompt('', 'What is the name of this filmstock?', 'text');
-	$data{'iso'} = prompt('', 'What is the box ISO/ASA speed of this filmstock?');
+	$data{'iso'} = prompt('', 'What is the box ISO/ASA speed of this filmstock?', 'integer');
 	$data{'colour'} = prompt('', 'Is this a colour film?', 'boolean');
 	if ($data{'colour'} == 1) {
 		$data{'panchromatic'} = 1;
