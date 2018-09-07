@@ -18,7 +18,13 @@ use DBD::mysql;
 use Config::IniHash;
 use Exporter qw(import);
 
-use lib 'lib';
+my $path;
+BEGIN {
+	if ($FindBin::Bin =~ /(.*)/) {
+		$path = $1;
+	}
+}
+use lib "$path/lib";
 use funcs;
 
 our @EXPORT = qw(tag);

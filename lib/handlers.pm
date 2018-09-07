@@ -9,7 +9,13 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-use lib 'lib';
+my $path;
+BEGIN {
+	if ($FindBin::Bin =~ /(.*)/) {
+		$path = $1;
+	}
+}
+use lib "$path/lib";
 use funcs;
 use queries;
 use tagger;
