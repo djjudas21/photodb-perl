@@ -9,3 +9,4 @@ requires 'strict';
 requires 'Switch';
 requires 'warnings';
 requires 'YAML';
+requires 'FindBin';

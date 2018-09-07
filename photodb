@@ -4,10 +4,17 @@
 
 use strict;
 use warnings;
+use FindBin;
 binmode(STDOUT, ":utf8");
 binmode(STDIN, ":encoding(utf8)");
 
-use lib 'lib';
+my $path;
+BEGIN {
+	if ($FindBin::Bin =~ /(.*)/) {
+		$path = $1;
+	}
+}
+use lib "$path/lib";
 use funcs;
 use handlers;
 use commands;
