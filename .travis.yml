@@ -4,4 +4,3 @@ perl:
 script:
         - "perl -cT photodb"
         - "perl -w check-usage-docs.pl"
-after_failure: "cat /home/travis/.cpanm/work/*/build.log"
