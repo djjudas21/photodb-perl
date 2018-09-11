@@ -1,8 +1,6 @@
 language: "perl"
 perl:
   - "5.26"
-install:
-        - "cpanm --verbose --installdeps --notest ."
 script:
         - "perl -cT photodb"
         - "perl -w check-usage-docs.pl"

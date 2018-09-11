@@ -1,5 +1,4 @@
 requires 'Config::IniHash';
-requires 'Devel::CheckLib';
 requires 'DBD::mysql';
 requires 'DBI';
 requires 'Exporter';
