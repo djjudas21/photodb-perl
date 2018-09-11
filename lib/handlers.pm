@@ -16,7 +16,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
@@ -385,6 +385,54 @@ sub camera_stats {
 		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
 		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
 	}
+}
+
+sub camera_choose {
+	my $db = shift;
+	my %where;
+	$where{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
+	$where{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
+        $where{'bulb'} = &prompt('', 'Do you need Bulb (B) shutter speed?', 'boolean');
+        $where{'time'} = &prompt('', 'Do you need Time (T) shutter speed?', 'boolean');
+        $where{'fixed_mount'} = prompt('', 'Do you need a camera with an interchangeable lens?', 'boolean');
+	if ($where{'fixed_mount'} && $where{'fixed_mount'} != 1) {
+		$where{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer');
+	}
+        $where{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE", 'integer');
+        $where{'metering'} = prompt('', 'Do you need a camera with metering?', 'boolean');
+        if ($where{'metering'} && $where{'metering'} == 1) {
+                $where{'coupled_metering'} = prompt('', 'Do you need coupled metering?', 'boolean');
+                $where{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer');
+        }
+        $where{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", 'integer');
+        $where{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer');
+        $where{'cable_release'} = prompt('', 'Do you need a camera with cable release?', 'boolean');
+        $where{'power_drive'} = prompt('', 'Do you need a camera with power drive?', 'boolean');
+        $where{'int_flash'} = prompt('', 'Do you need a camera with internal flash?', 'boolean');
+        $where{'ext_flash'} = prompt('', 'Do you need a camera that supports an external flash?', 'boolean');
+        if ($where{'ext_flash'} && $where{'ext_flash'} == 1) {
+                $where{'pc_sync'} = prompt('', 'Do you need a PC sync socket?', 'boolean');
+                $where{'hotshoe'} = prompt('', 'Do you need a hot shoe?', 'boolean');
+        }
+	if (($where{'int_flash'} && $where{'int_flash'} == 1) || ($where{'ext_flash'} && $where{'ext_flash'} == 1)) {
+                $where{'coldshoe'} = prompt('', 'Do you need a cold/accessory shoe?', 'boolean');
+                $where{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL", 'integer');
+        }
+        $where{'dof_preview'} = prompt('', 'Do you need a depth-of-field preview feature?', 'boolean');
+
+	my $thinwhere = &thin(\%where);
+	my $sql = SQL::Abstract->new;
+	my @fields = ('id', 'opt');
+	my($stmt, @bind) = $sql->select('camera_chooser', \@fields, $thinwhere);
+	my $sth = $db->prepare($stmt);
+	$sth->execute(@bind);
+	my $i=0;
+	print "\n";
+	while (my $ref = $sth->fetchrow_hashref) {
+		print "\t$ref->{id}\t$ref->{opt}\n";
+		$i++;
+	}
+	print "\n\tFound $i cameras that match your criteria\n";
 }
 
 sub negative_add {
