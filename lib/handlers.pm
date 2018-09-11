@@ -242,6 +242,7 @@ sub camera_add {
 	$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
 	$data{'oem_case'} = prompt('', 'Do you have the original case for this camera?', 'boolean');
 	$data{'dof_preview'} = prompt('', 'Does this camera have a depth-of-field preview feature?', 'boolean');
+	$data{'tripod'} = prompt('', 'Does this camera have a tripod bush?', 'boolean');
 	my $cameraid = &newrecord($db, \%data, 'CAMERA');
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
