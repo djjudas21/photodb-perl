@@ -1,5 +1,5 @@
 requires 'Config::IniHash';
-requires 'DBD::mysql', 4.046;
+requires 'DBD::mysql@4.046';
 requires 'DBI';
 requires 'Exporter';
 requires 'Image::ExifTool';
