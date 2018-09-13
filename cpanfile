@@ -1,5 +1,5 @@
 requires 'Config::IniHash';
-requires 'DBD::mysql';
+requires 'DBD::mysql', '== 4.046';
 requires 'DBI';
 requires 'Exporter';
 requires 'Image::ExifTool';
@@ -9,3 +9,4 @@ requires 'strict';
 requires 'Switch';
 requires 'warnings';
 requires 'YAML';
+requires 'FindBin';

@@ -142,6 +142,7 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
 | condition_id        | int(11)      | Denotes the cosmetic condition of the camera                                 |
 | oem_case            | tinyint(1)   | Whether we also own the original case                                        |
 | dof_preview         | tinyint(1)   | Whether the camera has depth of field preview                                |
+| tripod              | tinyint(1)   | Whether the camera has a tripod bush                                         |
 
 ## CONDITION
 

@@ -9,7 +9,13 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-use lib 'lib';
+my $path;
+BEGIN {
+	if ($FindBin::Bin =~ /(.*)/) {
+		$path = $1;
+	}
+}
+use lib "$path/lib";
 use funcs;
 use queries;
 use tagger;
@@ -236,6 +242,7 @@ sub camera_add {
 	$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
 	$data{'oem_case'} = prompt('', 'Do you have the original case for this camera?', 'boolean');
 	$data{'dof_preview'} = prompt('', 'Does this camera have a depth-of-field preview feature?', 'boolean');
+	$data{'tripod'} = prompt('', 'Does this camera have a tripod bush?', 'boolean');
 	my $cameraid = &newrecord($db, \%data, 'CAMERA');
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
@@ -903,7 +910,7 @@ sub filmstock_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
 	$data{'name'} = prompt('', 'What is the name of this filmstock?', 'text');
-	$data{'iso'} = prompt('', 'What is the box ISO/ASA speed of this filmstock?');
+	$data{'iso'} = prompt('', 'What is the box ISO/ASA speed of this filmstock?', 'integer');
 	$data{'colour'} = prompt('', 'Is this a colour film?', 'boolean');
 	if ($data{'colour'} == 1) {
 		$data{'panchromatic'} = 1;

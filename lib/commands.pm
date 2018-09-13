@@ -5,8 +5,15 @@ package commands;
 
 use strict;
 use warnings;
+use FindBin;
 
-use lib 'lib';
+my $path;
+BEGIN {
+	if ($FindBin::Bin =~ /(.*)/) {
+		$path = $1;
+	}
+}
+use lib "$path/lib";
 use handlers;
 
 # Define handlers for each command
