@@ -56,6 +56,8 @@ Add available metering mode info to a camera
 Add available shutter speed info to a camera
 ### `camera accessory`
 Add accessory compatibility info to a camera
+### `camera choose`
+Choose a camera based on multiple usage criteria
 
 ## `negative`
 The `negative` command provides subcommands for working with negatives (or slides, etc) which are part of a film.
