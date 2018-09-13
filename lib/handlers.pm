@@ -426,6 +426,7 @@ sub camera_choose {
                 $where{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL", 'integer');
         }
         $where{'dof_preview'} = prompt('', 'Do you need a depth-of-field preview feature?', 'boolean');
+	$where{'tripod'} = prompt('', 'Do you need a tripod bush?', 'boolean');
 
 	my $thinwhere = &thin(\%where);
 	my $sql = SQL::Abstract->new;
