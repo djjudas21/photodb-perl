@@ -73,6 +73,7 @@ our %handlers = (
 		'locate'  => { 'handler' => \&print_locate,  'desc' => 'Locate a print in an archive' },
 		'reprint' => { 'handler' => \&print_reprint, 'desc' => 'Show details for making another print the same' },
 		'exhibit' => { 'handler' => \&print_exhibit, 'desc' => 'Exhibit a print in an exhibition' },
+		'label'   => { 'handler' => \&print_label,   'desc' => 'Generate text to label a print' },
 	},
 	material => {
 		'paperstock' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' },

@@ -26,7 +26,7 @@ our @EXPORT = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit print_label
 	paperstock_add
 	developer_add
 	toner_add
@@ -845,6 +845,17 @@ sub print_exhibit {
 	$data{'exhibition_id'} = &listchoices($db, 'exhibition', "select exhibition_id as id, title as opt from EXHIBITION", 'integer', \&exhibition_add);
 	my $id = &newrecord($db, \%data, 'EXHIBIT');
 	return $id;
+}
+
+sub print_label {
+	my $db = shift;
+	my $print_id = prompt('', 'Which print do you want to label?', 'integer');
+	my $data = &lookupcol($db, "select * from print_info where print_id=$print_id");
+	my $row = @$data[0];
+	print "\t#$row->{'print_id'} $row->{'description'}\n" if ($row->{print_id} && $row->{description});
+	print "\tPhotographed $row->{photo_date}\n" if ($row->{photo_date});
+	print "\tPrinted $row->{print_date}\n" if ($row->{print_date});
+	print "\tby $row->{name}\n" if ($row->{name});
 }
 
 sub paperstock_add {

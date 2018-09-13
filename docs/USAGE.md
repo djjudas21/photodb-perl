@@ -119,6 +119,8 @@ Locate a print in an archive
 Show details for making another print the same
 ### `print exhibit`
 Exhibit a print at an exhibition
+### `print label`
+Generate text to label a print
 
 ## `material`
 The `material` command provides subcommands for adding materials, i.e. film, paper and chemicals to the database.
