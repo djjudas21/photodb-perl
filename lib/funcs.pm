@@ -96,7 +96,7 @@ sub ini {
 	if (-f $path) {
 		return glob('~/.photodb.ini');
 	} else {
-		if (prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
+		if (&prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
 			&writeconfig($path);
 			return $path;
 		} else {
@@ -158,7 +158,7 @@ sub updaterecord {
 	my($stmt, @bind) = $sql->update($table, $data, $where);
 
 	# Final confirmation
-	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -190,7 +190,7 @@ sub newrecord {
 	my($stmt, @bind) = $sql->insert($table, $data);
 
 	# Final confirmation
-	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -269,7 +269,7 @@ sub listchoices {
 	# Loop until we get valid input
 	my $input;
 	do {
-		$input = prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
+		$input = &prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
 	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
@@ -379,11 +379,11 @@ sub writeconfig {
 	$inifile = $1;
 
 	my %inidata;
-	$inidata{'database'}{'host'} = prompt('localhost', 'Database hostname or IP address', 'text');
-	$inidata{'database'}{'schema'} = prompt('photography', 'Schema name of photography database', 'text');
-	$inidata{'database'}{'user'} = prompt('photography', 'Username with access to the schema', 'text');
-	$inidata{'database'}{'pass'} = prompt('', 'Password for this user', 'text');
-	$inidata{'filesystem'}{'basepath'} = prompt('', 'Path to your scanned images', 'text');
+	$inidata{'database'}{'host'} = &prompt('localhost', 'Database hostname or IP address', 'text');
+	$inidata{'database'}{'schema'} = &prompt('photography', 'Schema name of photography database', 'text');
+	$inidata{'database'}{'user'} = &prompt('photography', 'Username with access to the schema', 'text');
+	$inidata{'database'}{'pass'} = &prompt('', 'Password for this user', 'text');
+	$inidata{'filesystem'}{'basepath'} = &prompt('', 'Path to your scanned images', 'text');
 	WriteINI($inifile, \%inidata);
 }
 
@@ -425,7 +425,7 @@ sub resolvenegid {
 
 sub chooseneg {
 	my $db = shift;
-	my $film_id = prompt('', 'Enter Film ID', 'integer');
+	my $film_id = &prompt('', 'Enter Film ID', 'integer');
 	my $frame = &listchoices($db, 'frame', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if ($neg_id =~ m/^\d+$/) {
