@@ -231,11 +231,12 @@ sub nosubcommand {
 
 # List arbitrary choices and return ID of the selected one
 sub listchoices {
-	my $db = shift;
-	my $keyword = shift;
-	my $query = shift;
-	my $type = shift || 'integer';
-	my $inserthandler = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $keyword = $href->{keyword};
+	my $query = $href->{query};
+	my $type = $href->{type} || 'integer';
+	my $inserthandler = $href->{inserthandler};
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
@@ -426,7 +427,7 @@ sub resolvenegid {
 sub chooseneg {
 	my $db = shift;
 	my $film_id = &prompt('', 'Enter Film ID', 'integer');
-	my $frame = &listchoices($db, 'frame', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if ($neg_id =~ m/^\d+$/) {
 		return $neg_id;

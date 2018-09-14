@@ -58,7 +58,7 @@ sub film_add {
 	my %data;
 	if (&prompt('no', 'Is this film bulk-loaded?', 'boolean') == 1) {
 		# These are filled in only for bulk-loaded films
-		$data{'film_bulk_id'} = &listchoices($db, 'bulk film', "select * from choose_bulk_film");
+		$data{'film_bulk_id'} = &listchoices({db=>$db, keyword=>'bulk film', query=>"select * from choose_bulk_film"});
 		$data{'film_bulk_loaded'} = &prompt(&today($db), 'When was the film bulk-loaded?');
 		# These are deduced automagically for bulk-loaded films
 		$data{'film_batch'} = &lookupval($db, "select batch from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}");
@@ -71,8 +71,8 @@ sub film_add {
 		$data{'film_batch'} = &prompt('', 'Film batch number', 'text');
 		$data{'film_expiry'} = &prompt('', 'Film expiry date', 'date');
 		$data{'purchase_date'} = &prompt(&today($db), 'Purchase date', 'date');
-		$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
-		$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
+		$data{'filmstock_id'} = &listchoices({db=>$db, keyword=>'filmstock', query=>"select * from choose_filmstock", type=>'integer', inserthandler=>\&filmstock_add});
+		$data{'format_id'} = &listchoices({db=>$db, keyword=>'format', query=>"select format_id as id, format as opt from FORMAT", type=>'integer', inserthandler=>\&format_add});
 	}
 	$data{'frames'} = &prompt('', 'How many frames?', 'integer');
 	$data{'price'} = &prompt('', 'Purchase price', 'decimal');
@@ -86,9 +86,9 @@ sub film_add {
 sub film_load {
 	# Load a film into a camera
 	my $db = shift;
-	my $film_id = shift || &listchoices($db, 'film', "select * from choose_film_to_load");
+	my $film_id = shift || &listchoices({db=>$db, keyword=>'film', query=>"select * from choose_film_to_load"});
 	my %data;
-	$data{'camera_id'} = &listchoices($db, 'camera', "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, FILM as F, MANUFACTURER as M where F.format_id=C.format_id and C.manufacturer_id=M.manufacturer_id and film_id=$film_id and own=1 order by opt");
+	$data{'camera_id'} = &listchoices({db=>$db, keyword=>'camera', query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, FILM as F, MANUFACTURER as M where F.format_id=C.format_id and C.manufacturer_id=M.manufacturer_id and film_id=$film_id and own=1 order by opt"});
 	$data{'exposed_at'} = &prompt(&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), 'What ISO?', 'integer');
 	$data{'date_loaded'} = &prompt(&today($db), 'What date was this film loaded?', 'date');
 	$data{'notes'} = &prompt('', 'Notes', 'text');
@@ -100,19 +100,19 @@ sub film_archive {
 	my $db = shift;
 	my $film_id = shift || &prompt('', 'Enter ID of film to archive', 'integer');
 	my %data;
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", type=>'integer', inserthandler=>\&archive_add});
 	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
 }
 
 sub film_develop {
 	# Develop a film
 	my $db = shift;
-	my $film_id = shift || &listchoices($db, 'film', "select * from choose_film_to_develop");
+	my $film_id = shift || &listchoices({db=>$db, keyword=>'film', query=>"select * from choose_film_to_develop"});
 	my %data;
 	$data{'date'} = &prompt(&today($db), 'What date was this film processed?', 'date');
-	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_film=1", 'integer', \&developer_add);
+	$data{'developer_id'} = &listchoices({db=>$db, keyword=>'developer', query=>"select developer_id as id, name as opt from DEVELOPER where for_film=1", type=>'integer', inserthandler=>\&developer_add});
 	$data{'directory'} = &prompt('', 'What directory are these scans in?', 'text');
-	$data{'photographer_id'} = &listchoices($db, 'photographer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
+	$data{'photographer_id'} = &listchoices({db=>$db, keyword=>'photographer', query=>"select person_id as id, name as opt from PERSON", type=>'integer', inserthandler=>\&person_add});
 	$data{'dev_uses'} = &prompt('', 'How many previous uses has the developer had?', 'integer');
 	$data{'dev_time'} = &prompt('', 'How long was the film developed for?', 'hh:mm:ss');
 	$data{'dev_temp'} = &prompt('', 'What temperature was the developer?', 'decimal');
@@ -151,8 +151,8 @@ sub film_locate {
 sub film_bulk {
 	my $db = shift;
 	my %data;
-	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
+	$data{'filmstock_id'} = &listchoices({db=>$db, keyword=>'filmstock', query=>"select * from choose_filmstock", type=>'integer', inserthandler=>\&filmstock_add});
+	$data{'format_id'} = &listchoices({db=>$db, keyword=>'format', query=>"select format_id as id, format as opt from FORMAT", type=>'integer', inserthandler=>\&format_add});
 	$data{'batch'} = &prompt('', 'Film batch number', 'text');
 	$data{'expiry'} = &prompt('', 'Film expiry date', 'date');
 	$data{'purchase_date'} = &prompt(&today($db), 'Purchase date', 'date');
@@ -172,7 +172,7 @@ sub camera_add {
 	# Add a new camera
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What model is the camera?', 'text');
 	$data{'fixed_mount'} = &prompt('', 'Does this camera have a fixed lens?', 'boolean');
 	if ($data{'fixed_mount'} == 1) {
@@ -180,18 +180,18 @@ sub camera_add {
 		print "Please enter some information about the lens\n";
 		$data{'lens_id'} = &lens_add($db);
 	} else {
-		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
+		$data{'mount_id'} = &listchoices({db=>$db, keyword=>'mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", type=>'integer', inserthandler=>\&mount_add});
 	}
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
-	$data{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE", 'integer', \&focustype_add);
+	$data{'format_id'} = &listchoices({db=>$db, keyword=>'format', query=>"select format_id as id, format as opt from FORMAT", type=>'integer', inserthandler=>\&format_add});
+	$data{'focus_type_id'} = &listchoices({db=>$db, keyword=>'focus type', query=>"select focus_type_id as id, focus_type as opt from FOCUS_TYPE", type=>'integer', inserthandler=>\&focustype_add});
 	$data{'metering'} = &prompt('', 'Does this camera have metering?', 'boolean');
 	if ($data{'metering'} == 1) {
 		$data{'coupled_metering'} = &prompt('', 'Is the metering coupled?', 'boolean');
-		$data{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
+		$data{'metering_type_id'} = &listchoices({db=>$db, keyword=>'metering type', query=>"select metering_type_id as id, metering as opt from METERING_TYPE", type=>'integer', inserthandler=>\&meteringtype_add});
 		$data{'meter_min_ev'} = &prompt('', 'What\'s the lowest EV the meter can handle?', 'integer');
 		$data{'meter_max_ev'} = &prompt('', 'What\'s the highest EV the meter can handle?', 'integer');
 	}
-	$data{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", 'integer', \&camera_addbodytype);
+	$data{'body_type_id'} = &listchoices({db=>$db, keyword=>'body type', query=>"select body_type_id as id, body_type as opt from BODY_TYPE", type=>'integer', inserthandler=>\&camera_addbodytype});
 	$data{'weight'} = &prompt('', 'What does it weigh? (g)', 'integer');
 	$data{'acquired'} = &prompt(&today($db), 'When was it acquired?', 'date');
 	$data{'cost'} = &prompt('', 'What did the camera cost?', 'decimal');
@@ -201,8 +201,8 @@ sub camera_add {
 	$data{'datecode'} = &prompt('', 'What is the camera\'s datecode?', 'text');
 	$data{'manufactured'} = &prompt('', 'When was the camera manufactured?', 'integer');
 	$data{'own'} = &prompt('yes', 'Do you own this camera?', 'boolean');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer', \&negativesize_add);
-	$data{'shutter_type_id'} = &listchoices($db, 'shutter type', "select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE", 'integer', \&shuttertype_add);
+	$data{'negative_size_id'} = &listchoices({db=>$db, keyword=>'negative size', query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", type=>'integer', inserthandler=>\&negativesize_add});
+	$data{'shutter_type_id'} = &listchoices({db=>$db, keyword=>'shutter type', query=>"select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE", type=>'integer', inserthandler=>\&shuttertype_add});
 	$data{'shutter_model'} = &prompt('', 'What is the shutter model?', 'text');
 	$data{'cable_release'} = &prompt('', 'Does this camera have a cable release?', 'boolean');
 	$data{'viewfinder_coverage'} = &prompt('', 'What is the viewfinder coverage?', 'integer');
@@ -214,7 +214,7 @@ sub camera_add {
 	$data{'digital'} = &prompt('no', 'Is this a digital camera?', 'boolean');
 	$data{'battery_qty'} = &prompt('', 'How many batteries does this camera take?', 'integer');
 	if ($data{'battery_qty'} > 0) {
-		$data{'battery_type'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
+		$data{'battery_type'} = &listchoices({db=>$db, keyword=>'battery type', query=>"select * from choose_battery", inserthandler=>\&battery_add});
 	}
 	$data{'notes'} = &prompt('', 'Additional notes', 'text');
 	$data{'source'} = &prompt('', 'Where was the camera acquired from?', 'text');
@@ -237,9 +237,9 @@ sub camera_add {
 	if ($data{'int_flash'} == 1 || $data{'ext_flash'} == 1) {
 		$data{'coldshoe'} = &prompt('', 'Does the camera have a cold/accessory shoe?', 'boolean');
 		$data{'x_sync'} = &prompt('', 'What\'s the X-sync speed?', 'text');
-		$data{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL", 'integer', \&flashprotocol_add);
+		$data{'flash_metering'} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"select * from FLASH_PROTOCOL", type=>'integer', inserthandler=>\&flashprotocol_add});
 	}
-	$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
+	$data{'condition_id'} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`"});
 	$data{'oem_case'} = &prompt('', 'Do you have the original case for this camera?', 'boolean');
 	$data{'dof_preview'} = &prompt('', 'Does this camera have a depth-of-field preview feature?', 'boolean');
 	$data{'tripod'} = &prompt('', 'Does this camera have a tripod bush?', 'boolean');
@@ -275,10 +275,10 @@ sub camera_add {
 
 sub camera_accessory {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $cameraid = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	while (1) {
 		my %compatdata;
-		$compatdata{'accessory_id'} = &listchoices($db, 'select * from choose_accessory', 'integer');
+		$compatdata{'accessory_id'} = &listchoices({db=>$db, query=>'select * from choose_accessory', type=>'integer'});
 		$compatdata{'camera_id'} = $cameraid;
 		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 		if (!&prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
@@ -289,10 +289,10 @@ sub camera_accessory {
 
 sub camera_shutterspeeds {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $cameraid = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	while (1) {
 		my %shutterdata;
-		$shutterdata{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", 'text', \&shutterspeed_add);
+		$shutterdata{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add});
 		$shutterdata{'camera_id'} = $cameraid;
 		&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
 		if (!&prompt('yes', 'Add another shutter speed?', 'boolean')) {
@@ -303,7 +303,7 @@ sub camera_shutterspeeds {
 
 sub camera_exposureprogram {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $cameraid = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	my $exposureprograms = &lookupcol($db, 'select * from EXPOSURE_PROGRAM');
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
@@ -321,7 +321,7 @@ sub camera_exposureprogram {
 
 sub camera_meteringmode {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $cameraid = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	my $meteringmodes = &lookupcol($db, 'select * from METERING_MODE');
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt('no', "Does this camera have $meteringmode->{metering_mode} metering?", 'boolean')) {
@@ -335,16 +335,16 @@ sub camera_meteringmode {
 sub camera_displaylens {
 	my $db = shift;
 	my %data;
-	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)");
+	$data{'camera_id'} = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)"});
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{'camera_id'}");
-	$data{'lens_id'} = &listchoices($db, 'lens', "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)");
+	$data{'lens_id'} = &listchoices({db=>$db, keyword=>'lens', query=>"select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)"});
 	my $displaylensid = &newrecord($db, \%data, 'DISPLAYLENS');
 	return $displaylensid;
 }
 
 sub camera_sell {
 	my $db = shift;
-	my $cameraid = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	my $cameraid = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	my %data;
 	$data{'own'} = 0;
 	$data{'lost'} = &prompt(&today($db), 'What date was this camera sold?', 'date');
@@ -366,7 +366,7 @@ sub camera_sell {
 sub camera_repair {
 	my $db = shift;
 	my %data;
-	$data{'camera_id'} = shift || &listchoices($db, 'camera', "select * from choose_camera");
+	$data{'camera_id'} = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	$data{'date'} = &prompt(&today($db), 'What date was this camera repaired?', 'date');
 	$data{'summary'} = &prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = &prompt('', 'Longer description of repair', 'text');
@@ -376,14 +376,14 @@ sub camera_repair {
 
 sub camera_info {
 	my $db = shift;
-	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	my $cameradata = &lookupcol($db, "select * from camera_summary where `Camera ID`=$camera_id");
 	print Dump($cameradata);
 }
 
 sub camera_stats {
 	my $db = shift;
-	my $camera_id = &listchoices($db, 'camera', "select * from choose_camera");
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
 	print "\tShowing statistics for $camera\n";
 	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
@@ -397,22 +397,22 @@ sub camera_stats {
 sub camera_choose {
 	my $db = shift;
 	my %where;
-	$where{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER");
-	$where{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT");
+	$where{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER"});
+	$where{'format_id'} = &listchoices({db=>$db, keyword=>'format', query=>"select format_id as id, format as opt from FORMAT"});
 	$where{'bulb'} = &prompt('', 'Do you need Bulb (B) shutter speed?', 'boolean');
 	$where{'time'} = &prompt('', 'Do you need Time (T) shutter speed?', 'boolean');
 	$where{'fixed_mount'} = &prompt('', 'Do you need a camera with an interchangeable lens?', 'boolean');
 	if ($where{'fixed_mount'} && $where{'fixed_mount'} != 1) {
-		$where{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer');
+		$where{'mount_id'} = &listchoices({db=>$db, keyword=>'mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", type=>'integer'});
 	}
-	$where{'focus_type_id'} = &listchoices($db, 'focus type', "select focus_type_id as id, focus_type as opt from FOCUS_TYPE", 'integer');
+	$where{'focus_type_id'} = &listchoices({db=>$db, keyword=>'focus type', query=>"select focus_type_id as id, focus_type as opt from FOCUS_TYPE", 'integer'});
 	$where{'metering'} = &prompt('', 'Do you need a camera with metering?', 'boolean');
 	if ($where{'metering'} && $where{'metering'} == 1) {
 		$where{'coupled_metering'} = &prompt('', 'Do you need coupled metering?', 'boolean');
-		$where{'metering_type_id'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer');
+		$where{'metering_type_id'} = &listchoices({db=>$db, keyword=>'metering type', query=>"select metering_type_id as id, metering as opt from METERING_TYPE", type=>'integer'});
 	}
-	$where{'body_type_id'} = &listchoices($db, 'body type', "select body_type_id as id, body_type as opt from BODY_TYPE", 'integer');
-	$where{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer');
+	$where{'body_type_id'} = &listchoices({db=>$db, keyword=>'body type', query=>"select body_type_id as id, body_type as opt from BODY_TYPE", type=>'integer'});
+	$where{'negative_size_id'} = &listchoices({db=>$db, keyword=>'negative size', query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", type=>'integer'});
 	$where{'cable_release'} = &prompt('', 'Do you need a camera with cable release?', 'boolean');
 	$where{'power_drive'} = &prompt('', 'Do you need a camera with power drive?', 'boolean');
 	$where{'int_flash'} = &prompt('', 'Do you need a camera with internal flash?', 'boolean');
@@ -423,7 +423,7 @@ sub camera_choose {
 	}
 	if (($where{'int_flash'} && $where{'int_flash'} == 1) || ($where{'ext_flash'} && $where{'ext_flash'} == 1)) {
 		$where{'coldshoe'} = &prompt('', 'Do you need a cold/accessory shoe?', 'boolean');
-		$where{'flash_metering'} = &listchoices($db, 'flash protocol', "select * from FLASH_PROTOCOL", 'integer');
+		$where{'flash_metering'} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"select * from FLASH_PROTOCOL", type=>'integer'});
 	}
 	$where{'dof_preview'} = &prompt('', 'Do you need a depth-of-field preview feature?', 'boolean');
 	$where{'tripod'} = &prompt('', 'Do you need a tripod bush?', 'boolean');
@@ -459,20 +459,20 @@ sub negative_add {
 	$data{'frame'} = &prompt('', 'Frame number', 'text');
 	$data{'description'} = &prompt('', 'Caption', 'text');
 	$data{'date'} = &prompt(&today($db), 'What date was this negative taken?', 'date');
-	$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
-	$data{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration");
+	$data{'lens_id'} = &listchoices({db=>$db, keyword=>'lens', query=>"select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}"});
+	$data{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 	$data{'aperture'} = &prompt('', 'Aperture', 'decimal');
-	$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter", 'integer', \&filter_add);
-	$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", 'integer', \&teleconverter_add);
+	$data{'filter_id'} = &listchoices({db=>$db, keyword=>'filter', query=>"select * from choose_filter", type=>'integer', inserthandler=>\&filter_add});
+	$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", type=>'integer', inserthandler=>\&teleconverter_add});
 	$data{'notes'} = &prompt('', 'Extra notes', 'text');
-	$data{'mount_adapter_id'} = &listchoices($db, 'mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}");
+	$data{'mount_adapter_id'} = &listchoices({db=>$db, keyword=>'mount adapter', query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}"});
 	$data{'focal_length'} = &prompt(&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), 'Focal length', 'integer');
 	$data{'latitude'} = &prompt('', 'Latitude', 'decimal');
 	$data{'longitude'} = &prompt('', 'Longitude', 'decimal');
 	$data{'flash'} = &prompt('no', 'Was flash used?', 'boolean');
-	$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
-	$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
-	$data{'photographer_id'} = &listchoices($db, 'photographer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
+	$data{'metering_mode'} = &listchoices({db=>$db, keyword=>'metering mode', query=>"select metering_mode_id as id, metering_mode as opt from METERING_MODE"});
+	$data{'exposure_program'} = &listchoices({db=>$db, keyword=>'exposure program', query=>"select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM"});
+	$data{'photographer_id'} = &listchoices({db=>$db, keywod=>'photographer', query=>"select person_id as id, name as opt from PERSON", type=>'integer', inserthandler=>\&person_add});
 	my $negativeid = &newrecord($db, \%data, 'NEGATIVE');
 	return $negativeid;
 }
@@ -486,19 +486,19 @@ sub negative_bulkadd {
 	if (&prompt('no', "Add any other attributes to all $num negatives?", 'boolean')) {
 		$data{'description'} = &prompt('', 'Caption', 'text');
 		$data{'date'} = &prompt(&today($db), 'What date was this negative taken?', 'date');
-		$data{'lens_id'} = &listchoices($db, 'lens', "select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}");
-		$data{'shutter_speed'} = &listchoices($db, 'shutter speed', "SELECT SP.shutter_speed FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration");
+		$data{'lens_id'} = &listchoices({db=>$db, keyword=>'lens', query=>"select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}"});
+		$data{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 		$data{'aperture'} = &prompt('', 'Aperture', 'decimal');
-		$data{'filter_id'} = &listchoices($db, 'filter', "select * from choose_filter", 'integer', \&filter_add);
-		$data{'teleconverter_id'} = &listchoices($db, 'teleconverter', "select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", 'integer', \&teleconverter_add);
+		$data{'filter_id'} = &listchoices({db=>$db, keyword=>'filter', query=>"select * from choose_filter", type=>'integer', inserthandler=>\&filter_add});
+		$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", type=>'integer', inserthandler=>\&teleconverter_add});
 		$data{'notes'} = &prompt('', 'Extra notes', 'text');
-		$data{'mount_adapter_id'} = &listchoices($db, 'mount adapter', "select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}");
+		$data{'mount_adapter_id'} = &listchoices({db=>$db, keyword=>'mount adapter', query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}"});
 		$data{'focal_length'} = &prompt(&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), 'Focal length', 'integer');
 		$data{'latitude'} = &prompt('', 'Latitude', 'decimal');
 		$data{'longitude'} = &prompt('', 'Longitude', 'decimal');
 		$data{'flash'} = &prompt('no', 'Was flash used?', 'boolean');
-		$data{'metering_mode'} = &listchoices($db, 'metering mode', "select metering_mode_id as id, metering_mode as opt from METERING_MODE");
-		$data{'exposure_program'} = &listchoices($db, 'exposure program', "select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM");
+		$data{'metering_mode'} = &listchoices({db=>$db, keyword=>'metering mode', query=>"select metering_mode_id as id, metering_mode as opt from METERING_MODE"});
+		$data{'exposure_program'} = &listchoices({db=>$db, keyword=>'exposure program', query=>"select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM"});
 	}
 
 	# Delete empty strings from data hash
@@ -546,7 +546,7 @@ sub lens_add {
 	my %data;
 	$data{'fixed_mount'} = &prompt('no', 'Does this lens have a fixed mount?', 'boolean');
 	if ($data{'fixed_mount'} == 0) {
-		$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT", 'integer', \&mount_add);
+		$data{'mount_id'} = &listchoices({db=>$db, keyword=>'mount', query=>"select mount_id as id, mount as opt from MOUNT", type=>'integer', inserthandler=>\&mount_add});
 	}
 	$data{'zoom'} = &prompt('no', 'Is this a zoom lens?', 'boolean');
 	if ($data{'zoom'} == 0) {
@@ -556,7 +556,7 @@ sub lens_add {
 		$data{'min_focal_length'} = &prompt('', 'What is the minimum focal length?', 'integer');
 		$data{'max_focal_length'} = &prompt('', 'What is the maximum focal length?', 'integer');
 	}
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the lens model?', 'text');
 	$data{'closest_focus'} = &prompt('', 'How close can the lens focus? (cm)', 'integer');
 	$data{'max_aperture'} = &prompt('', 'What is the largest lens aperture?', 'decimal');
@@ -576,7 +576,7 @@ sub lens_add {
 	$data{'introduced'} = &prompt('', 'When was this lens introduced?', 'integer');
 	$data{'discontinued'} = &prompt('', 'When was this lens discontinued?', 'integer');
 	$data{'manufactured'} = &prompt('', 'When was this lens manufactured?', 'integer');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
+	$data{'negative_size_id'} = &listchoices({db=>$db, keyword=>'negative size', query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", inserthandler=>\&negativesize_add});
 	$data{'acquired'} = &prompt(&today($db), 'When was this lens acquired?', 'date');
 	$data{'cost'} = &prompt('', 'How much did this lens cost?', 'decimal');
 	$data{'notes'} = &prompt('', 'Notes', 'text');
@@ -588,7 +588,7 @@ sub lens_add {
 	$data{'rectilinear'} = &prompt('yes', 'Is this a rectilinear lens?', 'boolean');
 	$data{'length'} = &prompt('', 'How long is this lens? (mm)', 'integer');
 	$data{'diameter'} = &prompt('', 'How wide is this lens? (mm)', 'integer');
-	$data{'condition_id'} = &listchoices($db, 'condition', "select condition_id as id, name as opt from `CONDITION`");
+	$data{'condition_id'} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`"});
 	$data{'image_circle'} = &prompt('', 'What is the diameter of the image circle?', 'integer');
 	$data{'formula'} = &prompt('', 'Does this lens have a named optical formula?', 'text');
 	$data{'shutter_model'} = &prompt('', 'What shutter does this lens incorporate?', 'text');
@@ -602,10 +602,10 @@ sub lens_add {
 
 sub lens_accessory {
 	my $db = shift;
-	my $lensid = shift || &listchoices($db, 'lens', "select * from choose_lens");
+	my $lensid = shift || &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	while (1) {
 		my %compatdata;
-		$compatdata{'accessory_id'} = &listchoices($db, 'accessory', 'select * from choose_accessory', 'integer');
+		$compatdata{'accessory_id'} = &listchoices({db=>$db, keyword=>'accessory', query=>'select * from choose_accessory', type=>'integer'});
 		$compatdata{'lens_id'} = $lensid;
 		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 		if (!&prompt('yes', 'Add more accessory compatibility info?', 'boolean')) {
@@ -617,7 +617,7 @@ sub lens_accessory {
 sub lens_sell {
 	my $db = shift;
 	my %data;
-	my $lensid = shift || &listchoices($db, 'lens', "select * from choose_lens");
+	my $lensid = shift || &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	$data{'own'} = 0;
 	$data{'lost'} = &prompt(&today($db), 'What date was this lens sold?', 'date');
 	$data{'lost_price'} = &prompt('', 'How much did this lens sell for?', 'decimal');
@@ -627,7 +627,7 @@ sub lens_sell {
 sub lens_repair {
 	my $db = shift;
 	my %data;
-	$data{'lens_id'} = shift || &listchoices($db, 'lens', "select * from choose_lens");
+	$data{'lens_id'} = shift || &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	$data{'date'} = &prompt(&today($db), 'What date was this lens repaired?', 'date');
 	$data{'summary'} = &prompt('', 'Short summary of repair', 'text');
 	$data{'description'} = &prompt('', 'Longer description of repair', 'text');
@@ -637,7 +637,7 @@ sub lens_repair {
 
 sub lens_stats {
 	my $db = shift;
-	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
+	my $lens_id = &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	my $lens = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id");
 	print "\tShowing statistics for $lens\n";
 	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
@@ -659,7 +659,7 @@ sub lens_stats {
 
 sub lens_info {
 	my $db = shift;
-	my $lens_id = &listchoices($db, 'lens', "select * from choose_lens");
+	my $lens_id = &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	my $lensdata = &lookupcol($db, "select * from lens_summary where `Lens ID`=$lens_id");
 	print Dump($lensdata);
 }
@@ -668,7 +668,7 @@ sub print_add {
 	my $db = shift;
 	my %data;
 	my $neg_id;
-	my $todo_id = &listchoices($db, 'print from the order queue', 'SELECT * FROM photography.choose_todo');
+	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', query=>'SELECT * FROM photography.choose_todo'});
 	if ($todo_id) {
 		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
 	} else {
@@ -676,19 +676,19 @@ sub print_add {
 	}
 	$data{'negative_id'} = &prompt($neg_id, 'Negative ID to print from', 'integer');
 	$data{'date'} = &prompt(&today($db), 'Date that the print was made', 'date');
-	$data{'paper_stock_id'} = &listchoices($db, 'paper stock', "select * from choose_paper", 'integer', \&paperstock_add);
+	$data{'paper_stock_id'} = &listchoices({db=>$db, keyword=>'paper stock', query=>"select * from choose_paper", type=>'integer', inserthandler=>\&paperstock_add});
 	$data{'height'} = &prompt('', 'Height of the print (inches)', 'integer');
 	$data{'width'} = &prompt('', 'Width of the print (inches)', 'integer');
 	$data{'aperture'} = &prompt('', 'Aperture used on enlarging lens', 'decimal');
 	$data{'exposure_time'} = &prompt('', 'Exposure time (s)', 'integer');
 	$data{'filtration_grade'} = &prompt('', 'Filtration grade', 'decimal');
 	$data{'development_time'} = &prompt('60', 'Development time (s)', 'integer');
-	$data{'enlarger_id'} = &listchoices($db, 'enlarger', "select * from choose_enlarger", 'integer', \&enlarger_add);
+	$data{'enlarger_id'} = &listchoices({db=>$db, keyword=>'enlarger', query=>"select * from choose_enlarger", type=>'integer', inserthandler=>\&enlarger_add});
 	$data{'lens_id'} = &listchoices($db, 'enlarger lens', "select * from choose_enlarger_lens");
-	$data{'developer_id'} = &listchoices($db, 'developer', "select developer_id as id, name as opt from DEVELOPER where for_paper=1", 'integer', \&developer_add);
+	$data{'developer_id'} = &listchoices({db=>$db, keyword=>'developer', query=>"select developer_id as id, name as opt from DEVELOPER where for_paper=1", type=>'integer', inserthandler=>\&developer_add});
 	$data{'fine'} = &prompt('', 'Is this a fine print?', 'boolean');
 	$data{'notes'} = &prompt('', 'Notes', 'text');
-	$data{'printer_id'} = &listchoices($db, 'printer', "select person_id as id, name as opt from PERSON", 'integer', \&person_add);
+	$data{'printer_id'} = &listchoices({db=>$db, keyword=>'printer', query=>"select person_id as id, name as opt from PERSON", type=>'integer', inserthandler=>\&person_add});
 	my $printid = &newrecord($db, \%data, 'PRINT');
 
 	# Mark is as complete in the todo list
@@ -713,7 +713,7 @@ sub print_add {
 sub print_fulfil {
 	my $db = shift;
 	my %data;
-	my $todo_id = &listchoices($db, 'print from the queue', 'SELECT * FROM photography.choose_todo');
+	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', query=>'SELECT * FROM photography.choose_todo'});
 	$data{'printed'} = &prompt('yes', 'Is this print order now fulfilled?', 'boolean');
 	$data{'print_id'} = &prompt('', 'Which print fulfilled this order?', 'integer');
 	&updaterecord($db, \%data, 'TO_PRINT', "id=$todo_id");
@@ -724,12 +724,12 @@ sub print_tone {
 	my %data;
 	my $print_id = shift || &prompt('', 'Which print did you tone?', 'integer');
 	$data{'bleach_time'} = &prompt('00:00:00', 'How long did you bleach for? (HH:MM:SS)', 'hh:mm:ss');
-	$data{'toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER", 'integer', \&toner_add);
+	$data{'toner_id'} = &listchoices({db=>$db, keyword=>'toner', query=>"select toner_id as id, toner as opt from TONER", type=>'integer', inserthandler=>\&toner_add});
 	my $dilution1 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'toner_id'}");
 	$data{'toner_dilution'} = &prompt($dilution1, 'What was the dilution of the first toner?', 'text');
 	$data{'toner_time'} = &prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
 	if (&prompt('no', 'Did you use a second toner?', 'boolean') == 1) {
-		$data{'2nd_toner_id'} = &listchoices($db, 'toner', "select toner_id as id, toner as opt from TONER", 'integer', \&toner_add);
+		$data{'2nd_toner_id'} = &listchoices({db=>$db, keyword=>'toner', query=>"select toner_id as id, toner as opt from TONER", type=>'integer', inserthandler=>\&toner_add});
 		my $dilution2 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'2nd_toner_id'}");
 		$data{'2nd_toner_dilution'} = &prompt($dilution2, 'What was the dilution of the second toner?', 'text');
 		$data{'2nd_toner_time'} = &prompt('', 'How long did you tone for? (HH:MM:SS)', 'hh:mm:ss');
@@ -764,7 +764,7 @@ sub print_archive {
 	my $db = shift;
 	my %data;
 	my $print_id = shift || &prompt('', 'Which print did you archive?', 'integer');
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0", type=>'integer', inserthandler=>\&archive_add});
 	$data{'own'} = 1;
 	$data{'location'} = 'Archive',
 	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
@@ -842,7 +842,7 @@ sub print_exhibit {
 	my $db = shift;
 	my %data;
 	$data{'print_id'} = &prompt('', 'Which print do you want to exhibit?', 'integer');
-	$data{'exhibition_id'} = &listchoices($db, 'exhibition', "select exhibition_id as id, title as opt from EXHIBITION", 'integer', \&exhibition_add);
+	$data{'exhibition_id'} = &listchoices({db=>$db, keyword=>'exhibition', query=>"select exhibition_id as id, title as opt from EXHIBITION", type=>'integer', inserthandler=>\&exhibition_add});
 	my $id = &newrecord($db, \%data, 'EXHIBIT');
 	return $id;
 }
@@ -861,7 +861,7 @@ sub print_label {
 sub paperstock_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'name'} = &prompt('', 'What model is the paper?', 'text');
 	$data{'resin_coated'} = &prompt('', 'Is this paper resin-coated?', 'boolean');
 	$data{'tonable'} = &prompt('', 'Is this paper tonable?', 'boolean');
@@ -874,7 +874,7 @@ sub paperstock_add {
 sub developer_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'name'} = &prompt('', 'What model is the developer?', 'text');
 	$data{'for_paper'} = &prompt('', 'Is this developer suitable for paper?', 'boolean');
 	$data{'for_film'} = &prompt('', 'Is this developer suitable for film?', 'boolean');
@@ -899,7 +899,7 @@ sub mount_add {
 
 sub mount_view {
 	my $db = shift;
-	my $mountid = &listchoices($db, 'mount', 'select mount_id as id, mount as opt from MOUNT');
+	my $mountid = &listchoices({db=>$db, keyword=>'mount', query=>'select mount_id as id, mount as opt from MOUNT'});
 	my $mountname = lookupval($db, "select mount from MOUNT where mount_id = ${mountid}");
 	print "Showing data for $mountname mount\n";
 	&printlist($db, "cameras with $mountname mount", "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt");
@@ -909,7 +909,7 @@ sub mount_view {
 sub toner_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'toner'} = &prompt('', 'What is the name of this toner?', 'text');
 	$data{'formulation'} = &prompt('', 'What is the chemical formulation of this toner?', 'text');
 	$data{'stock_dilution'} = &prompt('', 'What is the stock dilution of this toner?', 'text');
@@ -920,7 +920,7 @@ sub toner_add {
 sub filmstock_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'name'} = &prompt('', 'What is the name of this filmstock?', 'text');
 	$data{'iso'} = &prompt('', 'What is the box ISO/ASA speed of this filmstock?', 'integer');
 	$data{'colour'} = &prompt('', 'Is this a colour film?', 'boolean');
@@ -929,7 +929,7 @@ sub filmstock_add {
 	} else {
 		$data{'panchromatic'} = &prompt('yes', 'Is this a panchromatic film?', 'boolean');
 	}
-	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS', 'integer', \&process_add);
+	$data{'process_id'} = &listchoices({db=>$db, keyword=>'process', query=>'SELECT process_id as id, name as opt FROM photography.PROCESS', type=>'integer', inserthandler=>\&process_add});
 	my $filmstockid = &newrecord($db, \%data, 'FILMSTOCK');
 	return $filmstockid;
 }
@@ -937,10 +937,10 @@ sub filmstock_add {
 sub teleconverter_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the model of this teleconverter?', 'text');
 	$data{'factor'} = &prompt('', 'What is the magnification factor of this teleconverter?', 'decimal');
-	$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
+	$data{'mount_id'} = &listchoices({db=>$db, keyword=>'mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", type=>'integer', inserthandler=>\&mount_add});
 	$data{'elements'} = &prompt('', 'How many elements does this teleconverter have?');
 	$data{'groups'} = &prompt('', 'How many groups are the elements arranged in?');
 	$data{'multicoated'} = &prompt('', 'Is this teleconverter multicoated?', 'boolean');
@@ -952,7 +952,7 @@ sub filter_add {
 	my $db = shift;
 	my %data;
 	$data{'type'} = &prompt('', 'What type of filter is this?', 'text');
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandlers=>\&manufacturer_add});
 	$data{'attenuation'} = &prompt('', 'What attenutation (in stops) does this filter have?', 'decimal');
 	$data{'thread'} = &prompt('', 'What diameter mounting thread does this filter have?', 'decimal');
 	$data{'qty'} = &prompt(1, 'How many of these filters do you have?');
@@ -995,8 +995,8 @@ sub manufacturer_add {
 sub accessory_add {
 	my $db = shift;
 	my %data;
-	$data{'accessory_type_id'} = &listchoices($db, 'accessory type', "select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", 'integer', \&accessory_type);
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'accessory_type_id'} = &listchoices({db=>$db, keyword=>'accessory type', query=>"select accessory_type_id as id, accessory_type as opt from ACCESSORY_TYPE", type=>'integer', inserthandler=>\&accessory_type});
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the model of this accessory?', 'text');
 	$data{'acquired'} = &prompt(&today($db), 'When was this accessory acquired?', 'date');
 	$data{'cost'} = &prompt('', 'What did this accessory cost?', 'decimal');
@@ -1006,7 +1006,7 @@ sub accessory_add {
 		while (1) {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
-			$compatdata{'camera_id'} = &listchoices($db, 'camera', "select * from choose_camera");
+			$compatdata{'camera_id'} = &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_camera"});
 			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 			if (!&prompt('yes', 'Add another compatible camera?', 'boolean')) {
 				last;
@@ -1017,7 +1017,7 @@ sub accessory_add {
 		while (1) {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
-			$compatdata{'lens_id'} = &listchoices($db, 'camera', "select * from choose_lens");
+			$compatdata{'lens_id'} = &listchoices({db=>$db, keyword=>'camera', query=>"select * from choose_lens"});
 			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
 			if (!&prompt('yes', 'Add another compatible lens?', 'boolean')) {
 				last;
@@ -1038,9 +1038,9 @@ sub accessory_type {
 sub enlarger_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'enlarger'} = &prompt('', 'What is the model of this enlarger?', 'text');
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", \&negativesize_add);
+	$data{'negative_size_id'} = &listchoices({db=>$db, keyword=>'negative size', query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", inserthandler=>\&negativesize_add});
 	$data{'introduced'} = &prompt('', 'What year was this enlarger introduced?', 'integer');
 	$data{'discontinued'} = &prompt('', 'What year was this enlarger discontinued?', 'integer');
 	$data{'acquired'} = &prompt(&today($db), 'Purchase date', 'date');
@@ -1052,7 +1052,7 @@ sub enlarger_add {
 sub enlarger_sell {
 	my $db = shift;
 	my %data;
-	my $enlarger_id = shift || &listchoices($db, 'enlarger', "select * from choose_enlarger");
+	my $enlarger_id = shift || &listchoices({db=>$db, keyword=>'enlarger', query=>"select * from choose_enlarger"});
 	$data{'lost'} = &prompt(&today($db), 'What date was this enlarger sold?', 'date');
 	$data{'lost_price'} = &prompt('', 'How much did this enlarger sell for?', 'decimal');
 	&updaterecord($db, \%data, 'ENLARGER', "enlarger_id=$enlarger_id");
@@ -1061,13 +1061,13 @@ sub enlarger_sell {
 sub flash_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the model of this flash?', 'text');
 	$data{'guide_number'} = &prompt('', 'What is the guide number of this flash?', 'integer');
 	$data{'gn_info'} = &prompt('ISO 100', 'What are the conditions of the guide number?', 'text');
 	$data{'battery_powered'} = &prompt('yes', 'Is this flash battery-powered?', 'boolean');
 	if ($data{'battery_powered'} == 1) {
-		$data{'battery_type_id'} = &listchoices($db, 'battery type', "select * from choose_battery", \&battery_add);
+		$data{'battery_type_id'} = &listchoices({db=>$db, keyword=>'battery type', query=>"select * from choose_battery", inserthandler=>\&battery_add});
 		$data{'battery_qty'} = &prompt('', 'How many batteries does this flash need?', 'integer');
 	}
 	$data{'pc_sync'} = &prompt('yes', 'Does this flash have a PC sync socket?', 'boolean');
@@ -1080,7 +1080,7 @@ sub flash_add {
 	$data{'dslr_safe'} = &prompt('yes', 'Is this flash safe to use on a DSLR?', 'boolean');
 	$data{'ttl'} = &prompt('yes', 'Does this flash support TTL metering?', 'boolean');
 	if ($data{'ttl'} == 1) {
-		$data{'flash_protocol_id'} = &listchoices($db, 'flash protocol', "SELECT flash_protocol_id as id, concat(manufacturer, ' ', name) as opt FROM FLASH_PROTOCOL, MANUFACTURER where FLASH_PROTOCOL.manufacturer_id=MANUFACTURER.manufacturer_id");
+		$data{'flash_protocol_id'} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"SELECT flash_protocol_id as id, concat(manufacturer, ' ', name) as opt FROM FLASH_PROTOCOL, MANUFACTURER where FLASH_PROTOCOL.manufacturer_id=MANUFACTURER.manufacturer_id"});
 	}
 	$data{'trigger_voltage'} = &prompt('', 'What is the measured trigger voltage?', 'decimal');
 	$data{'own'} = 1;
@@ -1128,8 +1128,8 @@ sub negativesize_add {
 sub mount_adapt {
 	my $db = shift;
 	my %data;
-	$data{'lens_mount'} = &listchoices($db, 'lens-facing mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
-	$data{'camera_mount'} = &listchoices($db, 'camera-facing mount', "select mount_id as id, mount as opt from MOUNT where purpose='Camera'", 'integer', \&mount_add);
+	$data{'lens_mount'} = &listchoices({db=>$db, keyword=>'lens-facing mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", type=> 'integer', inserthandler=>\&mount_add});
+	$data{'camera_mount'} = &listchoices({db=>$db, keyword=>'camera-facing mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", type=>'integer', inserthandler=>\&mount_add});
 	$data{'has_optics'} = &prompt('', 'Does this mount adapter have corrective optics?', 'boolean');
 	$data{'infinity_focus'} = &prompt('', 'Does this mount adapter have infinity focus?', 'boolean');
 	$data{'notes'} = &prompt('', 'Notes', 'text');
@@ -1140,9 +1140,9 @@ sub mount_adapt {
 sub lightmeter_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the model of this light meter?', 'text');
-	$data{'metering_type'} = &listchoices($db, 'metering type', "select metering_type_id as id, metering as opt from METERING_TYPE", 'integer', \&meteringtype_add);
+	$data{'metering_type'} = &listchoices({db=>$db, keyword=>'metering type', query=>"select metering_type_id as id, metering as opt from METERING_TYPE", type=>'integer', inserthandler=>\&meteringtype_add});
 	$data{'reflected'} = &prompt('', 'Can this meter take reflected light readings?', 'boolean');
 	$data{'incident'} = &prompt('', 'Can this meter take incident light readings?', 'boolean');
 	$data{'spot'} = &prompt('', 'Can this meter take spot readings?', 'boolean');
@@ -1166,7 +1166,7 @@ sub camera_addbodytype {
 sub archive_add {
 	my $db = shift;
 	my %data;
-	$data{'archive_type_id'} = &listchoices($db, 'archive type', "select archive_type_id as id, archive_type as opt from ARCHIVE_TYPE", 'integer');
+	$data{'archive_type_id'} = &listchoices({db=>$db, keyword=>'archive type', query=>"select archive_type_id as id, archive_type as opt from ARCHIVE_TYPE", type=>'integer'});
 	$data{'name'} = &prompt('', 'What is the name of this archive?', 'text');
 	$data{'max_width'} = &prompt('', 'What is the maximum width of media that this archive can accept (if applicable)?', 'text');
 	$data{'max_height'} = &prompt('', 'What is the maximum height of media that this archive can accept (if applicable)?', 'text');
@@ -1191,13 +1191,13 @@ sub archive_films {
 		print "Must provide highest and lowest film IDs\n";
 		exit;
 	}
-	$data{'archive_id'} = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", 'integer', \&archive_add);
+	$data{'archive_id'} = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", type=>'integer', inserthandler=>\&archive_add});
 	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm and archive_id is null");
 }
 
 sub archive_list {
 	my $db = shift;
-	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $archive_id = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE", type=>'integer'});
 	my $archive_name = &lookupval($db, "select name from ARCHIVE where archive_id=$archive_id");
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
 	&printlist($db, "items in archive $archive_name", $query);
@@ -1206,7 +1206,7 @@ sub archive_list {
 sub archive_seal {
 	my $db = shift;
 	my %data;
-	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where sealed = 0", 'integer');
+	my $archive_id = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE where sealed = 0", type=>'integer'});
 	$data{'sealed'} = 1;
 	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
 }
@@ -1214,7 +1214,7 @@ sub archive_seal {
 sub archive_unseal {
 	my $db = shift;
 	my %data;
-	my $archive_id = &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE where sealed = 1", 'integer');
+	my $archive_id = &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE where sealed = 1", type=>'integer'});
 	$data{'sealed'} = 0;
 	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
 }
@@ -1222,7 +1222,7 @@ sub archive_unseal {
 sub archive_move {
 	my $db = shift;
 	my %data;
-	my $archive_id = shift || &listchoices($db, 'archive', "select archive_id as id, name as opt from ARCHIVE", 'integer');
+	my $archive_id = shift || &listchoices({db=>$db, keyword=>'archive', query=>"select archive_id as id, name as opt from ARCHIVE", type=>'integer'});
 	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
 	$data{'location'} = &prompt($oldlocation, 'What is the new location of this archive?', 'text');
 	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
@@ -1247,7 +1247,7 @@ sub focustype_add {
 sub flashprotocol_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'name'} = &prompt('', 'What flash protocol do you want to add?', 'text');
 	my $id = &newrecord($db, \%data, 'FLASH_PROTOCOL');
 	return $id;
@@ -1285,10 +1285,10 @@ sub person_add {
 sub projector_add {
 	my $db = shift;
 	my %data;
-	$data{'manufacturer_id'} = &listchoices($db, 'manufacturer', "select manufacturer_id as id, manufacturer as opt from MANUFACTURER", 'integer', \&manufacturer_add);
+	$data{'manufacturer_id'} = &listchoices({db=>$db, keyword=>'manufacturer', query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", type=>'integer', inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt('', 'What is the model of this projector?', 'text');
-	$data{'mount_id'} = &listchoices($db, 'mount', "select mount_id as id, mount as opt from MOUNT where purpose='Projector'", 'integer', \&mount_add);
-	$data{'negative_size_id'} = &listchoices($db, 'negative size', "select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", 'integer', \&negativesize_add);
+	$data{'mount_id'} = &listchoices({db=>$db, keyword=>'mount', query=>"select mount_id as id, mount as opt from MOUNT where purpose='Projector'", type=>'integer', inserthandler=>\&mount_add});
+	$data{'negative_size_id'} = &listchoices({db=>$db, keyword=>'negative size', query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", type=>'integer', inserthandler=>\&negativesize_add});
 	$data{'own'} = 1;
 	$data{'cine'} = &prompt('', 'Is this a cine/movie projector?', 'boolean');
 	my $id = &newrecord($db, \%data, 'PROJECTOR');
@@ -1299,40 +1299,40 @@ sub movie_add {
 	my $db = shift;
 	my %data;
 	$data{'title'} = &prompt('', 'What is the title of this movie?', 'text');
-	$data{'camera_id'} = &listchoices($db, 'camera', "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and video=1 and digital=0 order by opt");
+	$data{'camera_id'} = &listchoices({db=>$db, keyword=>'camera', query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and video=1 and digital=0 order by opt"});
 	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id = $data{'camera_id'}")) {
 		$data{'lens_id'} = &lookupval($db, "select lens_id from CAMERA where camera_id = $data{'camera_id'}");
 	} else {
-		$data{'lens_id'} = &listchoices($db, 'lens', "select * from choose_lens");
+		$data{'lens_id'} = &listchoices({db=>$db, keyword=>'lens', query=>"select * from choose_lens"});
 	}
-	$data{'format_id'} = &listchoices($db, 'format', "select format_id as id, format as opt from FORMAT", 'integer', \&format_add);
+	$data{'format_id'} = &listchoices({db=>$db, keyword=>'format', query=>"select format_id as id, format as opt from FORMAT", type=>'integer', inserthandler=>\&format_add});
 	$data{'sound'} = &prompt('', 'Does this movie have sound?', 'boolean');
 	$data{'fps'} = &prompt('', 'What is the fraterate of this movie in fps?', 'integer');
-	$data{'filmstock_id'} = &listchoices($db, 'filmstock', "select * from choose_filmstock", 'integer', \&filmstock_add);
+	$data{'filmstock_id'} = &listchoices({db=>$db, keyword=>'filmstock', query=>"select * from choose_filmstock", type=>'integer', inserthandler=>\&filmstock_add});
 	$data{'feet'} = &prompt('', 'What is the length of this movie in feet?', 'integer');
 	$data{'date_loaded'} = &prompt(&today($db), 'What date was the film loaded?', 'date');
 	$data{'date_shot'} = &prompt(&today($db), 'What date was the movie shot?', 'date');
 	$data{'date_processed'} = &prompt(&today($db), 'What date was the movie processed?', 'date');
-	$data{'process_id'} = &listchoices($db, 'process', 'SELECT process_id as id, name as opt FROM photography.PROCESS', 'integer', \&process_add);
+	$data{'process_id'} = &listchoices({db=>$db, keyword=>'process', query=>'SELECT process_id as id, name as opt FROM photography.PROCESS', type=>'integer', inserthandler=>\&process_add});
 	$data{'description'} = &prompt('', 'Please enter a description of the movie', 'text');
 	my $id = &newrecord($db, \%data, 'MOVIE');
 }
 
 sub audit_shutterspeeds {
 	my $db = shift;
-	my $cameraid = &listchoices($db, 'camera without shutter speed data', "select * from choose_camera_without_shutter_data");
+	my $cameraid = &listchoices({db=>$db, keyword=>'camera without shutter speed data', query=>"select * from choose_camera_without_shutter_data"});
 	 &camera_shutterspeeds($db, $cameraid);
 }
 
 sub audit_exposureprograms {
 	my $db = shift;
-	my $cameraid = &listchoices($db, 'camera without exposure program data', "select * from choose_camera_without_exposure_programs");
+	my $cameraid = &listchoices({db=>$db, keyword=>'camera without exposure program data', query=>"select * from choose_camera_without_exposure_programs"});
 	 &camera_exposureprogram($db, $cameraid);
 }
 
 sub audit_meteringmodes {
 	my $db = shift;
-	my $cameraid = &listchoices($db, 'camera without metering mode data', "select * from choose_camera_without_metering_data");
+	my $cameraid = &listchoices({db=>$db, keyword=>'camera without metering mode data', query=>"select * from choose_camera_without_metering_data"});
 	&camera_meteringmode($db, $cameraid);
 }
 
@@ -1348,7 +1348,7 @@ sub exhibition_add {
 
 sub exhibition_review {
 	my $db = shift;
-	my $exhibition_id = &listchoices($db, 'exhibition', "select exhibition_id as id, title as opt from EXHIBITION", 'integer');
+	my $exhibition_id = &listchoices({db=>$db, keyword=>'exhibition', query=>"select exhibition_id as id, title as opt from EXHIBITION", type=>'integer'});
 	my $title = &lookupval($db, "select title from EXHIBITION where exhibition_id=$exhibition_id");
 
 	my $query = "select PRINT.print_id as id, concat(description, ' (', displaysize(PRINT.width, PRINT.height), ')') as opt from NEGATIVE join PRINT on PRINT.negative_id=NEGATIVE.negative_id join EXHIBIT on EXHIBIT.print_id=PRINT.print_id join EXHIBITION on EXHIBITION.exhibition_id=EXHIBIT.exhibition_id where EXHIBITION.exhibition_id=$exhibition_id";
