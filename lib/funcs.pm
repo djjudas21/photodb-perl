@@ -28,7 +28,7 @@ sub prompt {
 		my $input = <STDIN>;
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
-	} while (!&validate($rv, $type));
+	} while (!&validate({val => $rv, type => $type}));
 
 	# Rewrite friendly bools
 	if ($type eq 'boolean') {
@@ -40,8 +40,9 @@ sub prompt {
 
 # Validate that a value is a certain type
 sub validate {
-	my $val = shift;
-	my $type = shift || 'text';
+	my $href = $_[0];
+	my $val = $href->{val};
+	my $type = $href->{type} || 'text';
 
 	if ($val eq '') {
 		return 1;
