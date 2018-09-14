@@ -13,7 +13,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -233,8 +233,8 @@ sub nosubcommand {
 sub listchoices {
 	my $href = $_[0];
 	my $db = $href->{db};
-	my $keyword = $href->{keyword};
 	my $query = $href->{query};
+	my $keyword = $href->{keyword} || &keyword($query);
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
 
@@ -496,6 +496,22 @@ sub annotatefilm {
 		}
 	} else {
 		die "Path $path not found\n";
+	}
+}
+
+# Figure out the keyword of an SQL statement, e.g. statements that select FROM
+# CAMERA or choose_camera would return "camera"
+# CAMERA_MOUNT or choose_camera_mount would return "camera mount"
+sub keyword {
+	my $query = shift;
+	if ($query =~ m/^.+ from (\w+).*$/i) {
+		my $text = $1;
+		$text = lc($text);
+		$text =~ s/^choose_//;
+		$text =~ s/_/ /g;
+		return $text;
+	} else {
+		die "Could not deduce valid keyword from SQL\n";
 	}
 }
 
