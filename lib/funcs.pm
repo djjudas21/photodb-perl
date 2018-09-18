@@ -13,13 +13,16 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword);
 
 # Prompt for an arbitrary value
 sub prompt {
-	my $default = shift || "";
-	my $prompt = shift;
-	my $type = shift || 'text';
+	my $href = $_[0];
+	my $default = $href->{default} || "";
+	my $prompt = $href->{prompt};
+	my $type = $href->{type} || 'text';
+
+	die "Must provide value for \$prompt\n" if !($prompt);
 
 	my $rv;
 	# Repeatedly prompt until we get a response of the correct type
@@ -28,7 +31,7 @@ sub prompt {
 		my $input = <STDIN>;
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
-	} while (!&validate($rv, $type));
+	} while (!&validate({val => $rv, type => $type}));
 
 	# Rewrite friendly bools
 	if ($type eq 'boolean') {
@@ -40,8 +43,11 @@ sub prompt {
 
 # Validate that a value is a certain type
 sub validate {
-	my $val = shift;
-	my $type = shift || 'text';
+	my $href = $_[0];
+	my $val = $href->{val};
+	my $type = $href->{type} || 'text';
+
+	die "Must provide value for \$val\n" if !defined($val);
 
 	if ($val eq '') {
 		return 1;
@@ -95,7 +101,7 @@ sub ini {
 	if (-f $path) {
 		return glob('~/.photodb.ini');
 	} else {
-		if (prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
+		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
 			&writeconfig($path);
 			return $path;
 		} else {
@@ -127,22 +133,25 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
-	my $db = shift;
+	my $href = $_[0];
+
+	# Read in db handle
+	my $db = $href->{db};
 
 	# Read in hash new values
-	my $data = shift;
+	my $data = $href->{data};
 
 	# Read in table name
-	my $table = shift;
+	my $table = $href->{table};
 
 	# Read in where condition
-	my $where = shift;
+	my $where = $href->{where};
 
-	# Quit if where is null
-	if (!defined($where)) {
-		print "No valid where clause, not going to do a risky UPDATE\n";
-		exit;
-	}
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $data' if !($data);
+	die 'Must pass in $table' if !($table);
+	die 'Must pass in $where' if !($where);
 
 	# Delete empty strings from data hash
 	$data = &thin($data);
@@ -157,7 +166,7 @@ sub updaterecord {
 	my($stmt, @bind) = $sql->update($table, $data, $where);
 
 	# Final confirmation
-	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -168,13 +177,21 @@ sub updaterecord {
 
 # Insert a record into any table
 sub newrecord {
-	my $db = shift;
+	my $href = $_[0];
 
-	# Read in hash of values
-	my $data = shift;
+	# Read in db handle
+	my $db = $href->{db};
+
+	# Read in hash new values
+	my $data = $href->{data};
 
 	# Read in table name
-	my $table = shift;
+	my $table = $href->{table};
+
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $data' if !($data);
+	die 'Must pass in $table' if !($table);
 
 	# Delete empty strings from data hash
 	$data = &thin($data);
@@ -189,7 +206,7 @@ sub newrecord {
 	my($stmt, @bind) = $sql->insert($table, $data);
 
 	# Final confirmation
-	prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -230,11 +247,12 @@ sub nosubcommand {
 
 # List arbitrary choices and return ID of the selected one
 sub listchoices {
-	my $db = shift;
-	my $keyword = shift;
-	my $query = shift;
-	my $type = shift || 'integer';
-	my $inserthandler = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $query = $href->{query};
+	my $keyword = $href->{keyword} || &keyword($query);
+	my $type = $href->{type} || 'integer';
+	my $inserthandler = $href->{inserthandler};
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
@@ -268,7 +286,7 @@ sub listchoices {
 	# Loop until we get valid input
 	my $input;
 	do {
-		$input = prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
+		$input = &prompt({default=>$default, prompt=>"Please select a $keyword from the list, or leave blank to skip", type=>$type});
 	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
@@ -378,11 +396,11 @@ sub writeconfig {
 	$inifile = $1;
 
 	my %inidata;
-	$inidata{'database'}{'host'} = prompt('localhost', 'Database hostname or IP address', 'text');
-	$inidata{'database'}{'schema'} = prompt('photography', 'Schema name of photography database', 'text');
-	$inidata{'database'}{'user'} = prompt('photography', 'Username with access to the schema', 'text');
-	$inidata{'database'}{'pass'} = prompt('', 'Password for this user', 'text');
-	$inidata{'filesystem'}{'basepath'} = prompt('', 'Path to your scanned images', 'text');
+	$inidata{'database'}{'host'} = &prompt({default=>'localhost', prompt=>'Database hostname or IP address', type=>'text'});
+	$inidata{'database'}{'schema'} = &prompt({default=>'photography', prompt=>'Schema name of photography database', type=>'text'});
+	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
+	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
+	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata);
 }
 
@@ -424,8 +442,8 @@ sub resolvenegid {
 
 sub chooseneg {
 	my $db = shift;
-	my $film_id = prompt('', 'Enter Film ID', 'integer');
-	my $frame = &listchoices($db, 'frame', "select frame as id, description as opt from NEGATIVE where film_id=$film_id", 'text');
+	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
+	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if ($neg_id =~ m/^\d+$/) {
 		return $neg_id;
@@ -494,6 +512,22 @@ sub annotatefilm {
 		}
 	} else {
 		die "Path $path not found\n";
+	}
+}
+
+# Figure out the keyword of an SQL statement, e.g. statements that select FROM
+# CAMERA or choose_camera would return "camera"
+# CAMERA_MOUNT or choose_camera_mount would return "camera mount"
+sub keyword {
+	my $query = shift;
+	if ($query =~ m/^.+ from (\w+).*$/i) {
+		my $text = $1;
+		$text = lc($text);
+		$text =~ s/^choose_//;
+		$text =~ s/_/ /g;
+		return $text;
+	} else {
+		die "Could not deduce valid keyword from SQL\n";
 	}
 }
 
