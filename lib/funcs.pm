@@ -47,7 +47,7 @@ sub validate {
 	my $val = $href->{val};
 	my $type = $href->{type} || 'text';
 
-	die "Must provide value for \$val\n" if !($val);
+	die "Must provide value for \$val\n" if !defined($val);
 
 	if ($val eq '') {
 		return 1;
