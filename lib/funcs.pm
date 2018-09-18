@@ -22,6 +22,8 @@ sub prompt {
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
 
+	die 'Must provide value for $prompt\n' if !($prompt);
+
 	my $rv;
 	# Repeatedly prompt until we get a response of the correct type
 	do {
@@ -44,6 +46,8 @@ sub validate {
 	my $href = $_[0];
 	my $val = $href->{val};
 	my $type = $href->{type} || 'text';
+
+	die 'Must provide value for $val\n' if !($val);
 
 	if ($val eq '') {
 		return 1;
