@@ -133,22 +133,25 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
-	my $db = shift;
+	my $href = $_[0];
+
+	# Read in db handle
+	my $db = $href->{db};
 
 	# Read in hash new values
-	my $data = shift;
+	my $data = $href->{data};
 
 	# Read in table name
-	my $table = shift;
+	my $table = $href->{table};
 
 	# Read in where condition
-	my $where = shift;
+	my $where = $href->{where};
 
-	# Quit if where is null
-	if (!defined($where)) {
-		print "No valid where clause, not going to do a risky UPDATE\n";
-		exit;
-	}
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $data' if !($data);
+	die 'Must pass in $table' if !($table);
+	die 'Must pass in $where' if !($where);
 
 	# Delete empty strings from data hash
 	$data = &thin($data);

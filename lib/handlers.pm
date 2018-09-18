@@ -92,7 +92,7 @@ sub film_load {
 	$data{'exposed_at'} = &prompt({default=>&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), prompt=>'What ISO?', type=>'integer'});
 	$data{'date_loaded'} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{'notes'} = &prompt({prompt=>'Notes'});
-	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
 sub film_archive {
@@ -101,7 +101,7 @@ sub film_archive {
 	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer'});
 	my %data;
 	$data{'archive_id'} = &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", inserthandler=>\&archive_add});
-	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
 sub film_develop {
@@ -119,7 +119,7 @@ sub film_develop {
 	$data{'dev_n'} = &prompt({default=>0, prompt=>'What push/pull was used?', type=>'integer'});
 	$data{'development_notes'} = &prompt({prompt=>'Any other development notes'});
 	$data{'processed_by'} = &prompt({prompt=>'Who developed the film?'});
-	&updaterecord($db, \%data, 'FILM', "film_id=$film_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 	if (&prompt({default=>'no', prompt=>'Archive this film now?', type=>'boolean'})) {
 		&film_archive($db, $film_id);
 	}
@@ -349,7 +349,7 @@ sub camera_sell {
 	$data{'own'} = 0;
 	$data{'lost'} = &prompt({default=>&today($db), prompt=>'What date was this camera sold?', type=>'date'});
 	$data{'lost_price'} = &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
-	&updaterecord($db, \%data, 'CAMERA', "camera_id=$cameraid");
+	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$cameraid"});
 	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id=$cameraid")) {
 		my $lensid = &lookupval($db, "select lens_id from CAMERA where camera_id=$cameraid");
 		if ($lensid) {
@@ -357,7 +357,7 @@ sub camera_sell {
 			$lensdata{'own'} = 0;
 			$lensdata{'lost'} = $data{'lost'};
 			$lensdata{'lost_price'} = 0;
-			&updaterecord($db, \%lensdata, 'LENS', "lens_id=$lensid");
+			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>"lens_id=$lensid"});
 		}
 	}
 
@@ -621,7 +621,7 @@ sub lens_sell {
 	$data{'own'} = 0;
 	$data{'lost'} = &prompt({default=>&today($db), prompt=>'What date was this lens sold?', type=>'date'});
 	$data{'lost_price'} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
-	&updaterecord($db, \%data, 'LENS', "lens_id=$lensid");
+	&updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
 sub lens_repair {
@@ -696,7 +696,7 @@ sub print_add {
 		my %data2;
 		$data2{'printed'} = 1;
 		$data2{'print_id'} = $printid;
-		&updaterecord($db, \%data2, 'TO_PRINT', "id=$todo_id");
+		&updaterecord({db=>$db, data=>\%data2, table=>'TO_PRINT', where=>"id=$todo_id"});
 	}
 
 	if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'})) {
@@ -716,7 +716,7 @@ sub print_fulfil {
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', query=>'SELECT * FROM photography.choose_todo'});
 	$data{'printed'} = &prompt({default=>'yes', prompt=>'Is this print order now fulfilled?', type=>'boolean'});
 	$data{'print_id'} = &prompt({prompt=>'Which print fulfilled this order?', type=>'integer'});
-	&updaterecord($db, \%data, 'TO_PRINT', "id=$todo_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
 }
 
 sub print_tone {
@@ -734,7 +734,7 @@ sub print_tone {
 		$data{'2nd_toner_dilution'} = &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
 		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	}
-	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_sell {
@@ -744,7 +744,7 @@ sub print_sell {
 	$data{'own'} = 0;
 	$data{'location'} = &prompt({prompt=>'What happened to the print?'});
 	$data{'sold_price'} = &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
-	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_order {
@@ -767,7 +767,7 @@ sub print_archive {
 	$data{'archive_id'} = &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0", inserthandler=>\&archive_add});
 	$data{'own'} = 1;
 	$data{'location'} = 'Archive',
-	&updaterecord($db, \%data, 'PRINT', "print_id=$print_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_locate {
@@ -1055,7 +1055,7 @@ sub enlarger_sell {
 	my $enlarger_id = shift || &listchoices({db=>$db, query=>"select * from choose_enlarger"});
 	$data{'lost'} = &prompt({default=>&today($db), prompt=>'What date was this enlarger sold?', type=>'date'});
 	$data{'lost_price'} = &prompt({prompt=>'How much did this enlarger sell for?', type=>'decimal'});
-	&updaterecord($db, \%data, 'ENLARGER', "enlarger_id=$enlarger_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
 }
 
 sub flash_add {
@@ -1192,7 +1192,7 @@ sub archive_films {
 		exit;
 	}
 	$data{'archive_id'} = &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0", inserthandler=>\&archive_add});
-	&updaterecord($db, \%data, 'FILM', "film_id >= $minfilm and film_id <= $maxfilm and archive_id is null");
+	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
 }
 
 sub archive_list {
@@ -1208,7 +1208,7 @@ sub archive_seal {
 	my %data;
 	my $archive_id = &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE where sealed = 0"});
 	$data{'sealed'} = 1;
-	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub archive_unseal {
@@ -1216,7 +1216,7 @@ sub archive_unseal {
 	my %data;
 	my $archive_id = &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE where sealed = 1"});
 	$data{'sealed'} = 0;
-	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub archive_move {
@@ -1225,7 +1225,7 @@ sub archive_move {
 	my $archive_id = shift || &listchoices({db=>$db, query=>"select archive_id as id, name as opt from ARCHIVE"});
 	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
 	$data{'location'} = &prompt({default=>$oldlocation, prompt=>'What is the new location of this archive?'});
-	&updaterecord($db, \%data, 'ARCHIVE', "archive_id = $archive_id");
+	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub shuttertype_add {
