@@ -76,7 +76,7 @@ sub film_add {
 	}
 	$data{'frames'} = &prompt({prompt=>'How many frames?', type=>'integer'});
 	$data{'price'} = &prompt({prompt=>'Purchase price', type=>'decimal'});
-	my $filmid = &newrecord($db, \%data, 'FILM');
+	my $filmid = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 	if (&prompt({default=>'no', prompt=>'Load this film into a camera now?', type=>'boolean'})) {
 		&film_load($db, $filmid);
 	}
@@ -158,7 +158,7 @@ sub film_bulk {
 	$data{'purchase_date'} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
 	$data{'cost'} = &prompt({prompt=>'Purchase price', type=>'decimal'});
 	$data{'source'} = &prompt({prompt=>'Where was this bulk film purchased from?'});
-	my $filmid = &newrecord($db, \%data, 'FILM_BULK');
+	my $filmid = &newrecord({db=>$db, data=>\%data, table=>'FILM_BULK'});
 	return $filmid;
 }
 
@@ -243,7 +243,7 @@ sub camera_add {
 	$data{'oem_case'} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean'});
 	$data{'dof_preview'} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean'});
 	$data{'tripod'} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean'});
-	my $cameraid = &newrecord($db, \%data, 'CAMERA');
+	my $cameraid = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
 	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera?', type=>'boolean'})) {
@@ -255,7 +255,7 @@ sub camera_add {
 			&camera_meteringmode($db, $cameraid);
 		} else {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => 0);
-			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
 		}
 	}
 
@@ -280,7 +280,7 @@ sub camera_accessory {
 		my %compatdata;
 		$compatdata{'accessory_id'} = &listchoices({db=>$db, query=>'select * from choose_accessory'});
 		$compatdata{'camera_id'} = $cameraid;
-		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 		if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'})) {
 			last;
 		}
@@ -294,7 +294,7 @@ sub camera_shutterspeeds {
 		my %shutterdata;
 		$shutterdata{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", insert_handler=>\&shutterspeed_add});
 		$shutterdata{'camera_id'} = $cameraid;
-		&newrecord($db, \%shutterdata, 'SHUTTER_SPEED_AVAILABLE');
+		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE'});
 		if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'})) {
 			last;
 		}
@@ -313,7 +313,7 @@ sub camera_exposureprogram {
 		next if $exposureprogram->{exposure_program_id} == 8;
 		if (&prompt({default=>'no', prompt=>"Does this camera have $exposureprogram->{exposure_program} exposure program?", type=>'boolean'})) {
 			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
-			&newrecord($db, \%epdata, 'EXPOSURE_PROGRAM_AVAILABLE');
+			&newrecord({db=>$db, data=>\%epdata, table=>'EXPOSURE_PROGRAM_AVAILABLE'});
 			last if $exposureprogram->{exposure_program_id} == 0;
 		}
 	}
@@ -326,7 +326,7 @@ sub camera_meteringmode {
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
-			&newrecord($db, \%mmdata, 'METERING_MODE_AVAILABLE');
+			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
 			last if $meteringmode->{metering_mode_id} == 0;
 		}
 	}
@@ -338,7 +338,7 @@ sub camera_displaylens {
 	$data{'camera_id'} = shift || &listchoices({db=>$db, query=>"select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)"});
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{'camera_id'}");
 	$data{'lens_id'} = &listchoices({db=>$db, query=>"select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)"});
-	my $displaylensid = &newrecord($db, \%data, 'DISPLAYLENS');
+	my $displaylensid = &newrecord({db=>$db, data=>\%data, table=>'DISPLAYLENS'});
 	return $displaylensid;
 }
 
@@ -370,7 +370,7 @@ sub camera_repair {
 	$data{'date'} = &prompt({default=>&today($db), prompt=>'What date was this camera repaired?', type=>'date'});
 	$data{'summary'} = &prompt({prompt=>'Short summary of repair'});
 	$data{'description'} = &prompt({prompt=>'Longer description of repair'});
-	my $repair_id = &newrecord($db, \%data, 'REPAIR');
+	my $repair_id = &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 	return $repair_id;
 }
 
@@ -473,7 +473,7 @@ sub negative_add {
 	$data{'metering_mode'} = &listchoices({db=>$db, query=>"select metering_mode_id as id, metering_mode as opt from METERING_MODE"});
 	$data{'exposure_program'} = &listchoices({db=>$db, query=>"select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM"});
 	$data{'photographer_id'} = &listchoices({db=>$db, keyword=>'photographer', query=>"select person_id as id, name as opt from PERSON", inserthandler=>\&person_add});
-	my $negativeid = &newrecord($db, \%data, 'NEGATIVE');
+	my $negativeid = &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 	return $negativeid;
 }
 
@@ -592,7 +592,7 @@ sub lens_add {
 	$data{'image_circle'} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer'});
 	$data{'formula'} = &prompt({prompt=>'Does this lens have a named optical formula?'});
 	$data{'shutter_model'} = &prompt({prompt=>'What shutter does this lens incorporate?'});
-	my $lensid = &newrecord($db, \%data, 'LENS');
+	my $lensid = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens?', type=>'boolean'})) {
 		&lens_accessory($db, $lensid);
@@ -607,7 +607,7 @@ sub lens_accessory {
 		my %compatdata;
 		$compatdata{'accessory_id'} = &listchoices({db=>$db, query=>'select * from choose_accessory'});
 		$compatdata{'lens_id'} = $lensid;
-		&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 		if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'})) {
 			last;
 		}
@@ -631,7 +631,7 @@ sub lens_repair {
 	$data{'date'} = &prompt({default=>&today($db), prompt=>'What date was this lens repaired?', type=>'date'});
 	$data{'summary'} = &prompt({prompt=>'Short summary of repair'});
 	$data{'description'} = &prompt({prompt=>'Longer description of repair'});
-	my $repair_id = &newrecord($db, \%data, 'REPAIR');
+	my $repair_id = &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 	return $repair_id;
 }
 
@@ -689,7 +689,7 @@ sub print_add {
 	$data{'fine'} = &prompt({prompt=>'Is this a fine print?', type=>'boolean'});
 	$data{'notes'} = &prompt({prompt=>'Notes'});
 	$data{'printer_id'} = &listchoices({db=>$db, keyword=>'printer', query=>"select person_id as id, name as opt from PERSON", inserthandler=>\&person_add});
-	my $printid = &newrecord($db, \%data, 'PRINT');
+	my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
 
 	# Mark is as complete in the todo list
 	if ($todo_id) {
@@ -756,7 +756,7 @@ sub print_order {
 	$data{'width'} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
 	$data{'recipient'} = &prompt({prompt=>'Who is the print for?'});
 	$data{'added'} = &prompt({default=>&today($db), prompt=>'Date that this order was placed', type=>'date'});
-	my $orderid = &newrecord($db, \%data, 'TO_PRINT');
+	my $orderid = &newrecord({db=>$db, data=>\%data, table=>'TO_PRINT'});
 }
 
 sub print_archive {
@@ -843,7 +843,7 @@ sub print_exhibit {
 	my %data;
 	$data{'print_id'} = &prompt({prompt=>'Which print do you want to exhibit?', type=>'integer'});
 	$data{'exhibition_id'} = &listchoices({db=>$db, query=>"select exhibition_id as id, title as opt from EXHIBITION", inserthandler=>\&exhibition_add});
-	my $id = &newrecord($db, \%data, 'EXHIBIT');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'EXHIBIT'});
 	return $id;
 }
 
@@ -867,7 +867,7 @@ sub paperstock_add {
 	$data{'tonable'} = &prompt({prompt=>'Is this paper tonable?', type=>'boolean'});
 	$data{'colour'} = &prompt({prompt=>'Is this a colour paper?', type=>'boolean'});
 	$data{'finish'} = &prompt({prompt=>'What surface finish does this paper have?'});
-	my $paperstockid = &newrecord($db, \%data, 'PAPER_STOCK');
+	my $paperstockid = &newrecord({db=>$db, data=>\%data, table=>'PAPER_STOCK'});
 	return $paperstockid;
 }
 
@@ -879,7 +879,7 @@ sub developer_add {
 	$data{'for_paper'} = &prompt({prompt=>'Is this developer suitable for paper?', type=>'boolean'});
 	$data{'for_film'} = &prompt({prompt=>'Is this developer suitable for film?', type=>'boolean'});
 	$data{'chemistry'} = &prompt({prompt=>'What type of chemistry is this developer based on?'});
-	my $developerid = &newrecord($db, \%data, 'DEVELOPER');
+	my $developerid = &newrecord({db=>$db, data=>\%data, table=>'DEVELOPER'});
 	return $developerid;
 }
 
@@ -893,7 +893,7 @@ sub mount_add {
 	$data{'purpose'} = &prompt({default=>'camera', prompt=>'What is the intended purpose of this mount? (e.g. camera, enlarger, projector, etc)'});
 	$data{'digital_only'} = &prompt({default=>'no', prompt=>'Is this a digital-only mount?', type=>'boolean'});
 	$data{'notes'} = &prompt({prompt=>'Notes about this mount'});
-	my $mountid = &newrecord($db, \%data, 'MOUNT');
+	my $mountid = &newrecord({db=>$db, data=>\%data, table=>'MOUNT'});
 	return $mountid;
 }
 
@@ -913,7 +913,7 @@ sub toner_add {
 	$data{'toner'} = &prompt({prompt=>'What is the name of this toner?'});
 	$data{'formulation'} = &prompt({prompt=>'What is the chemical formulation of this toner?'});
 	$data{'stock_dilution'} = &prompt({prompt=>'What is the stock dilution of this toner?'});
-	my $tonerid = &newrecord($db, \%data, 'TONER');
+	my $tonerid = &newrecord({db=>$db, data=>\%data, table=>'TONER'});
 	return $tonerid;
 }
 
@@ -930,7 +930,7 @@ sub filmstock_add {
 		$data{'panchromatic'} = &prompt({default=>'yes', prompt=>'Is this a panchromatic film?', type=>'boolean'});
 	}
 	$data{'process_id'} = &listchoices({db=>$db, query=>'SELECT process_id as id, name as opt FROM PROCESS', inserthandler=>\&process_add});
-	my $filmstockid = &newrecord($db, \%data, 'FILMSTOCK');
+	my $filmstockid = &newrecord({db=>$db, data=>\%data, table=>'FILMSTOCK'});
 	return $filmstockid;
 }
 
@@ -944,7 +944,7 @@ sub teleconverter_add {
 	$data{'elements'} = &prompt({prompt=>'How many elements does this teleconverter have?', type=>'integer'});
 	$data{'groups'} = &prompt({prompt=>'How many groups are the elements arranged in?', type=>'integer'});
 	$data{'multicoated'} = &prompt({prompt=>'Is this teleconverter multicoated?', type=>'boolean'});
-	my $teleconverterid = &newrecord($db, \%data, 'TELECONVERTER');
+	my $teleconverterid = &newrecord({db=>$db, data=>\%data, table=>'TELECONVERTER'});
 	return $teleconverterid;
 }
 
@@ -956,7 +956,7 @@ sub filter_add {
 	$data{'attenuation'} = &prompt({prompt=>'What attenutation (in stops) does this filter have?', type=>'decimal'});
 	$data{'thread'} = &prompt({prompt=>'What diameter mounting thread does this filter have?', type=>'decimal'});
 	$data{'qty'} = &prompt({default=>1, prompt=>'How many of these filters do you have?', type=>'integer'});
-	my $filterid = &newrecord($db, \%data, 'FILTER');
+	my $filterid = &newrecord({db=>$db, data=>\%data, table=>'FILTER'});
 	return $filterid;
 }
 
@@ -966,7 +966,7 @@ sub process_add {
 	$data{'name'} = &prompt({prompt=>'What is the name of this film process?'});
 	$data{'colour'} = &prompt({prompt=>'Is this a colour process?', type=>'boolean'});
 	$data{'positive'} = &prompt({prompt=>'Is this a reversal process?', type=>'boolean'});
-	my $processid = &newrecord($db, \%data, 'PROCESS');
+	my $processid = &newrecord({db=>$db, data=>\%data, table=>'PROCESS'});
 	return $processid;
 }
 
@@ -975,7 +975,7 @@ sub filter_adapt {
 	my %data;
 	$data{'camera_thread'} = &prompt({prompt=>'What diameter thread faces the camera on this filter adapter?', type=>'decimal'});
 	$data{'filter_thread'} = &prompt({prompt=>'What diameter thread faces the filter on this filter adapter?', type=>'decimal'});
-	my $filteradapterid = &newrecord($db, \%data, 'FILTER_ADAPTER');
+	my $filteradapterid = &newrecord({db=>$db, data=>\%data, table=>'FILTER_ADAPTER'});
 	return $filteradapterid;
 }
 
@@ -988,7 +988,7 @@ sub manufacturer_add {
 	$data{'url'} = &prompt({prompt=>'What is the main website of the manufacturer?'});
 	$data{'founded'} = &prompt({prompt=>'When was the manufacturer founded?', type=>'integer'});
 	$data{'dissolved'} = &prompt({prompt=>'When was the manufacturer dissolved?', type=>'integer'});
-	my $manufacturerid = &newrecord($db, \%data, 'MANUFACTURER');
+	my $manufacturerid = &newrecord({db=>$db, data=>\%data, table=>'MANUFACTURER'});
 	return $manufacturerid;
 }
 
@@ -1000,14 +1000,14 @@ sub accessory_add {
 	$data{'model'} = &prompt({prompt=>'What is the model of this accessory?'});
 	$data{'acquired'} = &prompt({default=>&today($db), prompt=>'When was this accessory acquired?', type=>'date'});
 	$data{'cost'} = &prompt({prompt=>'What did this accessory cost?', type=>'decimal'});
-	my $accessoryid = &newrecord($db, \%data, 'ACCESSORY');
+	my $accessoryid = &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY'});
 
 	if (&prompt({default=>'yes', prompt=>'Add camera compatibility info for this accessory?', type=>'boolean'})) {
 		while (1) {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
 			$compatdata{'camera_id'} = &listchoices({db=>$db, query=>"select * from choose_camera"});
-			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 			if (!&prompt({default=>'yes', prompt=>'Add another compatible camera?', type=>'boolean'})) {
 				last;
 			}
@@ -1018,7 +1018,7 @@ sub accessory_add {
 			my %compatdata;
 			$compatdata{'accessory_id'} = $accessoryid;
 			$compatdata{'lens_id'} = &listchoices({db=>$db, query=>"select * from choose_lens"});
-			&newrecord($db, \%compatdata, 'ACCESSORY_COMPAT');
+			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 			if (!&prompt({default=>'yes', prompt=>'Add another compatible lens?', type=>'boolean'})) {
 				last;
 			}
@@ -1031,7 +1031,7 @@ sub accessory_type {
 	my $db = shift;
 	my %data;
 	$data{'accessory_type'} = &prompt({prompt=>'What type of accessory do you want to add?'});
-	my $accessorytypeid = &newrecord($db, \%data, 'ACCESSORY_TYPE');
+	my $accessorytypeid = &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
 	return $accessorytypeid;
 }
 
@@ -1045,7 +1045,7 @@ sub enlarger_add {
 	$data{'discontinued'} = &prompt({prompt=>'What year was this enlarger discontinued?', type=>'integer'});
 	$data{'acquired'} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
 	$data{'cost'} = &prompt({prompt=>'Purchase price', type=>'decimal'});
-	my $enlarger_id = &newrecord($db, \%data, 'ENLARGER');
+	my $enlarger_id = &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
 	return $enlarger_id;
 }
 
@@ -1086,7 +1086,7 @@ sub flash_add {
 	$data{'own'} = 1;
 	$data{'acquired'} = &prompt({default=>&today($db), prompt=>'When was it acquired?', type=>'date'});
 	$data{'cost'} = &prompt({prompt=>'What did this flash cost?', type=>'decimal'});
-	my $flashid = &newrecord($db, \%data, 'FLASH');
+	my $flashid = &newrecord({db=>$db, data=>\%data, table=>'FLASH'});
 	return $flashid;
 }
 
@@ -1097,7 +1097,7 @@ sub battery_add {
 	$data{'voltage'} = &prompt({prompt=>'What is the nominal voltage of this battery?', type=>'decimal'});
 	$data{'chemistry'} = &prompt({prompt=>'What type of chemistry is this battery based on?'});
 	$data{'other_names'} = &prompt({prompt=>'Does this type of battery go by any other names?'});
-	my $batteryid = &newrecord($db, \%data, 'BATTERY');
+	my $batteryid = &newrecord({db=>$db, data=>\%data, table=>'BATTERY'});
 	return $batteryid;
 }
 
@@ -1106,7 +1106,7 @@ sub format_add {
 	my %data;
 	$data{'format'} = &prompt({prompt=>'What is the name of this film format?'});
 	$data{'digital'} = &prompt({default=>'no', prompt=>'Is this a digital format?', type=>'boolean'});
-	my $formatid = &newrecord($db, \%data, 'FORMAT');
+	my $formatid = &newrecord({db=>$db, data=>\%data, table=>'FORMAT'});
 	return $formatid;
 }
 
@@ -1121,7 +1121,7 @@ sub negativesize_add {
 		$data{'area'} = $data{'width'} * $data{'height'};
 		$data{'aspect_ratio'} = round($data{'width'} / $data{'height'}, 2);
 	}
-	my $negativesizeid = &newrecord($db, \%data, 'NEGATIVE_SIZE');
+	my $negativesizeid = &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE_SIZE'});
 	return $negativesizeid;
 }
 
@@ -1133,7 +1133,7 @@ sub mount_adapt {
 	$data{'has_optics'} = &prompt({prompt=>'Does this mount adapter have corrective optics?', type=>'boolean'});
 	$data{'infinity_focus'} = &prompt({prompt=>'Does this mount adapter have infinity focus?', type=>'boolean'});
 	$data{'notes'} = &prompt({prompt=>'Notes'});
-	my $mountadapterid = &newrecord($db, \%data, 'MOUNT_ADAPTER');
+	my $mountadapterid = &newrecord({db=>$db, data=>\%data, table=>'MOUNT_ADAPTER'});
 	return $mountadapterid;
 }
 
@@ -1151,7 +1151,7 @@ sub lightmeter_add {
 	$data{'max_asa'} = &prompt({prompt=>'What\'s the highest ISO/ASA setting this meter supports?', type=>'integer'});
 	$data{'min_lv'} = &prompt({prompt=>'What\'s the lowest light value (LV) reading this meter can give?', type=>'integer'});
 	$data{'max_lv'} = &prompt({prompt=>'What\'s the highest light value (LV) reading this meter can give?', type=>'integer'});
-	my $lightmeterid = &newrecord($db, \%data, 'LIGHT_METER');
+	my $lightmeterid = &newrecord({db=>$db, data=>\%data, table=>'LIGHT_METER'});
 	return $lightmeterid;
 }
 
@@ -1159,7 +1159,7 @@ sub camera_addbodytype {
 	my $db = shift;
 	my %data;
 	$data{'body_type'} = &prompt({prompt=>'Enter new camera body type'});
-	my $bodytypeid = &newrecord($db, \%data, 'BODY_TYPE');
+	my $bodytypeid = &newrecord({db=>$db, data=>\%data, table=>'BODY_TYPE'});
 	return $bodytypeid;
 }
 
@@ -1173,7 +1173,7 @@ sub archive_add {
 	$data{'location'} = &prompt({prompt=>'What is the location of this archive?'});
 	$data{'storage'} = &prompt({prompt=>'What is the storage type of this archive? (e.g. box, folder, ringbinder, etc)'});
 	$data{'sealed'} = &prompt({default=>'no', prompt=>'Is this archive sealed (closed to new additions)?', type=>'boolean'});
-	my $archiveid = &newrecord($db, \%data, 'ARCHIVE');
+	my $archiveid = &newrecord({db=>$db, data=>\%data, table=>'ARCHIVE'});
 	return $archiveid;
 }
 
@@ -1232,7 +1232,7 @@ sub shuttertype_add {
 	my $db = shift;
 	my %data;
 	$data{'shutter_type'} = &prompt({prompt=>'What type of shutter do you want to add?'});
-	my $id = &newrecord($db, \%data, 'SHUTTER_TYPE');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_TYPE'});
 	return $id;
 }
 
@@ -1240,7 +1240,7 @@ sub focustype_add {
 	my $db = shift;
 	my %data;
 	$data{'focus_type'} = &prompt({prompt=>'What type of focus system do you want to add?'});
-	my $id = &newrecord($db, \%data, 'FOCUS_TYPE');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'FOCUS_TYPE'});
 	return $id;
 }
 
@@ -1249,7 +1249,7 @@ sub flashprotocol_add {
 	my %data;
 	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add});
 	$data{'name'} = &prompt({prompt=>'What flash protocol do you want to add?'});
-	my $id = &newrecord($db, \%data, 'FLASH_PROTOCOL');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'FLASH_PROTOCOL'});
 	return $id;
 }
 
@@ -1257,7 +1257,7 @@ sub meteringtype_add {
 	my $db = shift;
 	my %data;
 	$data{'metering'} = &prompt({prompt=>'What type of metering system do you want to add?'});
-	my $id = &newrecord($db, \%data, 'METERING_TYPE');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'METERING_TYPE'});
 	return $id;
 }
 
@@ -1270,7 +1270,7 @@ sub shutterspeed_add {
 	} elsif ($data{'shutter_speed'} =~ m/((0\.)?\d+)/) {
 		$data{'duration'} = $1;
 	}
-	my $id = &newrecord($db, \%data, 'SHUTTER_SPEED');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED'});
 	return $id;
 }
 
@@ -1278,7 +1278,7 @@ sub person_add {
 	my $db = shift;
 	my %data;
 	$data{'name'} = &prompt({prompt=>'What is this person\'s name?'});
-	my $id = &newrecord($db, \%data, 'PERSON');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'PERSON'});
 	return $id;
 }
 
@@ -1291,7 +1291,7 @@ sub projector_add {
 	$data{'negative_size_id'} = &listchoices({db=>$db, query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", inserthandler=>\&negativesize_add});
 	$data{'own'} = 1;
 	$data{'cine'} = &prompt({prompt=>'Is this a cine/movie projector?', type=>'boolean'});
-	my $id = &newrecord($db, \%data, 'PROJECTOR');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'PROJECTOR'});
 	return $id;
 }
 
@@ -1315,7 +1315,7 @@ sub movie_add {
 	$data{'date_processed'} = &prompt({default=>&today($db), prompt=>'What date was the movie processed?', type=>'date'});
 	$data{'process_id'} = &listchoices({db=>$db, keyword=>'process', query=>'SELECT process_id as id, name as opt FROM photography.PROCESS', inserthandler=>\&process_add});
 	$data{'description'} = &prompt({prompt=>'Please enter a description of the movie'});
-	my $id = &newrecord($db, \%data, 'MOVIE');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
 }
 
 sub audit_shutterspeeds {
@@ -1343,7 +1343,7 @@ sub exhibition_add {
 	$data{'location'} = &prompt({prompt=>'Where is this exhibition?'});
 	$data{'start_date'} = &prompt({prompt=>'What date does the exhibition start?', type=>'date'});
 	$data{'end_date'} = &prompt({prompt=>'What date does the exhibition end?', type=>'date'});
-	my $id = &newrecord($db, \%data, 'EXHIBITION');
+	my $id = &newrecord({db=>$db, data=>\%data, table=>'EXHIBITION'});
 }
 
 sub exhibition_review {

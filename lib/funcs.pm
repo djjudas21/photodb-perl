@@ -177,13 +177,21 @@ sub updaterecord {
 
 # Insert a record into any table
 sub newrecord {
-	my $db = shift;
+	my $href = $_[0];
 
-	# Read in hash of values
-	my $data = shift;
+	# Read in db handle
+	my $db = $href->{db};
+
+	# Read in hash new values
+	my $data = $href->{data};
 
 	# Read in table name
-	my $table = shift;
+	my $table = $href->{table};
+
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $data' if !($data);
+	die 'Must pass in $table' if !($table);
 
 	# Delete empty strings from data hash
 	$data = &thin($data);
