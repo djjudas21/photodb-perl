@@ -17,9 +17,10 @@ our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosub
 
 # Prompt for an arbitrary value
 sub prompt {
-	my $default = shift || "";
-	my $prompt = shift;
-	my $type = shift || 'text';
+	my $href = $_[0];
+	my $default = $href->{default} || "";
+	my $prompt = $href->{prompt};
+	my $type = $href->{type} || 'text';
 
 	my $rv;
 	# Repeatedly prompt until we get a response of the correct type
@@ -96,7 +97,7 @@ sub ini {
 	if (-f $path) {
 		return glob('~/.photodb.ini');
 	} else {
-		if (&prompt('yes', 'Could not find config file. Generate one now?', 'boolean')) {
+		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
 			&writeconfig($path);
 			return $path;
 		} else {
@@ -158,7 +159,7 @@ sub updaterecord {
 	my($stmt, @bind) = $sql->update($table, $data, $where);
 
 	# Final confirmation
-	&prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -190,7 +191,7 @@ sub newrecord {
 	my($stmt, @bind) = $sql->insert($table, $data);
 
 	# Final confirmation
-	&prompt('yes', 'Proceed?', 'boolean') or die "Aborted!\n";
+	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -270,7 +271,7 @@ sub listchoices {
 	# Loop until we get valid input
 	my $input;
 	do {
-		$input = &prompt($default, "Please select a $keyword from the list, or leave blank to skip", $type);
+		$input = &prompt({default=>$default, prompt=>"Please select a $keyword from the list, or leave blank to skip", type=>$type});
 	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
@@ -380,11 +381,11 @@ sub writeconfig {
 	$inifile = $1;
 
 	my %inidata;
-	$inidata{'database'}{'host'} = &prompt('localhost', 'Database hostname or IP address', 'text');
-	$inidata{'database'}{'schema'} = &prompt('photography', 'Schema name of photography database', 'text');
-	$inidata{'database'}{'user'} = &prompt('photography', 'Username with access to the schema', 'text');
-	$inidata{'database'}{'pass'} = &prompt('', 'Password for this user', 'text');
-	$inidata{'filesystem'}{'basepath'} = &prompt('', 'Path to your scanned images', 'text');
+	$inidata{'database'}{'host'} = &prompt({default=>'localhost', prompt=>'Database hostname or IP address', type=>'text'});
+	$inidata{'database'}{'schema'} = &prompt({default=>'photography', prompt=>'Schema name of photography database', type=>'text'});
+	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
+	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
+	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata);
 }
 
@@ -426,7 +427,7 @@ sub resolvenegid {
 
 sub chooseneg {
 	my $db = shift;
-	my $film_id = &prompt('', 'Enter Film ID', 'integer');
+	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
 	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if ($neg_id =~ m/^\d+$/) {
