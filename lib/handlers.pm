@@ -544,23 +544,23 @@ sub negative_prints {
 sub lens_add {
 	my $db = shift;
 	my %data;
+	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add});
+	$data{'model'} = &prompt({prompt=>'What is the lens model?'});
+	$data{'zoom'} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&guesszoom($data{'model'})});
+	if ($data{'zoom'} == 0) {
+		$data{'min_focal_length'} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>&guessminfl($data{'model'})});
+		$data{'max_focal_length'} = $data{'min_focal_length'};
+	} else {
+		$data{'min_focal_length'} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>&guessminfl($data{'model'})});
+		$data{'max_focal_length'} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>&guessmaxfl($data{'model'})});
+	}
 	$data{'fixed_mount'} = &prompt({default=>'no', prompt=>'Does this lens have a fixed mount?', type=>'boolean'});
 	if ($data{'fixed_mount'} == 0) {
 		$data{'mount_id'} = &listchoices({db=>$db, query=>"select mount_id as id, mount as opt from MOUNT", inserthandler=>\&mount_add});
 	}
-	$data{'zoom'} = &prompt({default=>'no', prompt=>'Is this a zoom lens?', type=>'boolean'});
-	if ($data{'zoom'} == 0) {
-		$data{'min_focal_length'} = &prompt({prompt=>'What is the focal length?', type=>'integer'});
-		$data{'max_focal_length'} = $data{'min_focal_length'};
-	} else {
-		$data{'min_focal_length'} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer'});
-		$data{'max_focal_length'} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer'});
-	}
-	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add});
-	$data{'model'} = &prompt({prompt=>'What is the lens model?'});
-	$data{'closest_focus'} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer'});
-	$data{'max_aperture'} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal'});
+	$data{'max_aperture'} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>&guessaperture($data{'model'})});
 	$data{'min_aperture'} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal'});
+	$data{'closest_focus'} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer'});
 	$data{'elements'} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer'});
 	$data{'groups'} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer'});
 	$data{'weight'} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer'});
