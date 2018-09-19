@@ -22,7 +22,7 @@ use tagger;
 
 our @EXPORT = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
@@ -271,6 +271,95 @@ sub camera_add {
 		&camera_displaylens($db, $cameraid);
 	}
 	return $cameraid;
+}
+
+sub camera_edit {
+	my $db = shift;
+	my $camera_id = shift || &listchoices({db=>$db, query=>"select * from choose_camera"});
+	my $existingdata = &lookupcol($db, "select * from CAMERA where camera_id=$camera_id");
+	$existingdata = @$existingdata[0];
+	my %data;
+	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add});
+	$data{'model'} = &prompt({prompt=>'What model is the camera?'});
+	$data{'fixed_mount'} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
+	if ($data{'fixed_mount'} == 1) {
+		# Get info about lens
+		print "Please enter some information about the lens\n";
+		$data{'lens_id'} = &lens_add($db);
+	} else {
+		$data{'mount_id'} = &listchoices({db=>$db, query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", inserthandler=>\&mount_add});
+	}
+	$data{'format_id'} = &listchoices({db=>$db, query=>"select format_id as id, format as opt from FORMAT", inserthandler=>\&format_add});
+	$data{'focus_type_id'} = &listchoices({db=>$db, query=>"select focus_type_id as id, focus_type as opt from FOCUS_TYPE", inserthandler=>\&focustype_add});
+	$data{'metering'} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean'});
+	if ($data{'metering'} == 1) {
+		$data{'coupled_metering'} = &prompt({prompt=>'Is the metering coupled?', type=>'boolean'});
+		$data{'metering_type_id'} = &listchoices({db=>$db, query=>"select metering_type_id as id, metering as opt from METERING_TYPE", inserthandler=>\&meteringtype_add});
+		$data{'meter_min_ev'} = &prompt({prompt=>'What\'s the lowest EV the meter can handle?', type=>'integer'});
+		$data{'meter_max_ev'} = &prompt({prompt=>'What\'s the highest EV the meter can handle?', type=>'integer'});
+	}
+	$data{'body_type_id'} = &listchoices({db=>$db, query=>"select body_type_id as id, body_type as opt from BODY_TYPE", inserthandler=>\&camera_addbodytype});
+	$data{'weight'} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer'});
+	$data{'acquired'} = &prompt({default=>&today($db), prompt=>'When was it acquired?', type=>'date'});
+	$data{'cost'} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
+	$data{'introduced'} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer'});
+	$data{'discontinued'} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer'});
+	$data{'serial'} = &prompt({prompt=>'What is the camera\'s serial number?'});
+	$data{'datecode'} = &prompt({prompt=>'What is the camera\'s datecode?'});
+	$data{'manufactured'} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer'});
+	$data{'own'} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
+	$data{'negative_size_id'} = &listchoices({db=>$db, query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", inserthandler=>\&negativesize_add});
+	$data{'shutter_type_id'} = &listchoices({db=>$db, query=>"select shutter_type_id as id, shutter_type as opt from SHUTTER_TYPE", inserthandler=>\&shuttertype_add});
+	$data{'shutter_model'} = &prompt({prompt=>'What is the shutter model?'});
+	$data{'cable_release'} = &prompt({prompt=>'Does this camera have a cable release?', type=>'boolean'});
+	$data{'viewfinder_coverage'} = &prompt({prompt=>'What is the viewfinder coverage?', type=>'integer'});
+	$data{'power_drive'} = &prompt({prompt=>'Does this camera have power drive?', type=>'boolean'});
+	if ($data{'power_drive'} == 1) {
+		$data{'continuous_fps'} = &prompt({prompt=>'How many frames per second can this camera manage?', type=>'decimal'});
+	}
+	$data{'video'} = &prompt({default=>'no', prompt=>'Does this camera have a video/movie function?', type=>'boolean'});
+	$data{'digital'} = &prompt({default=>'no', prompt=>'Is this a digital camera?', type=>'boolean'});
+	$data{'battery_qty'} = &prompt({prompt=>'How many batteries does this camera take?', type=>'integer'});
+	if ($data{'battery_qty'} > 0) {
+		$data{'battery_type'} = &listchoices({db=>$db, keyword=>'battery type', query=>"select * from choose_battery", inserthandler=>\&battery_add});
+	}
+	$data{'notes'} = &prompt({prompt=>'Additional notes'});
+	$data{'source'} = &prompt({prompt=>'Where was the camera acquired from?'});
+	$data{'min_shutter'} = &prompt({prompt=>'What\'s the fastest shutter speed?'});
+	$data{'max_shutter'} = &prompt({prompt=>'What\'s the slowest shutter speed?'});
+	$data{'bulb'} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean'});
+	$data{'time'} = &prompt({prompt=>'Does the camera have time exposure mode?', type=>'boolean'});
+	$data{'min_iso'} = &prompt({prompt=>'What\'s the lowest ISO the camera can do?', type=>'integer'});
+	$data{'max_iso'} = &prompt({prompt=>'What\'s the highest ISO the camera can do?', type=>'integer'});
+	$data{'af_points'} = &prompt({prompt=>'How many autofocus points does the camera have?', type=>'integer'});
+	$data{'int_flash'} = &prompt({prompt=>'Does the camera have an internal flash?', type=>'boolean'});
+	if ($data{'int_flash'} == 1) {
+		$data{'int_flash_gn'} = &prompt({prompt=>'What\'s the guide number of the internal flash?', type=>'integer'});
+	}
+	$data{'ext_flash'} = &prompt({prompt=>'Does the camera support an external flash?', type=>'boolean'});
+	if ($data{'ext_flash'} == 1) {
+		$data{'pc_sync'} = &prompt({prompt=>'Does the camera have a PC sync socket?', type=>'boolean'});
+		$data{'hotshoe'} = &prompt({prompt=>'Does the camera have a hot shoe?', type=>'boolean'});
+	}
+	if ($data{'int_flash'} == 1 || $data{'ext_flash'} == 1) {
+		$data{'coldshoe'} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean'});
+		$data{'x_sync'} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text'});
+		$data{'flash_metering'} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"select flash_protocol_id as id, concat(manufacturer, ' ', name) as opt from FLASH_PROTOCOL left join MANUFACTURER on MANUFACTURER.manufacturer_id=FLASH_PROTOCOL.manufacturer_id", inserthandler=>\&flashprotocol_add});
+	}
+	$data{'condition_id'} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`"});
+	$data{'oem_case'} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean'});
+	$data{'dof_preview'} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean'});
+	$data{'tripod'} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean'});
+
+	# Compare new and old data to find changed fields
+	my %changes;
+	my $thindata = &thin(\%data);
+	foreach my $key (keys %$thindata) {
+		if ($data{$key} ne $$existingdata{$key}) {
+			$changes{$key} = $data{$key};
+		}
+	}
+	&updaterecord({db=>$db, data=>\%changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
 sub camera_accessory {
