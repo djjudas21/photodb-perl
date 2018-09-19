@@ -13,7 +13,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -529,6 +529,53 @@ sub keyword {
 	} else {
 		die "Could not deduce valid keyword from SQL\n";
 	}
+}
+
+# Parse lens model name to figure out some data
+sub parselensmodel {
+	my $model = shift;
+	my ($minfocal, $maxfocal, $aperture, $zoom);
+	if ($model =~ m/(\d+)-?(\d+)?mm/) {
+		$minfocal = $1;
+		$maxfocal = $2;
+	}
+	if ($minfocal && $maxfocal) {
+		$zoom = 'yes';
+	} else {
+		$zoom = 'no';
+	}
+	if ($model =~ m/(f\/|1:)([\d\.]+)/) {
+		$aperture = $2;
+	}
+	return {minfocal=>$minfocal, maxfocal=>$maxfocal, aperture=>$aperture, zoom=>$zoom};
+}
+
+# Guess minimum focal length
+sub guessminfl {
+	my $model = shift;
+	my $rv = &parselensmodel($model);
+	return $rv->{'minfocal'};
+}
+
+# Guess maximum focal length
+sub guessmaxfl {
+	my $model = shift;
+	my $rv = &parselensmodel($model);
+	return $rv->{'maxfocal'};
+}
+
+# Guess maximum aperture
+sub guessaperture {
+	my $model = shift;
+	my $rv = &parselensmodel($model);
+	return $rv->{'aperture'};
+}
+
+# Guess whether it is a zoom lens
+sub guesszoom {
+	my $model = shift;
+	my $rv = &parselensmodel($model);
+	return $rv->{'zoom'};
 }
 
 # This ensures the lib loads smoothly
