@@ -59,7 +59,7 @@ sub validate {
 			return 0;
 		}
 	} elsif ($type eq 'integer') {
-		if ($val =~ m/^\d+$/) {
+		if ($val =~ m/^-?\d+$/) {
 			return 1;
 		} else {
 			return 0;
