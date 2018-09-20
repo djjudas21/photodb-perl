@@ -58,6 +58,8 @@ Add available shutter speed info to a camera
 Add accessory compatibility info to a camera
 ### `camera choose`
 Choose a camera based on multiple usage criteria
+### `camera edit`
+Edit an existing camera
 
 ## `negative`
 The `negative` command provides subcommands for working with negatives (or slides, etc) which are part of a film.
