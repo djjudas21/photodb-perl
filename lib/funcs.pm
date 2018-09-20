@@ -253,11 +253,16 @@ sub listchoices {
 	my $keyword = $href->{keyword} || &keyword($query);
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
+	my $default = $href->{default} || '';
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
-	$sth->execute();
+	# No point in proveeding if there are no valid options to choose from
+	if ($rows == 0) {
+		die "No valid $keyword options to choose from\n";
+	}
+
 	my @allowedvals;
 
 	while (my $ref = $sth->fetchrow_hashref) {
@@ -272,15 +277,18 @@ sub listchoices {
 		push(@allowedvals, '0');
 	}
 
-	# Count number of allowed options and if there's just one, make it the default
-	my $default;
-	if ($rows == 1) {
-		$default = $allowedvals[0];
-	} elsif ($rows == 0) {
-		print "No valid $keyword options to choose from\n";
-		exit;
+	if ($default eq '') {
+		# If no default is given, count number of allowed options
+		# and if there's just one, make it the default
+		if ($rows == 1) {
+			$default = $allowedvals[0];
+		}
 	} else {
-		$default = '';
+		# Check that the provided default is an allowed value
+		# Otherwise silently unset it
+		if (!grep(/^$default$/, @allowedvals)) {
+			$default = '';
+		}
 	}
 
 	# Loop until we get valid input
