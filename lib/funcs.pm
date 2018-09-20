@@ -18,7 +18,7 @@ our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosub
 # Prompt for an arbitrary value
 sub prompt {
 	my $href = $_[0];
-	my $default = $href->{default} || "";
+	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
 
@@ -257,7 +257,7 @@ sub listchoices {
 	my $keyword = $href->{keyword} || &keyword($query);
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
-	my $default = $href->{default} || '';
+	my $default = $href->{default} // '';
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
