@@ -156,6 +156,10 @@ sub updaterecord {
 	# Delete empty strings from data hash
 	$data = &thin($data);
 
+	if (scalar(keys %$data) == 0) {
+		die "Nothing to update\n";
+	}
+
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n";
 	print Dump($data);
