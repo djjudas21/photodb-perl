@@ -175,7 +175,7 @@ sub camera_add {
 	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add});
 	$data{'model'} = &prompt({prompt=>'What model is the camera?'});
 	$data{'fixed_mount'} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
-	if ($data{'fixed_mount'} == 1) {
+	if (defined($data{'fixed_mount'}) && $data{'fixed_mount'} == 1) {
 		# Get info about lens
 		print "Please enter some information about the lens\n";
 		$data{'lens_id'} = &lens_add($db);
@@ -185,7 +185,7 @@ sub camera_add {
 	$data{'format_id'} = &listchoices({db=>$db, query=>"select format_id as id, format as opt from FORMAT", inserthandler=>\&format_add});
 	$data{'focus_type_id'} = &listchoices({db=>$db, query=>"select focus_type_id as id, focus_type as opt from FOCUS_TYPE", inserthandler=>\&focustype_add});
 	$data{'metering'} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean'});
-	if ($data{'metering'} == 1) {
+	if (defined($data{'metering'}) && $data{'metering'} == 1) {
 		$data{'coupled_metering'} = &prompt({prompt=>'Is the metering coupled?', type=>'boolean'});
 		$data{'metering_type_id'} = &listchoices({db=>$db, query=>"select metering_type_id as id, metering as opt from METERING_TYPE", inserthandler=>\&meteringtype_add});
 		$data{'meter_min_ev'} = &prompt({prompt=>'What\'s the lowest EV the meter can handle?', type=>'integer'});
@@ -207,13 +207,13 @@ sub camera_add {
 	$data{'cable_release'} = &prompt({prompt=>'Does this camera have a cable release?', type=>'boolean'});
 	$data{'viewfinder_coverage'} = &prompt({prompt=>'What is the viewfinder coverage?', type=>'integer'});
 	$data{'power_drive'} = &prompt({prompt=>'Does this camera have power drive?', type=>'boolean'});
-	if ($data{'power_drive'} == 1) {
+	if (defined($data{'power_drive'}) && $data{'power_drive'} == 1) {
 		$data{'continuous_fps'} = &prompt({prompt=>'How many frames per second can this camera manage?', type=>'decimal'});
 	}
 	$data{'video'} = &prompt({default=>'no', prompt=>'Does this camera have a video/movie function?', type=>'boolean'});
 	$data{'digital'} = &prompt({default=>'no', prompt=>'Is this a digital camera?', type=>'boolean'});
 	$data{'battery_qty'} = &prompt({prompt=>'How many batteries does this camera take?', type=>'integer'});
-	if ($data{'battery_qty'} > 0) {
+	if (defined($data{'battery_qty'}) && $data{'battery_qty'} > 0) {
 		$data{'battery_type'} = &listchoices({db=>$db, keyword=>'battery type', query=>"select * from choose_battery", inserthandler=>\&battery_add});
 	}
 	$data{'notes'} = &prompt({prompt=>'Additional notes'});
@@ -226,7 +226,7 @@ sub camera_add {
 	$data{'max_iso'} = &prompt({prompt=>'What\'s the highest ISO the camera can do?', type=>'integer'});
 	$data{'af_points'} = &prompt({prompt=>'How many autofocus points does the camera have?', type=>'integer'});
 	$data{'int_flash'} = &prompt({prompt=>'Does the camera have an internal flash?', type=>'boolean'});
-	if ($data{'int_flash'} == 1) {
+	if (defined($data{'int_flash'}) && $data{'int_flash'} == 1) {
 		$data{'int_flash_gn'} = &prompt({prompt=>'What\'s the guide number of the internal flash?', type=>'integer'});
 	}
 	$data{'ext_flash'} = &prompt({prompt=>'Does the camera support an external flash?', type=>'boolean'});
