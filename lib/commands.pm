@@ -63,6 +63,7 @@ our %handlers = (
 		'stats'     => { 'handler' => \&lens_stats,     'desc' => 'Show statistics about a lens' },
 		'accessory' => { 'handler' => \&lens_accessory, 'desc' => 'Add accessory compatibility info to a lens' },
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
+		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit an existing lens' },
 	},
 	print => {
 		'add'     => { 'handler' => \&print_add,     'desc' => 'Add a new print that has been made from a negative' },

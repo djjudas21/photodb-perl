@@ -25,7 +25,7 @@ our @EXPORT = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
-	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info
+	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
 	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit print_label
 	paperstock_add
 	developer_add
@@ -689,6 +689,72 @@ sub lens_add {
 		&lens_accessory($db, $lensid);
 	}
 	return $lensid;
+}
+
+sub lens_edit {
+	my $db = shift;
+	my %data;
+	my $lensid = shift || &listchoices({db=>$db, query=>"select * from choose_lens"});
+	my $existing = &lookupcol($db, "select * from LENS where lens_id=$lensid");
+	$existing = @$existing[0];
+	$data{'manufacturer_id'} = &listchoices({db=>$db, query=>"select manufacturer_id as id, manufacturer as opt from MANUFACTURER", inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
+	$data{'model'} = &prompt({prompt=>'What is the lens model?', default=>$$existing{model}});
+	$data{'zoom'} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>$$existing{zoom}});
+	if ($data{'zoom'} == 0) {
+		$data{'min_focal_length'} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>$$existing{min_focal_length}});
+		$data{'max_focal_length'} = $data{'min_focal_length'};
+	} else {
+		$data{'min_focal_length'} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>$$existing{min_focal_length}});
+		$data{'max_focal_length'} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>$$existing{max_focal_length}});
+	}
+	$data{'fixed_mount'} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$existing{fixed_mount}});
+	if ($data{'fixed_mount'} == 0) {
+		$data{'mount_id'} = &listchoices({db=>$db, query=>"select mount_id as id, mount as opt from MOUNT", inserthandler=>\&mount_add, default=>$$existing{mount_id}});
+	}
+	$data{'max_aperture'} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>$$existing{max_aperture}});
+	$data{'min_aperture'} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal', default=>$$existing{min_aperture}});
+	$data{'closest_focus'} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer', default=>$$existing{closest_focus}});
+	$data{'elements'} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer', default=>$$existing{elements}});
+	$data{'groups'} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer', default=>$$existing{groups}});
+	$data{'weight'} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer', default=>$$existing{weight}});
+	$data{'nominal_min_angle_diag'} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
+	$data{'nominal_max_angle_diag'} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_max_angle_diag}});
+	$data{'aperture_blades'} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer', default=>$$existing{aperture_blades}});
+	$data{'autofocus'} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean', default=>$$existing{autofocus}});
+	$data{'filter_thread'} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal', default=>$$existing{filter_thread}});
+	$data{'magnification'} = &prompt({prompt=>'What is the maximum magnification possible with this lens?', type=>'decimal', default=>$$existing{magnification}});
+	$data{'url'} = &prompt({prompt=>'Informational URL for this lens', default=>$$existing{url}});
+	$data{'serial'} = &prompt({prompt=>'What is the serial number of the lens?', default=>$$existing{serial}});
+	$data{'date_code'} = &prompt({prompt=>'What is the date code of the lens?', default=>$$existing{date_code}});
+	$data{'introduced'} = &prompt({prompt=>'When was this lens introduced?', type=>'integer', default=>$$existing{introduced}});
+	$data{'discontinued'} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$existing{discontinued}});
+	$data{'manufactured'} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$existing{manufactured}});
+	$data{'negative_size_id'} = &listchoices({db=>$db, query=>"select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE", inserthandler=>\&negativesize_add, default=>$$existing{negative_size_id}});
+	$data{'acquired'} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$existing{acquired}});
+	$data{'cost'} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$existing{cost}});
+	$data{'notes'} = &prompt({prompt=>'Notes', default=>$$existing{notes}});
+	$data{'own'} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$existing{own}});
+	$data{'source'} = &prompt({prompt=>'Where was this lens sourced from?', default=>$$existing{source}});
+	$data{'coating'} = &prompt({prompt=>'What coating does this lens have?', default=>$$existing{coating}});
+	$data{'hood'} = &prompt({prompt=>'What is the model number of the suitable hood for this lens?', default=>$$existing{hood}});
+	$data{'exif_lenstype'} = &prompt({prompt=>'EXIF lens type code', default=>$$existing{exif_lenstype}});
+	$data{'rectilinear'} = &prompt({prompt=>'Is this a rectilinear lens?', type=>'boolean', default=>$$existing{rectilinear}});
+	$data{'length'} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$existing{length}});
+	$data{'diameter'} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer', default=>$$existing{diameter}});
+	$data{'condition_id'} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`", default=>$$existing{condition_id}});
+	$data{'image_circle'} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer', default=>$$existing{image_circle}});
+	$data{'formula'} = &prompt({prompt=>'Does this lens have a named optical formula?', default=>$$existing{formula}});
+	$data{'shutter_model'} = &prompt({prompt=>'What shutter does this lens incorporate?', default=>$$existing{shutter_model}});
+
+	# Compare new and old data to find changed fields
+	my %changes;
+	my $thindata = &thin(\%data);
+	foreach my $key (keys %$thindata) {
+		if (!defined($$existing{$key}) || $data{$key} ne $$existing{$key}) {
+			$changes{$key} = $data{$key};
+		}
+	}
+	&updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
 sub lens_accessory {

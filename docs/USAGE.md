@@ -100,6 +100,8 @@ Show statistics about a lens
 Add accessory compatibility info to a lens
 ### `lens info`
 Show information about a lens
+### `lens edit`
+Edit an existing lens
 
 ## `print`
 The `print` command provides subcommands for working with prints which have been made from negatives.
