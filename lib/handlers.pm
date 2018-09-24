@@ -357,7 +357,7 @@ sub camera_edit {
 	my %changes;
 	my $thindata = &thin(\%data);
 	foreach my $key (keys %$thindata) {
-		if ($data{$key} ne $$existing{$key}) {
+		if (!defined($$existing{$key}) || $data{$key} ne $$existing{$key}) {
 			$changes{$key} = $data{$key};
 		}
 	}
