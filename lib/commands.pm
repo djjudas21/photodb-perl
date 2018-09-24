@@ -41,6 +41,7 @@ our %handlers = (
 		'shutterspeeds'   => { 'handler' => \&camera_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera' },
 		'accessory'       => { 'handler' => \&camera_accessory,       'desc' => 'Add accessory compatibility info to a camera' },
 		'choose'          => { 'handler' => \&camera_choose,          'desc' => 'Choose a camera based on several criteria' },
+		'edit'            => { 'handler' => \&camera_edit,            'desc' => 'Edit an existing camera' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
@@ -62,6 +63,7 @@ our %handlers = (
 		'stats'     => { 'handler' => \&lens_stats,     'desc' => 'Show statistics about a lens' },
 		'accessory' => { 'handler' => \&lens_accessory, 'desc' => 'Add accessory compatibility info to a lens' },
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
+		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit an existing lens' },
 	},
 	print => {
 		'add'     => { 'handler' => \&print_add,     'desc' => 'Add a new print that has been made from a negative' },

@@ -18,7 +18,7 @@ our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosub
 # Prompt for an arbitrary value
 sub prompt {
 	my $href = $_[0];
-	my $default = $href->{default} || "";
+	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
 
@@ -59,7 +59,7 @@ sub validate {
 			return 0;
 		}
 	} elsif ($type eq 'integer') {
-		if ($val =~ m/^\d+$/) {
+		if ($val =~ m/^-?\d+$/) {
 			return 1;
 		} else {
 			return 0;
@@ -155,6 +155,10 @@ sub updaterecord {
 
 	# Delete empty strings from data hash
 	$data = &thin($data);
+
+	if (scalar(keys %$data) == 0) {
+		die "Nothing to update\n";
+	}
 
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n";
@@ -253,11 +257,16 @@ sub listchoices {
 	my $keyword = $href->{keyword} || &keyword($query);
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
+	my $default = $href->{default} // '';
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
-	$sth->execute();
+	# No point in proveeding if there are no valid options to choose from
+	if ($rows == 0) {
+		die "No valid $keyword options to choose from\n";
+	}
+
 	my @allowedvals;
 
 	while (my $ref = $sth->fetchrow_hashref) {
@@ -272,15 +281,18 @@ sub listchoices {
 		push(@allowedvals, '0');
 	}
 
-	# Count number of allowed options and if there's just one, make it the default
-	my $default;
-	if ($rows == 1) {
-		$default = $allowedvals[0];
-	} elsif ($rows == 0) {
-		print "No valid $keyword options to choose from\n";
-		exit;
+	if ($default eq '') {
+		# If no default is given, count number of allowed options
+		# and if there's just one, make it the default
+		if ($rows == 1) {
+			$default = $allowedvals[0];
+		}
 	} else {
-		$default = '';
+		# Check that the provided default is an allowed value
+		# Otherwise silently unset it
+		if (!grep(/^$default$/, @allowedvals)) {
+			$default = '';
+		}
 	}
 
 	# Loop until we get valid input
