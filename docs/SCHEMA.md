@@ -554,28 +554,29 @@ Table to catalog motion picture films (movies)
 
 Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.
 
-| COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                                |
-|------------------|--------------|---------------------------------------------------------------|
-| negative_id      | int(11)      | Unique ID of this negative                                    |
-| film_id          | int(11)      | ID of the film that this negative belongs to                  |
-| frame            | varchar(5)   | Frame number or code of this negative                         |
-| description      | varchar(145) | Caption of this picture                                       |
-| date             | datetime     | Date & time on which this picture was taken                   |
-| lens_id          | int(11)      | ID of lens used to take this picture                          |
-| shutter_speed    | varchar(45)  | Shutter speed used to take this picture                       |
-| aperture         | decimal(4,1) | Aperture used to take this picture (numerical part only)      |
-| filter_id        | int(11)      | ID of filter used to take this picture                        |
-| teleconverter_id | int(11)      | ID of teleconverter used to take this picture                 |
-| notes            | text         | Extra freeform notes about this exposure                      |
-| mount_adapter_id | int(11)      | ID of lens mount adapter used to take this pciture            |
-| focal_length     | int(11)      | If a zoom lens was used, specify the focal length of the lens |
-| latitude         | decimal(9,6) | Latitude of the location where the picture was taken          |
-| longitude        | decimal(9,6) | Longitude of the location where the picture was taken         |
-| filename         | varchar(100) | Filename of the scanned image file from this negative         |
-| flash            | tinyint(1)   | Whether flash was used                                        |
-| metering_mode    | int(11)      | MeteringMode ID as defined in EXIF spec                       |
-| exposure_program | int(11)      | ExposureProgram ID as defined in EXIF spec                    |
-| photographer_id  | int(11)      | ID of person who took this photograph                         |
+| COLUMN_NAME      | COLUMN_TYPE  | COLUMN_COMMENT                                                                           |
+|------------------|--------------|------------------------------------------------------------------------------------------|
+| negative_id      | int(11)      | Unique ID of this negative                                                               |
+| film_id          | int(11)      | ID of the film that this negative belongs to                                             |
+| frame            | varchar(5)   | Frame number or code of this negative                                                    |
+| description      | varchar(145) | Caption of this picture                                                                  |
+| date             | datetime     | Date & time on which this picture was taken                                              |
+| lens_id          | int(11)      | ID of lens used to take this picture                                                     |
+| shutter_speed    | varchar(45)  | Shutter speed used to take this picture                                                  |
+| aperture         | decimal(4,1) | Aperture used to take this picture (numerical part only)                                 |
+| filter_id        | int(11)      | ID of filter used to take this picture                                                   |
+| teleconverter_id | int(11)      | ID of teleconverter used to take this picture                                            |
+| notes            | text         | Extra freeform notes about this exposure                                                 |
+| mount_adapter_id | int(11)      | ID of lens mount adapter used to take this pciture                                       |
+| focal_length     | int(11)      | If a zoom lens was used, specify the focal length of the lens                            |
+| latitude         | decimal(9,6) | Latitude of the location where the picture was taken                                     |
+| longitude        | decimal(9,6) | Longitude of the location where the picture was taken                                    |
+| filename         | varchar(100) | Filename of the scanned image file from this negative                                    |
+| flash            | tinyint(1)   | Whether flash was used                                                                   |
+| metering_mode    | int(11)      | MeteringMode ID as defined in EXIF spec                                                  |
+| exposure_program | int(11)      | ExposureProgram ID as defined in EXIF spec                                               |
+| photographer_id  | int(11)      | ID of person who took this photograph                                                    |
+| copy_of          | int(11)      | Negative ID of negative from which this negative is reproduced/duplicated/rephotographed |
 
 ## NEGATIVE_SIZE
 

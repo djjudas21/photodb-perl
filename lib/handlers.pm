@@ -564,6 +564,7 @@ sub negative_add {
 	$data{'metering_mode'} = &listchoices({db=>$db, query=>"select metering_mode_id as id, metering_mode as opt from METERING_MODE"});
 	$data{'exposure_program'} = &listchoices({db=>$db, query=>"select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM"});
 	$data{'photographer_id'} = &listchoices({db=>$db, keyword=>'photographer', query=>"select person_id as id, name as opt from PERSON", inserthandler=>\&person_add});
+	$data{copy_of} = &prompt({prompt=>'Negative ID that this is duplicated from', type=>'integer'});
 	my $negativeid = &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 	return $negativeid;
 }
