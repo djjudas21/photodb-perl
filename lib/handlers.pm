@@ -622,14 +622,14 @@ sub negative_bulkadd {
 
 sub negative_stats {
 	my $db = shift;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
 	print "\tThis negative has been printed $noprints times\n";
 }
 
 sub negative_prints {
 	my $db = shift;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	&printlist($db, "prints from negative $neg_id", "select id, opt from print_locations where negative_id=$neg_id");
 }
 
@@ -830,7 +830,7 @@ sub print_add {
 	if ($todo_id) {
 		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
 	} else {
-		$neg_id = &chooseneg($db);
+		$neg_id = &chooseneg({db=>$db});
 	}
 	$data{'negative_id'} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
 	$data{'date'} = &prompt({default=>&today($db), prompt=>'Date that the print was made', type=>'date'});
@@ -908,7 +908,7 @@ sub print_sell {
 sub print_order {
 	my $db = shift;
 	my %data;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	$data{'negative_id'} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
 	$data{'height'} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{'width'} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
