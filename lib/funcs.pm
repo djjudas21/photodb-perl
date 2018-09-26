@@ -258,9 +258,24 @@ sub listchoices {
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
 	my $skipok = $href->{skipok} || 0;
+	my $table = $href->{table};
+	my $cols = $href->{cols} // 'id, opt';
+	my $where = $href->{where} // {};
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		# Use the manual query
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $cols && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, cols, where\n";
+	}
 
 	# No point in proveeding if there are no valid options to choose from
 	if ($rows == 0) {
