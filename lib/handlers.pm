@@ -554,9 +554,9 @@ sub negative_add {
 	$data{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 	$data{'aperture'} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	$data{'filter_id'} = &listchoices({db=>$db, query=>"select * from choose_filter", inserthandler=>\&filter_add});
-	$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", inserthandler=>\&teleconverter_add});
+	$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", inserthandler=>\&teleconverter_add, skipok=>1});
 	$data{'notes'} = &prompt({prompt=>'Extra notes'});
-	$data{'mount_adapter_id'} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}"});
+	$data{'mount_adapter_id'} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}", skipok=>1});
 	$data{'focal_length'} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), prompt=>'Focal length', type=>'integer'});
 	$data{'latitude'} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{'longitude'} = &prompt({prompt=>'Longitude', type=>'decimal'});

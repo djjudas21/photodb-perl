@@ -258,13 +258,18 @@ sub listchoices {
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
+	my $skipok = $href->{skipok} || 0;
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
 	# No point in proveeding if there are no valid options to choose from
 	if ($rows == 0) {
-		die "No valid $keyword options to choose from\n";
+		if ($skipok) {
+			return undef;
+		} else {
+			die "No valid $keyword options to choose from\n";
+		}
 	}
 
 	my @allowedvals;
