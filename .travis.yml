@@ -6,3 +6,4 @@ install:
 script:
         - "perl -cT photodb"
         - "perl -w check-usage-docs.pl"
+        - "perlcritic photodb"

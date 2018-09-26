@@ -10,3 +10,4 @@ requires 'Switch';
 requires 'warnings';
 requires 'YAML';
 requires 'FindBin';
+requires 'Critic';
