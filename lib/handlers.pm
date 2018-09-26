@@ -554,9 +554,9 @@ sub negative_add {
 	$data{'shutter_speed'} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 	$data{'aperture'} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	$data{'filter_id'} = &listchoices({db=>$db, query=>"select * from choose_filter", inserthandler=>\&filter_add});
-	$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", inserthandler=>\&teleconverter_add});
+	$data{'teleconverter_id'} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", inserthandler=>\&teleconverter_add, skipok=>1});
 	$data{'notes'} = &prompt({prompt=>'Extra notes'});
-	$data{'mount_adapter_id'} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}"});
+	$data{'mount_adapter_id'} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}", skipok=>1});
 	$data{'focal_length'} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), prompt=>'Focal length', type=>'integer'});
 	$data{'latitude'} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{'longitude'} = &prompt({prompt=>'Longitude', type=>'decimal'});
@@ -564,6 +564,9 @@ sub negative_add {
 	$data{'metering_mode'} = &listchoices({db=>$db, query=>"select metering_mode_id as id, metering_mode as opt from METERING_MODE"});
 	$data{'exposure_program'} = &listchoices({db=>$db, query=>"select exposure_program_id as id, exposure_program as opt from EXPOSURE_PROGRAM"});
 	$data{'photographer_id'} = &listchoices({db=>$db, keyword=>'photographer', query=>"select person_id as id, name as opt from PERSON", inserthandler=>\&person_add});
+	if (&prompt({prompt=>'Is this negative duplicated from another?', type=>'boolean', default=>'no'})) {
+		$data{copy_of} = &chooseneg({db=>$db, oktoreturnundef=>1});
+	}
 	my $negativeid = &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 	return $negativeid;
 }
@@ -621,14 +624,14 @@ sub negative_bulkadd {
 
 sub negative_stats {
 	my $db = shift;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
 	print "\tThis negative has been printed $noprints times\n";
 }
 
 sub negative_prints {
 	my $db = shift;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	&printlist($db, "prints from negative $neg_id", "select id, opt from print_locations where negative_id=$neg_id");
 }
 
@@ -829,7 +832,7 @@ sub print_add {
 	if ($todo_id) {
 		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
 	} else {
-		$neg_id = &chooseneg($db);
+		$neg_id = &chooseneg({db=>$db});
 	}
 	$data{'negative_id'} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
 	$data{'date'} = &prompt({default=>&today($db), prompt=>'Date that the print was made', type=>'date'});
@@ -907,7 +910,7 @@ sub print_sell {
 sub print_order {
 	my $db = shift;
 	my %data;
-	my $neg_id = &chooseneg($db);
+	my $neg_id = &chooseneg({db=>$db});
 	$data{'negative_id'} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
 	$data{'height'} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{'width'} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
