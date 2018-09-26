@@ -258,13 +258,18 @@ sub listchoices {
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
+	my $skipok = $href->{skipok} || 0;
 
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 
 	# No point in proveeding if there are no valid options to choose from
 	if ($rows == 0) {
-		die "No valid $keyword options to choose from\n";
+		if ($skipok) {
+			return undef;
+		} else {
+			die "No valid $keyword options to choose from\n";
+		}
 	}
 
 	my @allowedvals;
@@ -453,12 +458,17 @@ sub resolvenegid {
 }
 
 sub chooseneg {
-	my $db = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
+
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
 	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
-	if ($neg_id =~ m/^\d+$/) {
+	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
+	} elsif ($oktoreturnundef == 1) {
+		return undef;
 	} else {
 		die "Could not find a negative ID for film $film_id and frame $frame\n";
 	}
