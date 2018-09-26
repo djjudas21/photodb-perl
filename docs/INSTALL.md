@@ -101,7 +101,7 @@ curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/scrip
 ```
 sudo dnf install "perl(Config::IniHash)" "perl(YAML)" "perl(DBD::mysql)" "perl(DBI)" \
 "perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(Image::ExifTool::Location)" \
-"perl(SQL::Abstract)" "perl(strict)" "perl(Switch)" "perl(Term::ReadKey)" "perl(warnings)"
+"perl(SQL::Abstract)" "perl(strict)" "perl(Term::ReadKey)" "perl(warnings)"
 ```
 
 3. Check out the PhotoDB application code directly from git
@@ -128,7 +128,7 @@ curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/scrip
 2. Install all of the deps in one go
 ```
 sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
-libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl libswitch-perl \
+libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl \
 libterm-readkey-perl libimage-exiftool-location-perl
 ```
 

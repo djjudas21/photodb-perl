@@ -5,7 +5,6 @@ package funcs;
 use strict;
 use warnings;
 
-use Switch;
 use DBI;
 use DBD::mysql;
 use SQL::Abstract;
