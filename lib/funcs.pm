@@ -477,7 +477,7 @@ sub chooseneg {
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
-	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
+	my $frame = &listchoices({db=>$db, keyword=>'frame', table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
