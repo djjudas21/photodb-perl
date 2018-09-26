@@ -6,7 +6,7 @@ requires 'Image::ExifTool';
 requires 'Image::ExifTool::Location';
 requires 'SQL::Abstract';
 requires 'strict';
-requires 'Switch';
 requires 'warnings';
 requires 'YAML';
 requires 'FindBin';
+requires 'Perl::Critic';

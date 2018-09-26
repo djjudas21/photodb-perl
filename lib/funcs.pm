@@ -5,7 +5,6 @@ package funcs;
 use strict;
 use warnings;
 
-use Switch;
 use DBI;
 use DBD::mysql;
 use SQL::Abstract;
@@ -266,7 +265,7 @@ sub listchoices {
 	# No point in proveeding if there are no valid options to choose from
 	if ($rows == 0) {
 		if ($skipok) {
-			return undef;
+			return;
 		} else {
 			die "No valid $keyword options to choose from\n";
 		}
@@ -468,7 +467,7 @@ sub chooseneg {
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
-		return undef;
+		return;
 	} else {
 		die "Could not find a negative ID for film $film_id and frame $frame\n";
 	}
