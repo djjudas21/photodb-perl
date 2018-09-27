@@ -125,6 +125,8 @@ Show details for making another print the same
 Exhibit a print at an exhibition
 ### `print label`
 Generate text to label a print
+### `print worklist`
+Display print todo list
 
 ## `material`
 The `material` command provides subcommands for adding materials, i.e. film, paper and chemicals to the database.

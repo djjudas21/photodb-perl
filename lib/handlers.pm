@@ -26,7 +26,7 @@ our @EXPORT = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit print_label
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit print_label print_worklist
 	paperstock_add
 	developer_add
 	toner_add
@@ -1015,6 +1015,15 @@ sub print_label {
 	print "\tPhotographed $row->{photo_date}\n" if ($row->{photo_date});
 	print "\tPrinted $row->{print_date}\n" if ($row->{print_date});
 	print "\tby $row->{name}\n" if ($row->{name});
+}
+
+sub print_worklist {
+	my $db = shift;
+	my $data = &lookupcol($db, 'select * from choose_todo');
+
+	foreach my $row (@$data) {
+		print "\t$row->{opt}\n";
+        }
 }
 
 sub paperstock_add {
