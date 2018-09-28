@@ -71,8 +71,8 @@ sub film_add {
 		$data{film_batch} = &prompt({prompt=>'Film batch number'});
 		$data{film_expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
 		$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
-		$data{filmstock_id} = &listchoices({db=>$db, query=>"select * from choose_filmstock", inserthandler=>\&filmstock_add});
-		$data{format_id} = &listchoices({db=>$db, query=>"select format_id as id, format as opt from FORMAT", inserthandler=>\&format_add});
+		$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add});
+		$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add});
 	}
 	$data{frames} = &prompt({prompt=>'How many frames?', type=>'integer'});
 	$data{price} = &prompt({prompt=>'Purchase price', type=>'decimal'});
@@ -172,7 +172,7 @@ sub camera_add {
 	# Add a new camera
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &listchoices({db=>$db, query=>'select manufacturer_id as id, manufacturer as opt from MANUFACTURER', inserthandler=>\&manufacturer_add});
+	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add});
 	$data{model} = &prompt({prompt=>'What model is the camera?'});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1) {
