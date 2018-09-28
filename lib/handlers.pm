@@ -100,7 +100,7 @@ sub film_archive {
 	my $db = shift;
 	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer'});
 	my %data;
-	$data{archive_id} = &listchoices({db=>$db, query=>'select archive_id as id, name as opt from ARCHIVE where archive_type_id in (1,2) and sealed = 0', inserthandler=>\&archive_add});
+	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add});
 	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
@@ -110,9 +110,9 @@ sub film_develop {
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_develop'});
 	my %data;
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this film processed?', type=>'date'});
-	$data{developer_id} = &listchoices({db=>$db, query=>'select developer_id as id, name as opt from DEVELOPER where for_film=1', inserthandler=>\&developer_add});
+	$data{developer_id} = &listchoices({db=>$db, table=>'DEVELOPER', cols=>['developer_id as id', 'name as opt'], where=>{'for_film'=>1}, inserthandler=>\&developer_add});
 	$data{directory} = &prompt({prompt=>'What directory are these scans in?'});
-	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', query=>'select person_id as id, name as opt from PERSON', inserthandler=>\&person_add});
+	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', table=> 'PERSON', cols=>['person_id as id', 'name as opt'], inserthandler=>\&person_add});
 	$data{dev_uses} = &prompt({prompt=>'How many previous uses has the developer had?', type=>'integer'});
 	$data{dev_time} = &prompt({prompt=>'How long was the film developed for?', type=>'hh:mm:ss'});
 	$data{dev_temp} = &prompt({prompt=>'What temperature was the developer?', type=>'decimal'});
@@ -152,7 +152,7 @@ sub film_bulk {
 	my $db = shift;
 	my %data;
 	$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add});
-	$data{format_id} = &listchoices({db=>$db, query=>'select format_id as id, format as opt from FORMAT', inserthandler=>\&format_add});
+	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add});
 	$data{batch} = &prompt({prompt=>'Film batch number'});
 	$data{expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
 	$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
@@ -180,7 +180,7 @@ sub camera_add {
 		print "Please enter some information about the lens\n";
 		$data{lens_id} = &lens_add($db);
 	} else {
-		$data{mount_id} = &listchoices({db=>$db, query=>"select mount_id as id, mount as opt from MOUNT where purpose='Camera'", inserthandler=>\&mount_add});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add});
 	}
 	$data{format_id} = &listchoices({db=>$db, query=>'select format_id as id, format as opt from FORMAT', inserthandler=>\&format_add});
 	$data{focus_type_id} = &listchoices({db=>$db, query=>'select focus_type_id as id, focus_type as opt from FOCUS_TYPE', inserthandler=>\&focustype_add});
