@@ -258,7 +258,7 @@ sub listchoices {
 	my $default = $href->{default} // '';
 	my $skipok = $href->{skipok} || 0;
 	my $table = $href->{table};
-	my $cols = $href->{cols} // 'id, opt';
+	my $cols = $href->{cols} // ('id, opt');
 	my $where = $href->{where} // {};
 	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
 
