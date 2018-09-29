@@ -237,7 +237,7 @@ sub camera_add {
 	if ($data{int_flash} == 1 || $data{ext_flash} == 1) {
 		$data{coldshoe} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean'});
 		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text'});
-		$data{flash_metering} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"select flash_protocol_id as id, concat(manufacturer, ' ', name) as opt from FLASH_PROTOCOL left join MANUFACTURER on MANUFACTURER.manufacturer_id=FLASH_PROTOCOL.manufacturer_id", inserthandler=>\&flashprotocol_add});
+		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add});
 	}
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
 	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean'});
@@ -346,7 +346,7 @@ sub camera_edit {
 	if ($data{int_flash} == 1 || $data{ext_flash} == 1) {
 		$data{coldshoe} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean', default=>$$existing{coldshoe}});
 		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text', default=>$$existing{x_sync}});
-		$data{flash_metering} = &listchoices({db=>$db, keyword=>'flash protocol', query=>"select flash_protocol_id as id, concat(manufacturer, ' ', name) as opt from FLASH_PROTOCOL left join MANUFACTURER on MANUFACTURER.manufacturer_id=FLASH_PROTOCOL.manufacturer_id", inserthandler=>\&flashprotocol_add, default=>$$existing{flash_metering}});
+		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add, default=>$$existing{flash_metering}});
 	}
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', query=>'select condition_id as id, name as opt from `CONDITION`', default=>$$existing{condition_id}});
 	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean', default=>$$existing{oem_case}});
@@ -513,7 +513,7 @@ sub camera_choose {
 	}
 	if (($where{int_flash} && $where{int_flash} == 1) || ($where{ext_flash} && $where{ext_flash} == 1)) {
 		$where{coldshoe} = &prompt({prompt=>'Do you need a cold/accessory shoe?', type=>'boolean'});
-		$where{flash_metering} = &listchoices({db=>$db, table=>'FLASH_PROTOCOL'});
+		$where{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol'});
 	}
 	$where{dof_preview} = &prompt({prompt=>'Do you need a depth-of-field preview feature?', type=>'boolean'});
 	$where{tripod} = &prompt({prompt=>'Do you need a tripod bush?', type=>'boolean'});
@@ -1248,7 +1248,7 @@ sub flash_add {
 	$data{dslr_safe} = &prompt({default=>'yes', prompt=>'Is this flash safe to use on a DSLR?', type=>'boolean'});
 	$data{ttl} = &prompt({default=>'yes', prompt=>'Does this flash support TTL metering?', type=>'boolean'});
 	if ($data{ttl} == 1) {
-		$data{flash_protocol_id} = &listchoices({db=>$db, keyword=>"flash protocol', query=>'SELECT flash_protocol_id as id, concat(manufacturer, ' ', name) as opt FROM FLASH_PROTOCOL, MANUFACTURER where FLASH_PROTOCOL.manufacturer_id=MANUFACTURER.manufacturer_id"});
+		$data{flash_protocol_id} = &listchoices({db=>$db, table=>'choose_flash_protocol'});
 	}
 	$data{trigger_voltage} = &prompt({prompt=>'What is the measured trigger voltage?', type=>'decimal'});
 	$data{own} = 1;
