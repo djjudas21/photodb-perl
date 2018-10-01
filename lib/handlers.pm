@@ -550,7 +550,7 @@ sub negative_add {
 	$data{description} = &prompt({prompt=>'Caption'});
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
 	$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
-	$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
+	$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}});
 	$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{'film_id'}", inserthandler=>\&teleconverter_add, skipok=>1});
@@ -580,7 +580,7 @@ sub negative_bulkadd {
 		$data{description} = &prompt({prompt=>'Caption'});
 		$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
 		$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
-		$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{film_id} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
+		$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}});
 		$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 		$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
 		$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', query=>"select teleconverter_id as id, concat(manufacturer, ' ', T.model, ' (', factor, 'x)') as opt from TELECONVERTER as T, CAMERA as C, FILM as F, MANUFACTURER as M where C.mount_id=T.mount_id and F.camera_id=C.camera_id and M.manufacturer_id=T.manufacturer_id and film_id=$data{film_id}", inserthandler=>\&teleconverter_add});
