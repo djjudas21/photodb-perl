@@ -555,7 +555,7 @@ sub negative_add {
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1});
 	$data{notes} = &prompt({prompt=>'Extra notes'});
-	$data{mount_adapter_id} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{'film_id'}", skipok=>1});
+	$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
 	$data{focal_length} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), prompt=>'Focal length', type=>'integer'});
 	$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
@@ -585,7 +585,7 @@ sub negative_bulkadd {
 		$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
 		$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1});
 		$data{notes} = &prompt({prompt=>'Extra notes'});
-		$data{mount_adapter_id} = &listchoices({db=>$db, query=>"select mount_adapter_id as id, mount as opt from MOUNT_ADAPTER as MA, CAMERA as C, FILM as F, MOUNT as M where C.mount_id=MA.camera_mount and F.camera_id=C.camera_id and M.mount_id=MA.lens_mount and film_id=$data{film_id}"});
+		$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
 		$data{focal_length} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{lens_id}"), prompt=>'Focal length', type=>'integer'});
 		$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 		$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
