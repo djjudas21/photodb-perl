@@ -744,7 +744,7 @@ sub lens_edit {
 	$data{rectilinear} = &prompt({prompt=>'Is this a rectilinear lens?', type=>'boolean', default=>$$existing{rectilinear}});
 	$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$existing{length}});
 	$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer', default=>$$existing{diameter}});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`", default=>$$existing{condition_id}});
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'CONDITION', default=>$$existing{condition_id}});
 	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer', default=>$$existing{image_circle}});
 	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?', default=>$$existing{formula}});
 	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?', default=>$$existing{shutter_model}});
@@ -828,7 +828,7 @@ sub print_add {
 	my $db = shift;
 	my %data;
 	my $neg_id;
-	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', query=>'SELECT * FROM photography.choose_todo'});
+	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', table=>'choose_todo'});
 	if ($todo_id) {
 		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
 	} else {
@@ -844,11 +844,11 @@ sub print_add {
 	$data{filtration_grade} = &prompt({prompt=>'Filtration grade', type=>'decimal'});
 	$data{development_time} = &prompt({default=>'60', prompt=>'Development time (s)', type=>'integer'});
 	$data{enlarger_id} = &listchoices({db=>$db, table=>'choose_enlarger', inserthandler=>\&enlarger_add});
-	$data{lens_id} = &listchoices({db=>$db, query=>"select * from choose_enlarger_lens"});
-	$data{developer_id} = &listchoices({db=>$db, query=>'select developer_id as id, name as opt from DEVELOPER where for_paper=1', inserthandler=>\&developer_add});
+	$data{lens_id} = &listchoices({db=>$db, table=>'choose_enlarger_lens'});
+	$data{developer_id} = &listchoices({db=>$db, cols=>['developer_id as id', 'name as opt'], table=>'DEVELOPER', where=>{'for_paper'=>1}, inserthandler=>\&developer_add});
 	$data{fine} = &prompt({prompt=>'Is this a fine print?', type=>'boolean'});
 	$data{notes} = &prompt({prompt=>'Notes'});
-	$data{printer_id} = &listchoices({db=>$db, keyword=>'printer', query=>'select person_id as id, name as opt from PERSON', inserthandler=>\&person_add});
+	$data{printer_id} = &listchoices({db=>$db, keyword=>'printer', cols=>['person_id as id', 'name as opt'], table=>'PERSON', inserthandler=>\&person_add});
 	my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
 
 	# Mark is as complete in the todo list
@@ -873,7 +873,7 @@ sub print_add {
 sub print_fulfil {
 	my $db = shift;
 	my %data;
-	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', query=>'SELECT * FROM photography.choose_todo'});
+	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', table=>'choose_todo'});
 	$data{printed} = &prompt({default=>'yes', prompt=>'Is this print order now fulfilled?', type=>'boolean'});
 	$data{print_id} = &prompt({prompt=>'Which print fulfilled this order?', type=>'integer'});
 	&updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
@@ -884,12 +884,12 @@ sub print_tone {
 	my %data;
 	my $print_id = shift || &prompt({prompt=>'Which print did you tone?', type=>'integer'});
 	$data{bleach_time} = &prompt({default=>'00:00:00', prompt=>'How long did you bleach for? (HH:MM:SS)', type=>'hh:mm:ss'});
-	$data{toner_id} = &listchoices({db=>$db, query=>'select toner_id as id, toner as opt from TONER', inserthandler=>\&toner_add});
+	$data{toner_id} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
 	my $dilution1 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{toner_id}");
 	$data{toner_dilution} = &prompt({default=>$dilution1, prompt=>'What was the dilution of the first toner?'});
 	$data{toner_time} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	if (&prompt({default=>'no', prompt=>'Did you use a second toner?', type=>'boolean'}) == 1) {
-		$data{'2nd_toner_id'} = &listchoices({db=>$db, query=>'select toner_id as id, toner as opt from TONER', inserthandler=>\&toner_add});
+		$data{'2nd_toner_id'} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
 		my $dilution2 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'2nd_toner_id'}");
 		$data{'2nd_toner_dilution'} = &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
 		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
@@ -924,7 +924,7 @@ sub print_archive {
 	my $db = shift;
 	my %data;
 	my $print_id = shift || &prompt({prompt=>'Which print did you archive?', type=>'integer'});
-	$data{archive_id} = &listchoices({db=>$db, query=>'select archive_id as id, name as opt from ARCHIVE where archive_type_id = 3 and sealed = 0', inserthandler=>\&archive_add});
+	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{'archive_type_id'=>3, 'sealed'=>0}, inserthandler=>\&archive_add});
 	$data{own} = 1;
 	$data{location} = 'Archive',
 	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
@@ -1002,7 +1002,7 @@ sub print_exhibit {
 	my $db = shift;
 	my %data;
 	$data{print_id} = &prompt({prompt=>'Which print do you want to exhibit?', type=>'integer'});
-	$data{exhibition_id} = &listchoices({db=>$db, query=>'select exhibition_id as id, title as opt from EXHIBITION', inserthandler=>\&exhibition_add});
+	$data{exhibition_id} = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', inserthandler=>\&exhibition_add});
 	my $id = &newrecord({db=>$db, data=>\%data, table=>'EXHIBIT'});
 	return $id;
 }
