@@ -549,7 +549,7 @@ sub negative_add {
 	$data{frame} = &prompt({prompt=>'Frame number'});
 	$data{description} = &prompt({prompt=>'Caption'});
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
-	$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', query=>"select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{'film_id'}"});
+	$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
 	$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed as id, '' as opt FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{'film_id'} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 	$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
@@ -579,7 +579,7 @@ sub negative_bulkadd {
 	if (&prompt({default=>'no', prompt=>"Add any other attributes to all $num negatives?", type=>'boolean'})) {
 		$data{description} = &prompt({prompt=>'Caption'});
 		$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
-		$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', query=>"select LENS.lens_id as id, LENS.model as opt from FILM, CAMERA, LENS where FILM.camera_id=CAMERA.camera_id and CAMERA.mount_id=LENS.mount_id and FILM.film_id=$data{film_id}"});
+		$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
 		$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT SP.shutter_speed FROM SHUTTER_SPEED_AVAILABLE as SPA, SHUTTER_SPEED as SP, FILM, CAMERA where film_id=$data{film_id} and SPA.shutter_speed=SP.shutter_speed and FILM.camera_id=CAMERA.camera_id and CAMERA.camera_id=SPA.camera_id order by duration"});
 		$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 		$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add});
