@@ -560,7 +560,7 @@ sub negative_add {
 	$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
 	$data{flash} = &prompt({default=>'no', prompt=>'Was flash used?', type=>'boolean'});
-	$data{metering_mode} = &listchoices({db=>$db, cols=>['select metering_mode_id as id', 'metering_mode as opt'], table=>'METERING_MODE'});
+	$data{metering_mode} = &listchoices({db=>$db, cols=>['metering_mode_id as id', 'metering_mode as opt'], table=>'METERING_MODE'});
 	$data{exposure_program} = &listchoices({db=>$db, cols=>['exposure_program_id as id', 'exposure_program as opt'], table=>'EXPOSURE_PROGRAM'});
 	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', cols=>['person_id as id', 'name as opt'], table=>'PERSON', inserthandler=>\&person_add});
 	if (&prompt({prompt=>'Is this negative duplicated from another?', type=>'boolean', default=>'no'})) {
@@ -592,6 +592,7 @@ sub negative_bulkadd {
 		$data{flash} = &prompt({default=>'no', prompt=>'Was flash used?', type=>'boolean'});
 		$data{metering_mode} = &listchoices({db=>$db, cols=>['metering_mode_id as id', 'metering_mode as opt'], table=>'METERING_MODE'});
 		$data{exposure_program} = &listchoices({db=>$db, cols=>['exposure_program_id as id', 'exposure_program as opt'], table=>'EXPOSURE_PROGRAM'});
+		$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', cols=>['person_id as id', 'name as opt'], table=>'PERSON', inserthandler=>\&person_add});
 	}
 
 	# Delete empty strings from data hash
@@ -637,7 +638,7 @@ sub negative_prints {
 sub lens_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &listchoices({db=>$db, cold=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add});
+	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add});
 	$data{model} = &prompt({prompt=>'What is the lens model?'});
 	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&guesszoom($data{model})});
 	if ($data{zoom} == 0) {
@@ -649,7 +650,7 @@ sub lens_add {
 	}
 	$data{fixed_mount} = &prompt({default=>'no', prompt=>'Does this lens have a fixed mount?', type=>'boolean'});
 	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['select mount_id as id', 'mount as opt'], table=>'MOUNT', inserthandler=>\&mount_add});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', inserthandler=>\&mount_add});
 	}
 	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>&guessaperture($data{model})});
 	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal'});
@@ -681,7 +682,7 @@ sub lens_add {
 	$data{rectilinear} = &prompt({default=>'yes', prompt=>'Is this a rectilinear lens?', type=>'boolean'});
 	$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer'});
 	$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer'});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', query=>"select condition_id as id, name as opt from `CONDITION`"});
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'CONDITION'});
 	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer'});
 	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?'});
 	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?'});
@@ -699,7 +700,7 @@ sub lens_edit {
 	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens'});
 	my $existing = &lookupcol($db, "select * from LENS where lens_id=$lensid");
 	$existing = @$existing[0];
-	$data{manufacturer_id} = &listchoices({db=>$db, query=>'select manufacturer_id as id, manufacturer as opt from MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
+	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$existing{model}});
 	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>$$existing{zoom}});
 	if ($data{zoom} == 0) {
@@ -711,7 +712,7 @@ sub lens_edit {
 	}
 	$data{fixed_mount} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$existing{fixed_mount}});
 	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, query=>'select mount_id as id, mount as opt from MOUNT', inserthandler=>\&mount_add, default=>$$existing{mount_id}});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', inserthandler=>\&mount_add, default=>$$existing{mount_id}});
 	}
 	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>$$existing{max_aperture}});
 	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal', default=>$$existing{min_aperture}});
@@ -731,7 +732,7 @@ sub lens_edit {
 	$data{introduced} = &prompt({prompt=>'When was this lens introduced?', type=>'integer', default=>$$existing{introduced}});
 	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$existing{discontinued}});
 	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$existing{manufactured}});
-	$data{negative_size_id} = &listchoices({db=>$db, query=>'select negative_size_id as id, negative_size as opt from NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$existing{negative_size_id}});
+	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$existing{negative_size_id}});
 	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$existing{acquired}});
 	$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$existing{cost}});
 	$data{notes} = &prompt({prompt=>'Notes', default=>$$existing{notes}});
