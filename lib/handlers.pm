@@ -243,6 +243,9 @@ sub camera_add {
 	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean'});
 	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean'});
 	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean'});
+	if (defined($data{mount_id})) {
+		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}});
+	}
 	my $cameraid = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
@@ -265,10 +268,6 @@ sub camera_add {
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera?', type=>'boolean'})) {
 		&camera_accessory($db, $cameraid);
-	}
-
-	if (&prompt({default=>'yes', prompt=>'Add a display lens for this camera?', type=>'boolean'})) {
-		&camera_displaylens($db, $cameraid);
 	}
 	return $cameraid;
 }
@@ -352,6 +351,9 @@ sub camera_edit {
 	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean', default=>$$existing{oem_case}});
 	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean', default=>$$existing{dof_preview}});
 	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean', default=>$$existing{tripod}});
+	if (defined($data{mount_id})) {
+		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}});
+	}
 
 	# Compare new and old data to find changed fields
 	my %changes;
@@ -426,11 +428,10 @@ sub camera_meteringmode {
 sub camera_displaylens {
 	my $db = shift;
 	my %data;
-	$data{camera_id} = shift || &listchoices({db=>$db, query=>"select camera_id as id, concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id not in (select camera_id from DISPLAYLENS)"});
-	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$data{camera_id}");
-	$data{lens_id} = &listchoices({db=>$db, query=>"select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mount and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 and lens_id not in (select lens_id from DISPLAYLENS)"});
-	my $displaylensid = &newrecord({db=>$db, data=>\%data, table=>'DISPLAYLENS'});
-	return $displaylensid;
+	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select camera_id as id, concat(manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id"});
+	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$camera_id");
+	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$mount}});
+	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
 sub camera_sell {
