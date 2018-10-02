@@ -1469,7 +1469,7 @@ sub movie_add {
 	my $db = shift;
 	my %data;
 	$data{title} = &prompt({prompt=>'What is the title of this movie?'});
-	$data{camera_id} = &listchoices({db=>$db, query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and video=1 and digital=0 order by opt"});
+	$data{camera_id} = &listchoices({db=>$db, table=>'choose_movie_camera'});
 	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id = $data{camera_id}")) {
 		$data{lens_id} = &lookupval($db, "select lens_id from CAMERA where camera_id = $data{camera_id}");
 	} else {
