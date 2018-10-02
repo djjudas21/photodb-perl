@@ -88,7 +88,7 @@ sub film_load {
 	my $db = shift;
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load'});
 	my %data;
-	$data{camera_id} = &listchoices({db=>$db, query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, FILM as F, MANUFACTURER as M where F.format_id=C.format_id and C.manufacturer_id=M.manufacturer_id and film_id=$film_id and own=1 order by opt"});
+	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}});
 	$data{exposed_at} = &prompt({default=>&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
