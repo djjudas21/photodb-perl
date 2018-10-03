@@ -1521,9 +1521,7 @@ sub exhibition_review {
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION'});
 	my $title = &lookupval($db, "select title from EXHIBITION where exhibition_id=$exhibition_id");
 
-	my $query = "select PRINT.print_id as id, concat(description, ' (', displaysize(PRINT.width, PRINT.height), ')') as opt from NEGATIVE join PRINT on PRINT.negative_id=NEGATIVE.negative_id join EXHIBIT on EXHIBIT.print_id=PRINT.print_id join EXHIBITION on EXHIBITION.exhibition_id=EXHIBIT.exhibition_id where EXHIBITION.exhibition_id=$exhibition_id";
-
-	  &printlist($db, "prints exhibited at $title", $query);
+	&printlist($db, "prints exhibited at $title", "select id, opt from exhibits where exhibition_id=$exhibition_id");
 }
 
 sub task_run {
