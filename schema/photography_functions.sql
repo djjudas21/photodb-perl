@@ -7,7 +7,7 @@
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `displaysize`(`width` decimal(5,2), `height` decimal(5,2)) RETURNS varchar(10) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+CREATE DEFINER=`jonathan`@`%` FUNCTION `DISPLAYSIZE`(`width` decimal(5,2), `height` decimal(5,2)) RETURNS varchar(10) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
     DETERMINISTIC
 BEGIN
   declare size varchar(10);
