@@ -428,7 +428,7 @@ sub camera_meteringmode {
 sub camera_displaylens {
 	my $db = shift;
 	my %data;
-	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', query=>"select camera_id as id, concat(manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where mount_id is not null and own=1 and CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id"});
+	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}});
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$camera_id");
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$mount}});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
