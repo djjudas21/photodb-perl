@@ -253,14 +253,29 @@ sub listchoices {
 	my $href = $_[0];
 	my $db = $href->{db};
 	my $query = $href->{query};
-	my $keyword = $href->{keyword} || &keyword($query);
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
 	my $skipok = $href->{skipok} || 0;
+	my $table = $href->{table};
+	my $cols = $href->{cols} // ('id, opt');
+	my $where = $href->{where} // {};
+	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		# Use the manual query
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $cols && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, cols, where\n";
+	}
 
 	# No point in proveeding if there are no valid options to choose from
 	if ($rows == 0) {
@@ -462,7 +477,7 @@ sub chooseneg {
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
-	my $frame = &listchoices({db=>$db, keyword=>'frame', query=>"select frame as id, description as opt from NEGATIVE where film_id=$film_id", type=>'text'});
+	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
 	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
@@ -541,7 +556,8 @@ sub annotatefilm {
 # CAMERA_MOUNT or choose_camera_mount would return "camera mount"
 sub keyword {
 	my $query = shift;
-	if ($query =~ m/^.+ from (\w+).*$/i) {
+	# This matches either a full SQL query, or just the table name
+	if ($query =~ m/^.+ from (\w+).*$/i || $query =~ m/^(\w+)$/i) {
 		my $text = $1;
 		$text = lc($text);
 		$text =~ s/^choose_//;
