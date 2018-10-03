@@ -430,7 +430,7 @@ sub camera_displaylens {
 	my %data;
 	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}});
 	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$camera_id");
-	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$mount}});
+	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval($db, "select display_lens from CAMERA where camera_id=$camera_id")});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
