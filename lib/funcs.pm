@@ -416,7 +416,7 @@ sub updatedata {
 # Return today's date
 sub today {
 	my $db = shift;
-	return &lookupval($db, 'select curdate()');
+	return &lookupval({db=>$db, query=>'select curdate()'});
 }
 
 # Translate "friendly" bools to integers
@@ -477,7 +477,7 @@ sub resolvenegid {
 		# 999/99A - a film/frame ID
 		my $film_id = $1;
 		my $frame = $2;
-		my $neg_id = &lookupval($db, "select lookupneg($film_id, $frame)");
+		my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
 		return $neg_id;
 	} else {
 		# Could not resolve
@@ -492,7 +492,7 @@ sub chooseneg {
 
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
@@ -510,7 +510,7 @@ sub annotatefilm {
 	my $inidata = ReadINI(&ini);
 	my $path = $$inidata{'filesystem'}{'basepath'};
 	if (defined($path) && $path ne '' && -d $path) {
-		my $filmdir = &lookupval($db, "select directory from FILM where film_id=$film_id");
+		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";

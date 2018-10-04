@@ -61,11 +61,11 @@ sub film_add {
 		$data{film_bulk_id} = &listchoices({db=>$db, table=>'choose_bulk_film'});
 		$data{film_bulk_loaded} = &prompt({default=>&today($db), prompt=>'When was the film bulk-loaded?'});
 		# These are deduced automagically for bulk-loaded films
-		$data{film_batch} = &lookupval($db, "select batch from FILM_BULK where film_bulk_id=$data{film_bulk_id}");
-		$data{film_expiry} = &lookupval($db, "select expiry from FILM_BULK where film_bulk_id=$data{film_bulk_id}");
-		$data{purchase_date} = &lookupval($db, "select purchase_date from FILM_BULK where film_bulk_id=$data{film_bulk_id}");
-		$data{filmstock_id} = &lookupval($db, "select filmstock_id from FILM_BULK where film_bulk_id=$data{film_bulk_id}");
-		$data{format_id} = &lookupval($db, "select format_id from FILM_BULK where film_bulk_id=$data{film_bulk_id}");
+		$data{film_batch} = &lookupval({db=>$db, query=>"select batch from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}"});
+		$data{film_expiry} = &lookupval({db=>$db, query=>"select expiry from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}"});
+		$data{purchase_date} = &lookupval({db=>$db, query=>"select purchase_date from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}"});
+		$data{filmstock_id} = &lookupval({db=>$db, query=>"select filmstock_id from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}"});
+		$data{format_id} = &lookupval({db=>$db, query=>"select format_id from FILM_BULK where film_bulk_id=$data{'film_bulk_id'}"});
 	} else {
 		# These are filled in only for standalone films
 		$data{film_batch} = &prompt({prompt=>'Film batch number'});
@@ -89,7 +89,7 @@ sub film_load {
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load'});
 	my %data;
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}});
-	$data{exposed_at} = &prompt({default=>&lookupval($db, "select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"), prompt=>'What ISO?', type=>'integer'});
+	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, query=>"select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"}), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
 	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
@@ -139,8 +139,8 @@ sub film_locate {
 	my $db = shift;
 	my $film_id = shift || &prompt({prompt=>'Which film do you want to locate?', type=>'integer'});
 
-	if (my $archiveid = &lookupval($db, "select archive_id from FILM where film_id=$film_id")) {
-		my $archive = &lookupval($db, "select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid");
+	if (my $archiveid = &lookupval({db=>$db, query=>"select archive_id from FILM where film_id=$film_id"})) {
+		my $archive = &lookupval({db=>$db, query=>"select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid"});
 		print "Film #${film_id} is in $archive\n";
 	} else {
 		print "The location of film #${film_id} is unknown\n";
@@ -429,8 +429,8 @@ sub camera_displaylens {
 	my $db = shift;
 	my %data;
 	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}});
-	my $mount = &lookupval($db, "select mount_id from CAMERA where camera_id=$camera_id");
-	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval($db, "select display_lens from CAMERA where camera_id=$camera_id")});
+	my $mount = &lookupval({db=>$db, query=>"select mount_id from CAMERA where camera_id=$camera_id"});
+	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, query=>"select display_lens from CAMERA where camera_id=$camera_id"})});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
@@ -442,8 +442,8 @@ sub camera_sell {
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this camera sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$cameraid"});
-	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id=$cameraid")) {
-		my $lensid = &lookupval($db, "select lens_id from CAMERA where camera_id=$cameraid");
+	if (&lookupval({db=>$db, query=>"select fixed_mount from CAMERA where camera_id=$cameraid"})) {
+		my $lensid = &lookupval({db=>$db, query=>"select lens_id from CAMERA where camera_id=$cameraid"});
 		if ($lensid) {
 			my %lensdata;
 			$lensdata{own} = 0;
@@ -475,10 +475,10 @@ sub camera_info {
 sub camera_stats {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera'});
-	my $camera = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id");
+	my $camera = &lookupval({db=>$db, query=>"select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id"});
 	print "\tShowing statistics for $camera\n";
-	my $total_shots_with_cam = &lookupval($db, "select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id");
-	my $total_shots = &lookupval($db, 'select count(*) from NEGATIVE');
+	my $total_shots_with_cam = &lookupval({db=>$db, query=>"select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id"});
+	my $total_shots = &lookupval({db=>$db, query=>'select count(*) from NEGATIVE'});
 	if ($total_shots > 0) {
 		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
 		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
@@ -539,7 +539,7 @@ sub negative_add {
 	my $db = shift;
 	my %data;
 	$data{film_id} = &prompt({prompt=>'Which film does this negative belong to?', type=>'integer'});
-	if (!&lookupval($db, "select camera_id from FILM where film_id=$data{film_id}")) {
+	if (!&lookupval({db=>$db, query=>"select camera_id from FILM where film_id=$data{film_id}"})) {
 		print 'Film must be loaded into a camera before you can add negatives\n';
 		if (&prompt({default=>'yes', prompt=>'Load film into a camera now?', type=>'boolean'})) {
 			&film_load($db, $data{film_id});
@@ -557,7 +557,7 @@ sub negative_add {
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1});
 	$data{notes} = &prompt({prompt=>'Extra notes'});
 	$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
-	$data{focal_length} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{'lens_id'}"), prompt=>'Focal length', type=>'integer'});
+	$data{focal_length} = &prompt({default=>&lookupval({db=>$db, query=>"select min_focal_length from LENS where lens_id=$data{'lens_id'}"}), prompt=>'Focal length', type=>'integer'});
 	$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
 	$data{flash} = &prompt({default=>'no', prompt=>'Was flash used?', type=>'boolean'});
@@ -587,7 +587,7 @@ sub negative_bulkadd {
 		$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1});
 		$data{notes} = &prompt({prompt=>'Extra notes'});
 		$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
-		$data{focal_length} = &prompt({default=>&lookupval($db, "select min_focal_length from LENS where lens_id=$data{lens_id}"), prompt=>'Focal length', type=>'integer'});
+		$data{focal_length} = &prompt({default=>&lookupval({db=>$db, query=>"select min_focal_length from LENS where lens_id=$data{lens_id}"}), prompt=>'Focal length', type=>'integer'});
 		$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 		$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
 		$data{flash} = &prompt({default=>'no', prompt=>'Was flash used?', type=>'boolean'});
@@ -626,7 +626,7 @@ sub negative_bulkadd {
 sub negative_stats {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-	my $noprints = &lookupval($db, "select count(*) from PRINT where negative_id=$neg_id");
+	my $noprints = &lookupval({db=>$db, query=>"select count(*) from PRINT where negative_id=$neg_id"});
 	print "\tThis negative has been printed $noprints times\n";
 }
 
@@ -799,21 +799,21 @@ sub lens_repair {
 sub lens_stats {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens'});
-	my $lens = &lookupval($db, "select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id");
+	my $lens = &lookupval({db=>$db, query=>"select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id"});
 	print "\tShowing statistics for $lens\n";
-	my $total_shots_with_lens = &lookupval($db, "select count(*) from NEGATIVE where lens_id=$lens_id");
-	my $total_shots = &lookupval($db, 'select count(*) from NEGATIVE');
+	my $total_shots_with_lens = &lookupval({db=>$db, query=>"select count(*) from NEGATIVE where lens_id=$lens_id"});
+	my $total_shots = &lookupval({db=>$db, query=>'select count(*) from NEGATIVE'});
 	if ($total_shots > 0) {
 		my $percentage = round(100 * $total_shots_with_lens / $total_shots);
 		print "\tThis lens has been used to take $total_shots_with_lens frames, which is ${percentage}% of the frames in your collection\n";
 	}
-	my $maxaperture = &lookupval($db, "select max_aperture from LENS where lens_id=$lens_id");
-	my $modeaperture = &lookupval($db, "select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1");
+	my $maxaperture = &lookupval({db=>$db, query=>"select max_aperture from LENS where lens_id=$lens_id"});
+	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
-	if (&lookupval($db, "select zoom from LENS where lens_id=$lens_id")) {
-		my $minf = &lookupval($db, "select min_focal_length from LENS where lens_id=$lens_id");
-		my $maxf = &lookupval($db, "select max_focal_length from LENS where lens_id=$lens_id");
-		my $meanf = &lookupval($db, "select avg(focal_length) from NEGATIVE where lens_id=$lens_id");
+	if (&lookupval({db=>$db, query=>"select zoom from LENS where lens_id=$lens_id"})) {
+		my $minf = &lookupval({db=>$db, query=>"select min_focal_length from LENS where lens_id=$lens_id"});
+		my $maxf = &lookupval({db=>$db, query=>"select max_focal_length from LENS where lens_id=$lens_id"});
+		my $meanf = &lookupval({db=>$db, query=>"select avg(focal_length) from NEGATIVE where lens_id=$lens_id"});
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
 }
@@ -831,7 +831,7 @@ sub print_add {
 	my $neg_id;
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', table=>'choose_todo'});
 	if ($todo_id) {
-		$neg_id = &lookupval($db, "select negative_id from TO_PRINT where id=$todo_id");
+		$neg_id = &lookupval({db=>$db, query=>"select negative_id from TO_PRINT where id=$todo_id"});
 	} else {
 		$neg_id = &chooseneg({db=>$db});
 	}
@@ -886,12 +886,12 @@ sub print_tone {
 	my $print_id = shift || &prompt({prompt=>'Which print did you tone?', type=>'integer'});
 	$data{bleach_time} = &prompt({default=>'00:00:00', prompt=>'How long did you bleach for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	$data{toner_id} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
-	my $dilution1 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{toner_id}");
+	my $dilution1 = &lookupval({db=>$db, query=>"select stock_dilution from TONER where toner_id=$data{toner_id}"});
 	$data{toner_dilution} = &prompt({default=>$dilution1, prompt=>'What was the dilution of the first toner?'});
 	$data{toner_time} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	if (&prompt({default=>'no', prompt=>'Did you use a second toner?', type=>'boolean'}) == 1) {
 		$data{'2nd_toner_id'} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
-		my $dilution2 = &lookupval($db, "select stock_dilution from TONER where toner_id=$data{'2nd_toner_id'}");
+		my $dilution2 = &lookupval({db=>$db, query=>"select stock_dilution from TONER where toner_id=$data{'2nd_toner_id'}"});
 		$data{'2nd_toner_dilution'} = &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
 		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	}
@@ -935,11 +935,11 @@ sub print_locate {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to locate?', type=>'integer'});
 
-	if (my $archiveid = &lookupval($db, "select archive_id from PRINT where print_id=$print_id")) {
-		my $archive = &lookupval($db, "select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid");
+	if (my $archiveid = &lookupval({db=>$db, query=>"select archive_id from PRINT where print_id=$print_id"})) {
+		my $archive = &lookupval({db=>$db, query=>"select concat(name, ' (', location, ')') as archive from ARCHIVE where archive_id = $archiveid"});
 		print "Print #${print_id} is in $archive\n";
-	} elsif (my $location = &lookupval($db, "select location from PRINT where print_id=$print_id")) {
-		if (my $own = &lookupval($db, "select own from PRINT where print_id=$print_id")) {
+	} elsif (my $location = &lookupval({db=>$db, query=>"select location from PRINT where print_id=$print_id"})) {
+		if (my $own = &lookupval({db=>$db, query=>"select own from PRINT where print_id=$print_id"})) {
 			print "Print #${print_id} is in the collection. Location: $location\n";
 		} else {
 			print "Print #${print_id} is not in the collection. Location: $location\n";
@@ -953,40 +953,40 @@ sub print_locate {
 sub print_reprint {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to reprint?', type=>'integer'});
-	my $negative = &lookupval($db, "select concat(film_id, '/', frame) as negative from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id");
-	my $caption = &lookupval($db, "select description from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id");
+	my $negative = &lookupval({db=>$db, query=>"select concat(film_id, '/', frame) as negative from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id"});
+	my $caption = &lookupval({db=>$db, query=>"select description from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id"});
 	print "\tPrint #${print_id} was made from Negative $negative \"$caption\"\n";
 
-	my $size = &lookupval($db, "select concat(width,'x',height,'\"') as size from PRINT where print_id = $print_id");
-	my $paper = &lookupval($db, "select concat(manufacturer, ' ', PAPER_STOCK.name) as paper from PRINT, PAPER_STOCK, MANUFACTURER where print_id = $print_id and PRINT.paper_stock_id = PAPER_STOCK.paper_stock_id and PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id");
+	my $size = &lookupval({db=>$db, query=>"select concat(width,'x',height,'\"') as size from PRINT where print_id = $print_id"});
+	my $paper = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', PAPER_STOCK.name) as paper from PRINT, PAPER_STOCK, MANUFACTURER where print_id = $print_id and PRINT.paper_stock_id = PAPER_STOCK.paper_stock_id and PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id"});
 	print "\tIt was made on $paper at size $size\n";
 
 	# enlarger, lens
-	my $enlarger = &lookupval($db, "select concat(manufacturer, ' ', enlarger) as enlarger from PRINT, ENLARGER, MANUFACTURER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id and ENLARGER.manufacturer_id = MANUFACTURER.manufacturer_id");
-	my $lens = &lookupval($db, "select concat(manufacturer, ' ', model) as lens from PRINT, LENS, MANUFACTURER where print_id=$print_id and PRINT.lens_id=LENS.lens_id and LENS.manufacturer_id = MANUFACTURER.manufacturer_id");
+	my $enlarger = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', enlarger) as enlarger from PRINT, ENLARGER, MANUFACTURER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id and ENLARGER.manufacturer_id = MANUFACTURER.manufacturer_id"});
+	my $lens = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', model) as lens from PRINT, LENS, MANUFACTURER where print_id=$print_id and PRINT.lens_id=LENS.lens_id and LENS.manufacturer_id = MANUFACTURER.manufacturer_id"});
 	print "\tIt was made with the $enlarger enlarger and $lens lens\n";
-	if (&lookupval($db, "select ENLARGER.lost from PRINT, ENLARGER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id")) {
+	if (&lookupval({db=>$db, query=>"select ENLARGER.lost from PRINT, ENLARGER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id"})) {
 		print "\tYou no longer own the $enlarger, so the exposure information may be useless!\n";
 	}
 
 	# time & aperture
-	my $time = &lookupval($db, "select exposure_time from PRINT where print_id=$print_id");
-	my $aperture = &lookupval($db, "select aperture from PRINT where print_id=$print_id");
+	my $time = &lookupval({db=>$db, query=>"select exposure_time from PRINT where print_id=$print_id"});
+	my $aperture = &lookupval({db=>$db, query=>"select aperture from PRINT where print_id=$print_id"});
 	print "\tExposure was ${time}s at f/${aperture}\n";
 
 	# multigrade filter
-	if (my $grade = &lookupval($db, "select filtration_grade from PRINT where print_id=$print_id")) {
+	if (my $grade = &lookupval({db=>$db, query=>"select filtration_grade from PRINT where print_id=$print_id"})) {
 		print "\tFiltration grade was $grade\n";
 	} else {
 		print "\tPrint was unfiltered\n";
 	}
 	# toner
-	if (&lookupval($db, "select toner_id from PRINT where print_id=$print_id")) {
+	if (&lookupval({db=>$db, query=>"select toner_id from PRINT where print_id=$print_id"})) {
 		# at least one toner
-		my $firsttoner = &lookupval($db, "select concat(manufacturer, ' ', toner, if(toner_dilution is not null, concat(' (', toner_dilution, ')'), ''), if(toner_time is not null, concat(' for ', toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id");
-		if (&lookupval($db, "select 2nd_toner_id from PRINT where print_id=$print_id")) {
+		my $firsttoner = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', toner, if(toner_dilution is not null, concat(' (', toner_dilution, ')'), ''), if(toner_time is not null, concat(' for ', toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id"});
+		if (&lookupval({db=>$db, query=>"select 2nd_toner_id from PRINT where print_id=$print_id"})) {
 			# 2 toners
-			my $secondtoner = &lookupval($db, "select concat(manufacturer, ' ', toner, if(2nd_toner_dilution is not null, concat(' (', 2nd_toner_dilution, ')'), ''), if(2nd_toner_time is not null, concat(' for ', 2nd_toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.2nd_toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id");
+			my $secondtoner = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', toner, if(2nd_toner_dilution is not null, concat(' (', 2nd_toner_dilution, ')'), ''), if(2nd_toner_time is not null, concat(' for ', 2nd_toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.2nd_toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id"});
 			print "\tToned frst in $firsttoner\n";
 			print "\tThen toned in $secondtoner\n";
 		} else {
@@ -1070,7 +1070,7 @@ sub mount_add {
 sub mount_view {
 	my $db = shift;
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT'});
-	my $mountname = lookupval($db, "select mount from MOUNT where mount_id = ${mountid}");
+	my $mountname = &lookupval({db=>$db, query=>"select mount from MOUNT where mount_id = ${mountid}"});
 	print "Showing data for $mountname mount\n";
 	&printlist($db, "cameras with $mountname mount", "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt");
 	&printlist($db, "lenses with $mountname mount", "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt");
@@ -1368,7 +1368,7 @@ sub archive_films {
 sub archive_list {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE'});
-	my $archive_name = &lookupval($db, "select name from ARCHIVE where archive_id=$archive_id");
+	my $archive_name = &lookupval({db=>$db, query=>"select name from ARCHIVE where archive_id=$archive_id"});
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
 	&printlist($db, "items in archive $archive_name", $query);
 }
@@ -1393,7 +1393,7 @@ sub archive_move {
 	my $db = shift;
 	my %data;
 	my $archive_id = shift || &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE'});
-	my $oldlocation = &lookupval($db, "select location from ARCHIVE where archive_id = $archive_id");
+	my $oldlocation = &lookupval({db=>$db, query=>"select location from ARCHIVE where archive_id = $archive_id"});
 	$data{location} = &prompt({default=>$oldlocation, prompt=>'What is the new location of this archive?'});
 	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
@@ -1470,8 +1470,8 @@ sub movie_add {
 	my %data;
 	$data{title} = &prompt({prompt=>'What is the title of this movie?'});
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_movie_camera'});
-	if (&lookupval($db, "select fixed_mount from CAMERA where camera_id = $data{camera_id}")) {
-		$data{lens_id} = &lookupval($db, "select lens_id from CAMERA where camera_id = $data{camera_id}");
+	if (&lookupval({db=>$db, query=>"select fixed_mount from CAMERA where camera_id = $data{camera_id}"})) {
+		$data{lens_id} = &lookupval({db=>$db, query=>"select lens_id from CAMERA where camera_id = $data{camera_id}"});
 	} else {
 		$data{lens_id} = &listchoices({db=>$db, table=>'choose_lens'});
 	}
@@ -1519,7 +1519,7 @@ sub exhibition_add {
 sub exhibition_review {
 	my $db = shift;
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION'});
-	my $title = &lookupval($db, "select title from EXHIBITION where exhibition_id=$exhibition_id");
+	my $title = &lookupval({db=>$db, query=>"select title from EXHIBITION where exhibition_id=$exhibition_id"});
 
 	&printlist($db, "prints exhibited at $title", "select id, opt from exhibits where exhibition_id=$exhibition_id");
 }
