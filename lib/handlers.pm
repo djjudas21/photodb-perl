@@ -637,7 +637,7 @@ sub negative_stats {
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-	&printlist({db=>$db, msg=>"prints from negative $neg_id", query=>"select id, opt from print_locations where negative_id=$neg_id"});
+	&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
 }
 
 sub lens_add {
@@ -1525,7 +1525,7 @@ sub exhibition_review {
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION'});
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});
 
-	&printlist({db=>$db, msg=>"prints exhibited at $title", query=>"select id, opt from exhibits where exhibition_id=$exhibition_id"});
+	&printlist({db=>$db, msg=>"prints exhibited at $title", table=>'exhibits', where=>{exhibition_id=>$exhibition_id}});
 }
 
 sub task_run {
