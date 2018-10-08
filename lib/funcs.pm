@@ -256,6 +256,7 @@ sub listchoices {
 	my $type = $href->{type} || 'integer';
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
+	my $autodefault = $href->{autodefault} // 1;
 	my $skipok = $href->{skipok} || 0;
 	my $table = $href->{table};
 	my $cols = $href->{cols} // ('id, opt');
@@ -300,7 +301,7 @@ sub listchoices {
 		push(@allowedvals, '0');
 	}
 
-	if ($default eq '') {
+	if ($default eq '' && $autodefault) {
 		# If no default is given, count number of allowed options
 		# and if there's just one, make it the default
 		if ($rows == 1) {
