@@ -475,10 +475,10 @@ sub camera_info {
 sub camera_stats {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera'});
-	my $camera = &lookupval({db=>$db, query=>"select concat( manufacturer, ' ',model) as opt from CAMERA, MANUFACTURER where CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id and camera_id=$camera_id"});
+	my $camera = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{camera_id=>$camera_id}});
 	print "\tShowing statistics for $camera\n";
-	my $total_shots_with_cam = &lookupval({db=>$db, query=>"select count(*) from NEGATIVE, FILM where NEGATIVE.film_id=FILM.film_id and camera_id=$camera_id"});
-	my $total_shots = &lookupval({db=>$db, cols=>'count(*)', table=>'NEGATIVE'});
+	my $total_shots_with_cam = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE join FILM on NEGATIVE.film_id=FILM.film_id', where=>{camera_id=>$camera_id}});
+	my $total_shots = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE'});
 	if ($total_shots > 0) {
 		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
 		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
