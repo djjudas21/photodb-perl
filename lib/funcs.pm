@@ -12,7 +12,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom);
+our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom choose_manufacturer);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -401,6 +401,19 @@ sub thin {
 		delete $$data{$_} unless (defined $$data{$_} and $$data{$_} ne '');
 	}
 	return \%$data;
+}
+
+# Select a manufacturer using the first initial
+sub choose_manufacturer {
+	my $db = shift;
+	# Loop until we get valid input
+	my $initial;
+	do {
+		$initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
+	} while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
+	$initial = lc($initial);
+	my $manufacturer = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&manufacturer_add});
+	return $manufacturer;
 }
 
 # Return arbitrary value from database
