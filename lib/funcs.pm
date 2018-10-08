@@ -334,16 +334,29 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
-	my $db = shift;
-	my $msg = shift;
-	my $query = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $msg = $href->{msg};
+	my $query = $href->{query};
+	my $table = $href->{table};
+	my $cols = $href->{cols} // ('id, opt');
+	my $where = $href->{where} // {};
 
-	print "Now showing $msg\n\n";
+	print "Now showing $msg\n";
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
-
-	$sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $cols && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, cols, where\n";
+	}
 
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
@@ -352,13 +365,27 @@ sub printlist {
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
-	my $db = shift;
-	my $query = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $query = $href->{query};
+	my $table = $href->{table};
+	my $cols = $href->{cols} // '*';
+	my $where = $href->{where} // {};
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $cols && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, cols, where\n";
+	}
 
-	$sth->execute();
 	my @array;
 	while (my $ref = $sth->fetchrow_hashref) {
 		$ref = &thin($ref);
@@ -378,15 +405,29 @@ sub thin {
 
 # Return arbitrary value from database
 sub lookupval {
-	my $db = shift;
-	my $query = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $query = $href->{query};
+	my $table = $href->{table};
+	my $col = $href->{col};
+	my $where = $href->{where} // {};
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		# Use the manual query
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $col && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $col, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, col, where\n";
+	}
 
-	$sth->execute();
 	my $row = $sth->fetchrow_array();
-
 	return $row;
 }
 
@@ -403,7 +444,7 @@ sub updatedata {
 # Return today's date
 sub today {
 	my $db = shift;
-	return &lookupval($db, 'select curdate()');
+	return &lookupval({db=>$db, query=>'select curdate()'});
 }
 
 # Translate "friendly" bools to integers
@@ -464,7 +505,7 @@ sub resolvenegid {
 		# 999/99A - a film/frame ID
 		my $film_id = $1;
 		my $frame = $2;
-		my $neg_id = &lookupval($db, "select lookupneg($film_id, $frame)");
+		my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
 		return $neg_id;
 	} else {
 		# Could not resolve
@@ -479,7 +520,7 @@ sub chooseneg {
 
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
-	my $neg_id = &lookupval($db, "select lookupneg('$film_id', '$frame')");
+	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
@@ -497,7 +538,7 @@ sub annotatefilm {
 	my $inidata = ReadINI(&ini);
 	my $path = $$inidata{'filesystem'}{'basepath'};
 	if (defined($path) && $path ne '' && -d $path) {
-		my $filmdir = &lookupval($db, "select directory from FILM where film_id=$film_id");
+		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";
