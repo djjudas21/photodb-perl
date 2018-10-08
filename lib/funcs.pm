@@ -355,21 +355,21 @@ sub lookupcol {
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $table = $href->{table};
-	my $col = $href->{col};
+	my $cols = $href->{cols} // '*';
 	my $where = $href->{where} // {};
 
 	my ($sth, $rows);
 	if ($query) {
 		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 		$rows = $sth->execute();
-	} elsif ($table && $col && $where) {
+	} elsif ($table && $cols && $where) {
 		# Use SQL::Abstract
 		my $sql = SQL::Abstract->new;
-		my($stmt, @bind) = $sql->select($table, $col, $where);
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, col, where\n";
+		die "Must pass in either query OR table, cols, where\n";
 	}
 
 	my @array;
