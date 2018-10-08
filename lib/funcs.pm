@@ -351,13 +351,27 @@ sub printlist {
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
-	my $db = shift;
-	my $query = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $query = $href->{query};
+	my $table = $href->{table};
+	my $col = $href->{col};
+	my $where = $href->{where} // {};
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $col && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $col, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, col, where\n";
+	}
 
-	$sth->execute();
 	my @array;
 	while (my $ref = $sth->fetchrow_hashref) {
 		$ref = &thin($ref);

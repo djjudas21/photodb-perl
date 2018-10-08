@@ -275,7 +275,7 @@ sub camera_add {
 sub camera_edit {
 	my $db = shift;
 	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera'});
-	my $existing = &lookupcol($db, "select * from CAMERA where camera_id=$camera_id");
+	my $existing = &lookupcol({db=>$db, query=>"select * from CAMERA where camera_id=$camera_id"});
 	$existing = @$existing[0];
 	my %data;
 	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
@@ -397,7 +397,7 @@ sub camera_shutterspeeds {
 sub camera_exposureprogram {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera'});
-	my $exposureprograms = &lookupcol($db, 'select * from EXPOSURE_PROGRAM');
+	my $exposureprograms = &lookupcol({db=>$db, query=>'select * from EXPOSURE_PROGRAM'});
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
 		next if $exposureprogram->{exposure_program_id} == 5;
@@ -415,7 +415,7 @@ sub camera_exposureprogram {
 sub camera_meteringmode {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera'});
-	my $meteringmodes = &lookupcol($db, 'select * from METERING_MODE');
+	my $meteringmodes = &lookupcol({db=>$db, query=>'select * from METERING_MODE'});
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
@@ -468,7 +468,7 @@ sub camera_repair {
 sub camera_info {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera'});
-	my $cameradata = &lookupcol($db, "select * from camera_summary where `Camera ID`=$camera_id");
+	my $cameradata = &lookupcol({db=>$db, query=>"select * from camera_summary where `Camera ID`=$camera_id"});
 	print Dump($cameradata);
 }
 
@@ -699,7 +699,7 @@ sub lens_edit {
 	my $db = shift;
 	my %data;
 	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens'});
-	my $existing = &lookupcol($db, "select * from LENS where lens_id=$lensid");
+	my $existing = &lookupcol({db=>$db, query=>"select * from LENS where lens_id=$lensid"});
 	$existing = @$existing[0];
 	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$existing{model}});
@@ -821,7 +821,7 @@ sub lens_stats {
 sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens'});
-	my $lensdata = &lookupcol($db, "select * from lens_summary where `Lens ID`=$lens_id");
+	my $lensdata = &lookupcol({db=>$db, query=>"select * from lens_summary where `Lens ID`=$lens_id"});
 	print Dump($lensdata);
 }
 
@@ -1011,7 +1011,7 @@ sub print_exhibit {
 sub print_label {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer'});
-	my $data = &lookupcol($db, "select * from print_info where print_id=$print_id");
+	my $data = &lookupcol({db=>$db, query=>"select * from print_info where print_id=$print_id"});
 	my $row = @$data[0];
 	print "\t#$row->{'print_id'} $row->{'description'}\n" if ($row->{print_id} && $row->{description});
 	print "\tPhotographed $row->{photo_date}\n" if ($row->{photo_date});
@@ -1021,7 +1021,7 @@ sub print_label {
 
 sub print_worklist {
 	my $db = shift;
-	my $data = &lookupcol($db, 'select * from choose_todo');
+	my $data = &lookupcol({db=>$db, query=>'select * from choose_todo'});
 
 	foreach my $row (@$data) {
 		print "\t$row->{opt}\n";
