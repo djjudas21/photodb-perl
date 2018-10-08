@@ -334,16 +334,29 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
-	my $db = shift;
-	my $msg = shift;
-	my $query = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+	my $msg = $href->{msg};
+	my $query = $href->{query};
+	my $table = $href->{table};
+	my $cols = $href->{cols} // ('id, opt');
+	my $where = $href->{where} // {};
 
-	print "Now showing $msg\n\n";
+	print "Now showing $msg\n";
 
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
-
-	$sth->execute();
+	my ($sth, $rows);
+	if ($query) {
+		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
+		$rows = $sth->execute();
+	} elsif ($table && $cols && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		die "Must pass in either query OR table, cols, where\n";
+	}
 
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";

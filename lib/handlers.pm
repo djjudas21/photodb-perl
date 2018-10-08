@@ -637,7 +637,7 @@ sub negative_stats {
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-	&printlist($db, "prints from negative $neg_id", "select id, opt from print_locations where negative_id=$neg_id");
+	&printlist({db=>$db, msg=>"prints from negative $neg_id", query=>"select id, opt from print_locations where negative_id=$neg_id"});
 }
 
 sub lens_add {
@@ -1076,8 +1076,8 @@ sub mount_view {
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT'});
 	my $mountname = &lookupval({db=>$db, col=>'mount', table=>'MOUNT', where=>{mount_id=>${mountid}}});
 	print "Showing data for $mountname mount\n";
-	&printlist($db, "cameras with $mountname mount", "select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt");
-	&printlist($db, "lenses with $mountname mount", "select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt");
+	&printlist({db=>$db, msg=>"cameras with $mountname mount", query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt"});
+	&printlist({db=>$db, msg=>"lenses with $mountname mount", query=>"select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt"});
 }
 
 sub toner_add {
@@ -1374,7 +1374,7 @@ sub archive_list {
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE'});
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
-	&printlist($db, "items in archive $archive_name", $query);
+	&printlist({db=>$db, msg=>"items in archive $archive_name", query=>$query});
 }
 
 sub archive_seal {
@@ -1525,7 +1525,7 @@ sub exhibition_review {
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION'});
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});
 
-	&printlist($db, "prints exhibited at $title", "select id, opt from exhibits where exhibition_id=$exhibition_id");
+	&printlist({db=>$db, msg=>"prints exhibited at $title", query=>"select id, opt from exhibits where exhibition_id=$exhibition_id"});
 }
 
 sub task_run {
