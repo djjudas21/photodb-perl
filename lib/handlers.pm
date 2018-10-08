@@ -89,7 +89,7 @@ sub film_load {
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load'});
 	my %data;
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}});
-	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, query=>"select iso from FILM, FILMSTOCK where FILM.filmstock_id=FILMSTOCK.filmstock_id and film_id=$film_id"}), prompt=>'What ISO?', type=>'integer'});
+	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
 	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
@@ -799,7 +799,7 @@ sub lens_repair {
 sub lens_stats {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens'});
-	my $lens = &lookupval({db=>$db, query=>"select concat( manufacturer, ' ',model) as opt from LENS, MANUFACTURER where LENS.manufacturer_id=MANUFACTURER.manufacturer_id and lens_id=$lens_id"});
+	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $total_shots_with_lens = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
 	my $total_shots = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE'});
@@ -953,8 +953,8 @@ sub print_locate {
 sub print_reprint {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to reprint?', type=>'integer'});
-	my $negative = &lookupval({db=>$db, query=>"select concat(film_id, '/', frame) as negative from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id"});
-	my $caption = &lookupval({db=>$db, query=>"select description from PRINT, NEGATIVE where print_id = $print_id and PRINT.negative_id=NEGATIVE.negative_id"});
+	my $negative = &lookupval({db=>$db, col=>"concat(film_id, '/', frame) as negative", table=>'PRINT join NEGATIVE on PRINT.negative_id=NEGATIVE.negative_id', where=>{print_id=>$print_id}});
+	my $caption = &lookupval({db=>$db, col=>"description", table=>'PRINT join NEGATIVE on PRINT.negative_id=NEGATIVE.negative_id', where=>{print_id=>$print_id}});
 	print "\tPrint #${print_id} was made from Negative $negative \"$caption\"\n";
 
 	my $size = &lookupval({db=>$db, col=>"concat(width,'x',height,'\"') as size", table=>'PRINT', where=>{print_id=>$print_id}});
