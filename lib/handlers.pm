@@ -172,7 +172,7 @@ sub camera_add {
 	# Add a new camera
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add});
+	$data{manufacturer_id} = &choose_manufacturer($db);
 	$data{model} = &prompt({prompt=>'What model is the camera?'});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1) {
@@ -488,7 +488,7 @@ sub camera_stats {
 sub camera_choose {
 	my $db = shift;
 	my %where;
-	$where{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER'});
+	$where{manufacturer_id} = &choose_manufacturer($db);
 	$where{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT'});
 	$where{bulb} = &prompt({prompt=>'Do you need Bulb (B) shutter speed?', type=>'boolean'});
 	$where{time} = &prompt({prompt=>'Do you need Time (T) shutter speed?', type=>'boolean'});
@@ -643,7 +643,7 @@ sub negative_prints {
 sub lens_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add});
+	$data{manufacturer_id} = &choose_manufacturer($db);
 	$data{model} = &prompt({prompt=>'What is the lens model?'});
 	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&guesszoom($data{model})});
 	if ($data{zoom} == 0) {
