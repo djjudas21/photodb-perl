@@ -173,7 +173,7 @@ sub camera_add {
 	# Add a new camera
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What model is the camera?'});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1) {
@@ -489,7 +489,7 @@ sub camera_stats {
 sub camera_choose {
 	my $db = shift;
 	my %where;
-	$where{manufacturer_id} = &choose_manufacturer($db);
+	$where{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$where{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT'});
 	$where{bulb} = &prompt({prompt=>'Do you need Bulb (B) shutter speed?', type=>'boolean'});
 	$where{time} = &prompt({prompt=>'Do you need Time (T) shutter speed?', type=>'boolean'});
@@ -644,7 +644,7 @@ sub negative_prints {
 sub lens_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the lens model?'});
 	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&guesszoom($data{model})});
 	if ($data{zoom} == 0) {
@@ -1036,7 +1036,7 @@ sub print_worklist {
 sub paperstock_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What model is the paper?'});
 	$data{resin_coated} = &prompt({prompt=>'Is this paper resin-coated?', type=>'boolean'});
 	$data{tonable} = &prompt({prompt=>'Is this paper tonable?', type=>'boolean'});
@@ -1049,7 +1049,7 @@ sub paperstock_add {
 sub developer_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What model is the developer?'});
 	$data{for_paper} = &prompt({prompt=>'Is this developer suitable for paper?', type=>'boolean'});
 	$data{for_film} = &prompt({prompt=>'Is this developer suitable for film?', type=>'boolean'});
@@ -1084,7 +1084,7 @@ sub mount_view {
 sub toner_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{toner} = &prompt({prompt=>'What is the name of this toner?'});
 	$data{formulation} = &prompt({prompt=>'What is the chemical formulation of this toner?'});
 	$data{stock_dilution} = &prompt({prompt=>'What is the stock dilution of this toner?'});
@@ -1095,7 +1095,7 @@ sub toner_add {
 sub filmstock_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What is the name of this filmstock?'});
 	$data{iso} = &prompt({prompt=>'What is the box ISO/ASA speed of this filmstock?', type=>'integer'});
 	$data{colour} = &prompt({prompt=>'Is this a colour film?', type=>'boolean'});
@@ -1112,7 +1112,7 @@ sub filmstock_add {
 sub teleconverter_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this teleconverter?'});
 	$data{factor} = &prompt('', 'What is the magnification factor of this teleconverter?', 'decimal');
 	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
@@ -1127,7 +1127,7 @@ sub filter_add {
 	my $db = shift;
 	my %data;
 	$data{type} = &prompt({prompt=>'What type of filter is this?'});
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{attenuation} = &prompt({prompt=>'What attenutation (in stops) does this filter have?', type=>'decimal'});
 	$data{thread} = &prompt({prompt=>'What diameter mounting thread does this filter have?', type=>'decimal'});
 	$data{qty} = &prompt({default=>1, prompt=>'How many of these filters do you have?', type=>'integer'});
@@ -1171,7 +1171,7 @@ sub accessory_add {
 	my $db = shift;
 	my %data;
 	$data{accessory_type_id} = &listchoices({db=>$db, cols=>['accessory_type_id as id', 'accessory_type as opt'], table=>'ACCESSORY_TYPE', inserthandler=>\&accessory_type});
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this accessory?'});
 	$data{acquired} = &prompt({default=>&today($db), prompt=>'When was this accessory acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did this accessory cost?', type=>'decimal'});
@@ -1213,7 +1213,7 @@ sub accessory_type {
 sub enlarger_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{enlarger} = &prompt({prompt=>'What is the model of this enlarger?'});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
 	$data{introduced} = &prompt({prompt=>'What year was this enlarger introduced?', type=>'integer'});
@@ -1236,7 +1236,7 @@ sub enlarger_sell {
 sub flash_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this flash?'});
 	$data{guide_number} = &prompt({prompt=>'What is the guide number of this flash?', type=>'integer'});
 	$data{gn_info} = &prompt({default=>'ISO 100', prompt=>'What are the conditions of the guide number?'});
@@ -1315,7 +1315,7 @@ sub mount_adapt {
 sub lightmeter_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this light meter?'});
 	$data{metering_type} = &listchoices({db=>$db, cols=>['metering_type_id as id', 'metering as opt'], table=>'METERING_TYPE', inserthandler=>\&meteringtype_add});
 	$data{reflected} = &prompt({prompt=>'Can this meter take reflected light readings?', type=>'boolean'});
@@ -1422,7 +1422,7 @@ sub focustype_add {
 sub flashprotocol_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What flash protocol do you want to add?'});
 	my $id = &newrecord({db=>$db, data=>\%data, table=>'FLASH_PROTOCOL'});
 	return $id;
@@ -1460,7 +1460,7 @@ sub person_add {
 sub projector_add {
 	my $db = shift;
 	my %data;
-	$data{manufacturer_id} = &choose_manufacturer($db);
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this projector?'});
 	$data{mount_id} = &listchoices({db=>$db, cols=>['select mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Projector'}, inserthandler=>\&mount_add});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
@@ -1547,7 +1547,9 @@ sub task_run {
 
 # Select a manufacturer using the first initial
 sub choose_manufacturer {
-        my $db = shift;
+	my $href = $_[0];
+	my $db = $href->{db};
+
         # Loop until we get valid input
         my $initial;
         do {
