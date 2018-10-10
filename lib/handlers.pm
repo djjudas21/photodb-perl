@@ -970,7 +970,7 @@ sub print_reprint {
 	my $enlarger = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', enlarger) as enlarger from PRINT, ENLARGER, MANUFACTURER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id and ENLARGER.manufacturer_id = MANUFACTURER.manufacturer_id"});
 	my $lens = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', model) as lens from PRINT, LENS, MANUFACTURER where print_id=$print_id and PRINT.lens_id=LENS.lens_id and LENS.manufacturer_id = MANUFACTURER.manufacturer_id"});
 	print "\tIt was made with the $enlarger enlarger and $lens lens\n";
-	if (&lookupval({db=>$db, query=>"select ENLARGER.lost from PRINT, ENLARGER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id"})) {
+	if (&lookupval({db=>$db, col=>'ENLARGER.lost', table=>'PRINT join ENLARGER on PRINT.enlarger_id=ENLARGER.enlarger_id', where=>{print_id=>$print_id}})) {
 		print "\tYou no longer own the $enlarger, so the exposure information may be useless!\n";
 	}
 
