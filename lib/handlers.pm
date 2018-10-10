@@ -279,7 +279,7 @@ sub camera_edit {
 	my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$existing = @$existing[0];
 	my %data;
-	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$existing{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What model is the camera?', default=>$$existing{model}});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', default=>$$existing{fixed_mount}});
 	if ($data{fixed_mount} == 1) {
@@ -706,7 +706,7 @@ sub lens_edit {
 	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens'});
 	my $existing = &lookupcol({db=>$db, table=>'LENS', where=>{lens_id=>$lensid}});
 	$existing = @$existing[0];
-	$data{manufacturer_id} = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', inserthandler=>\&manufacturer_add, default=>$$existing{manufacturer_id}});
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$existing{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$existing{model}});
 	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>$$existing{zoom}});
 	if ($data{zoom} == 0) {
@@ -1549,6 +1549,12 @@ sub task_run {
 sub choose_manufacturer {
 	my $href = $_[0];
 	my $db = $href->{db};
+	my $default = $href->{default};
+
+	if ($default) {
+		my $manufacturer = &lookupval({db=>$db, col=>'manufacturer', table=>'MANUFACTURER', where=>{manufacturer_id=>$default}});
+		return $default if (!&prompt({prompt=>"Current manufacturer is $manufacturer. Change this?", type=>'boolean', default=>'no'}));
+	}
 
         # Loop until we get valid input
         my $initial;
