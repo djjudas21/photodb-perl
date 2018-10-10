@@ -50,6 +50,7 @@ our @EXPORT = qw(
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
 	exhibition_add exhibition_review
+	choose_manufacturer
 );
 
 sub film_add {
@@ -1542,6 +1543,19 @@ sub task_run {
 	my $sql = $tasks[$input]{'query'};
 	my $rows = &updatedata($db, $sql);
 	print "Updated $rows rows\n";
+}
+
+# Select a manufacturer using the first initial
+sub choose_manufacturer {
+        my $db = shift;
+        # Loop until we get valid input
+        my $initial;
+        do {
+                $initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
+        } while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
+        $initial = lc($initial);
+        my $manufacturer = &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add});
+        return $manufacturer;
 }
 
 # This ensures the lib loads smoothly
