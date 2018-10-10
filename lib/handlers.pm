@@ -1075,10 +1075,10 @@ sub mount_add {
 sub mount_view {
 	my $db = shift;
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT'});
-	my $mountname = &lookupval({db=>$db, col=>'mount', table=>'MOUNT', where=>{mount_id=>${mountid}}});
-	print "Showing data for $mountname mount\n";
-	&printlist({db=>$db, msg=>"cameras with $mountname mount", query=>"select C.camera_id as id, concat(M.manufacturer, ' ', C.model) as opt from CAMERA as C, MANUFACTURER as M where C.manufacturer_id=M.manufacturer_id and own=1 and mount_id=$mountid order by opt"});
-	&printlist({db=>$db, msg=>"lenses with $mountname mount", query=>"select lens_id as id, concat(manufacturer, ' ', model) as opt from LENS, MANUFACTURER where mount_id=$mountid and LENS.manufacturer_id=MANUFACTURER.manufacturer_id and own=1 order by opt"});
+	my $mount = &lookupval({db=>$db, col=>'mount', table=>'MOUNT', where=>{mount_id=>${mountid}}});
+	print "Showing data for $mount mount\n";
+	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"camera_id as id, concat(manufacturer, ' ', model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{own=>1, mount_id=>$mountid}, order=>'opt'});
+	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"lens_id as id, concat(manufacturer, ' ', model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{mount_id=>$mountid, own=>1}, order=>'opt'});
 }
 
 sub toner_add {

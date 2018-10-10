@@ -346,6 +346,7 @@ sub printlist {
 	my $table = $href->{table};
 	my $cols = $href->{cols} // ('id, opt');
 	my $where = $href->{where} // {};
+	my $order = $href->{order};
 
 	print "Now showing $msg\n";
 
@@ -356,7 +357,7 @@ sub printlist {
 	} elsif ($table && $cols && $where) {
 		# Use SQL::Abstract
 		my $sql = SQL::Abstract->new;
-		my($stmt, @bind) = $sql->select($table, $cols, $where);
+		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
