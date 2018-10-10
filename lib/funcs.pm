@@ -278,12 +278,17 @@ sub listchoices {
 		die "Must pass in either query OR table, cols, where\n";
 	}
 
-	# No point in proveeding if there are no valid options to choose from
+	# No point in proceeding if there are no valid options to choose from
 	if ($rows == 0) {
-		if ($skipok) {
+		print "No valid $keyword options to choose from\n";
+		if ($inserthandler && &prompt({prompt=>"Add a new $keyword?", type=>'boolean', default=>'no'})) {
+			# add a new entry
+			my $id = $inserthandler->($db);
+			return $id;
+		} elsif ($skipok) {
 			return;
 		} else {
-			die "No valid $keyword options to choose from\n";
+			die;
 		}
 	}
 
