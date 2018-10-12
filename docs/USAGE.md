@@ -119,8 +119,8 @@ Fulfil an order for a print
 Add a print to a physical archive
 ### `print locate`
 Locate a print in an archive
-### `print reprint`
-Show details for making another print the same
+### `print info`
+Show details about a print
 ### `print exhibit`
 Exhibit a print at an exhibition
 ### `print label`

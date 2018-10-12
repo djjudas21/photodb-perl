@@ -26,7 +26,7 @@ our @EXPORT = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_reprint print_exhibit print_label print_worklist
+	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_info print_exhibit print_label print_worklist
 	paperstock_add
 	developer_add
 	toner_add
@@ -955,9 +955,9 @@ sub print_locate {
 	exit;
 }
 
-sub print_reprint {
+sub print_info {
 	my $db = shift;
-	my $print_id = &prompt({prompt=>'Which print do you want to reprint?', type=>'integer'});
+	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer'});
 	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
 	print Dump($data);
 }
