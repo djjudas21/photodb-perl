@@ -958,50 +958,8 @@ sub print_locate {
 sub print_reprint {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to reprint?', type=>'integer'});
-	my $negative = &lookupval({db=>$db, col=>"concat(film_id, '/', frame) as negative", table=>'PRINT join NEGATIVE on PRINT.negative_id=NEGATIVE.negative_id', where=>{print_id=>$print_id}});
-	my $caption = &lookupval({db=>$db, col=>"description", table=>'PRINT join NEGATIVE on PRINT.negative_id=NEGATIVE.negative_id', where=>{print_id=>$print_id}});
-	print "\tPrint #${print_id} was made from Negative $negative \"$caption\"\n";
-
-	my $size = &lookupval({db=>$db, col=>"concat(width,'x',height,'\"') as size", table=>'PRINT', where=>{print_id=>$print_id}});
-	my $paper = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', PAPER_STOCK.name) as paper from PRINT, PAPER_STOCK, MANUFACTURER where print_id = $print_id and PRINT.paper_stock_id = PAPER_STOCK.paper_stock_id and PAPER_STOCK.manufacturer_id=MANUFACTURER.manufacturer_id"});
-	print "\tIt was made on $paper at size $size\n";
-
-	# enlarger, lens
-	my $enlarger = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', enlarger) as enlarger from PRINT, ENLARGER, MANUFACTURER where print_id=$print_id and PRINT.enlarger_id=ENLARGER.enlarger_id and ENLARGER.manufacturer_id = MANUFACTURER.manufacturer_id"});
-	my $lens = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', model) as lens from PRINT, LENS, MANUFACTURER where print_id=$print_id and PRINT.lens_id=LENS.lens_id and LENS.manufacturer_id = MANUFACTURER.manufacturer_id"});
-	print "\tIt was made with the $enlarger enlarger and $lens lens\n";
-	if (&lookupval({db=>$db, col=>'ENLARGER.lost', table=>'PRINT join ENLARGER on PRINT.enlarger_id=ENLARGER.enlarger_id', where=>{print_id=>$print_id}})) {
-		print "\tYou no longer own the $enlarger, so the exposure information may be useless!\n";
-	}
-
-	# time & aperture
-	my $time = &lookupval({db=>$db, col=>'exposure_time', table=>'PRINT', where=>{print_id=>$print_id}});
-	my $aperture = &lookupval({db=>$db, col=>'aperture', table=>'PRINT', where=>{print_id=>$print_id}});
-	print "\tExposure was ${time}s at f/${aperture}\n";
-
-	# multigrade filter
-	if (my $grade = &lookupval({db=>$db, col=>'filtration_grade', table=>'PRINT', where=>{print_id=>$print_id}})) {
-		print "\tFiltration grade was $grade\n";
-	} else {
-		print "\tPrint was unfiltered\n";
-	}
-	# toner
-	if (&lookupval({db=>$db, col=>'toner_id', table=>'PRINT', where=>{print_id=>$print_id}})) {
-		# at least one toner
-		my $firsttoner = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', toner, if(toner_dilution is not null, concat(' (', toner_dilution, ')'), ''), if(toner_time is not null, concat(' for ', toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id"});
-		if (&lookupval({db=>$db, col=>'2nd_toner_id', table=>'PRINT', where=>{print_id=>$print_id}})) {
-			# 2 toners
-			my $secondtoner = &lookupval({db=>$db, query=>"select concat(manufacturer, ' ', toner, if(2nd_toner_dilution is not null, concat(' (', 2nd_toner_dilution, ')'), ''), if(2nd_toner_time is not null, concat(' for ', 2nd_toner_time), '')) as toner from PRINT, TONER, MANUFACTURER where PRINT.2nd_toner_id=TONER.toner_id and TONER.manufacturer_id=MANUFACTURER.manufacturer_id"});
-			print "\tToned frst in $firsttoner\n";
-			print "\tThen toned in $secondtoner\n";
-		} else {
-			# 1 toner
-			print "\tToned in $firsttoner\n";
-		}
-	} else {
-		# no toner
-		print "\tPrint was not toned\n";
-	}
+	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
+	print Dump($data);
 }
 
 sub print_exhibit {
@@ -1016,12 +974,12 @@ sub print_exhibit {
 sub print_label {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer'});
-	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{print_id=>$print_id}});
+	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
 	my $row = @$data[0];
-	print "\t#$row->{'print_id'} $row->{'description'}\n" if ($row->{print_id} && $row->{description});
-	print "\tPhotographed $row->{photo_date}\n" if ($row->{photo_date});
-	print "\tPrinted $row->{print_date}\n" if ($row->{print_date});
-	print "\tby $row->{name}\n" if ($row->{name});
+	print "\t#$row->{'Print'} $row->{'Description'}\n" if ($row->{'Print'} && $row->{Description});
+	print "\tPhotographed $row->{'Photo date'}\n" if ($row->{'Photo date'});
+	print "\tPrinted $row->{'Print date'}\n" if ($row->{'Print date'});
+	print "\tby $row->{Photographer}\n" if ($row->{Photographer});
 }
 
 sub print_worklist {
