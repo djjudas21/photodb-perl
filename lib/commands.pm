@@ -73,7 +73,7 @@ our %handlers = (
 		'fulfil'   => { 'handler' => \&print_fulfil,   'desc' => 'Fulfil an order for a print' },
 		'archive'  => { 'handler' => \&print_archive,  'desc' => 'Add a print to a physical archive' },
 		'locate'   => { 'handler' => \&print_locate,   'desc' => 'Locate a print in an archive' },
-		'reprint'  => { 'handler' => \&print_reprint,  'desc' => 'Show details for making another print the same' },
+		'info'     => { 'handler' => \&print_info,     'desc' => 'Show details about a print' },
 		'exhibit'  => { 'handler' => \&print_exhibit,  'desc' => 'Exhibit a print in an exhibition' },
 		'label'    => { 'handler' => \&print_label,    'desc' => 'Generate text to label a print' },
 		'worklist' => { 'handler' => \&print_worklist, 'desc' => 'Display print todo list' },
