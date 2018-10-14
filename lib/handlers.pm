@@ -141,7 +141,7 @@ sub film_locate {
 	my $film_id = shift || &prompt({prompt=>'Which film do you want to locate?', type=>'integer'});
 
 	if (my $archiveid = &lookupval({db=>$db, col=>'archive_id', table=>'FILM', where=>{film_id=>$film_id}})) {
-		my $archive = &lookupval({db=>$db, col=>"select concat(name, ' (', location, ')') as archive", table=>'ARCHIVE', where=>{archive_id=> $archiveid}});
+		my $archive = &lookupval({db=>$db, col=>"concat(name, ' (', location, ')') as archive", table=>'ARCHIVE', where=>{archive_id=> $archiveid}});
 		print "Film #${film_id} is in $archive\n";
 	} else {
 		print "The location of film #${film_id} is unknown\n";
@@ -495,7 +495,7 @@ sub camera_choose {
 	$where{time} = &prompt({prompt=>'Do you need Time (T) shutter speed?', type=>'boolean'});
 	$where{fixed_mount} = &prompt({prompt=>'Do you need a camera with an interchangeable lens?', type=>'boolean'});
 	if ($where{fixed_mount} && $where{fixed_mount} != 1) {
-		$where{mount_id} = &listchoices({db=>$db, cols=>['select mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}});
+		$where{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}});
 	}
 	$where{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', 'integer'});
 	$where{metering} = &prompt({prompt=>'Do you need a camera with metering?', type=>'boolean'});
@@ -1420,7 +1420,7 @@ sub projector_add {
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this projector?'});
-	$data{mount_id} = &listchoices({db=>$db, cols=>['select mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Projector'}, inserthandler=>\&mount_add});
+	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Projector'}, inserthandler=>\&mount_add});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
 	$data{own} = 1;
 	$data{cine} = &prompt({prompt=>'Is this a cine/movie projector?', type=>'boolean'});
