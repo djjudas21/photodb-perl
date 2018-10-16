@@ -27,6 +27,7 @@ our %handlers = (
 		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
 		'bulk'     => { 'handler' => \&film_bulk,     'desc' => 'Add a new bulk film to the database' },
 		'annotate' => { 'handler' => \&film_annotate, 'desc' => 'Write out a text file with the scans from the film' },
+		'stocks'   => { 'handler' => \&film_stocks,   'desc' => 'List the films that are currently in stock' },
 	},
 	camera => {
 		'add'             => { 'handler' => \&camera_add,             'desc' => 'Add a new camera to the database' },
