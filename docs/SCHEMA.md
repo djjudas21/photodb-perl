@@ -143,6 +143,7 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
 | oem_case            | tinyint(1)   | Whether we also own the original case                                        |
 | dof_preview         | tinyint(1)   | Whether the camera has depth of field preview                                |
 | tripod              | tinyint(1)   | Whether the camera has a tripod bush                                         |
+| display_lens        | int(11)      | Lens ID of the lens that this camera should normally be displayed with       |
 
 ## CONDITION
 
@@ -169,16 +170,6 @@ Table to list film and paper developers
 | for_paper       | tinyint(1)  | Whether this developer can be used with paper                       |
 | for_film        | tinyint(1)  | Whether this developer can be used with film                        |
 | chemistry       | varchar(45) | The key chemistry on which this developer is based (e.g. phenidone) |
-
-## DISPLAYLENS
-
-Table to record which cameras should be displayed with which lens
-
-| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                         |
-|-------------|-------------|----------------------------------------|
-| display_id  | int(11)     | Unique ID for this display combination |
-| camera_id   | int(11)     | Camera ID                              |
-| lens_id     | int(11)     | Lens ID                                |
 
 ## ENLARGER
 

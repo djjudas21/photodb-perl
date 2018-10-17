@@ -21,7 +21,7 @@ use queries;
 use tagger;
 
 our @EXPORT = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
@@ -167,6 +167,23 @@ sub film_annotate {
 	my $db = shift;
 	my $film_id = &prompt({prompt=>'Which film do you want to annotate?', type=>'integer'});
 	&annotatefilm($db, $film_id);
+}
+
+sub film_stocks {
+	my $db = shift;
+	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
+	my $rows = @$data;
+	if ($rows ge 0) {
+		print "Films currently in stock:\n";
+		foreach my $row (@$data) {
+			print "\t$row->{qty}  x\t$row->{film}\n";
+		}
+		if (&prompt({default=>'yes', prompt=>'Load a film into a camera now?', type=>'boolean'})) {
+			&film_load($db);
+		}
+	} else {
+		print "No films currently in stock\n";
+	}
 }
 
 sub camera_add {
