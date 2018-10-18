@@ -20,6 +20,7 @@ sub prompt {
 	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
+	my $required = $href->{required} // 0;
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
@@ -30,7 +31,7 @@ sub prompt {
 		my $input = <STDIN>;
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
-	} while (!&validate({val => $rv, type => $type}));
+	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
 
 	# Rewrite friendly bools
 	if ($type eq 'boolean') {
