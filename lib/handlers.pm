@@ -59,7 +59,7 @@ sub film_add {
 	my %data;
 	if (&prompt({default=>'no', prompt=>'Is this film bulk-loaded?', type=>'boolean'}) == 1) {
 		# These are filled in only for bulk-loaded films
-		$data{film_bulk_id} = &listchoices({db=>$db, table=>'choose_bulk_film'});
+		$data{film_bulk_id} = &listchoices({db=>$db, table=>'choose_bulk_film', required=>1});
 		$data{film_bulk_loaded} = &prompt({default=>&today($db), prompt=>'When was the film bulk-loaded?'});
 		# These are deduced automagically for bulk-loaded films
 		$data{film_batch} = &lookupval({db=>$db, col=>'batch', table=>'FILM_BULK', where=>{film_bulk_id=>$data{'film_bulk_id'}}});
@@ -72,8 +72,8 @@ sub film_add {
 		$data{film_batch} = &prompt({prompt=>'Film batch number'});
 		$data{film_expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
 		$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
-		$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add});
-		$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add});
+		$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add, required=>1});
+		$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add}, required=>1);
 	}
 	$data{frames} = &prompt({prompt=>'How many frames?', type=>'integer'});
 	$data{price} = &prompt({prompt=>'Purchase price', type=>'decimal'});
@@ -87,9 +87,9 @@ sub film_add {
 sub film_load {
 	# Load a film into a camera
 	my $db = shift;
-	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load'});
+	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load', required=>1});
 	my %data;
-	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}});
+	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}, required=>1});
 	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
@@ -99,16 +99,16 @@ sub film_load {
 sub film_archive {
 	# Archive a film for storage
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer'});
+	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer', required=>1});
 	my %data;
-	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add});
+	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
 	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
 sub film_develop {
 	# Develop a film
 	my $db = shift;
-	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_develop'});
+	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_develop', required=>1});
 	my %data;
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this film processed?', type=>'date'});
 	$data{developer_id} = &listchoices({db=>$db, table=>'DEVELOPER', cols=>['developer_id as id', 'name as opt'], where=>{'for_film'=>1}, inserthandler=>\&developer_add});
@@ -152,8 +152,8 @@ sub film_locate {
 sub film_bulk {
 	my $db = shift;
 	my %data;
-	$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add});
-	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add});
+	$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add, required=>1});
+	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
 	$data{batch} = &prompt({prompt=>'Film batch number'});
 	$data{expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
 	$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
@@ -191,7 +191,7 @@ sub camera_add {
 	my $db = shift;
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
-	$data{model} = &prompt({prompt=>'What model is the camera?'});
+	$data{model} = &prompt({prompt=>'What model is the camera?', required=>1});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean'});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1) {
 		# Get info about lens
@@ -200,7 +200,7 @@ sub camera_add {
 	} else {
 		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add});
 	}
-	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add});
+	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
 	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add});
 	$data{metering} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean'});
 	if (defined($data{metering}) && $data{metering} == 1) {
@@ -292,7 +292,7 @@ sub camera_add {
 
 sub camera_edit {
 	my $db = shift;
-	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera'});
+	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$existing = @$existing[0];
 	my %data;
