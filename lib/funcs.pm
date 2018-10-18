@@ -263,6 +263,7 @@ sub listchoices {
 	my $cols = $href->{cols} // ('id, opt');
 	my $where = $href->{where} // {};
 	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
+	my $required = $href->{required} // 0;
 
 	my ($sth, $rows);
 	if ($query) {
@@ -323,8 +324,11 @@ sub listchoices {
 
 	# Loop until we get valid input
 	my $input;
+	my $msg = "Please select a $keyword from the list";
+	$msg .= ', or leave blank to skip' if ($required == 0);
+
 	do {
-		$input = &prompt({default=>$default, prompt=>"Please select a $keyword from the list, or leave blank to skip", type=>$type});
+		$input = &prompt({default=>$default, prompt=>$msg, type=>$type, required=>$required});
 	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
