@@ -20,6 +20,7 @@ sub prompt {
 	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
+	my $required = $href->{required} // 0;
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
@@ -30,7 +31,7 @@ sub prompt {
 		my $input = <STDIN>;
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
-	} while (!&validate({val => $rv, type => $type}));
+	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
 
 	# Rewrite friendly bools
 	if ($type eq 'boolean') {
@@ -262,6 +263,7 @@ sub listchoices {
 	my $cols = $href->{cols} // ('id, opt');
 	my $where = $href->{where} // {};
 	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
+	my $required = $href->{required} // 0;
 
 	my ($sth, $rows);
 	if ($query) {
@@ -322,8 +324,11 @@ sub listchoices {
 
 	# Loop until we get valid input
 	my $input;
+	my $msg = "Please select a $keyword from the list";
+	$msg .= ', or leave blank to skip' if ($required == 0);
+
 	do {
-		$input = &prompt({default=>$default, prompt=>"Please select a $keyword from the list, or leave blank to skip", type=>$type});
+		$input = &prompt({default=>$default, prompt=>$msg, type=>$type, required=>$required});
 	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
