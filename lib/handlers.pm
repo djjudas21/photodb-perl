@@ -1179,7 +1179,7 @@ sub enlarger_add {
 	$data{discontinued} = &prompt({prompt=>'What year was this enlarger discontinued?', type=>'integer'});
 	$data{acquired} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
 	$data{cost} = &prompt({prompt=>'Purchase price', type=>'decimal'});
-	return = &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
+	return &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
 }
 
 sub enlarger_sell {
