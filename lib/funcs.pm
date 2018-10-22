@@ -177,6 +177,7 @@ sub updaterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n";
+	return $rows;
 }
 
 # Insert a record into any table
@@ -372,6 +373,7 @@ sub printlist {
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
+	return;
 }
 
 # Return values from an arbitrary column from database as an arrayref
@@ -486,6 +488,7 @@ sub writeconfig {
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata);
+	return;
 }
 
 # Round numbers to any precision
@@ -503,6 +506,7 @@ sub pad {
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
+	return $newstring;
 }
 
 # Get a negative ID either from the neg ID or the film/frame ID
@@ -602,6 +606,7 @@ sub annotatefilm {
 	} else {
 		die "Path $path not found\n";
 	}
+	return;
 }
 
 # Figure out the keyword of an SQL statement, e.g. statements that select FROM

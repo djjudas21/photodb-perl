@@ -153,6 +153,7 @@ while (my $ref = $sth->fetchrow_hashref()) {
 print "Found $foundcount images\n";
 print "Changed EXIF data in $changedcount images\n";
 print 'Found ' . ($#missingfiles + 1) . " missing files\n";
+return;
 }
 
 # This ensures the lib loads smoothly
