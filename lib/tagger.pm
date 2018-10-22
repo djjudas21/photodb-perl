@@ -47,7 +47,7 @@ if (substr($basepath, -1, 1) ne '/') {
 }
 
 # Crank up an instance of ExifTool
-my $exifTool = new Image::ExifTool;
+my $exifTool = Image::ExifTool->new;
 
 # Specify which attributes we want to write
 # If any are specified here but not available, they will be ignored
