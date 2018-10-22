@@ -16,7 +16,7 @@ our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosub
 
 # Prompt for an arbitrary value
 sub prompt {
-	my $href = $_[0];
+	my $href = shift;
 	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
@@ -43,7 +43,7 @@ sub prompt {
 
 # Validate that a value is a certain type
 sub validate {
-	my $href = $_[0];
+	my $href = shift;
 	my $val = $href->{val};
 	my $type = $href->{type} || 'text';
 
@@ -133,7 +133,7 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
-	my $href = $_[0];
+	my $href = shift;
 
 	# Read in db handle
 	my $db = $href->{db};
@@ -182,7 +182,7 @@ sub updaterecord {
 
 # Insert a record into any table
 sub newrecord {
-	my $href = $_[0];
+	my $href = shift;
 
 	# Read in db handle
 	my $db = $href->{db};
@@ -252,7 +252,7 @@ sub nosubcommand {
 
 # List arbitrary choices and return ID of the selected one
 sub listchoices {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $type = $href->{type} || 'integer';
@@ -345,7 +345,7 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $msg = $href->{msg};
 	my $query = $href->{query};
@@ -378,7 +378,7 @@ sub printlist {
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $table = $href->{table};
@@ -418,7 +418,7 @@ sub thin {
 
 # Return arbitrary value from database
 sub lookupval {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $table = $href->{table};
@@ -529,7 +529,7 @@ sub resolvenegid {
 }
 
 sub chooseneg {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 

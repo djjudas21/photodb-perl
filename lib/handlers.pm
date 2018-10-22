@@ -1518,7 +1518,7 @@ sub task_run {
 
 # Select a manufacturer using the first initial
 sub choose_manufacturer {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $default = $href->{default};
 
