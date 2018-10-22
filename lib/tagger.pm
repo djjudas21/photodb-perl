@@ -11,6 +11,7 @@ package tagger;
 # - use pm for sql connector
 
 use strict;
+use warnings;
 use Image::ExifTool;
 use Image::ExifTool::Location;
 use DBI;
