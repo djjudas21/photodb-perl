@@ -137,3 +137,6 @@ our %handlers = (
 		'review' => { 'handler' => \&exhibition_review, 'desc' => 'Review which prints were exhibited at an exhibition' },
 	},
 );
+
+# This ensures the lib loads smoothly
+1;
