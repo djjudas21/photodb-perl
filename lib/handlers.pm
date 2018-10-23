@@ -390,7 +390,7 @@ sub camera_accessory {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
 		$compatdata{camera_id} = $cameraid;
-		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
+		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
 		if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'})) {
 			last;
 		}
@@ -404,7 +404,7 @@ sub camera_shutterspeeds {
 		my %shutterdata;
 		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 		$shutterdata{camera_id} = $cameraid;
-		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE'});
+		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 		if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'})) {
 			last;
 		}
@@ -423,7 +423,7 @@ sub camera_exposureprogram {
 		next if $exposureprogram->{exposure_program_id} == 8;
 		if (&prompt({default=>'no', prompt=>"Does this camera have $exposureprogram->{exposure_program} exposure program?", type=>'boolean'})) {
 			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
-			&newrecord({db=>$db, data=>\%epdata, table=>'EXPOSURE_PROGRAM_AVAILABLE'});
+			&newrecord({db=>$db, data=>\%epdata, table=>'EXPOSURE_PROGRAM_AVAILABLE', silent=>1});
 			last if $exposureprogram->{exposure_program_id} == 0;
 		}
 	}
@@ -436,7 +436,7 @@ sub camera_meteringmode {
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
-			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
+			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE', silent=>1});
 			last if $meteringmode->{metering_mode_id} == 0;
 		}
 	}
@@ -1142,7 +1142,7 @@ sub accessory_add {
 			my %compatdata;
 			$compatdata{accessory_id} = $accessoryid;
 			$compatdata{camera_id} = &listchoices({db=>$db, table=>'choose_camera', required=>1});
-			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
+			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
 			if (!&prompt({default=>'yes', prompt=>'Add another compatible camera?', type=>'boolean'})) {
 				last;
 			}
@@ -1153,7 +1153,7 @@ sub accessory_add {
 			my %compatdata;
 			$compatdata{accessory_id} = $accessoryid;
 			$compatdata{lens_id} = &listchoices({db=>$db, table=>'choose_lens', required=>1});
-			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
+			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
 			if (!&prompt({default=>'yes', prompt=>'Add another compatible lens?', type=>'boolean'})) {
 				last;
 			}
