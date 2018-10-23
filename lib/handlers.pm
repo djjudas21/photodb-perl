@@ -175,7 +175,7 @@ sub film_stocks {
 	my $db = shift;
 	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
 	my $rows = @$data;
-	if ($rows ge 0) {
+	if ($rows >= 0) {
 		print "Films currently in stock:\n";
 		foreach my $row (@$data) {
 			print "\t$row->{qty}  x\t$row->{film}\n";
