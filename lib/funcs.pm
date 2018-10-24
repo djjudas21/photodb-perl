@@ -4,6 +4,7 @@ package funcs;
 
 use strict;
 use warnings;
+use experimental 'smartmatch';
 
 use DBI;
 use DBD::mysql;
@@ -12,11 +13,11 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom);
 
 # Prompt for an arbitrary value
 sub prompt {
-	my $href = $_[0];
+	my $href = shift;
 	my $default = $href->{default} // '';
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
@@ -28,7 +29,7 @@ sub prompt {
 	# Repeatedly prompt until we get a response of the correct type
 	do {
 		print "$prompt ($type) [$default]: ";
-		my $input = <STDIN>;
+		my $input = <STDIN>; ## no critic
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
 	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
@@ -43,7 +44,7 @@ sub prompt {
 
 # Validate that a value is a certain type
 sub validate {
-	my $href = $_[0];
+	my $href = shift;
 	my $val = $href->{val};
 	my $type = $href->{type} || 'text';
 
@@ -133,7 +134,7 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
-	my $href = $_[0];
+	my $href = shift;
 
 	# Read in db handle
 	my $db = $href->{db};
@@ -180,11 +181,12 @@ sub updaterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n" unless $silent;
+	return $rows;
 }
 
 # Insert a record into any table
 sub newrecord {
-	my $href = $_[0];
+	my $href = shift;
 
 	# Read in db handle
 	my $db = $href->{db};
@@ -257,7 +259,7 @@ sub nosubcommand {
 
 # List arbitrary choices and return ID of the selected one
 sub listchoices {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $type = $href->{type} || 'integer';
@@ -323,7 +325,7 @@ sub listchoices {
 	} else {
 		# Check that the provided default is an allowed value
 		# Otherwise silently unset it
-		if (!grep(/^$default$/, @allowedvals)) {
+		if (!($default ~~ @allowedvals)) {
 			$default = '';
 		}
 	}
@@ -335,7 +337,7 @@ sub listchoices {
 
 	do {
 		$input = &prompt({default=>$default, prompt=>$msg, type=>$type, required=>$required});
-	} while (!(grep(/^$input$/, @allowedvals) || $input eq ''));
+	} while (!($input ~~ @allowedvals || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
@@ -350,7 +352,7 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $msg = $href->{msg};
 	my $query = $href->{query};
@@ -378,11 +380,12 @@ sub printlist {
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
+	return;
 }
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $table = $href->{table};
@@ -422,7 +425,7 @@ sub thin {
 
 # Return arbitrary value from database
 sub lookupval {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
 	my $table = $href->{table};
@@ -492,6 +495,7 @@ sub writeconfig {
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata);
+	return;
 }
 
 # Round numbers to any precision
@@ -509,6 +513,7 @@ sub pad {
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
+	return $newstring;
 }
 
 # Get a negative ID either from the neg ID or the film/frame ID
@@ -531,7 +536,7 @@ sub resolvenegid {
 }
 
 sub chooseneg {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
@@ -608,6 +613,7 @@ sub annotatefilm {
 	} else {
 		die "Path $path not found\n";
 	}
+	return;
 }
 
 # Figure out the keyword of an SQL statement, e.g. statements that select FROM

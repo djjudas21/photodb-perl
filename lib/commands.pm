@@ -14,7 +14,7 @@ BEGIN {
 	}
 }
 use lib "$path/lib";
-use handlers;
+use handlers qw)/./);
 
 # Define handlers for each command
 our %handlers = (
@@ -137,3 +137,6 @@ our %handlers = (
 		'review' => { 'handler' => \&exhibition_review, 'desc' => 'Review which prints were exhibited at an exhibition' },
 	},
 );
+
+# This ensures the lib loads smoothly
+1;

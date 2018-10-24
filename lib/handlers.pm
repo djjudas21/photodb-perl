@@ -18,9 +18,9 @@ BEGIN {
 use lib "$path/lib";
 use funcs;
 use queries;
-use tagger;
+use tagger qw(/./);
 
-our @EXPORT = qw(
+our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
@@ -93,7 +93,7 @@ sub film_load {
 	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
-	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
 sub film_archive {
@@ -102,7 +102,7 @@ sub film_archive {
 	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer', required=>1});
 	my %data;
 	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
-	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
 sub film_develop {
@@ -124,6 +124,7 @@ sub film_develop {
 	if (&prompt({default=>'no', prompt=>'Archive this film now?', type=>'boolean'})) {
 		&film_archive($db, $film_id);
 	}
+	return;
 }
 
 sub film_tag {
@@ -134,6 +135,7 @@ sub film_tag {
 		&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'}) or die "Aborted!\n";
 	}
 	&tag($db, $film_id);
+	return;
 }
 
 sub film_locate {
@@ -146,7 +148,7 @@ sub film_locate {
 	} else {
 		print "The location of film #${film_id} is unknown\n";
 	}
-	exit;
+	return;
 }
 
 sub film_bulk {
@@ -166,13 +168,14 @@ sub film_annotate {
 	my $db = shift;
 	my $film_id = &prompt({prompt=>'Which film do you want to annotate?', type=>'integer', required=>1});
 	&annotatefilm($db, $film_id);
+	return;
 }
 
 sub film_stocks {
 	my $db = shift;
 	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
 	my $rows = @$data;
-	if ($rows ge 0) {
+	if ($rows >= 0) {
 		print "Films currently in stock:\n";
 		foreach my $row (@$data) {
 			print "\t$row->{qty}  x\t$row->{film}\n";
@@ -183,6 +186,7 @@ sub film_stocks {
 	} else {
 		print "No films currently in stock\n";
 	}
+	return;
 }
 
 sub camera_add {
@@ -380,7 +384,7 @@ sub camera_edit {
 			$changes{$key} = $data{$key};
 		}
 	}
-	&updaterecord({db=>$db, data=>\%changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	return &updaterecord({db=>$db, data=>\%changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
 sub camera_accessory {
@@ -395,6 +399,7 @@ sub camera_accessory {
 			last;
 		}
 	}
+	return;
 }
 
 sub camera_shutterspeeds {
@@ -409,6 +414,7 @@ sub camera_shutterspeeds {
 			last;
 		}
 	}
+	return;
 }
 
 sub camera_exposureprogram {
@@ -427,6 +433,7 @@ sub camera_exposureprogram {
 			last if $exposureprogram->{exposure_program_id} == 0;
 		}
 	}
+	return;
 }
 
 sub camera_meteringmode {
@@ -440,6 +447,7 @@ sub camera_meteringmode {
 			last if $meteringmode->{metering_mode_id} == 0;
 		}
 	}
+	return;
 }
 
 sub camera_displaylens {
@@ -448,7 +456,7 @@ sub camera_displaylens {
 	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}, required=>1 });
 	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, col=>'display_lens', table=>'CAMERA', where=>{camera_id=>$camera_id}})});
-	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
 sub camera_sell {
@@ -469,6 +477,7 @@ sub camera_sell {
 			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>"lens_id=$lensid"});
 		}
 	}
+	return;
 }
 
 sub camera_repair {
@@ -486,6 +495,7 @@ sub camera_info {
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
 	print Dump($cameradata);
+	return;
 }
 
 sub camera_stats {
@@ -499,6 +509,7 @@ sub camera_stats {
 		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
 		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
 	}
+	return;
 }
 
 sub camera_choose {
@@ -548,6 +559,7 @@ sub camera_choose {
 		$i++;
 	}
 	print "\n\tFound $i cameras that match your criteria\n";
+	return;
 }
 
 sub negative_add {
@@ -640,6 +652,7 @@ sub negative_bulkadd {
 	}
 
 	print "Inserted $num negatives into film #$data{film_id}\n";
+	return;
 }
 
 sub negative_stats {
@@ -647,12 +660,14 @@ sub negative_stats {
 	my $neg_id = &chooseneg({db=>$db});
 	my $noprints = &lookupval({db=>$db, col=>'count(*)', table=>'PRINT', where=>{negative_id=>$neg_id}});
 	print "\tThis negative has been printed $noprints times\n";
+	return;
 }
 
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
 	&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
+	return;
 }
 
 sub lens_add {
@@ -777,7 +792,7 @@ sub lens_edit {
 			$changes{$key} = $data{$key};
 		}
 	}
-	&updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
+	return &updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
 sub lens_accessory {
@@ -792,6 +807,7 @@ sub lens_accessory {
 			last;
 		}
 	}
+	return;
 }
 
 sub lens_sell {
@@ -801,7 +817,7 @@ sub lens_sell {
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
-	&updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
 sub lens_repair {
@@ -834,6 +850,7 @@ sub lens_stats {
 		my $meanf = &lookupval({db=>$db, col=>'avg(focal_length)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
+	return;
 }
 
 sub lens_info {
@@ -841,6 +858,7 @@ sub lens_info {
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
 	print Dump($lensdata);
+	return;
 }
 
 sub print_add {
@@ -895,7 +913,7 @@ sub print_fulfil {
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', table=>'choose_todo', required=>1});
 	$data{printed} = &prompt({default=>'yes', prompt=>'Is this print order now fulfilled?', type=>'boolean'});
 	$data{print_id} = &prompt({prompt=>'Which print fulfilled this order?', type=>'integer'});
-	&updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
 }
 
 sub print_tone {
@@ -913,7 +931,7 @@ sub print_tone {
 		$data{'2nd_toner_dilution'} = &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
 		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
 	}
-	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_sell {
@@ -923,7 +941,7 @@ sub print_sell {
 	$data{own} = 0;
 	$data{location} = &prompt({prompt=>'What happened to the print?'});
 	$data{sold_price} = &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
-	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_order {
@@ -935,7 +953,7 @@ sub print_order {
 	$data{width} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
 	$data{recipient} = &prompt({prompt=>'Who is the print for?'});
 	$data{added} = &prompt({default=>&today($db), prompt=>'Date that this order was placed', type=>'date'});
-	my $orderid = &newrecord({db=>$db, data=>\%data, table=>'TO_PRINT'});
+	return &newrecord({db=>$db, data=>\%data, table=>'TO_PRINT'});
 }
 
 sub print_archive {
@@ -945,8 +963,8 @@ sub print_archive {
 	my $print_id = shift || &prompt({prompt=>'Which print did you archive?', type=>'integer', required=>1});
 	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{'archive_type_id'=>3, 'sealed'=>0}, inserthandler=>\&archive_add, required=>1});
 	$data{own} = 1;
-	$data{location} = 'Archive',
-	&updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	$data{location} = 'Archive';
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 sub print_locate {
@@ -965,7 +983,7 @@ sub print_locate {
 	} else {
 		print "The location of print #${print_id} is unknown\n";
 	}
-	exit;
+	return;
 }
 
 sub print_info {
@@ -973,6 +991,7 @@ sub print_info {
 	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
 	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
 	print Dump($data);
+	return;
 }
 
 sub print_exhibit {
@@ -992,6 +1011,7 @@ sub print_label {
 	print "\tPhotographed $row->{'Photo date'}\n" if ($row->{'Photo date'});
 	print "\tPrinted $row->{'Print date'}\n" if ($row->{'Print date'});
 	print "\tby $row->{Photographer}\n" if ($row->{Photographer});
+	return;
 }
 
 sub print_worklist {
@@ -1001,6 +1021,7 @@ sub print_worklist {
 	foreach my $row (@$data) {
 		print "\t$row->{opt}\n";
         }
+	return;
 }
 
 sub paperstock_add {
@@ -1046,6 +1067,7 @@ sub mount_view {
 	print "Showing data for $mount mount\n";
 	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"camera_id as id, concat(manufacturer, ' ', model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{own=>1, mount_id=>$mountid}, order=>'opt'});
 	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"lens_id as id, concat(manufacturer, ' ', model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{mount_id=>$mountid, own=>1}, order=>'opt'});
+	return;
 }
 
 sub toner_add {
@@ -1188,7 +1210,7 @@ sub enlarger_sell {
 	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this enlarger sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this enlarger sell for?', type=>'decimal'});
-	&updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
 }
 
 sub flash_add {
@@ -1317,7 +1339,7 @@ sub archive_films {
 		exit;
 	}
 	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>'archive_type_id in (1,2) and sealed = 0', inserthandler=>\&archive_add});
-	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
 }
 
 sub archive_list {
@@ -1326,6 +1348,7 @@ sub archive_list {
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
 	&printlist({db=>$db, msg=>"items in archive $archive_name", query=>$query});
+	return;
 }
 
 sub archive_seal {
@@ -1333,7 +1356,7 @@ sub archive_seal {
 	my %data;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>0}, required=>1});
 	$data{sealed} = 1;
-	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub archive_unseal {
@@ -1341,7 +1364,7 @@ sub archive_unseal {
 	my %data;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>1}, required=>1});
 	$data{sealed} = 0;
-	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub archive_move {
@@ -1350,7 +1373,7 @@ sub archive_move {
 	my $archive_id = shift || &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $oldlocation = &lookupval({db=>$db, col=>'location', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	$data{location} = &prompt({default=>$oldlocation, prompt=>'What is the new location of this archive?'});
-	&updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
 sub shuttertype_add {
@@ -1433,25 +1456,28 @@ sub movie_add {
 	$data{date_processed} = &prompt({default=>&today($db), prompt=>'What date was the movie processed?', type=>'date'});
 	$data{process_id} = &listchoices({db=>$db, keyword=>'process', cols=>['process_id as id', 'name as opt'], table=>'PROCESS', inserthandler=>\&process_add});
 	$data{description} = &prompt({prompt=>'Please enter a description of the movie'});
-	my $id = &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
+	return &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
 }
 
 sub audit_shutterspeeds {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
-	 &camera_shutterspeeds($db, $cameraid);
+	&camera_shutterspeeds($db, $cameraid);
+	return;
 }
 
 sub audit_exposureprograms {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
-	 &camera_exposureprogram($db, $cameraid);
+	&camera_exposureprogram($db, $cameraid);
+	return;
 }
 
 sub audit_meteringmodes {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
 	&camera_meteringmode($db, $cameraid);
+	return;
 }
 
 sub exhibition_add {
@@ -1461,7 +1487,7 @@ sub exhibition_add {
 	$data{location} = &prompt({prompt=>'Where is this exhibition?'});
 	$data{start_date} = &prompt({prompt=>'What date does the exhibition start?', type=>'date'});
 	$data{end_date} = &prompt({prompt=>'What date does the exhibition end?', type=>'date'});
-	my $id = &newrecord({db=>$db, data=>\%data, table=>'EXHIBITION'});
+	return &newrecord({db=>$db, data=>\%data, table=>'EXHIBITION'});
 }
 
 sub exhibition_review {
@@ -1470,6 +1496,7 @@ sub exhibition_review {
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});
 
 	&printlist({db=>$db, msg=>"prints exhibited at $title", table=>'exhibits', where=>{exhibition_id=>$exhibition_id}});
+	return;
 }
 
 sub task_run {
@@ -1486,11 +1513,12 @@ sub task_run {
 	my $sql = $tasks[$input]{'query'};
 	my $rows = &updatedata($db, $sql);
 	print "Updated $rows rows\n";
+	return;
 }
 
 # Select a manufacturer using the first initial
 sub choose_manufacturer {
-	my $href = $_[0];
+	my $href = shift;
 	my $db = $href->{db};
 	my $default = $href->{default};
 

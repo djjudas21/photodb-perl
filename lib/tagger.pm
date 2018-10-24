@@ -11,6 +11,7 @@ package tagger;
 # - use pm for sql connector
 
 use strict;
+use warnings;
 use Image::ExifTool;
 use Image::ExifTool::Location;
 use DBI;
@@ -27,7 +28,7 @@ BEGIN {
 use lib "$path/lib";
 use funcs;
 
-our @EXPORT = qw(tag);
+our @EXPORT_OK = qw(tag);
 
 sub tag {
 
@@ -47,7 +48,7 @@ if (substr($basepath, -1, 1) ne '/') {
 }
 
 # Crank up an instance of ExifTool
-my $exifTool = new Image::ExifTool;
+my $exifTool = Image::ExifTool->new;
 
 # Specify which attributes we want to write
 # If any are specified here but not available, they will be ignored
@@ -153,6 +154,7 @@ while (my $ref = $sth->fetchrow_hashref()) {
 print "Found $foundcount images\n";
 print "Changed EXIF data in $changedcount images\n";
 print 'Found ' . ($#missingfiles + 1) . " missing files\n";
+return;
 }
 
 # This ensures the lib loads smoothly
