@@ -4,6 +4,7 @@ package funcs;
 
 use strict;
 use warnings;
+use experimental 'smartmatch';
 
 use DBI;
 use DBD::mysql;
