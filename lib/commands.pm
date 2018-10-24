@@ -14,7 +14,7 @@ BEGIN {
 	}
 }
 use lib "$path/lib";
-use handlers;
+use handlers qw)/./);
 
 # Define handlers for each command
 our %handlers = (

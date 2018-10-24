@@ -28,7 +28,7 @@ BEGIN {
 use lib "$path/lib";
 use funcs;
 
-our @EXPORT = qw(tag);
+our @EXPORT_OK = qw(tag);
 
 sub tag {
 

@@ -18,9 +18,9 @@ BEGIN {
 use lib "$path/lib";
 use funcs;
 use queries;
-use tagger;
+use tagger qw(/./);
 
-our @EXPORT = qw(
+our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
