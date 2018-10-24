@@ -547,18 +547,7 @@ sub camera_choose {
 	$where{tripod} = &prompt({prompt=>'Do you need a tripod bush?', type=>'boolean'});
 
 	my $thinwhere = &thin(\%where);
-	my $sql = SQL::Abstract->new;
-	my @fields = ('id', 'opt');
-	my($stmt, @bind) = $sql->select('camera_chooser', \@fields, $thinwhere);
-	my $sth = $db->prepare($stmt);
-	$sth->execute(@bind);
-	my $i=0;
-	print "\n";
-	while (my $ref = $sth->fetchrow_hashref) {
-		print "\t$ref->{id}\t$ref->{opt}\n";
-		$i++;
-	}
-	print "\n\tFound $i cameras that match your criteria\n";
+	&printlist({db=>$db, msg=>"cameras that match your criteria", table=>'camera_chooser', where=>$thinwhere});
 	return;
 }
 
