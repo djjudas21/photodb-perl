@@ -588,7 +588,7 @@ sub negative_add {
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', where=>{'thread'=>{'>=', $filter_dia}}, inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
 	$data{notes} = &prompt({prompt=>'Extra notes'});
-	$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
+	$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}, skipok=>1});
 	$data{focal_length} = &prompt({default=>&lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$data{'lens_id'}}}), prompt=>'Focal length', type=>'integer'});
 	$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 	$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
@@ -617,7 +617,7 @@ sub negative_bulkadd {
 		$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 		$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
 		$data{notes} = &prompt({prompt=>'Extra notes'});
-		$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}});
+		$data{mount_adapter_id} = &listchoices({db=>$db, table=>'choose_mount_adapter_by_film', where=>{film_id=>$data{film_id}}, skipok=>1});
 		$data{focal_length} = &prompt({default=>&lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$data{lens_id}}}), prompt=>'Focal length', type=>'integer'});
 		$data{latitude} = &prompt({prompt=>'Latitude', type=>'decimal'});
 		$data{longitude} = &prompt({prompt=>'Longitude', type=>'decimal'});
