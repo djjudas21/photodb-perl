@@ -147,6 +147,7 @@ sub updaterecord {
 
 	# Read in where condition
 	my $where = $href->{where};
+	my $silent = $href->{silent} // 0;
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -162,22 +163,24 @@ sub updaterecord {
 	}
 
 	# Dump data for debugging
-	print "\n\nThis is what I will update into $table where $where:\n";
-	print Dump($data);
-	print "\n";
+	print "\n\nThis is what I will update into $table where $where:\n" unless $silent;
+	print Dump($data) unless $silent;
+	print "\n" unless $silent;
 
 	# Build query
 	my $sql = SQL::Abstract->new;
 	my($stmt, @bind) = $sql->update($table, $data, $where);
 
 	# Final confirmation
-	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+	unless ($silent) {
+		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+	}
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	my $rows = $sth->execute(@bind);
 	$rows = 0 if ($rows eq  '0E0');
-	print "Updated $rows rows\n";
+	print "Updated $rows rows\n" unless $silent;
 	return $rows;
 }
 
@@ -193,6 +196,7 @@ sub newrecord {
 
 	# Read in table name
 	my $table = $href->{table};
+	my $silent = $href->{silent} // 0;
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -203,16 +207,18 @@ sub newrecord {
 	$data = &thin($data);
 
 	# Dump data for debugging
-	print "\n\nThis is what I will insert into $table:\n";
-	print Dump($data);
-	print "\n";
+	print "\n\nThis is what I will insert into $table:\n" unless $silent;
+	print Dump($data) unless $silent;
+	print "\n" unless $silent;
 
 	# Build query
 	my $sql = SQL::Abstract->new;
 	my($stmt, @bind) = $sql->insert($table, $data);
 
 	# Final confirmation
-	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+	unless ($silent) {
+		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+	}
 
 	# Execute query
 	my $sth = $db->prepare($stmt);
@@ -220,7 +226,7 @@ sub newrecord {
 
 	# Display inserted row
 	my $insertedrow = $sth->{mysql_insertid};
-	print "Inserted $table $insertedrow\n";
+	print "Inserted $table $insertedrow\n" unless $silent;
 
 	return $insertedrow;
 }
