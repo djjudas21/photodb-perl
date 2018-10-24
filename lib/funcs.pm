@@ -29,7 +29,7 @@ sub prompt {
 	# Repeatedly prompt until we get a response of the correct type
 	do {
 		print "$prompt ($type) [$default]: ";
-		my $input = <STDIN>;
+		my $input = <STDIN>; ## no critic
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
 	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
