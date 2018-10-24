@@ -15,7 +15,7 @@ BEGIN {
 	}
 }
 use lib "$path/lib";
-use funcs;
+use funcs qw(/./);
 use handlers;
 use commands;
 

@@ -26,7 +26,7 @@ BEGIN {
 	}
 }
 use lib "$path/lib";
-use funcs;
+use funcs qw(/./);
 
 our @EXPORT_OK = qw(tag);
 

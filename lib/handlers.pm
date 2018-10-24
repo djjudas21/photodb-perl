@@ -16,7 +16,7 @@ BEGIN {
 	}
 }
 use lib "$path/lib";
-use funcs;
+use funcs qw(/./);
 use queries;
 use tagger qw(/./);
 
