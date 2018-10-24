@@ -643,12 +643,8 @@ sub negative_bulkadd {
 		# Now inside the loop, add an incremented frame number for each neg
 		$data{frame} = $i;
 
-		# Generate an abstract object for this negative
-		my($stmt, @bind) = $sql->insert('NEGATIVE', \%data);
-
-		# Execute query
-		my $sth = $db->prepare($stmt);
-		$sth->execute(@bind);
+		# Create a new row
+		&newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 	}
 
 	print "Inserted $num negatives into film #$data{film_id}\n";
