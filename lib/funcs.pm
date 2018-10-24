@@ -341,7 +341,7 @@ sub listchoices {
 
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
-	if ($input eq '0') {
+	if ($input eq '0' && $inserthandler) {
 		my $id = $inserthandler->($db);
 		return $id;
 	} else {
