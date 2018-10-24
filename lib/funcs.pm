@@ -318,7 +318,7 @@ sub listchoices {
 	} else {
 		# Check that the provided default is an allowed value
 		# Otherwise silently unset it
-		if (!grep { /^$default$/ } @allowedvals) {
+		if (!($default ~~ @allowedvals)) {
 			$default = '';
 		}
 	}
@@ -330,7 +330,7 @@ sub listchoices {
 
 	do {
 		$input = &prompt({default=>$default, prompt=>$msg, type=>$type, required=>$required});
-	} while (!(grep { /^$input$/ } @allowedvals  || $input eq ''));
+	} while (!($input ~~ @allowedvals || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
