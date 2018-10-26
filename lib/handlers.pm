@@ -21,7 +21,7 @@ use queries;
 use tagger qw(/./);
 
 our @EXPORT_OK = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
@@ -186,6 +186,12 @@ sub film_stocks {
 	} else {
 		print "No films currently in stock\n";
 	}
+	return;
+}
+
+sub film_current {
+	my $db = shift;
+	&printlist({db=>$db, msg=>"current films", table=>'current_films'});
 	return;
 }
 

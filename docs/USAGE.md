@@ -33,6 +33,8 @@ Add a new bulk film to the database
 Create a text file in the film scan directory with summary info about the film & negatives
 ### `film stocks`
 List the films that are currently in stock
+### `film current`
+List films that are currently loaded into cameras
 
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
