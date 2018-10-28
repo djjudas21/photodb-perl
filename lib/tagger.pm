@@ -66,8 +66,6 @@ my @attributes = (
 	'Author',
 	'ImageDescription',
 	'DateTimeOriginal',
-#	'GPSLatitude',
-#	'GPSLongitude',
 	'ExposureProgram',
 	'MeteringMode',
 	'Flash',
