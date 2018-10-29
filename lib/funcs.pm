@@ -262,7 +262,7 @@ sub listchoices {
 	my $href = shift;
 	my $db = $href->{db};
 	my $query = $href->{query};
-	my $type = $href->{type} || 'integer';
+	my $type = $href->{type} || 'text';
 	my $inserthandler = $href->{inserthandler};
 	my $default = $href->{default} // '';
 	my $autodefault = $href->{autodefault} // 1;
@@ -272,6 +272,7 @@ sub listchoices {
 	my $where = $href->{where} // {};
 	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
 	my $required = $href->{required} // 0;
+	my $char = $href->{char} // '+';
 
 	my ($sth, $rows);
 	if ($query) {
@@ -312,8 +313,8 @@ sub listchoices {
 
 	# Add option to insert a new row, if applicable
 	if ($inserthandler) {
-		print "\t0\tAdd a new $keyword\n";
-		push(@allowedvals, '0');
+		print "\t$char\tAdd a new $keyword\n";
+		push(@allowedvals, $char);
 	}
 
 	if ($default eq '' && $autodefault) {
@@ -337,11 +338,11 @@ sub listchoices {
 
 	do {
 		$input = &prompt({default=>$default, prompt=>$msg, type=>$type, required=>$required});
-	} while ($input && !($input ~~ @allowedvals || $input eq ''));
+	} while ($input && !($input ~~ [ map {"$_"} @allowedvals ] || $input eq ''));
 
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
-	if ($input eq '0' && $inserthandler) {
+	if ($input eq $char && $inserthandler) {
 		my $id = $inserthandler->($db);
 		return $id;
 	} else {
