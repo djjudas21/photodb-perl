@@ -66,11 +66,9 @@ my @attributes = (
 	'Author',
 	'ImageDescription',
 	'DateTimeOriginal',
-#	'GPSLatitude',
-#	'GPSLongitude',
 	'ExposureProgram',
 	'MeteringMode',
-	'Flash#',
+	'Flash',
 );
 
 # This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
