@@ -21,7 +21,7 @@ use queries;
 use tagger qw(/./);
 
 our @EXPORT_OK = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
@@ -192,6 +192,34 @@ sub film_stocks {
 sub film_current {
 	my $db = shift;
 	&printlist({db=>$db, msg=>"current films", table=>'current_films'});
+	return;
+}
+
+sub film_choose {
+	my $db = shift;
+	while (1) {
+		my $film_id = &prompt({prompt=>'Enter film ID if you know it, or leave blank to choose', type=>'integer'});
+		if ($film_id ne '') {
+			my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
+			return $film_id if &prompt({default=>'yes', prompt=>"This film is entitled $info. Is this the right film?", type=>'boolean'})
+		} else {
+			my %where;
+			#narrow by format
+			if (&prompt({default=>'no', prompt=>'Narrow search by film format?', type=>'boolean'})) {
+				$where{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT'});
+			}
+			if (&prompt({default=>'no', prompt=>'Narrow search by filmstock?', type=>'boolean'})) {
+				$where{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock'});
+			}
+			if (&prompt({default=>'no', prompt=>'Narrow search by the camera the film was loaded into?', type=>'boolean'})) {
+				$where{camera_id} = &listchoices({db=>$db, table=>'choose_camera'});
+			}
+			#listchoices
+			$where{notes} = {'!=',undef};
+			my $thinwhere = &thin(\%where);
+			return &listchoices({db=>$db, cols=>['film_id as id', 'notes as opt'], table=>'FILM', where=>$thinwhere, required=>1});
+		}
+	}
 	return;
 }
 
