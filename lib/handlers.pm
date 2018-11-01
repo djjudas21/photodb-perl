@@ -99,7 +99,7 @@ sub film_load {
 sub film_archive {
 	# Archive a film for storage
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer', required=>1});
+	my $film_id = shift || &film_choose($db);
 	my %data;
 	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
@@ -130,7 +130,7 @@ sub film_develop {
 sub film_tag {
 	# Write EXIF tags to a film
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Which film do you want to write EXIF tags to?', type=>'integer'});
+	my $film_id = shift || &film_choose($db);
 	if ($film_id eq '') {
 		&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'}) or die "Aborted!\n";
 	}
