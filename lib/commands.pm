@@ -23,7 +23,7 @@ our %handlers = (
 		'load'     => { 'handler' => \&film_load,     'desc' => 'Load a film into a camera' },
 		'develop'  => { 'handler' => \&film_develop,  'desc' => 'Develop a film' },
 		'tag'      => { 'handler' => \&film_tag,      'desc' => 'Write EXIF tags to scans from a film' },
-		'archive'  => { 'handler' => \&film_archive,  'desc' => 'Put the film in a physical archive' },
+		'archive'  => { 'handler' => \&film_archive,  'desc' => 'Put a film in a physical archive' },
 		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
 		'bulk'     => { 'handler' => \&film_bulk,     'desc' => 'Add a new bulk film to the database' },
 		'annotate' => { 'handler' => \&film_annotate, 'desc' => 'Write out a text file with the scans from the film' },
