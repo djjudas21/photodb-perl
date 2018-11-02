@@ -40,4 +40,6 @@ if (!exists $handlers{$command}{$subcommand}) {
 my $db = &db;
 
 # Execute chosen handler
-$handlers{$command}{$subcommand}{'handler'}->($db);
+if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
+	$handlers{$command}{$subcommand}{'handler'}->($db);
+}
