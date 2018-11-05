@@ -21,7 +21,7 @@ use queries;
 use tagger qw(/./);
 
 our @EXPORT_OK = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
@@ -99,7 +99,7 @@ sub film_load {
 sub film_archive {
 	# Archive a film for storage
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Enter ID of film to archive', type=>'integer', required=>1});
+	my $film_id = shift || &film_choose($db);
 	my %data;
 	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
@@ -130,7 +130,7 @@ sub film_develop {
 sub film_tag {
 	# Write EXIF tags to a film
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Which film do you want to write EXIF tags to?', type=>'integer'});
+	my $film_id = shift || &film_choose($db);
 	if ($film_id eq '') {
 		&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'}) or die "Aborted!\n";
 	}
@@ -140,7 +140,7 @@ sub film_tag {
 
 sub film_locate {
 	my $db = shift;
-	my $film_id = shift || &prompt({prompt=>'Which film do you want to locate?', type=>'integer', required=>1});
+	my $film_id = shift || &film_choose($db);
 
 	if (my $archiveid = &lookupval({db=>$db, col=>'archive_id', table=>'FILM', where=>{film_id=>$film_id}})) {
 		my $archive = &lookupval({db=>$db, col=>"concat(name, ' (', location, ')') as archive", table=>'ARCHIVE', where=>{archive_id=> $archiveid}});
@@ -166,7 +166,7 @@ sub film_bulk {
 
 sub film_annotate {
 	my $db = shift;
-	my $film_id = &prompt({prompt=>'Which film do you want to annotate?', type=>'integer', required=>1});
+	my $film_id = shift || &film_choose($db);
 	&annotatefilm($db, $film_id);
 	return;
 }
@@ -192,6 +192,34 @@ sub film_stocks {
 sub film_current {
 	my $db = shift;
 	&printlist({db=>$db, msg=>"current films", table=>'current_films'});
+	return;
+}
+
+sub film_choose {
+	my $db = shift;
+	while (1) {
+		my $film_id = &prompt({prompt=>'Enter film ID if you know it, or leave blank to choose', type=>'integer'});
+		if ($film_id ne '') {
+			my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
+			return $film_id if &prompt({default=>'yes', prompt=>"This film is entitled $info. Is this the right film?", type=>'boolean'})
+		} else {
+			my %where;
+			#narrow by format
+			if (&prompt({default=>'no', prompt=>'Narrow search by film format?', type=>'boolean'})) {
+				$where{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT'});
+			}
+			if (&prompt({default=>'no', prompt=>'Narrow search by filmstock?', type=>'boolean'})) {
+				$where{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock'});
+			}
+			if (&prompt({default=>'no', prompt=>'Narrow search by the camera the film was loaded into?', type=>'boolean'})) {
+				$where{camera_id} = &listchoices({db=>$db, table=>'choose_camera'});
+			}
+			#listchoices
+			$where{notes} = {'!=',undef};
+			my $thinwhere = &thin(\%where);
+			return &listchoices({db=>$db, cols=>['film_id as id', 'notes as opt'], table=>'FILM', where=>$thinwhere, required=>1});
+		}
+	}
 	return;
 }
 
@@ -561,7 +589,7 @@ sub negative_add {
 	# Add a single neg to a film
 	my $db = shift;
 	my %data;
-	$data{film_id} = &prompt({prompt=>'Which film does this negative belong to?', type=>'integer', required=>1});
+	$data{film_id} = &film_choose($db);
 	if (!&lookupval({db=>$db, col=>'camera_id', table=>'FILM', where=>{film_id=>$data{film_id}}})) {
 		print 'Film must be loaded into a camera before you can add negatives\n';
 		if (&prompt({default=>'yes', prompt=>'Load film into a camera now?', type=>'boolean'})) {
@@ -601,7 +629,7 @@ sub negative_bulkadd {
 	my $db = shift;
 	# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
 	my %data;
-	$data{film_id} = shift || &prompt({prompt=>'Bulk add negatives to which film?', type=>'integer', required=>1});
+	$data{film_id} = shift || &film_choose($db);
 	my $num = &prompt({prompt=>'How many frames to add?', type=>'integer'});
 	if (&prompt({default=>'no', prompt=>"Add any other attributes to all $num negatives?", type=>'boolean'})) {
 		$data{description} = &prompt({prompt=>'Caption'});
