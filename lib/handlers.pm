@@ -698,9 +698,13 @@ sub lens_add {
 	if ($data{zoom} == 0) {
 		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>&guessminfl($data{model})});
 		$data{max_focal_length} = $data{min_focal_length};
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer'});
+		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
 	} else {
 		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>&guessminfl($data{model})});
 		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>&guessmaxfl($data{model})});
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer'});
+		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer'});
 	}
 	$data{fixed_mount} = &prompt({default=>'no', prompt=>'Does this lens have a fixed mount?', type=>'boolean'});
 	if ($data{fixed_mount} == 0) {
@@ -715,8 +719,6 @@ sub lens_add {
 	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer'});
 	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer'});
 	$data{groups} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer'});
-	$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer'});
-	$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer'});
 	$data{aperture_blades} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer'});
 	$data{autofocus} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean'});
 	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal'});
@@ -760,9 +762,13 @@ sub lens_edit {
 	if ($data{zoom} == 0) {
 		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>$$existing{min_focal_length}});
 		$data{max_focal_length} = $data{min_focal_length};
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
+		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
 	} else {
 		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>$$existing{min_focal_length}});
 		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>$$existing{max_focal_length}});
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
+		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_max_angle_diag}});
 	}
 	$data{fixed_mount} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$existing{fixed_mount}});
 	if ($data{fixed_mount} == 0) {
@@ -777,8 +783,6 @@ sub lens_edit {
 	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer', default=>$$existing{closest_focus}});
 	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer', default=>$$existing{elements}});
 	$data{groups} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer', default=>$$existing{groups}});
-	$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
-	$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_max_angle_diag}});
 	$data{aperture_blades} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer', default=>$$existing{aperture_blades}});
 	$data{autofocus} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean', default=>$$existing{autofocus}});
 	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal', default=>$$existing{filter_thread}});
