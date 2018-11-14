@@ -501,6 +501,7 @@ sub camera_sell {
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this camera sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$cameraid"});
+	&unsetdisplaylens({db=>$db, camera_id=>$cameraid});
 	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERA', where=>{camera_id=>$cameraid}})) {
 		my $lensid = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$cameraid}});
 		if ($lensid) {
@@ -836,6 +837,7 @@ sub lens_sell {
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
+	&unsetdisplaylens({db=>$db, lens_id=>$lensid});
 	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
