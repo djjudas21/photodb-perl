@@ -13,15 +13,15 @@ Look for a tagged release in the future!
 The heart of PhotoDB is the MySQL/MariaDB backend database schema. This is the most complete
 part of the project and describes all the data that is recorded.
 
-The application is a relatively new addition to the project. It is currently an interactive
-command-line tool to make it easier to add and edit data in the database. It is not a graphical
-interface or web application (but someone with the right enthusiasm and skills could use the
-logic I've already written to make a basic graphical interface quite quickly).
+The application is an interactive command-line tool to make it easier to add and edit data in
+the database. It is not a graphical interface or web application (but someone with the right
+enthusiasm and skills could use the logic I've already written to make a basic graphical
+interface quite quickly).
 
-The application is not yet feature-complete, so for now you may also need to edit parts of
-the database directly. You can access the raw database using the MySQL command line, or by
-using an application such as [MySQL Workbench](http://www.mysql.com/products/workbench/) or
-[phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) to obtain a GUI for manipulating
+The application is not quite feature-complete, so for now you may also need to edit parts of
+the database directly in some circumstances. You can access the raw database using the MySQL
+command line, or by using an application such as [MySQL Workbench](http://www.mysql.com/products/workbench/)
+or [phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) to obtain a GUI for manipulating
 the tables.
 
 ## Documentation
