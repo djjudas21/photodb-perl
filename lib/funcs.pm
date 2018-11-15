@@ -13,7 +13,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -679,6 +679,24 @@ sub guesszoom {
 	my $model = shift;
 	my $rv = &parselensmodel($model);
 	return $rv->{'zoom'};
+}
+
+# Unset display lens
+sub unsetdisplaylens {
+	my $href = shift;
+	my $db = $href->{db};
+	my %where;
+	$where{camera_id} = $href->{camera_id};
+	$where{display_lens} = $href->{lens_id};
+	my $thinwhere = &thin(\%where);
+
+	# Build query
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->update('CAMERA', {display_lens => undef}, $thinwhere);
+
+	# Execute query
+	my $sth = $db->prepare($stmt);
+	return $sth->execute(@bind);
 }
 
 # This ensures the lib loads smoothly
