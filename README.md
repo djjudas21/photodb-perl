@@ -31,3 +31,4 @@ the tables.
 * [Developing PhotoDB](docs/CONTRIBUTING.md)
 * [Schema description](docs/SCHEMA.md)
 * [Glossary](docs/GLOSSARY.md)
+* [Roadmap](docs/ROADMAP.md)
