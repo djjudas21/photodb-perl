@@ -1434,11 +1434,7 @@ sub shutterspeed_add {
 	my $db = shift;
 	my %data;
 	$data{shutter_speed} = &prompt({prompt=>'What shutter speed do you want to add?', required=>1});
-	if ($data{shutter_speed} =~ m/1\/(\d+)/) {
-		$data{duration} = 1 / $1;
-	} elsif ($data{shutter_speed} =~ m/((0\.)?\d+)/) {
-		$data{duration} = $1;
-	}
+	$data{duration} = &duration($data{shutter_speed});
 	return &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED'});
 }
 
