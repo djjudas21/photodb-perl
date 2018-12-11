@@ -60,6 +60,8 @@ my @tables = (
         'NEGATIVE_SIZE',
         'PROCESS',
         'SHUTTER_SPEED',
+        'SHUTTER_SPEED_SERIES',
+        'SHUTTER_SPEED_SERIES_MEMBERSHIP',
         'SHUTTER_TYPE'
 );
 
