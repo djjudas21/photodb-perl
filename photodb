@@ -19,6 +19,8 @@ use funcs qw(/./);
 use handlers;
 use commands;
 
+use IO::Prompter -argv;
+
 # Define handlers for each command
 my %handlers = %commands::handlers;
 

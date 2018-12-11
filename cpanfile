@@ -11,3 +11,4 @@ requires 'YAML';
 requires 'FindBin';
 requires 'Perl::Critic';
 requires 'experimental';
+requires 'IO::Prompter';
