@@ -22,13 +22,19 @@ sub prompt {
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
 	my $required = $href->{required} // 0;
+	my $showtype = $href->{showtype} // 1;
+	my $showdefault = $href->{showdefault} // 1;
+	my $char = $href->{char} // ':';
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
 	my $rv;
 	# Repeatedly prompt until we get a response of the correct type
 	do {
-		print "$prompt ($type) [$default]: ";
+		print $prompt;
+		print " ($type)" if $showtype;
+		print " [$default]" if $showdefault;
+		print "$char ";
 		my $input = <STDIN>; ## no critic
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
