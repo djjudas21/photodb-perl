@@ -105,8 +105,12 @@ sub validate {
 sub ini {
 	# Look for ini file
 	my $path = "$ENV{HOME}/.photodb.ini";
-	if (-f $path) {
+	if (-r $path) {
 		return glob('~/.photodb.ini');
+	} elsif (-r '/etc/photodb.ini') {
+		return '/etc/photodb.ini';
+	} elsif (-r '/photodb.ini') {
+		return '/photodb.ini';
 	} else {
 		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
 			&writeconfig($path);

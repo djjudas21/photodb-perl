@@ -179,7 +179,7 @@ docker pull djjudas21/photodb
 ```
 2. Run the image
 ```
-docker run -it --rm photodb photodb
+docker run -it --rm -v ~/.photodb.ini:/photodb.ini --name photodb photodb
 ```
 
 ### Set up autocomplete
