@@ -40,7 +40,7 @@ my $film_id = shift // '%';
 my $connect = ReadINI(&ini);
 if (!defined($$connect{'filesystem'}{'basepath'})) {
 	print "Config file did not contain basepath";
-	exit;
+	return;
 }
 my $basepath = $$connect{'filesystem'}{'basepath'};
 if (substr($basepath, -1, 1) ne '/') {

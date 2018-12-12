@@ -596,7 +596,7 @@ sub negative_add {
 		if (&prompt({default=>'yes', prompt=>'Load film into a camera now?', type=>'boolean'})) {
 			&film_load($db, $data{film_id});
 		} else {
-			exit;
+			return;
 		}
 	}
 	$data{frame} = &prompt({prompt=>'Frame number'});
@@ -1357,11 +1357,11 @@ sub archive_films {
 	if (($minfilm =~ m/^\d+$/) && ($maxfilm =~ m/^\d+$/)) {
 		if ($maxfilm le $minfilm) {
 			print "Highest film ID must be higher than lowest film ID\n";
-			exit;
+			return;
 		}
 	} else {
 		print "Must provide highest and lowest film IDs\n";
-		exit;
+		return;
 	}
 	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>'archive_type_id in (1,2) and sealed = 0', inserthandler=>\&archive_add});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
