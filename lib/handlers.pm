@@ -132,7 +132,10 @@ sub film_tag {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
 	if ($film_id eq '') {
-		&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'}) or die "Aborted!\n";
+		if (!&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'})) {
+			print "Aborted!\n";
+			return;
+		}
 	}
 	&tag($db, $film_id);
 	return;
@@ -660,7 +663,10 @@ sub negative_bulkadd {
 	my $sql = SQL::Abstract->new;
 
 	# Final confirmation
-	&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+	if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		print "Aborted!\n";
+		return;
+	}
 
 	# Execute query
 	for my $i (1..$num) {

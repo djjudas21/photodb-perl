@@ -165,7 +165,8 @@ sub updaterecord {
 	$data = &thin($data);
 
 	if (scalar(keys %$data) == 0) {
-		die "Nothing to update\n";
+		print "Nothing to update\n";
+		return;
 	}
 
 	# Dump data for debugging
@@ -179,7 +180,10 @@ sub updaterecord {
 
 	# Final confirmation
 	unless ($silent) {
-		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
 	}
 
 	# Execute query
@@ -223,7 +227,10 @@ sub newrecord {
 
 	# Final confirmation
 	unless ($silent) {
-		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
 	}
 
 	# Execute query
@@ -239,7 +246,8 @@ sub newrecord {
 
 # Print a warning that this command/subcommand is not yet implemented
 sub notimplemented {
-	die "This command or subcommand is not yet implemented.\n";
+	print "This command or subcommand is not yet implemented.\n";
+	return;
 }
 
 # Quit if no valid command is given
@@ -381,7 +389,8 @@ sub printlist {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, cols, where\n";
+		print "Must pass in either query OR table, cols, where\n";
+		return;
 	}
 
 	while (my $ref = $sth->fetchrow_hashref) {
@@ -410,7 +419,8 @@ sub lookupcol {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, cols, where\n";
+		print "Must pass in either query OR table, cols, where\n";
+		return;
 	}
 
 	my @array;
@@ -451,7 +461,8 @@ sub lookupval {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, col, where\n";
+		print "Must pass in either query OR table, col, where\n";
+		return;
 	}
 
 	my $row = $sth->fetchrow_array();
@@ -615,10 +626,12 @@ sub annotatefilm {
 			}
 			close $fh;
 		} else {
-			die "Film directory $path/$filmdir not found\n";
+			print "Film directory $path/$filmdir not found\n";
+			return;
 		}
 	} else {
-		die "Path $path not found\n";
+		print "Path $path not found\n";
+		return;
 	}
 	return;
 }
@@ -636,7 +649,8 @@ sub keyword {
 		$text =~ s/_/ /g;
 		return $text;
 	} else {
-		die "Could not deduce valid keyword from SQL\n";
+		print "Could not deduce valid keyword from SQL\n";
+		return;
 	}
 }
 
