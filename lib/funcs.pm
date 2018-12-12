@@ -13,7 +13,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -703,6 +703,18 @@ sub unsetdisplaylens {
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	return $sth->execute(@bind);
+}
+
+# Print welcome message
+sub welcome {
+       my $ascii = <<'END_ASCII';
+ ____  _           _        ____  ____
+|  _ \| |__   ___ | |_ ___ |  _ \| __ )
+| |_) | '_ \ / _ \| __/ _ \| | | |  _ \
+|  __/| | | | (_) | || (_) | |_| | |_) |
+|_|   |_| |_|\___/ \__\___/|____/|____/
+END_ASCII
+        print "$ascii\n\n";
 }
 
 # This ensures the lib loads smoothly
