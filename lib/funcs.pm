@@ -715,6 +715,7 @@ sub welcome {
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
         print "$ascii\n\n";
+	return;
 }
 
 # This ensures the lib loads smoothly
