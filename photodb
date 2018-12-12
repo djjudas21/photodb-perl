@@ -61,12 +61,14 @@ if (defined($ARGV[0])) {
 			my $command = $1;
 			if (!exists $handlers{$command}) {
 				&nocommand(\%handlers);
+				next;
 			}
 
 			# Check if the subcommand is defined in the handlers
 			my $subcommand = $2;
 			if (!exists $handlers{$command}{$subcommand}) {
 				&nosubcommand(\%{$handlers{$command}}, $command);
+				next;
 			}
 
 			# Connect to the database
