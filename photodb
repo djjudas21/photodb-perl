@@ -68,6 +68,14 @@ if (defined($ARGV[0])) {
 			if (!exists $handlers{$command}{$subcommand}) {
 				&nosubcommand(\%{$handlers{$command}}, $command);
 			}
+
+			# Connect to the database
+			my $db = &db;
+
+			# Execute chosen handler
+			if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
+				$handlers{$command}{$subcommand}{'handler'}->($db);
+			}
 		} else {
 			if ($rv ne '') {
 				&nocommand(\%handlers);
