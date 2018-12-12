@@ -22,24 +22,54 @@ use commands;
 # Define handlers for each command
 my %handlers = %commands::handlers;
 
-# Read in and verify command
-my $command = $ARGV[0] or &nocommand(\%handlers);
+# Check if any args were passed in
+if (defined($ARGV[0])) {
+	# We got at least one cmdline arg, so we run in one-shot mode
 
-# Check if the command is defined in the handlers
-if (!exists $handlers{$command}) {
-	&nocommand(\%handlers);
-}
+	# Read in and verify command
+	my $command = $ARGV[0] or &nocommand(\%handlers);
 
-# Read in and verify subcommand
-my $subcommand = $ARGV[1] or &nosubcommand(\%{$handlers{$command}}, $command);
-if (!exists $handlers{$command}{$subcommand}) {
-	&nosubcommand(\%{$handlers{$command}}, $command);
-}
+	# Check if the command is defined in the handlers
+	if (!exists $handlers{$command}) {
+		&nocommand(\%handlers);
+	}
 
-# Connect to the database
-my $db = &db;
+	# Read in and verify subcommand
+	my $subcommand = $ARGV[1] or &nosubcommand(\%{$handlers{$command}}, $command);
+	if (!exists $handlers{$command}{$subcommand}) {
+		&nosubcommand(\%{$handlers{$command}}, $command);
+	}
 
-# Execute chosen handler
-if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
-	$handlers{$command}{$subcommand}{'handler'}->($db);
+	# Connect to the database
+	my $db = &db;
+
+	# Execute chosen handler
+	if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
+		$handlers{$command}{$subcommand}{'handler'}->($db);
+	}
+} else {
+	# No cmdline args, so enter interactive prompt
+	while (1) {
+		my $rv = &prompt({prompt=>'photodb>', type=>'text'});
+		# Trap important keywords first
+		if ($rv eq 'exit') {
+			exit;
+		} elsif ($rv =~ /(\w+) (\w+)/) {
+			# Check if the command is defined in the handlers
+			my $command = $1;
+			if (!exists $handlers{$command}) {
+				&nocommand(\%handlers);
+			}
+
+			# Check if the subcommand is defined in the handlers
+			my $subcommand = $2;
+			if (!exists $handlers{$command}{$subcommand}) {
+				&nosubcommand(\%{$handlers{$command}}, $command);
+			}
+		} else {
+			if ($rv ne '') {
+				print "Command not found\n";
+			}
+		}
+	}
 }
