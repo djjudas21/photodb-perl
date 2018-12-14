@@ -257,8 +257,7 @@ sub notimplemented {
 # Quit if no valid command is given
 sub nocommand {
 	my $handlers = shift;
-	print "Photography Database UI\n\n";
-	print "$0 <command> <subcommand>\n\n";
+	print "photodb <command> <subcommand>\n\n";
 	print "Please enter a valid command. Valid commands are:\n";
 	print "\t$_\n" for sort keys %$handlers;
 	return;
@@ -268,8 +267,7 @@ sub nocommand {
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
-	print "Photography Database UI\n\n";
-	print "$0 $command <subcommand>\n\n";
+	print "photodb $command <subcommand>\n\n";
 	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
 	print "\t" . &pad($_) . $$handlers{$_}{'desc'} . "\n" for sort keys %$handlers;
 	return;

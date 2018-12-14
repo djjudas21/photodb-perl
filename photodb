@@ -27,17 +27,15 @@ if (defined($ARGV[0])) {
 	# We got at least one cmdline arg, so we run in one-shot mode
 
 	# Read in and verify command
-	my $command = $ARGV[0] or &nocommand(\%handlers);
-
-	# Check if the command is defined in the handlers
-	if (!exists $handlers{$command}) {
+	my $command = $ARGV[0];
+	if ((!defined $command) || (!exists $handlers{$command})) {
 		&nocommand(\%handlers);
 		exit;
 	}
 
 	# Read in and verify subcommand
-	my $subcommand = $ARGV[1] or &nosubcommand(\%{$handlers{$command}}, $command);
-	if (!exists $handlers{$command}{$subcommand}) {
+	my $subcommand = $ARGV[1];
+	if ((!defined $subcommand) || (!exists $handlers{$command}{$subcommand})) {
 		&nosubcommand(\%{$handlers{$command}}, $command);
 		exit;
 	}
