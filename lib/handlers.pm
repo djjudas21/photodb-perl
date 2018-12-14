@@ -48,7 +48,7 @@ our @EXPORT_OK = qw(
 	movie_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
-	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
+	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_review
 	choose_manufacturer
 );
@@ -1562,6 +1562,14 @@ sub choose_manufacturer {
         } while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
         $initial = lc($initial);
         return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
+}
+
+# Audit cameras without display lenses set
+sub audit_displaylenses {
+	my $db = shift;
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera', table=>'camera_chooser', where=>{mount_id=>{'!=', undef}, display_lens=>{'=', undef}}, required=>1 });
+	&camera_displaylens($db, $camera_id);
+	return;
 }
 
 # This ensures the lib loads smoothly
