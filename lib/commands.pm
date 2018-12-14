@@ -132,6 +132,7 @@ our %handlers = (
 		'shutterspeeds'    => { 'handler' => \&audit_shutterspeeds,    'desc' => 'Audit cameras without shutter speed data' },
 		'exposureprograms' => { 'handler' => \&audit_exposureprograms, 'desc' => 'Audit cameras without exposure program data' },
 		'meteringmodes'    => { 'handler' => \&audit_meteringmodes,    'desc' => 'Audit cameras without metering mode data' },
+		'displaylenses'    => { 'handler' => \&audit_displaylenses,    'desc' => 'Audit cameras without display lenses set' },
 	},
 	exhibition => {
 		'add'    => { 'handler' => \&exhibition_add,    'desc' => 'Add a new exhibition to the database' },

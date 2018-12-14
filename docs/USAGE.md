@@ -227,6 +227,8 @@ Audit cameras without shutter speed data
 Audit cameras without exposure program data
 ### `audit meteringmodes`
 Audit cameras without metering mode data
+### `audit displaylenses`
+Audit cameras without a display lens set
 
 ## `exhibition`
 The `exhibition` command provides a set of subcommands for managing exhibitions.
