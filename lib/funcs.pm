@@ -13,7 +13,11 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
+<<<<<<< HEAD
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome);
+=======
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens duration);
+>>>>>>> master
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -732,6 +736,20 @@ sub welcome {
 END_ASCII
         print "$ascii\n\n";
 	return;
+}
+
+# Calculate duration of a shutter speed
+sub duration {
+	my $shutter_speed = shift;
+	my $duration = 0;
+	# Expressed like 1/125
+        if ($shutter_speed =~ m/1\/(\d+)/) {
+                $duration = 1 / $1;
+	# Expressed like 0.3 or 1
+        } elsif ($shutter_speed =~ m/((0\.)?\d+)/) {
+                $duration = $1;
+        }
+	return $duration;
 }
 
 # This ensures the lib loads smoothly

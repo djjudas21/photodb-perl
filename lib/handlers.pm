@@ -48,7 +48,7 @@ our @EXPORT_OK = qw(
 	movie_add
 	archive_add archive_films archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
-	audit_shutterspeeds audit_exposureprograms audit_meteringmodes
+	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_review
 	choose_manufacturer
 );
@@ -442,9 +442,16 @@ sub camera_accessory {
 sub camera_shutterspeeds {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	&newrecord({db=>$db, data=>{camera_id=>$cameraid, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+	my $min_shutter_speed_duration = &duration($min_shutter_speed);
+	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	my $max_shutter_speed_duration = &duration($max_shutter_speed);
+	&newrecord({db=>$db, data=>{camera_id=>$cameraid, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+
 	while (1) {
 		my %shutterdata;
-		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 		$shutterdata{camera_id} = $cameraid;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 		if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'})) {
@@ -1440,11 +1447,7 @@ sub shutterspeed_add {
 	my $db = shift;
 	my %data;
 	$data{shutter_speed} = &prompt({prompt=>'What shutter speed do you want to add?', required=>1});
-	if ($data{shutter_speed} =~ m/1\/(\d+)/) {
-		$data{duration} = 1 / $1;
-	} elsif ($data{shutter_speed} =~ m/((0\.)?\d+)/) {
-		$data{duration} = $1;
-	}
+	$data{duration} = &duration($data{shutter_speed});
 	return &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED'});
 }
 
@@ -1565,6 +1568,14 @@ sub choose_manufacturer {
         } while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
         $initial = lc($initial);
         return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
+}
+
+# Audit cameras without display lenses set
+sub audit_displaylenses {
+	my $db = shift;
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera', table=>'camera_chooser', where=>{mount_id=>{'!=', undef}, display_lens=>{'=', undef}}, required=>1 });
+	&camera_displaylens($db, $camera_id);
+	return;
 }
 
 # This ensures the lib loads smoothly
