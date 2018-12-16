@@ -26,7 +26,7 @@ our @EXPORT_OK = qw(
 	mount_add mount_view mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
-	print_add print_tone print_sell print_order print_fulfil print_archive print_locate print_info print_exhibit print_label print_worklist
+	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
 	paperstock_add
 	developer_add
 	toner_add
@@ -979,6 +979,7 @@ sub print_sell {
 	$data{own} = 0;
 	$data{location} = &prompt({prompt=>'What happened to the print?'});
 	$data{sold_price} = &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
+	&print_unarchive($db, $print_id);
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
@@ -1003,6 +1004,13 @@ sub print_archive {
 	$data{own} = 1;
 	$data{location} = 'Archive';
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+}
+
+sub print_unarchive {
+	# Remove a print from an archive
+	my $db = shift;
+	my $print_id = shift || &prompt({prompt=>'Which print did you remove from its archive?', type=>'integer', required=>1});
+	return &lookupval({db=>$db, query=>"select print_unarchive($print_id)"});
 }
 
 sub print_locate {
