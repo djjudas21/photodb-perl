@@ -121,6 +121,8 @@ Register an order for a print
 Fulfil an order for a print
 ### `print archive`
 Add a print to a physical archive
+### `print unarchive`
+Remove a print from a physical archive
 ### `print locate`
 Locate a print in an archive
 ### `print info`
