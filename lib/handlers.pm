@@ -980,6 +980,7 @@ sub print_sell {
 	$data{location} = &prompt({prompt=>'What happened to the print?'});
 	$data{sold_price} = &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	&print_unarchive($db, $printid);
 }
 
 sub print_order {
