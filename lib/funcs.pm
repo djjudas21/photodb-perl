@@ -13,7 +13,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens duration);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome duration);
 
 # Prompt for an arbitrary value
 sub prompt {
@@ -22,13 +22,19 @@ sub prompt {
 	my $prompt = $href->{prompt};
 	my $type = $href->{type} || 'text';
 	my $required = $href->{required} // 0;
+	my $showtype = $href->{showtype} // 1;
+	my $showdefault = $href->{showdefault} // 1;
+	my $char = $href->{char} // ':';
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
 	my $rv;
 	# Repeatedly prompt until we get a response of the correct type
 	do {
-		print "$prompt ($type) [$default]: ";
+		print $prompt;
+		print " ($type)" if $showtype;
+		print " [$default]" if $showdefault;
+		print "$char ";
 		my $input = <STDIN>; ## no critic
 		chomp($input);
 		$rv = ($input eq "") ? $default:$input;
@@ -99,8 +105,12 @@ sub validate {
 sub ini {
 	# Look for ini file
 	my $path = "$ENV{HOME}/.photodb.ini";
-	if (-f $path) {
+	if (-r $path) {
 		return glob('~/.photodb.ini');
+	} elsif (-r '/etc/photodb.ini') {
+		return '/etc/photodb.ini';
+	} elsif (-r '/photodb.ini') {
+		return '/photodb.ini';
 	} else {
 		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
 			&writeconfig($path);
@@ -159,7 +169,8 @@ sub updaterecord {
 	$data = &thin($data);
 
 	if (scalar(keys %$data) == 0) {
-		die "Nothing to update\n";
+		print "Nothing to update\n";
+		return;
 	}
 
 	# Dump data for debugging
@@ -173,7 +184,10 @@ sub updaterecord {
 
 	# Final confirmation
 	unless ($silent) {
-		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
 	}
 
 	# Execute query
@@ -217,7 +231,10 @@ sub newrecord {
 
 	# Final confirmation
 	unless ($silent) {
-		&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'}) or die "Aborted!\n";
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
 	}
 
 	# Execute query
@@ -233,28 +250,27 @@ sub newrecord {
 
 # Print a warning that this command/subcommand is not yet implemented
 sub notimplemented {
-	die "This command or subcommand is not yet implemented.\n";
+	print "This command or subcommand is not yet implemented.\n";
+	return;
 }
 
 # Quit if no valid command is given
 sub nocommand {
 	my $handlers = shift;
-	print "Photography Database UI\n\n";
-	print "$0 <command> <subcommand>\n\n";
+	print "photodb <command> <subcommand>\n\n";
 	print "Please enter a valid command. Valid commands are:\n";
 	print "\t$_\n" for sort keys %$handlers;
-	exit;
+	return;
 }
 
 # Quit if no valid subcommand is given
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
-	print "Photography Database UI\n\n";
-	print "$0 $command <subcommand>\n\n";
+	print "photodb $command <subcommand>\n\n";
 	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
 	print "\t" . &pad($_) . $$handlers{$_}{'desc'} . "\n" for sort keys %$handlers;
-	exit;
+	return;
 }
 
 # List arbitrary choices and return ID of the selected one
@@ -375,7 +391,8 @@ sub printlist {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, cols, where\n";
+		print "Must pass in either query OR table, cols, where\n";
+		return;
 	}
 
 	while (my $ref = $sth->fetchrow_hashref) {
@@ -404,7 +421,8 @@ sub lookupcol {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, cols, where\n";
+		print "Must pass in either query OR table, cols, where\n";
+		return;
 	}
 
 	my @array;
@@ -445,7 +463,8 @@ sub lookupval {
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		die "Must pass in either query OR table, col, where\n";
+		print "Must pass in either query OR table, col, where\n";
+		return;
 	}
 
 	my $row = $sth->fetchrow_array();
@@ -609,10 +628,12 @@ sub annotatefilm {
 			}
 			close $fh;
 		} else {
-			die "Film directory $path/$filmdir not found\n";
+			print "Film directory $path/$filmdir not found\n";
+			return;
 		}
 	} else {
-		die "Path $path not found\n";
+		print "Path $path not found\n";
+		return;
 	}
 	return;
 }
@@ -630,7 +651,8 @@ sub keyword {
 		$text =~ s/_/ /g;
 		return $text;
 	} else {
-		die "Could not deduce valid keyword from SQL\n";
+		print "Could not deduce valid keyword from SQL\n";
+		return;
 	}
 }
 
@@ -697,6 +719,19 @@ sub unsetdisplaylens {
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	return $sth->execute(@bind);
+}
+
+# Print welcome message
+sub welcome {
+       my $ascii = <<'END_ASCII';
+ ____  _           _        ____  ____
+|  _ \| |__   ___ | |_ ___ |  _ \| __ )
+| |_) | '_ \ / _ \| __/ _ \| | | |  _ \
+|  __/| | | | (_) | || (_) | |_| | |_) |
+|_|   |_| |_|\___/ \__\___/|____/|____/
+END_ASCII
+        print "$ascii\n\n";
+	return;
 }
 
 # Calculate duration of a shutter speed

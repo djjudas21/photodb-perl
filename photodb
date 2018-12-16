@@ -22,24 +22,65 @@ use commands;
 # Define handlers for each command
 my %handlers = %commands::handlers;
 
-# Read in and verify command
-my $command = $ARGV[0] or &nocommand(\%handlers);
+# Check if any args were passed in
+if (defined($ARGV[0])) {
+	# We got at least one cmdline arg, so we run in one-shot mode
 
-# Check if the command is defined in the handlers
-if (!exists $handlers{$command}) {
-	&nocommand(\%handlers);
-}
+	# Read in and verify command
+	my $command = $ARGV[0];
+	if ((!defined $command) || (!exists $handlers{$command})) {
+		&nocommand(\%handlers);
+		exit;
+	}
 
-# Read in and verify subcommand
-my $subcommand = $ARGV[1] or &nosubcommand(\%{$handlers{$command}}, $command);
-if (!exists $handlers{$command}{$subcommand}) {
-	&nosubcommand(\%{$handlers{$command}}, $command);
-}
+	# Read in and verify subcommand
+	my $subcommand = $ARGV[1];
+	if ((!defined $subcommand) || (!exists $handlers{$command}{$subcommand})) {
+		&nosubcommand(\%{$handlers{$command}}, $command);
+		exit;
+	}
 
-# Connect to the database
-my $db = &db;
+	# Connect to the database
+	my $db = &db;
 
-# Execute chosen handler
-if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
-	$handlers{$command}{$subcommand}{'handler'}->($db);
+	# Execute chosen handler
+	if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
+		$handlers{$command}{$subcommand}{'handler'}->($db);
+	}
+} else {
+	# No cmdline args, so enter interactive prompt
+	&welcome;
+	while (1) {
+		my $rv = &prompt({prompt=>'photodb', type=>'text', showtype=>0, showdefault=>0, char=>'>'});
+		# Trap important keywords first
+		if ($rv eq 'exit' || $rv eq 'quit') {
+			exit;
+		} elsif ($rv =~ /^(\w+) ([\w-]+)$/) {
+			# Check if the command is defined in the handlers
+			my $command = $1;
+			if (!exists $handlers{$command}) {
+				&nocommand(\%handlers);
+				next;
+			}
+
+			# Check if the subcommand is defined in the handlers
+			my $subcommand = $2;
+			if (!exists $handlers{$command}{$subcommand}) {
+				&nosubcommand(\%{$handlers{$command}}, $command);
+				next;
+			}
+
+			# Connect to the database
+			my $db = &db;
+
+			# Execute chosen handler
+			if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
+				$handlers{$command}{$subcommand}{'handler'}->($db);
+			}
+		} else {
+			if ($rv ne '') {
+				&nocommand(\%handlers);
+			}
+		}
+	}
 }
