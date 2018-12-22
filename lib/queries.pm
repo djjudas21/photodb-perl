@@ -125,6 +125,19 @@ our @tasks = (
 			width is not null
 			and height is not null'
 	},
+	{
+		desc => 'Set no flash for negatives taken with cameras that don\'t support flash',
+		query => 'UPDATE
+			CAMERA
+			join FILM on FILM.camera_id=CAMERA.camera_id
+			join NEGATIVE on NEGATIVE.film_id = FILM.film_id
+		SET
+			NEGATIVE.flash = 0
+		WHERE
+			int_flash=0
+			and ext_flash=0
+			and NEGATIVE.flash is null'
+	},
 );
 
 # This ensures the lib loads smoothly
