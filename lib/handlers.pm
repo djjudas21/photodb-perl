@@ -681,7 +681,7 @@ sub negative_bulkadd {
 		$data{frame} = $i;
 
 		# Create a new row
-		&newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
+		&newrecord({db=>$db, data=>\%data, table=>'NEGATIVE', silent=>1});
 	}
 
 	print "Inserted $num negatives into film #$data{film_id}\n";
