@@ -27,12 +27,7 @@ GetOptions (
 ) or die("Error in command line arguments\n");
 
 # Prompt for password
-print "Password: ";
-ReadMode 'noecho';
-my $password = ReadLine 0;
-chomp $password;
-ReadMode 'normal';
-print "\n";
+my $password = &password;
 
 if ($dumptables) {
 	# Find out the list of table and view names
@@ -108,4 +103,15 @@ sub dumpdata {
 	print "\tDumping data from $table\n";
         `mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
+}
+
+# Prompt for password
+sub password {
+	print "Password: ";
+	ReadMode 'noecho';
+	my $password = ReadLine 0;
+	chomp $password;
+	ReadMode 'normal';
+	print "\n";
+	return $password;
 }
