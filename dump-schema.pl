@@ -42,8 +42,8 @@ if ($dumptables) {
 	# Dump each table schema to its own file
 	print "\nDumping table schemas and views...\n";
 	while (my @row= $sqlQuery->fetchrow_array()) {
-	  my $table = $row[0];
-	  &dumptable($table);
+		my $table = $row[0];
+		&dumptable($table);
 	}
 
 	# Disconnect from the database
