@@ -10,12 +10,21 @@ use DBI;
 my $hostname = '127.0.0.1';
 my $database = 'photography';
 my $username = getlogin;
+my $dumptables = 1;
+my $dumpfuncs = 1;
+my $dumpdata = 1;
+my $dumpdocs = 1;
 
 # Read in our command line options
-GetOptions ("hostname=s" => \$hostname,
-            "database=s" => \$database,
-            "username=s" => \$username)
-  or die("Error in command line arguments\n");
+GetOptions (
+	"hostname=s" => \$hostname,
+	"database=s" => \$database,
+	"username=s" => \$username,
+	"tables!" => \$dumptables,
+	"funcs!" => \$dumpfuncs,
+	"data!" => \$dumpdata,
+	"docs!" => \$dumpdocs,
+) or die("Error in command line arguments\n");
 
 # Prompt for password
 print "Password: ";
@@ -25,52 +34,58 @@ chomp $password;
 ReadMode 'normal';
 print "\n";
 
-# Find out the list of table and view names
-my $query = "show full tables";
-my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
-my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
-my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
+if ($dumptables) {
+	# Find out the list of table and view names
+	my $query = "show full tables";
+	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
+	my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
+	my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 
-# Delete all existing *.sql files in the schema subdir
-unlink <schema/*.sql>;
+	# Delete all existing *.sql files in the schema subdir
+	unlink <schema/*.sql>;
 
-# Dump each table schema to its own file
-print "\nDumping table schemas and views...\n";
-while (my @row= $sqlQuery->fetchrow_array()) {
-  my $table = $row[0];
-  &dumptable($table);
+	# Dump each table schema to its own file
+	print "\nDumping table schemas and views...\n";
+	while (my @row= $sqlQuery->fetchrow_array()) {
+	  my $table = $row[0];
+	  &dumptable($table);
+	}
+
+	# Disconnect from the database
+	$sqlQuery->finish;
 }
 
-# Disconnect from the database 
-$sqlQuery->finish;
+if ($dumpdata) {
+	# List of tables that contain useful sample data
+	my @tables = (
+	        'ACCESSORY_TYPE',
+	        'ARCHIVE_TYPE',
+	        'BODY_TYPE',
+	        'EXPOSURE_PROGRAM',
+	        'FILMSTOCK',
+	        'FORMAT',
+	        'LENS_TYPE',
+	        'MANUFACTURER',
+	        'METERING_MODE',
+	        'METERING_TYPE',
+	        'MOUNT',
+	        'NEGATIVE_SIZE',
+	        'PROCESS',
+	        'SHUTTER_SPEED',
+	        'SHUTTER_TYPE'
+	);
 
-# List of tables that contain useful sample data
-my @tables = (
-        'ACCESSORY_TYPE',
-        'ARCHIVE_TYPE',
-        'BODY_TYPE',
-        'EXPOSURE_PROGRAM',
-        'FILMSTOCK',
-        'FORMAT',
-        'LENS_TYPE',
-        'MANUFACTURER',
-        'METERING_MODE',
-        'METERING_TYPE',
-        'MOUNT',
-        'NEGATIVE_SIZE',
-        'PROCESS',
-        'SHUTTER_SPEED',
-        'SHUTTER_TYPE'
-);
-
-# Dump sample data from specific tables
-print "\nDumping sample data...\n";
-foreach my $table (@tables) {
-  &dumpdata($table);
+	# Dump sample data from specific tables
+	print "\nDumping sample data...\n";
+	foreach my $table (@tables) {
+		&dumpdata($table);
+	}
 }
 
-# Dump functions too
-&dumpfuncs;
+if ($dumpfuncs) {
+	# Dump functions too
+	&dumpfuncs;
+}
 
 # Dump schema only
 sub dumptable {
