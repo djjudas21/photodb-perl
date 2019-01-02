@@ -168,6 +168,7 @@ sub dumpdocs {
 		print $fh $_;
 	}
 	close $fh;
+	return;
 }
 
 # Prompt for password
