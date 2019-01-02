@@ -87,6 +87,11 @@ if ($dumpfuncs) {
 	&dumpfuncs;
 }
 
+if ($dumpdocs) {
+	# Generate schema documentation
+	&dumpdocs;
+}
+
 # Dump schema only
 sub dumptable {
 	my $table = shift;
@@ -108,6 +113,60 @@ sub dumpdata {
 	print "\tDumping data from $table\n";
 	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
+}
+
+# Generate docs from schema
+sub dumpdocs {
+	# Find out the list of table and view names
+	my $query = "show full tables where table_type = 'base table';";
+	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
+	my $sqlQuery  = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
+	$sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
+
+	# Set up array to write file into
+	my @output;
+
+	# Print headers
+	push(@output, "# PhotoDB schema documentation\n");
+	push(@output, 'This documentation is generated automatically from the database schema itself with the `generate-docs.pl` script, using table and column comments embedded in the database\n');
+
+	# Generate docs for each table in turn
+	while (my @row= $sqlQuery->fetchrow_array()) {
+	  my $table = $row[0];
+
+	  print "Generating docs for $table\n";
+	  push(@output, "\n## $table\n\n");
+
+	  my $query2 = "select TABLE_COMMENT from information_schema.TABLES where TABLE_NAME='$table' and TABLE_SCHEMA='$database'";
+	  my $sth2 = $dbh->prepare($query2) or die "Can't prepare $query2: $dbh->errstr\n";
+	  $sth2->execute or die "can't execute the query $sth2->errstr";
+	  my @commentrow = $sth2->fetchrow_array();
+	  if ($commentrow[0]) {
+		  push(@output, "$commentrow[0]\n\n");
+	  }
+
+	  my @tableoutput =  `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
+
+	  # Delete first and last elements (table borders)
+	  shift(@tableoutput);
+	  pop(@tableoutput);
+
+	  # Substitute some table chars
+	  foreach (@tableoutput) {
+		  $_ =~ s/\+/\|/g;
+	  }
+	  push(@output, @tableoutput);
+	}
+
+	# Disconnect from the database
+	$sqlQuery->finish;
+
+	# Open a file and dump compiled array into it
+	open my $fh, '>', "docs/SCHEMA.md" or die "Cannot open docs/SCHEMA.md: $!";
+	foreach (@output) {
+	    print $fh $_;
+	}
+	close $fh;
 }
 
 # Prompt for password
