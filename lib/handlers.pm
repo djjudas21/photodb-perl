@@ -238,7 +238,7 @@ sub camera_add {
 		print "Please enter some information about the lens\n";
 		$data{lens_id} = &lens_add($db);
 	} else {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add});
 	}
 	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
 	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add});
@@ -346,7 +346,7 @@ sub camera_edit {
 			$data{lens_id} = &lens_add($db);
 		}
 	} else {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add, default=>$$existing{mount_id}});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add, default=>$$existing{mount_id}});
 	}
 	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, default=>$$existing{format_id}});
 	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add, default=>$$existing{focus_type_id}});
@@ -566,7 +566,7 @@ sub camera_choose {
 	$where{time} = &prompt({prompt=>'Do you need Time (T) shutter speed?', type=>'boolean'});
 	$where{fixed_mount} = &prompt({prompt=>'Do you need a camera with an interchangeable lens?', type=>'boolean'});
 	if ($where{fixed_mount} && $where{fixed_mount} != 1) {
-		$where{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}});
+		$where{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}});
 	}
 	$where{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', 'integer'});
 	$where{metering} = &prompt({prompt=>'Do you need a camera with metering?', type=>'boolean'});
@@ -722,7 +722,7 @@ sub lens_add {
 	}
 	$data{fixed_mount} = &prompt({default=>'no', prompt=>'Does this lens have a fixed mount?', type=>'boolean'});
 	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', inserthandler=>\&mount_add});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add});
 		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer'});
 		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
 		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer'});
@@ -786,7 +786,7 @@ sub lens_edit {
 	}
 	$data{fixed_mount} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$existing{fixed_mount}});
 	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', inserthandler=>\&mount_add, default=>$$existing{mount_id}});
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add, default=>$$existing{mount_id}});
 		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer', default=>$$existing{weight}});
 		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$existing{cost}});
 		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$existing{length}});
@@ -1097,6 +1097,7 @@ sub mount_add {
 	my $db = shift;
 	my %data;
 	$data{mount} = &prompt({prompt=>'What is the name of this lens mount?'});
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{fixed} = &prompt({default=>'no', prompt=>'Is this a fixed mount?', type=>'boolean'});
 	$data{shutter_in_lens} = &prompt({default=>'no', prompt=>'Does this mount contain the shutter in the lens?', type=>'boolean'});
 	$data{type} = &prompt({prompt=>'What type of mounting does this mount use? (e.g. bayonet, screw, etc)'});
@@ -1108,8 +1109,8 @@ sub mount_add {
 
 sub mount_view {
 	my $db = shift;
-	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', required=>1});
-	my $mount = &lookupval({db=>$db, col=>'mount', table=>'MOUNT', where=>{mount_id=>${mountid}}});
+	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
+	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
 	print "Showing data for $mount mount\n";
 	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"camera_id as id, concat(manufacturer, ' ', model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{own=>1, mount_id=>$mountid}, order=>'opt'});
 	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"lens_id as id, concat(manufacturer, ' ', model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{mount_id=>$mountid, own=>1}, order=>'opt'});
@@ -1148,7 +1149,7 @@ sub teleconverter_add {
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this teleconverter?'});
 	$data{factor} = &prompt('', 'What is the magnification factor of this teleconverter?', 'decimal');
-	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
+	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
 	$data{elements} = &prompt({prompt=>'How many elements does this teleconverter have?', type=>'integer'});
 	$data{groups} = &prompt({prompt=>'How many groups are the elements arranged in?', type=>'integer'});
 	$data{multicoated} = &prompt({prompt=>'Is this teleconverter multicoated?', type=>'boolean'});
@@ -1325,8 +1326,8 @@ sub negativesize_add {
 sub mount_adapt {
 	my $db = shift;
 	my %data;
-	$data{lens_mount} = &listchoices({db=>$db, keyword=>'lens-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
-	$data{camera_mount} = &listchoices({db=>$db, keyword=>'camera-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
+	$data{lens_mount} = &listchoices({db=>$db, keyword=>'lens-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
+	$data{camera_mount} = &listchoices({db=>$db, keyword=>'camera-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
 	$data{has_optics} = &prompt({prompt=>'Does this mount adapter have corrective optics?', type=>'boolean'});
 	$data{infinity_focus} = &prompt({prompt=>'Does this mount adapter have infinity focus?', type=>'boolean'});
 	$data{notes} = &prompt({prompt=>'Notes'});
@@ -1471,7 +1472,7 @@ sub projector_add {
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this projector?'});
-	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'MOUNT', where=>{'purpose'=>'Projector'}, inserthandler=>\&mount_add});
+	$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Projector'}, inserthandler=>\&mount_add});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
 	$data{own} = 1;
 	$data{cine} = &prompt({prompt=>'Is this a cine/movie projector?', type=>'boolean'});

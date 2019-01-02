@@ -506,6 +506,7 @@ Table to catalog different lens mount standards. This is mostly used for camera 
 | purpose         | varchar(25) | The intended purpose of this lens mount (e.g. camera, enlarger, projector) |
 | notes           | varchar(45) | Freeform notes field                                                       |
 | digital_only    | tinyint(1)  | Whether this mount is intended only for digital cameras                    |
+| manufacturer_id | int(11)     | Manufacturer ID of this lens mount, if applicable                          |
 
 ## MOUNT_ADAPTER
 
