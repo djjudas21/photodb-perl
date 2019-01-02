@@ -1097,6 +1097,7 @@ sub mount_add {
 	my $db = shift;
 	my %data;
 	$data{mount} = &prompt({prompt=>'What is the name of this lens mount?'});
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{fixed} = &prompt({default=>'no', prompt=>'Is this a fixed mount?', type=>'boolean'});
 	$data{shutter_in_lens} = &prompt({default=>'no', prompt=>'Does this mount contain the shutter in the lens?', type=>'boolean'});
 	$data{type} = &prompt({prompt=>'What type of mounting does this mount use? (e.g. bayonet, screw, etc)'});

@@ -9,6 +9,9 @@ CREATE TABLE `MOUNT` (
   `purpose` varchar(25) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'The intended purpose of this lens mount (e.g. camera, enlarger, projector)',
   `notes` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Freeform notes field',
   `digital_only` tinyint(1) DEFAULT NULL COMMENT 'Whether this mount is intended only for digital cameras',
-  PRIMARY KEY (`mount_id`)
+  `manufacturer_id` int(11) DEFAULT NULL COMMENT 'Manufacturer ID of this lens mount, if applicable',
+  PRIMARY KEY (`mount_id`),
+  KEY `fk_MOUNT_1_idx` (`manufacturer_id`),
+  CONSTRAINT `fk_MOUNT_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different lens mount standards. This is mostly used for camera lens mounts, but can also be used for enlarger and projector lenses.';
 /*!40101 SET character_set_client = @saved_cs_client */;
