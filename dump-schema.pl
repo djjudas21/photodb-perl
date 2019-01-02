@@ -131,10 +131,11 @@ sub dumpdocs {
 	push(@output, 'This documentation is generated automatically from the database schema itself with the `generate-docs.pl` script, using table and column comments embedded in the database\n');
 
 	# Generate docs for each table in turn
+	  print "Generating schema docs for tables...\n";
 	while (my @row= $sqlQuery->fetchrow_array()) {
 	  my $table = $row[0];
 
-	  print "Generating docs for $table\n";
+	  print "\tGenerating docs for $table\n";
 	  push(@output, "\n## $table\n\n");
 
 	  my $query2 = "select TABLE_COMMENT from information_schema.TABLES where TABLE_NAME='$table' and TABLE_SCHEMA='$database'";
