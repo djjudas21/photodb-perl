@@ -26,6 +26,8 @@ GetOptions (
 	"docs!" => \$dumpdocs,
 ) or die("Error in command line arguments\n");
 
+die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $dumpdata || $dumpdocs);
+
 # Prompt for password
 my $password = &password($username, $hostname);
 
