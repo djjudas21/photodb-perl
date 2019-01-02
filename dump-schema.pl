@@ -27,7 +27,7 @@ GetOptions (
 ) or die("Error in command line arguments\n");
 
 # Prompt for password
-my $password = &password;
+my $password = &password($username, $hostname);
 
 if ($dumptables) {
 	# Find out the list of table and view names
@@ -107,7 +107,9 @@ sub dumpdata {
 
 # Prompt for password
 sub password {
-	print "Password: ";
+	my $username = shift;
+	my $hostname = shift;
+	print "Password for database user $username". '@' . "$hostname: ";
 	ReadMode 'noecho';
 	my $password = ReadLine 0;
 	chomp $password;
