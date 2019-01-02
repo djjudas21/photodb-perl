@@ -55,21 +55,21 @@ if ($dumptables) {
 if ($dumpdata) {
 	# List of tables that contain useful sample data
 	my @tables = (
-	        'ACCESSORY_TYPE',
-	        'ARCHIVE_TYPE',
-	        'BODY_TYPE',
-	        'EXPOSURE_PROGRAM',
-	        'FILMSTOCK',
-	        'FORMAT',
-	        'LENS_TYPE',
-	        'MANUFACTURER',
-	        'METERING_MODE',
-	        'METERING_TYPE',
-	        'MOUNT',
-	        'NEGATIVE_SIZE',
-	        'PROCESS',
-	        'SHUTTER_SPEED',
-	        'SHUTTER_TYPE'
+		'ACCESSORY_TYPE',
+		'ARCHIVE_TYPE',
+		'BODY_TYPE',
+		'EXPOSURE_PROGRAM',
+		'FILMSTOCK',
+		'FORMAT',
+		'LENS_TYPE',
+		'MANUFACTURER',
+		'METERING_MODE',
+		'METERING_TYPE',
+		'MOUNT',
+		'NEGATIVE_SIZE',
+		'PROCESS',
+		'SHUTTER_SPEED',
+		'SHUTTER_TYPE'
 	);
 
 	# Delete all existing *.sql files in the sample-data subdir
@@ -104,9 +104,9 @@ sub dumpfuncs {
 
 # Dump table data
 sub dumpdata {
-        my $table = shift;
+	my $table = shift;
 	print "\tDumping data from $table\n";
-        `mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
 }
 
