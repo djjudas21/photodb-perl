@@ -70,6 +70,9 @@ if ($dumpdata) {
 	        'SHUTTER_TYPE'
 	);
 
+	# Delete all existing *.sql files in the sample-data subdir
+	unlink <sample-data/*.sql>;
+
 	# Dump sample data from specific tables
 	print "\nDumping sample data...\n";
 	foreach my $table (@tables) {
