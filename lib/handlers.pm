@@ -902,14 +902,12 @@ sub lens_info {
 sub print_add {
 	my $db = shift;
 	my %data;
-	my $neg_id;
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', table=>'choose_todo'});
 	if ($todo_id) {
-		$neg_id = &lookupval({db=>$db, col=>'negative_id', table=>'TO_PRINT', where=>{id=>$todo_id}});
+		$data{negative_id} = &lookupval({db=>$db, col=>'negative_id', table=>'TO_PRINT', where=>{id=>$todo_id}});
 	} else {
-		$neg_id = &chooseneg({db=>$db});
+		$data{negative_id} = &chooseneg({db=>$db});
 	}
-	$data{negative_id} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
 	my $qty = &prompt({default=>1, prompt=>'How many similar prints did you make from this negative?', type=>'integer'});
 	print "Enter some data about all the prints in the run:\n" if ($qty > 1);
 	$data{date} = &prompt({default=>&today($db), prompt=>'Date that the print was made', type=>'date'});
