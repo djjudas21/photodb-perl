@@ -984,8 +984,7 @@ sub print_sell {
 sub print_order {
 	my $db = shift;
 	my %data;
-	my $neg_id = &chooseneg({db=>$db});
-	$data{negative_id} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
+	$data{negative_id} = &chooseneg({db=>$db});
 	$data{height} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{width} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
 	$data{recipient} = &prompt({prompt=>'Who is the print for?'});
