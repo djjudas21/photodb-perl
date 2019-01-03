@@ -910,39 +910,46 @@ sub print_add {
 		$neg_id = &chooseneg({db=>$db});
 	}
 	$data{negative_id} = &prompt({default=>$neg_id, prompt=>'Negative ID to print from', type=>'integer'});
+	my $qty = &prompt({default=>1, prompt=>'How many similar prints did you make from this negative?', type=>'integer'});
+	print "Enter some data about all the prints in the run:\n" if ($qty > 1);
 	$data{date} = &prompt({default=>&today($db), prompt=>'Date that the print was made', type=>'date'});
 	$data{paper_stock_id} = &listchoices({db=>$db, keyword=>'paper stock', table=>'choose_paper', inserthandler=>\&paperstock_add});
 	$data{height} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{width} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
-	$data{aperture} = &prompt({prompt=>'Aperture used on enlarging lens', type=>'decimal'});
-	$data{exposure_time} = &prompt({prompt=>'Exposure time (s)', type=>'integer'});
-	$data{filtration_grade} = &prompt({prompt=>'Filtration grade', type=>'decimal'});
-	$data{development_time} = &prompt({default=>'60', prompt=>'Development time (s)', type=>'integer'});
 	$data{enlarger_id} = &listchoices({db=>$db, table=>'choose_enlarger', inserthandler=>\&enlarger_add});
 	$data{lens_id} = &listchoices({db=>$db, table=>'choose_enlarger_lens'});
 	$data{developer_id} = &listchoices({db=>$db, cols=>['developer_id as id', 'name as opt'], table=>'DEVELOPER', where=>{'for_paper'=>1}, inserthandler=>\&developer_add});
-	$data{fine} = &prompt({prompt=>'Is this a fine print?', type=>'boolean'});
-	$data{notes} = &prompt({prompt=>'Notes'});
 	$data{printer_id} = &listchoices({db=>$db, keyword=>'printer', cols=>['person_id as id', 'name as opt'], table=>'PERSON', inserthandler=>\&person_add});
-	my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
+	my @prints;
+	for my $n (1..$qty) {
+		print "\nEnter some data about print $n of $qty in this run:\n" if ($qty > 1);
+		$data{aperture} = &prompt({prompt=>'Aperture used on enlarging lens', type=>'decimal'});
+		$data{exposure_time} = &prompt({prompt=>'Exposure time (s)', type=>'integer'});
+		$data{filtration_grade} = &prompt({prompt=>'Filtration grade', type=>'decimal'});
+		$data{development_time} = &prompt({default=>'60', prompt=>'Development time (s)', type=>'integer'});
+		$data{fine} = &prompt({prompt=>'Is this a fine print?', type=>'boolean'});
+		$data{notes} = &prompt({prompt=>'Notes'});
+		my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
+		push @prints, $printid;
+
+		if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'})) {
+			&print_tone($db, $printid);
+		}
+
+		if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'})) {
+			&print_archive($db, $printid);
+		}
+	}
+
+	print "\nAdded $qty prints in this run, numbered #$prints[0]-$prints[-1]\n" if ($qty > 1);
 
 	# Mark is as complete in the todo list
 	if ($todo_id) {
-		my %data2;
-		$data2{printed} = 1;
-		$data2{print_id} = $printid;
-		&updaterecord({db=>$db, data=>\%data2, table=>'TO_PRINT', where=>"id=$todo_id"});
+		&updaterecord({db=>$db, data=>{printed=>1, print_id=>$prints[-1]}, table=>'TO_PRINT', where=>"id=$todo_id"});
 	}
 
-	if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'})) {
-		&print_tone($db, $printid);
-	}
-
-	if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'})) {
-		&print_archive($db, $printid);
-	}
-
-	return $printid;
+	# Return ID of the last print in the run
+	return $prints[-1];
 }
 
 sub print_fulfil {
