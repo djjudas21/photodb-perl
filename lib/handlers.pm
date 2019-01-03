@@ -930,7 +930,7 @@ sub print_add {
 		my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
 		push @prints, $printid;
 
-		&print_tone($db, $printid) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}))
+		&print_tone($db, $printid) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}));
 		&print_archive($db, $printid) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
 	}
 
