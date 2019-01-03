@@ -930,21 +930,14 @@ sub print_add {
 		my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
 		push @prints, $printid;
 
-		if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'})) {
-			&print_tone($db, $printid);
-		}
-
-		if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'})) {
-			&print_archive($db, $printid);
-		}
+		&print_tone($db, $printid) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}))
+		&print_archive($db, $printid) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
 	}
 
 	print "\nAdded $qty prints in this run, numbered #$prints[0]-$prints[-1]\n" if ($qty > 1);
 
 	# Mark is as complete in the todo list
-	if ($todo_id) {
-		&updaterecord({db=>$db, data=>{printed=>1, print_id=>$prints[-1]}, table=>'TO_PRINT', where=>"id=$todo_id"});
-	}
+	&updaterecord({db=>$db, data=>{printed=>1, print_id=>$prints[-1]}, table=>'TO_PRINT', where=>"id=$todo_id"}) if ($todo_id);
 
 	# Return ID of the last print in the run
 	return $prints[-1];
