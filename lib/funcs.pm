@@ -15,32 +15,38 @@ use YAML;
 
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome duration);
 
-# Prompt for an arbitrary value
+# Prompt the user for an arbitrary value
 sub prompt {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $default = $href->{default} // '';
-	my $prompt = $href->{prompt};
-	my $type = $href->{type} || 'text';
-	my $required = $href->{required} // 0;
-	my $showtype = $href->{showtype} // 1;
-	my $showdefault = $href->{showdefault} // 1;
-	my $char = $href->{char} // ':';
+	# Unpack the hashref and set default values
+	my $default = $href->{default} // '';		# Default value that will be used if no input from user
+	my $prompt = $href->{prompt};			# Prompt message for the user
+	my $type = $href->{type} || 'text';		# Data type that this input expects, out of text, integer, boolean, date, decimal, hh:mm:ss
+	my $required = $href->{required} // 0;		# Whether this input is required, or whether it can return an empty value
+	my $showtype = $href->{showtype} // 1;		# Whether to show the user what data type is expected
+	my $showdefault = $href->{showdefault} // 1;	# Whether to show the user what the default value is
+	my $char = $href->{char} // ':';		# Character to print at the end of the prompt
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
 	my $rv;
-	# Repeatedly prompt until we get a response of the correct type
+	# Repeatedly prompt user until we get a response of the correct type
 	do {
+		# Assemble prompt text and print it
 		print $prompt;
 		print " ($type)" if $showtype;
 		print " [$default]" if $showdefault;
 		print "$char ";
 		my $input = <STDIN>; ## no critic
 		chomp($input);
+
+		# Use default value if user gave blank input
 		$rv = ($input eq "") ? $default:$input;
+	# Prompt again if the input doesn't pass validation, or if it's a required field that was blank
 	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
 
-	# Rewrite friendly bools
+	# Rewrite friendly bools and then return the value
 	if ($type eq 'boolean') {
 		return friendlybool($rv);
 	} else {
@@ -48,14 +54,17 @@ sub prompt {
 	}
 }
 
-# Validate that a value is a certain type
+# Validate that a value is a certain data type
 sub validate {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $val = $href->{val};
-	my $type = $href->{type} || 'text';
+	# Unpack the hashref and set default values
+	my $val = $href->{val};			# The value to be validated
+	my $type = $href->{type} || 'text';	# Data type to validate as, out of text, integer, boolean, date, decimal, hh:mm:ss
 
 	die "Must provide value for \$val\n" if !defined($val);
 
+	# Empty string always passes validation
 	if ($val eq '') {
 		return 1;
 	}
@@ -83,7 +92,6 @@ sub validate {
 		} else {
 			return 0;
 		}
-
 	} elsif ($type eq 'decimal') {
 		if ($val =~ m/^\d+(\.\d+)?$/) {
 			return 1;
@@ -135,7 +143,9 @@ sub db {
 		$$connect{'database'}{'user'},
 		$$connect{'database'}{'pass'},
 		{
+			# Required for updates to work properly
 			mysql_client_found_rows => 0,
+			# Required to print symbols
 			mysql_enable_utf8mb4 => 1,
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
@@ -254,7 +264,7 @@ sub notimplemented {
 	return;
 }
 
-# Quit if no valid command is given
+# Print list of commands
 sub nocommand {
 	my $handlers = shift;
 	print "photodb <command> <subcommand>\n\n";
@@ -263,7 +273,7 @@ sub nocommand {
 	return;
 }
 
-# Quit if no valid subcommand is given
+# Print list of subcommands for a given command
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
@@ -273,22 +283,22 @@ sub nosubcommand {
 	return;
 }
 
-# List arbitrary choices and return ID of the selected one
+# List arbitrary choices from the DB and return ID of the selected one
 sub listchoices {
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $type = $href->{type} || 'text';
-	my $inserthandler = $href->{inserthandler};
-	my $default = $href->{default} // '';
-	my $autodefault = $href->{autodefault} // 1;
-	my $skipok = $href->{skipok} || 0;
-	my $table = $href->{table};
-	my $cols = $href->{cols} // ('id, opt');
-	my $where = $href->{where} // {};
-	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
-	my $required = $href->{required} // 0;
-	my $char = $href->{char} // '+';
+	my $db = $href->{db};								# DB handle
+	my $query = $href->{query};							# (legacy) the SQL to generate the list of choices
+	my $type = $href->{type} || 'text';						# Data type of choice to be made. Often but not always integer
+	my $inserthandler = $href->{inserthandler};					# ref to handler that can be used to insert a new row
+	my $default = $href->{default} // '';						# id of default choice
+	my $autodefault = $href->{autodefault} // 1;					# if default not set, count number of allowed options and if there's just 1, make it the default
+	my $skipok = $href->{skipok} || 0;						# whether it is ok to return null if there are no options to choose from
+	my $table = $href->{table};							# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // ('id, opt');					# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};						# Part of the SQL::Abstract tuple
+	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);		# keyword to describe the thing being chosen
+	my $required = $href->{required} // 0;						# whether we allow the user to enter an empty input
+	my $char = $href->{char} // '+';						# character to use to signal that you want to enter a new row
 
 	my ($sth, $rows);
 	if ($query) {
