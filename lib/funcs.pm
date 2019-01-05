@@ -154,20 +154,15 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
+	# Pass in a hashref of arguments
 	my $href = shift;
 
-	# Read in db handle
-	my $db = $href->{db};
-
-	# Read in hash new values
-	my $data = $href->{data};
-
-	# Read in table name
-	my $table = $href->{table};
-
-	# Read in where condition
-	my $where = $href->{where};
-	my $silent = $href->{silent} // 0;
+	# Unpack the hashref and set default values
+	my $db = $href->{db};			# DB handle
+	my $data = $href->{data};		# Hash of new values to update
+	my $table = $href->{table};		# Name of table to update
+	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
+	my $silent = $href->{silent} // 0;	# Suppress output
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -180,7 +175,7 @@ sub updaterecord {
 
 	if (scalar(keys %$data) == 0) {
 		print "Nothing to update\n";
-		return;
+		return 0;
 	}
 
 	# Dump data for debugging
@@ -210,17 +205,14 @@ sub updaterecord {
 
 # Insert a record into any table
 sub newrecord {
+	# Pass in a hashref of arguments
 	my $href = shift;
 
-	# Read in db handle
-	my $db = $href->{db};
-
-	# Read in hash new values
-	my $data = $href->{data};
-
-	# Read in table name
-	my $table = $href->{table};
-	my $silent = $href->{silent} // 0;
+	# Unpack the hashref and set default values
+	my $db = $href->{db};			# DB handle
+	my $data = $href->{data};		# Hash of new values to insert
+	my $table = $href->{table};		# Table to insert into
+	my $silent = $href->{silent} // 0;	# Suppress output
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -285,7 +277,9 @@ sub nosubcommand {
 
 # List arbitrary choices from the DB and return ID of the selected one
 sub listchoices {
+	# Pass in a hashref of arguments
 	my $href = shift;
+
 	my $db = $href->{db};								# DB handle
 	my $query = $href->{query};							# (legacy) the SQL to generate the list of choices
 	my $type = $href->{type} || 'text';						# Data type of choice to be made. Often but not always integer
@@ -379,14 +373,16 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $msg = $href->{msg};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $cols = $href->{cols} // ('id, opt');
-	my $where = $href->{where} // {};
-	my $order = $href->{order};
+
+	my $db = $href->{db};				# DB handle
+	my $msg = $href->{msg};				# Message to display to user
+	my $query = $href->{query};			# (legacy) SQL query to run
+	my $table = $href->{table};			# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // ('id, opt');	# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};		# Part of the SQL::Abstract tuple
+	my $order = $href->{order};			# Part of the SQL::Abstract tuple
 
 	print "Now showing $msg\n";
 
@@ -413,12 +409,14 @@ sub printlist {
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $cols = $href->{cols} // '*';
-	my $where = $href->{where} // {};
+
+	my $db = $href->{db};			# DB handle
+	my $query = $href->{query};		# (legacy) SQL query to run
+	my $table = $href->{table};		# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // '*';	# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};	# Part of the SQL::Abstract tuple
 
 	my ($sth, $rows);
 	if ($query) {
@@ -454,12 +452,14 @@ sub thin {
 
 # Return arbitrary value from database
 sub lookupval {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $col = $href->{col};
-	my $where = $href->{where} // {};
+
+	my $db = $href->{db};			# DB handle
+	my $query = $href->{query};		# (legacy) SQL query to run
+	my $table = $href->{table};		# Part of the SQL::Abstract tuple
+	my $col = $href->{col};			# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};	# Part of the SQL::Abstract tuple
 
 	my ($sth, $rows);
 	if ($query) {
@@ -530,16 +530,16 @@ sub writeconfig {
 
 # Round numbers to any precision
 sub round {
-	my $x = shift;
-	my $pow10 = shift || 0;
+	my $x = shift;		# Number to round
+	my $pow10 = shift || 0;	# Number of decimal places to round to
 	my $a = 10 ** $pow10;
 	return int(($x * $a) + 0.5) / $a
 }
 
 # Pad a string with spaces up to a fixed length
 sub pad {
-	my $string = shift;
-	my $totallength = shift || 18;
+	my $string = shift;		# Text to pad
+	my $totallength = shift || 18;	# Total number of characters to pad to
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
@@ -565,12 +565,16 @@ sub resolvenegid {
 	}
 }
 
+# Select a negative by drilling down
 sub chooseneg {
 	my $href = shift;
 	my $db = $href->{db};
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
+	# Choose a film
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
+
+	#  Choose a negative from this film
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
 	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
