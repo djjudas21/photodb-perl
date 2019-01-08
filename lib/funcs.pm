@@ -481,23 +481,27 @@ sub lookupval {
 	return $row;
 }
 
-# Update data
+# Update data using a bare UPDATE statement
+# Avoid using if possible
 sub updatedata {
-	my $db = shift;
-	my $query = shift;
+	my $db = shift;		# DB handle
+	my $query = shift;	# Plain SQL query
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
+	# DBD returns scientific 0E0 instead of 0
 	$rows = 0 if ($rows eq '0E0');
 	return $rows;
 }
 
-# Return today's date
+# Return today's date according to the DB
 sub today {
-	my $db = shift;
+	my $db = shift;		# DB handle
 	return &lookupval({db=>$db, query=>'select curdate()'});
 }
 
 # Translate "friendly" bools to integers
+# y/yes/true/1
+# n/no/false/0
 sub friendlybool {
 	my $val = shift;
 	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
@@ -748,7 +752,7 @@ END_ASCII
 	return;
 }
 
-# Calculate duration of a shutter speed
+# Calculate duration of a shutter speed from its string representation
 sub duration {
 	my $shutter_speed = shift;
 	my $duration = 0;
