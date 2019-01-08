@@ -1,14 +1,11 @@
 package tagger;
 
-
-# This script reads data from the analogue photography database and
-# writes EXIF tags back to the JPGs that have been scanned from negatives
+# This func reads data from PhotoDB and writes EXIF tags
+# to the JPGs that have been scanned from negatives
 #
 # TODO
 # - Write out some film info in freeform field
 # - log list of missing/corrupt files
-# - use inifile for basepath
-# - use pm for sql connector
 
 use strict;
 use warnings;
