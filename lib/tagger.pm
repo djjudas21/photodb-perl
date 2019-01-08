@@ -1,12 +1,5 @@
 package tagger;
 
-# This func reads data from PhotoDB and writes EXIF tags
-# to the JPGs that have been scanned from negatives
-#
-# TODO
-# - Write out some film info in freeform field
-# - log list of missing/corrupt files
-
 use strict;
 use warnings;
 use Image::ExifTool;
@@ -27,6 +20,8 @@ use funcs qw(/./);
 
 our @EXPORT_OK = qw(tag);
 
+# This func reads data from PhotoDB and writes EXIF tags
+# to the JPGs that have been scanned from negatives
 sub tag {
 
 	# Read in cmdline args
