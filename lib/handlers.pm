@@ -431,9 +431,7 @@ sub camera_accessory {
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
 		$compatdata{camera_id} = $cameraid;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
-		if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'})) {
-			last;
-		}
+		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
 	return;
 }
@@ -453,9 +451,7 @@ sub camera_shutterspeeds {
 		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM photography.SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 		$shutterdata{camera_id} = $cameraid;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
-		if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'})) {
-			last;
-		}
+		last if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'}));
 	}
 	return;
 }
@@ -839,9 +835,7 @@ sub lens_accessory {
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
 		$compatdata{lens_id} = $lensid;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
-		if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'})) {
-			last;
-		}
+		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
 	return;
 }
@@ -1208,9 +1202,7 @@ sub accessory_add {
 			$compatdata{accessory_id} = $accessoryid;
 			$compatdata{camera_id} = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
-			if (!&prompt({default=>'yes', prompt=>'Add another compatible camera?', type=>'boolean'})) {
-				last;
-			}
+			last if (!&prompt({default=>'yes', prompt=>'Add another compatible camera?', type=>'boolean'}));
 		}
 	}
 	if (&prompt({default=>'yes', prompt=>'Add lens compatibility info for this accessory?', type=>'boolean'})) {
@@ -1219,9 +1211,7 @@ sub accessory_add {
 			$compatdata{accessory_id} = $accessoryid;
 			$compatdata{lens_id} = &listchoices({db=>$db, table=>'choose_lens', required=>1});
 			&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
-			if (!&prompt({default=>'yes', prompt=>'Add another compatible lens?', type=>'boolean'})) {
-				last;
-			}
+			last if (!&prompt({default=>'yes', prompt=>'Add another compatible lens?', type=>'boolean'}));
 		}
 	}
 	return $accessoryid;
