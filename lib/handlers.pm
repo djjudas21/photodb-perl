@@ -53,8 +53,8 @@ our @EXPORT_OK = qw(
 	choose_manufacturer
 );
 
+# Add a newly-purchased film
 sub film_add {
-	# Add a newly-purchased film
 	my $db = shift;
 	my %data;
 	if (&prompt({default=>'no', prompt=>'Is this film bulk-loaded?', type=>'boolean'}) == 1) {
@@ -84,8 +84,8 @@ sub film_add {
 	return $filmid;
 }
 
+# Load a film into a camera
 sub film_load {
-	# Load a film into a camera
 	my $db = shift;
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load', required=>1});
 	my %data;
@@ -96,8 +96,8 @@ sub film_load {
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
+# Archive a film for storage
 sub film_archive {
-	# Archive a film for storage
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
 	my %data;
@@ -105,8 +105,8 @@ sub film_archive {
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
+# Develop a film
 sub film_develop {
-	# Develop a film
 	my $db = shift;
 	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_develop', required=>1});
 	my %data;
@@ -127,8 +127,8 @@ sub film_develop {
 	return;
 }
 
+# Write EXIF tags to a film
 sub film_tag {
-	# Write EXIF tags to a film
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
 	if ($film_id eq '') {
@@ -226,8 +226,8 @@ sub film_choose {
 	return;
 }
 
+# Add a new camera
 sub camera_add {
-	# Add a new camera
 	my $db = shift;
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
@@ -596,8 +596,8 @@ sub camera_choose {
 	return;
 }
 
+# Add a single neg to a film
 sub negative_add {
-	# Add a single neg to a film
 	my $db = shift;
 	my %data;
 	$data{film_id} = &film_choose($db);
@@ -636,9 +636,9 @@ sub negative_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 }
 
+# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
 sub negative_bulkadd {
 	my $db = shift;
-	# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
 	my %data;
 	$data{film_id} = shift || &film_choose($db);
 	my $num = &prompt({prompt=>'How many frames to add?', type=>'integer'});
