@@ -12,6 +12,7 @@ use SQL::Abstract;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
+use Image::ExifTool::Location;
 
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome duration);
 
