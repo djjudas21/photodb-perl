@@ -52,7 +52,7 @@ our @EXPORT_OK = qw(
 	choose_manufacturer
 );
 
-# Add a newly-purchased film
+# Add a new film to the database
 sub film_add {
 	my $db = shift;
 	my %data;
@@ -95,7 +95,7 @@ sub film_load {
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
 
-# Archive a film for storage
+# Put a film in a physical archive
 sub film_archive {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
@@ -126,7 +126,7 @@ sub film_develop {
 	return;
 }
 
-# Write EXIF tags to a film
+# Write EXIF tags to scans from a film
 sub film_tag {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
@@ -140,6 +140,7 @@ sub film_tag {
 	return;
 }
 
+# Locate where this film is
 sub film_locate {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
@@ -153,6 +154,7 @@ sub film_locate {
 	return;
 }
 
+# Add a new bulk film to the database
 sub film_bulk {
 	my $db = shift;
 	my %data;
@@ -166,6 +168,7 @@ sub film_bulk {
 	return &newrecord({db=>$db, data=>\%data, table=>'FILM_BULK'});
 }
 
+# Write out a text file with the scans from the film
 sub film_annotate {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
@@ -173,6 +176,7 @@ sub film_annotate {
 	return;
 }
 
+# List the films that are currently in stock
 sub film_stocks {
 	my $db = shift;
 	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
@@ -191,6 +195,7 @@ sub film_stocks {
 	return;
 }
 
+# List films that are currently loaded into cameras
 sub film_current {
 	my $db = shift;
 	&printlist({db=>$db, msg=>"current films", table=>'current_films'});
@@ -225,7 +230,7 @@ sub film_choose {
 	return;
 }
 
-# Add a new camera
+# Add a new camera to the database
 sub camera_add {
 	my $db = shift;
 	my %data;
@@ -329,6 +334,7 @@ sub camera_add {
 	return $cameraid;
 }
 
+# Edit an existing camera
 sub camera_edit {
 	my $db = shift;
 	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -423,6 +429,7 @@ sub camera_edit {
 	return &updaterecord({db=>$db, data=>\%changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
+# Add accessory compatibility info to a camera
 sub camera_accessory {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -436,6 +443,7 @@ sub camera_accessory {
 	return;
 }
 
+# Add available shutter speed info to a camera
 sub camera_shutterspeeds {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -456,6 +464,7 @@ sub camera_shutterspeeds {
 	return;
 }
 
+# Add available exposure program info to a camera
 sub camera_exposureprogram {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -475,6 +484,7 @@ sub camera_exposureprogram {
 	return;
 }
 
+# Add available metering mode info to a camera
 sub camera_meteringmode {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -489,6 +499,7 @@ sub camera_meteringmode {
 	return;
 }
 
+# Associate a camera with a lens for display purposes
 sub camera_displaylens {
 	my $db = shift;
 	my %data;
@@ -498,6 +509,7 @@ sub camera_displaylens {
 	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
 }
 
+# Sell a camera
 sub camera_sell {
 	my $db = shift;
 	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera'});
@@ -520,6 +532,7 @@ sub camera_sell {
 	return;
 }
 
+# Repair a camera
 sub camera_repair {
 	my $db = shift;
 	my %data;
@@ -530,6 +543,7 @@ sub camera_repair {
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 }
 
+# Show information about a camera
 sub camera_info {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -538,6 +552,7 @@ sub camera_info {
 	return;
 }
 
+# Show statistics about a camera
 sub camera_stats {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -552,6 +567,7 @@ sub camera_stats {
 	return;
 }
 
+# Choose a camera based on several criteria
 sub camera_choose {
 	my $db = shift;
 	my %where;
@@ -591,7 +607,7 @@ sub camera_choose {
 	return;
 }
 
-# Add a single neg to a film
+# Add a new negative to the database as part of a film
 sub negative_add {
 	my $db = shift;
 	my %data;
@@ -631,7 +647,7 @@ sub negative_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE'});
 }
 
-# Add lots of negatives to a film, maybe asks if they were all shot with the same lens
+# Bulk add multiple negatives to the database as part of a film
 sub negative_bulkadd {
 	my $db = shift;
 	my %data;
@@ -683,6 +699,7 @@ sub negative_bulkadd {
 	return;
 }
 
+# Show statistics about a negative
 sub negative_stats {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
@@ -691,6 +708,7 @@ sub negative_stats {
 	return;
 }
 
+# Find all prints made from a negative
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
@@ -698,6 +716,7 @@ sub negative_prints {
 	return;
 }
 
+# Add a new lens to the database
 sub lens_add {
 	my $db = shift;
 	my %data;
@@ -759,6 +778,7 @@ sub lens_add {
 	return $lensid;
 }
 
+# Edit an existing lens
 sub lens_edit {
 	my $db = shift;
 	my %data;
@@ -827,6 +847,7 @@ sub lens_edit {
 	return &updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
+# Add accessory compatibility info to a lens
 sub lens_accessory {
 	my $db = shift;
 	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
@@ -840,6 +861,7 @@ sub lens_accessory {
 	return;
 }
 
+# Sell a lens
 sub lens_sell {
 	my $db = shift;
 	my %data;
@@ -851,6 +873,7 @@ sub lens_sell {
 	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
+# Repair a lens
 sub lens_repair {
 	my $db = shift;
 	my %data;
@@ -861,6 +884,7 @@ sub lens_repair {
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 }
 
+# Show statistics about a lens
 sub lens_stats {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
@@ -884,6 +908,7 @@ sub lens_stats {
 	return;
 }
 
+# Show information about a lens
 sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
@@ -892,6 +917,7 @@ sub lens_info {
 	return;
 }
 
+# Add a new print that has been made from a negative
 sub print_add {
 	my $db = shift;
 	my %data;
@@ -936,6 +962,7 @@ sub print_add {
 	return $prints[-1];
 }
 
+# Fulfil an order for a print
 sub print_fulfil {
 	my $db = shift;
 	my %data;
@@ -945,6 +972,7 @@ sub print_fulfil {
 	return &updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
 }
 
+# Add toning to a print
 sub print_tone {
 	my $db = shift;
 	my %data;
@@ -963,6 +991,7 @@ sub print_tone {
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
+# Sell a print
 sub print_sell {
 	my $db = shift;
 	my %data;
@@ -974,6 +1003,7 @@ sub print_sell {
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
+# Register an order for a print
 sub print_order {
 	my $db = shift;
 	my %data;
@@ -985,6 +1015,7 @@ sub print_order {
 	return &newrecord({db=>$db, data=>\%data, table=>'TO_PRINT'});
 }
 
+# Add a print to a physical archive
 sub print_archive {
 	# Archive a print for storage
 	my $db = shift;
@@ -996,6 +1027,7 @@ sub print_archive {
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
+# Remove a print from a physical archive
 sub print_unarchive {
 	# Remove a print from an archive
 	my $db = shift;
@@ -1003,6 +1035,7 @@ sub print_unarchive {
 	return &lookupval({db=>$db, query=>"select print_unarchive($print_id)"});
 }
 
+# Locate a print in an archive
 sub print_locate {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to locate?', type=>'integer', required=>1});
@@ -1022,6 +1055,7 @@ sub print_locate {
 	return;
 }
 
+# Show details about a print
 sub print_info {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
@@ -1030,6 +1064,7 @@ sub print_info {
 	return;
 }
 
+# Exhibit a print in an exhibition
 sub print_exhibit {
 	my $db = shift;
 	my %data;
@@ -1038,6 +1073,7 @@ sub print_exhibit {
 	return &newrecord({db=>$db, data=>\%data, table=>'EXHIBIT'});
 }
 
+# Generate text to label a print
 sub print_label {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer', required=>1});
@@ -1050,6 +1086,7 @@ sub print_label {
 	return;
 }
 
+# Display print todo list
 sub print_worklist {
 	my $db = shift;
 	my $data = &lookupcol({db=>$db, table=>'choose_todo'});
@@ -1060,6 +1097,7 @@ sub print_worklist {
 	return;
 }
 
+# Add a new type of photo paper to the database
 sub paperstock_add {
 	my $db = shift;
 	my %data;
@@ -1072,6 +1110,7 @@ sub paperstock_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'PAPER_STOCK'});
 }
 
+# Add a new developer to the database
 sub developer_add {
 	my $db = shift;
 	my %data;
@@ -1083,6 +1122,7 @@ sub developer_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'DEVELOPER'});
 }
 
+# Add a new lens mount to the database
 sub mount_add {
 	my $db = shift;
 	my %data;
@@ -1097,6 +1137,7 @@ sub mount_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'MOUNT'});
 }
 
+# View compatible cameras and lenses for a mount
 sub mount_view {
 	my $db = shift;
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
@@ -1107,6 +1148,7 @@ sub mount_view {
 	return;
 }
 
+# Add a new chemical toner to the database
 sub toner_add {
 	my $db = shift;
 	my %data;
@@ -1117,6 +1159,7 @@ sub toner_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'TONER'});
 }
 
+# Add a new type of filmstock to the database
 sub filmstock_add {
 	my $db = shift;
 	my %data;
@@ -1133,6 +1176,7 @@ sub filmstock_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FILMSTOCK'});
 }
 
+# Add a new teleconverter to the database
 sub teleconverter_add {
 	my $db = shift;
 	my %data;
@@ -1146,6 +1190,7 @@ sub teleconverter_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'TELECONVERTER'});
 }
 
+# Add a new (optical) filter to the database
 sub filter_add {
 	my $db = shift;
 	my %data;
@@ -1157,6 +1202,7 @@ sub filter_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FILTER'});
 }
 
+# Add a new development process to the database
 sub process_add {
 	my $db = shift;
 	my %data;
@@ -1166,6 +1212,7 @@ sub process_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'PROCESS'});
 }
 
+# Add a filter adapter to the database
 sub filter_adapt {
 	my $db = shift;
 	my %data;
@@ -1174,6 +1221,7 @@ sub filter_adapt {
 	return &newrecord({db=>$db, data=>\%data, table=>'FILTER_ADAPTER'});
 }
 
+# Add a new manufacturer to the database
 sub manufacturer_add {
 	my $db = shift;
 	my %data;
@@ -1186,6 +1234,7 @@ sub manufacturer_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'MANUFACTURER'});
 }
 
+# Add a new "other" accessory to the database
 sub accessory_add {
 	my $db = shift;
 	my %data;
@@ -1217,6 +1266,7 @@ sub accessory_add {
 	return $accessoryid;
 }
 
+# Add a new type of "other" accessory to the database
 sub accessory_type {
 	my $db = shift;
 	my %data;
@@ -1224,6 +1274,7 @@ sub accessory_type {
 	return &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
 }
 
+# Add a new enlarger to the database
 sub enlarger_add {
 	my $db = shift;
 	my %data;
@@ -1237,6 +1288,7 @@ sub enlarger_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
 }
 
+# Sell an enlarger
 sub enlarger_sell {
 	my $db = shift;
 	my %data;
@@ -1246,6 +1298,7 @@ sub enlarger_sell {
 	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
 }
 
+# Add a new flash to the database
 sub flash_add {
 	my $db = shift;
 	my %data;
@@ -1277,6 +1330,7 @@ sub flash_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FLASH'});
 }
 
+# Add a new type of battery to the database
 sub battery_add {
 	my $db = shift;
 	my %data;
@@ -1287,6 +1341,7 @@ sub battery_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'BATTERY'});
 }
 
+# Add a new film format to the database
 sub format_add {
 	my $db = shift;
 	my %data;
@@ -1295,6 +1350,7 @@ sub format_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FORMAT'});
 }
 
+# Add a size of negative to the database
 sub negativesize_add {
 	my $db = shift;
 	my %data;
@@ -1309,6 +1365,7 @@ sub negativesize_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'NEGATIVE_SIZE'});
 }
 
+# Add a new mount adapter to the database
 sub mount_adapt {
 	my $db = shift;
 	my %data;
@@ -1320,6 +1377,7 @@ sub mount_adapt {
 	return &newrecord({db=>$db, data=>\%data, table=>'MOUNT_ADAPTER'});
 }
 
+# Add a new light meter to the database
 sub lightmeter_add {
 	my $db = shift;
 	my %data;
@@ -1337,6 +1395,7 @@ sub lightmeter_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'LIGHT_METER'});
 }
 
+# Add a new camera body type
 sub camera_addbodytype {
 	my $db = shift;
 	my %data;
@@ -1344,6 +1403,7 @@ sub camera_addbodytype {
 	return &newrecord({db=>$db, data=>\%data, table=>'BODY_TYPE'});
 }
 
+# Add a new physical archive for prints or films
 sub archive_add {
 	my $db = shift;
 	my %data;
@@ -1357,6 +1417,7 @@ sub archive_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'ARCHIVE'});
 }
 
+# Bulk-add multiple films to an archive
 sub archive_films {
 	my $db = shift;
 	my %data;
@@ -1375,6 +1436,7 @@ sub archive_films {
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
 }
 
+# List the contents of an archive
 sub archive_list {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
@@ -1384,6 +1446,7 @@ sub archive_list {
 	return;
 }
 
+# Seal an archive and prevent new items from being added to it
 sub archive_seal {
 	my $db = shift;
 	my %data;
@@ -1392,6 +1455,7 @@ sub archive_seal {
 	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
+# Unseal an archive and allow new items to be added to it
 sub archive_unseal {
 	my $db = shift;
 	my %data;
@@ -1400,6 +1464,7 @@ sub archive_unseal {
 	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
+# Move an archive to a new location
 sub archive_move {
 	my $db = shift;
 	my %data;
@@ -1409,6 +1474,7 @@ sub archive_move {
 	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
 }
 
+# Add a new type of shutter to the database
 sub shuttertype_add {
 	my $db = shift;
 	my %data;
@@ -1416,6 +1482,7 @@ sub shuttertype_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_TYPE'});
 }
 
+# Add a new type of focus system to the database
 sub focustype_add {
 	my $db = shift;
 	my %data;
@@ -1423,6 +1490,7 @@ sub focustype_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FOCUS_TYPE'});
 }
 
+# Add a new flash protocol to the database
 sub flashprotocol_add {
 	my $db = shift;
 	my %data;
@@ -1431,6 +1499,7 @@ sub flashprotocol_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'FLASH_PROTOCOL'});
 }
 
+# Add a new type of metering system to the database
 sub meteringtype_add {
 	my $db = shift;
 	my %data;
@@ -1438,6 +1507,7 @@ sub meteringtype_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'METERING_TYPE'});
 }
 
+# Add a new shutter speed to the database
 sub shutterspeed_add {
 	my $db = shift;
 	my %data;
@@ -1446,6 +1516,7 @@ sub shutterspeed_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED'});
 }
 
+# Add a new person to the database
 sub person_add {
 	my $db = shift;
 	my %data;
@@ -1453,6 +1524,7 @@ sub person_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'PERSON'});
 }
 
+# Add a new projector to the database
 sub projector_add {
 	my $db = shift;
 	my %data;
@@ -1465,6 +1537,7 @@ sub projector_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'PROJECTOR'});
 }
 
+# Add a new movie to the database
 sub movie_add {
 	my $db = shift;
 	my %data;
@@ -1488,6 +1561,7 @@ sub movie_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
 }
 
+# Audit cameras without shutter speed data
 sub audit_shutterspeeds {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
@@ -1495,6 +1569,7 @@ sub audit_shutterspeeds {
 	return;
 }
 
+# Audit cameras without exposure program data
 sub audit_exposureprograms {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
@@ -1502,6 +1577,7 @@ sub audit_exposureprograms {
 	return;
 }
 
+# Audit cameras without metering mode data
 sub audit_meteringmodes {
 	my $db = shift;
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
@@ -1509,6 +1585,7 @@ sub audit_meteringmodes {
 	return;
 }
 
+# Add a new exhibition to the database
 sub exhibition_add {
 	my $db = shift;
 	my %data;
@@ -1519,6 +1596,7 @@ sub exhibition_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'EXHIBITION'});
 }
 
+# Review which prints were exhibited at an exhibition
 sub exhibition_review {
 	my $db = shift;
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', required=>1});
@@ -1528,6 +1606,7 @@ sub exhibition_review {
 	return;
 }
 
+# Run a selection of maintenance tasks on the database
 sub task_run {
 	my $db = shift;
 
