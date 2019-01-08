@@ -18,7 +18,6 @@ BEGIN {
 use lib "$path/lib";
 use funcs qw(/./);
 use queries;
-use tagger qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose
