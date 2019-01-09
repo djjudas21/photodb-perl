@@ -25,10 +25,6 @@
 ## `annotatefilm`
 ## `keyword`
 ## `parselensmodel`
-## `guessminfl`
-## `guessmaxfl`
-## `guessaperture`
-## `guesszoom`
 ## `unsetdisplaylens`
 ## `welcome`
 ## `duration`

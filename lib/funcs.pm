@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool::Location;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome duration);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -678,48 +678,31 @@ sub keyword {
 # Parse lens model name to figure out some data
 sub parselensmodel {
 	my $model = shift;
-	my ($minfocal, $maxfocal, $aperture, $zoom);
+	my $param = shift;
+
+	# Define hash to hold results
+	my %results;
+
 	if ($model =~ m/(\d+)-?(\d+)?mm/) {
-		$minfocal = $1;
-		$maxfocal = $2;
+		$results{minfocal} = $1;
+		$results{maxfocal} = $2;
 	}
-	if ($minfocal && $maxfocal) {
-		$zoom = 'yes';
+	if ($results{minfocal} && $results{maxfocal}) {
+		$results{zoom} = 'yes';
 	} else {
-		$zoom = 'no';
+		$results{zoom} = 'no';
 	}
 	if ($model =~ m/(f\/|1:)([\d\.]+)/) {
-		$aperture = $2;
+		$results{aperture} = $2;
 	}
-	return {minfocal=>$minfocal, maxfocal=>$maxfocal, aperture=>$aperture, zoom=>$zoom};
-}
 
-# Guess minimum focal length
-sub guessminfl {
-	my $model = shift;
-	my $rv = &parselensmodel($model);
-	return $rv->{'minfocal'};
-}
-
-# Guess maximum focal length
-sub guessmaxfl {
-	my $model = shift;
-	my $rv = &parselensmodel($model);
-	return $rv->{'maxfocal'};
-}
-
-# Guess maximum aperture
-sub guessaperture {
-	my $model = shift;
-	my $rv = &parselensmodel($model);
-	return $rv->{'aperture'};
-}
-
-# Guess whether it is a zoom lens
-sub guesszoom {
-	my $model = shift;
-	my $rv = &parselensmodel($model);
-	return $rv->{'zoom'};
+	if ($param) {
+		# If a specific param was requested, return it
+		return $results{$param};
+	} else {
+		# Else return a hashref of all params
+		return \%results;
+	}
 }
 
 # Unset display lens
