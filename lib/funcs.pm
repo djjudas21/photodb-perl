@@ -622,7 +622,7 @@ sub annotatefilm {
 			}
 
 			# Now work out the negative details
-			my $sth2 = $db->prepare('SELECT * FROM photography.negative_info where film_id=?') or die "Couldn't prepare statement: " . $db->errstr;
+			my $sth2 = $db->prepare('SELECT * FROM photography.negative_info where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
 			my $rows2 = $sth2->execute($film_id);
 
 			# Print a block for each negative

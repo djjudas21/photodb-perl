@@ -89,6 +89,7 @@ our %handlers = (
 		'bulk'     => { 'handler' => \&film_bulk,     'desc' => 'Add a new bulk film to the database' },
 		'current'  => { 'handler' => \&film_current,  'desc' => 'List films that are currently loaded into cameras' },
 		'develop'  => { 'handler' => \&film_develop,  'desc' => 'Develop a film' },
+		'info'     => { 'handler' => \&film_info,     'desc' => 'Show information about a film' },
 		'load'     => { 'handler' => \&film_load,     'desc' => 'Load a film into a camera' },
 		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
 		'stocks'   => { 'handler' => \&film_stocks,   'desc' => 'List the films that are currently in stock' },
@@ -119,6 +120,7 @@ our %handlers = (
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
 		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
+		'info'     => { 'handler' => \&negative_info,    'desc' => 'Show information about a negative' },
 		'prints'   => { 'handler' => \&negative_prints,  'desc' => 'Find all prints made from a negative' },
 		'stats'    => { 'handler' => \&negative_stats,   'desc' => 'Show statistics about a negative' },
 	},

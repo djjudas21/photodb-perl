@@ -35,6 +35,8 @@ Create a text file in the film scan directory with summary info about the film &
 List the films that are currently in stock
 ### `film current`
 List films that are currently loaded into cameras
+### `film info`
+Show information about a film
 
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
@@ -73,6 +75,8 @@ Add a new negative to the database as part of a film
 `negative bulk-add` registers a number of negatives to an existing film, but doesn't collect any data.
 It is useful only for blocking out e.g. 24 negatives for a 24-exp film. They will need to have data added later.
 Bulk add multiple negatives to the database as part of a film
+### `negative info`
+Show information about a negative
 ### `negative stats`
 Show statistics about a negative
 ### `negative prints`
