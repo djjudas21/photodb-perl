@@ -693,7 +693,7 @@ sub negative_bulkadd {
 		&newrecord({db=>$db, data=>\%$thindata, table=>'NEGATIVE', silent=>1});
 	}
 
-	print "Inserted $num negatives into film #$$data{film_id}\n";
+	print "Inserted $num negatives into film #$$thindata{film_id}\n";
 	return;
 }
 
