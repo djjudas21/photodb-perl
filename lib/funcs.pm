@@ -12,35 +12,42 @@ use SQL::Abstract;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
+use Image::ExifTool::Location;
 
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel guessminfl guessmaxfl guessaperture guesszoom unsetdisplaylens welcome duration);
 
-# Prompt for an arbitrary value
+# Prompt the user for an arbitrary value
 sub prompt {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $default = $href->{default} // '';
-	my $prompt = $href->{prompt};
-	my $type = $href->{type} || 'text';
-	my $required = $href->{required} // 0;
-	my $showtype = $href->{showtype} // 1;
-	my $showdefault = $href->{showdefault} // 1;
-	my $char = $href->{char} // ':';
+	# Unpack the hashref and set default values
+	my $default = $href->{default} // '';		# Default value that will be used if no input from user
+	my $prompt = $href->{prompt};			# Prompt message for the user
+	my $type = $href->{type} || 'text';		# Data type that this input expects, out of text, integer, boolean, date, decimal, hh:mm:ss
+	my $required = $href->{required} // 0;		# Whether this input is required, or whether it can return an empty value
+	my $showtype = $href->{showtype} // 1;		# Whether to show the user what data type is expected
+	my $showdefault = $href->{showdefault} // 1;	# Whether to show the user what the default value is
+	my $char = $href->{char} // ':';		# Character to print at the end of the prompt
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
 	my $rv;
-	# Repeatedly prompt until we get a response of the correct type
+	# Repeatedly prompt user until we get a response of the correct type
 	do {
+		# Assemble prompt text and print it
 		print $prompt;
 		print " ($type)" if $showtype;
 		print " [$default]" if $showdefault;
 		print "$char ";
 		my $input = <STDIN>; ## no critic
 		chomp($input);
+
+		# Use default value if user gave blank input
 		$rv = ($input eq "") ? $default:$input;
+	# Prompt again if the input doesn't pass validation, or if it's a required field that was blank
 	} while (!&validate({val => $rv, type => $type}) || ($rv eq '' && $required == 1));
 
-	# Rewrite friendly bools
+	# Rewrite friendly bools and then return the value
 	if ($type eq 'boolean') {
 		return friendlybool($rv);
 	} else {
@@ -48,14 +55,17 @@ sub prompt {
 	}
 }
 
-# Validate that a value is a certain type
+# Validate that a value is a certain data type
 sub validate {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $val = $href->{val};
-	my $type = $href->{type} || 'text';
+	# Unpack the hashref and set default values
+	my $val = $href->{val};			# The value to be validated
+	my $type = $href->{type} || 'text';	# Data type to validate as, out of text, integer, boolean, date, decimal, hh:mm:ss
 
 	die "Must provide value for \$val\n" if !defined($val);
 
+	# Empty string always passes validation
 	if ($val eq '') {
 		return 1;
 	}
@@ -83,7 +93,6 @@ sub validate {
 		} else {
 			return 0;
 		}
-
 	} elsif ($type eq 'decimal') {
 		if ($val =~ m/^\d+(\.\d+)?$/) {
 			return 1;
@@ -135,7 +144,9 @@ sub db {
 		$$connect{'database'}{'user'},
 		$$connect{'database'}{'pass'},
 		{
+			# Required for updates to work properly
 			mysql_client_found_rows => 0,
+			# Required to print symbols
 			mysql_enable_utf8mb4 => 1,
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
@@ -144,20 +155,15 @@ sub db {
 
 # Update an existing record in any table
 sub updaterecord {
+	# Pass in a hashref of arguments
 	my $href = shift;
 
-	# Read in db handle
-	my $db = $href->{db};
-
-	# Read in hash new values
-	my $data = $href->{data};
-
-	# Read in table name
-	my $table = $href->{table};
-
-	# Read in where condition
-	my $where = $href->{where};
-	my $silent = $href->{silent} // 0;
+	# Unpack the hashref and set default values
+	my $db = $href->{db};			# DB handle
+	my $data = $href->{data};		# Hash of new values to update
+	my $table = $href->{table};		# Name of table to update
+	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
+	my $silent = $href->{silent} // 0;	# Suppress output
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -170,7 +176,7 @@ sub updaterecord {
 
 	if (scalar(keys %$data) == 0) {
 		print "Nothing to update\n";
-		return;
+		return 0;
 	}
 
 	# Dump data for debugging
@@ -200,17 +206,14 @@ sub updaterecord {
 
 # Insert a record into any table
 sub newrecord {
+	# Pass in a hashref of arguments
 	my $href = shift;
 
-	# Read in db handle
-	my $db = $href->{db};
-
-	# Read in hash new values
-	my $data = $href->{data};
-
-	# Read in table name
-	my $table = $href->{table};
-	my $silent = $href->{silent} // 0;
+	# Unpack the hashref and set default values
+	my $db = $href->{db};			# DB handle
+	my $data = $href->{data};		# Hash of new values to insert
+	my $table = $href->{table};		# Table to insert into
+	my $silent = $href->{silent} // 0;	# Suppress output
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -254,7 +257,7 @@ sub notimplemented {
 	return;
 }
 
-# Quit if no valid command is given
+# Print list of commands
 sub nocommand {
 	my $handlers = shift;
 	print "photodb <command> <subcommand>\n\n";
@@ -263,7 +266,7 @@ sub nocommand {
 	return;
 }
 
-# Quit if no valid subcommand is given
+# Print list of subcommands for a given command
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
@@ -273,22 +276,24 @@ sub nosubcommand {
 	return;
 }
 
-# List arbitrary choices and return ID of the selected one
+# List arbitrary choices from the DB and return ID of the selected one
 sub listchoices {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $type = $href->{type} || 'text';
-	my $inserthandler = $href->{inserthandler};
-	my $default = $href->{default} // '';
-	my $autodefault = $href->{autodefault} // 1;
-	my $skipok = $href->{skipok} || 0;
-	my $table = $href->{table};
-	my $cols = $href->{cols} // ('id, opt');
-	my $where = $href->{where} // {};
-	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);
-	my $required = $href->{required} // 0;
-	my $char = $href->{char} // '+';
+
+	my $db = $href->{db};								# DB handle
+	my $query = $href->{query};							# (legacy) the SQL to generate the list of choices
+	my $type = $href->{type} || 'text';						# Data type of choice to be made. Often but not always integer
+	my $inserthandler = $href->{inserthandler};					# ref to handler that can be used to insert a new row
+	my $default = $href->{default} // '';						# id of default choice
+	my $autodefault = $href->{autodefault} // 1;					# if default not set, count number of allowed options and if there's just 1, make it the default
+	my $skipok = $href->{skipok} || 0;						# whether it is ok to return null if there are no options to choose from
+	my $table = $href->{table};							# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // ('id, opt');					# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};						# Part of the SQL::Abstract tuple
+	my $keyword = $href->{keyword} || &keyword($table) || &keyword($query);		# keyword to describe the thing being chosen
+	my $required = $href->{required} // 0;						# whether we allow the user to enter an empty input
+	my $char = $href->{char} // '+';						# character to use to signal that you want to enter a new row
 
 	my ($sth, $rows);
 	if ($query) {
@@ -369,14 +374,16 @@ sub listchoices {
 
 # List arbitrary rows
 sub printlist {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $msg = $href->{msg};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $cols = $href->{cols} // ('id, opt');
-	my $where = $href->{where} // {};
-	my $order = $href->{order};
+
+	my $db = $href->{db};				# DB handle
+	my $msg = $href->{msg};				# Message to display to user
+	my $query = $href->{query};			# (legacy) SQL query to run
+	my $table = $href->{table};			# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // ('id, opt');	# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};		# Part of the SQL::Abstract tuple
+	my $order = $href->{order};			# Part of the SQL::Abstract tuple
 
 	print "Now showing $msg\n";
 
@@ -403,12 +410,14 @@ sub printlist {
 
 # Return values from an arbitrary column from database as an arrayref
 sub lookupcol {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $cols = $href->{cols} // '*';
-	my $where = $href->{where} // {};
+
+	my $db = $href->{db};			# DB handle
+	my $query = $href->{query};		# (legacy) SQL query to run
+	my $table = $href->{table};		# Part of the SQL::Abstract tuple
+	my $cols = $href->{cols} // '*';	# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};	# Part of the SQL::Abstract tuple
 
 	my ($sth, $rows);
 	if ($query) {
@@ -444,12 +453,14 @@ sub thin {
 
 # Return arbitrary value from database
 sub lookupval {
+	# Pass in a hashref of arguments
 	my $href = shift;
-	my $db = $href->{db};
-	my $query = $href->{query};
-	my $table = $href->{table};
-	my $col = $href->{col};
-	my $where = $href->{where} // {};
+
+	my $db = $href->{db};			# DB handle
+	my $query = $href->{query};		# (legacy) SQL query to run
+	my $table = $href->{table};		# Part of the SQL::Abstract tuple
+	my $col = $href->{col};			# Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};	# Part of the SQL::Abstract tuple
 
 	my ($sth, $rows);
 	if ($query) {
@@ -471,23 +482,27 @@ sub lookupval {
 	return $row;
 }
 
-# Update data
+# Update data using a bare UPDATE statement
+# Avoid using if possible
 sub updatedata {
-	my $db = shift;
-	my $query = shift;
+	my $db = shift;		# DB handle
+	my $query = shift;	# Plain SQL query
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
+	# DBD returns scientific 0E0 instead of 0
 	$rows = 0 if ($rows eq '0E0');
 	return $rows;
 }
 
-# Return today's date
+# Return today's date according to the DB
 sub today {
-	my $db = shift;
+	my $db = shift;		# DB handle
 	return &lookupval({db=>$db, query=>'select curdate()'});
 }
 
 # Translate "friendly" bools to integers
+# y/yes/true/1
+# n/no/false/0
 sub friendlybool {
 	my $val = shift;
 	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
@@ -520,16 +535,16 @@ sub writeconfig {
 
 # Round numbers to any precision
 sub round {
-	my $x = shift;
-	my $pow10 = shift || 0;
+	my $x = shift;		# Number to round
+	my $pow10 = shift || 0;	# Number of decimal places to round to
 	my $a = 10 ** $pow10;
 	return int(($x * $a) + 0.5) / $a
 }
 
 # Pad a string with spaces up to a fixed length
 sub pad {
-	my $string = shift;
-	my $totallength = shift || 18;
+	my $string = shift;		# Text to pad
+	my $totallength = shift || 18;	# Total number of characters to pad to
 	my $lengthofstring = length($string);
 	my $pad = $totallength - $lengthofstring;
 	my $newstring = $string . ' ' x $pad;
@@ -555,12 +570,16 @@ sub resolvenegid {
 	}
 }
 
+# Select a negative by drilling down
 sub chooseneg {
 	my $href = shift;
 	my $db = $href->{db};
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
+	# Choose a film
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
+
+	#  Choose a negative from this film
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
 	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
@@ -734,7 +753,7 @@ END_ASCII
 	return;
 }
 
-# Calculate duration of a shutter speed
+# Calculate duration of a shutter speed from its string representation
 sub duration {
 	my $shutter_speed = shift;
 	my $duration = 0;
@@ -746,6 +765,133 @@ sub duration {
                 $duration = $1;
         }
 	return $duration;
+}
+
+# This func reads data from PhotoDB and writes EXIF tags
+# to the JPGs that have been scanned from negatives
+sub tag {
+
+	# Read in cmdline args
+	my $db = shift;
+	my $film_id = shift // '%';
+
+	# Make sure basepath is valid
+	my $connect = ReadINI(&ini);
+	if (!defined($$connect{'filesystem'}{'basepath'})) {
+		print "Config file did not contain basepath";
+		return;
+	}
+	my $basepath = $$connect{'filesystem'}{'basepath'};
+	if (substr($basepath, -1, 1) ne '/') {
+		$basepath .= '/';
+	}
+
+	# Crank up an instance of ExifTool
+	my $exifTool = Image::ExifTool->new;
+
+	# Specify which attributes we want to write
+	# If any are specified here but not available, they will be ignored
+	my @attributes = (
+		'Make',
+		'Model',
+		'Lens',
+		'LensModel',
+		'ExposureTime',
+		'MaxApertureValue',
+		'FNumber',
+		'ApertureValue',
+		'FocalLength',
+		'ISO',
+		'Author',
+		'ImageDescription',
+		'DateTimeOriginal',
+		'ExposureProgram',
+		'MeteringMode',
+		'Flash',
+	);
+
+	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
+	my $sql = 'SELECT * from exifdata where film_id = ?';
+
+	# Prepare and execute the SQL
+	my $sth = $db->prepare($sql) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute($film_id);
+
+	# Set some globals
+	my $foundcount=0;
+	my $changedcount=0;
+	my @missingfiles;
+
+	# Loop through our result set
+	while (my $ref = $sth->fetchrow_hashref()) {
+		# First check the path is defined in MySQL
+		if (defined($ref->{'path'})) {
+			# Now make sure the path actually exists on the system
+			if (-e "$basepath$ref->{'path'}") {
+				# File exists, so we go on and do stuff to it.
+				# Grab the existing EXIF tags for comparison
+				my $exif = $exifTool->ImageInfo("$basepath$ref->{'path'}");
+				my $changeflag = 0;
+				$foundcount++;
+
+				# For each of the attributes on our list...
+				foreach my $var (@attributes) {
+					#  Test if it exists in the DB
+					if (defined($ref->{$var})) {
+						# Test if it already exists in the file AND has the correct value
+						if (defined($exif->{$var}) && ($exif->{$var} eq $ref->{$var})) {
+							# Tag already has correct value, skip
+						} else {
+							# Set the value of the tag and flag that a change was made
+							print "    Setting $var: $ref->{$var}\n";
+							$exifTool->SetNewValue($var => $ref->{$var});
+							$changeflag = 1;
+						}
+					}
+				}
+
+				# Handle the geotags separately
+				# If the data exists in the DB...
+				if (defined($ref->{'GPSLatitude'}) && defined($ref->{'GPSLongitude'})) {
+					# And the image doesn't already have the same geotag
+					if (!$exifTool->HasLocation()) {
+						# image doesn't have any geotag, write one
+						print "    Setting GPSLatitude: $ref->{'GPSLatitude'}\n";
+						print "    Setting GPSLongitude: $ref->{'GPSLongitude'}\n";
+						$exifTool->SetLocation($ref->{'GPSLatitude'}, $ref->{'GPSLongitude'});
+						$changeflag = 1;
+					} else {
+						my ($imglat, $imglon) = $exifTool->GetLocation();
+						if ($imglat == $ref->{'GPSLatitude'} && $imglon == $ref->{'GPSLongitude'}) {
+						# image is already tagged with correct tag, skip
+						} else {
+							# Image has wrong geotag, write the correct geotag
+							print "    Setting GPSLatitude: $ref->{'GPSLatitude'}\n";
+							print "    Setting GPSLongitude: $ref->{'GPSLongitude'}\n";
+							$exifTool->SetLocation($ref->{'GPSLatitude'}, $ref->{'GPSLongitude'});
+							$changeflag = 1;
+						}
+					}
+				}
+
+				# If a change has been made to the EXIF data, write out the data
+				if ($changeflag == 1) {
+					$exifTool->WriteInfo("$basepath$ref->{'path'}");
+					print "Wrote tags to $basepath$ref->{'path'}\n\n";
+					$changedcount++;
+				}
+			} else {
+				print "$basepath$ref->{'path'} not found - skipping\n";
+				push (@missingfiles, "$basepath$ref->{'path'}");
+			}
+		}
+	}
+
+	# Print some stats
+	print "Found $foundcount images\n";
+	print "Changed EXIF data in $changedcount images\n";
+	print 'Found ' . ($#missingfiles + 1) . " missing files\n";
+	return;
 }
 
 # This ensures the lib loads smoothly

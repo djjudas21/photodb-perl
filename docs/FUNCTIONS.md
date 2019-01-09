@@ -1,0 +1,35 @@
+# Function reference
+
+## `prompt`
+## `validate`
+## `ini`
+## `db`
+## `updaterecord`
+## `newrecord`
+## `notimplemented`
+## `nocommand`
+## `nosubcommand`
+## `listchoices`
+## `printlist`
+## `lookupcol`
+## `thin`
+## `lookupval`
+## `updatedata`
+## `today`
+## `friendlybool`
+## `writeconfig`
+## `round`
+## `pad`
+## `resolvenegid`
+## `chooseneg`
+## `annotatefilm`
+## `keyword`
+## `parselensmodel`
+## `guessminfl`
+## `guessmaxfl`
+## `guessaperture`
+## `guesszoom`
+## `unsetdisplaylens`
+## `welcome`
+## `duration`
+## `tag`

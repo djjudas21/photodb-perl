@@ -53,7 +53,21 @@ this in random paths on your system!
 After running the script, check which files have been added, removed or changed, and then commit
 the diffs with a meaningful commit message.
 
+## Application conventions
 
-### Contributing your work
+The application frontend, `photodb`, is the smallest possible script to determine which command
+the user wants to run, map the command to a handler using `commands.pm` and then execute the
+handler from `handlers.pm` to complete the user interaction.
+
+Handlers are pieces of code which carry out user interaction, and encode logic about what information
+to collect. They tend to be simple but extensive. Most handlers simply run through a list of prompts to
+build a hash of data, which is then inserted/updated/etc into the database backend. Some handlers
+contain simple logic to make decisions or loops to simplify bulk operations.
+
+Handlers rely on functions in `funcs.pm` which are reusable pieces of code which do not interact
+with the user, but perform common operations like selecting from a database, validating user input,
+etc.
+
+## Contributing your work
 
 Pull requests are welcome.

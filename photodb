@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 
-# Interactive user interface for interacting with the photography database
+# Interactive user interface for interacting with the PhotoDB database backend
 
 use strict;
 use warnings;
@@ -47,8 +47,11 @@ if (defined($ARGV[0])) {
 	if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
 		$handlers{$command}{$subcommand}{'handler'}->($db);
 	}
+
+	# Exit after one job
+	exit;
 } else {
-	# No cmdline args, so enter interactive prompt
+	# No cmdline args, so enter interactive prompt and loop until exited by user
 	&welcome;
 	while (1) {
 		my $rv = &prompt({prompt=>'photodb', type=>'text', showtype=>0, showdefault=>0, char=>'>'});
@@ -78,6 +81,7 @@ if (defined($ARGV[0])) {
 				$handlers{$command}{$subcommand}{'handler'}->($db);
 			}
 		} else {
+			# Print list of commands if no command is entered
 			if ($rv ne '') {
 				&nocommand(\%handlers);
 			}
