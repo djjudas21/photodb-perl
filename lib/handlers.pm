@@ -722,15 +722,15 @@ sub lens_add {
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the lens model?'});
-	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&guesszoom($data{model})});
+	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&parselensmodel($data{model}, 'zoom')});
 	if ($data{zoom} == 0) {
-		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>&guessminfl($data{model})});
+		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'minfocal')});
 		$data{max_focal_length} = $data{min_focal_length};
 		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer'});
 		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
 	} else {
-		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>&guessminfl($data{model})});
-		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>&guessmaxfl($data{model})});
+		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'minfocal')});
+		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'maxfocal')});
 		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer'});
 		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer'});
 	}
@@ -742,7 +742,7 @@ sub lens_add {
 		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer'});
 		$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer'});
 	}
-	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>&guessaperture($data{model})});
+	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>&parselensmodel($data{model}, 'aperture')});
 	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal'});
 	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer'});
 	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer'});
