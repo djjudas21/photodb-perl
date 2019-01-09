@@ -35,7 +35,7 @@ our @EXPORT_OK = qw(
 	filter_add filter_adapt
 	manufacturer_add
 	accessory_add accessory_type
-	enlarger_add enlarger_sell
+	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
 	format_add
@@ -45,7 +45,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add
-	archive_add archive_films archive_list archive_seal archive_unseal archive_move
+	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_review
@@ -1288,6 +1288,15 @@ sub enlarger_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
 }
 
+# Display info about an enlarger
+sub enlarger_info {
+	my $db = shift;
+	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
+	my $enlargerdata = &lookupcol({db=>$db, table=>'enlarger_info', where=>{'`Enlarger ID`'=>$enlarger_id}});
+	print Dump($enlargerdata);
+	return;
+}
+
 # Sell an enlarger
 sub enlarger_sell {
 	my $db = shift;
@@ -1434,6 +1443,15 @@ sub archive_films {
 	}
 	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>'archive_type_id in (1,2) and sealed = 0', inserthandler=>\&archive_add});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
+}
+
+# Display info about an archive
+sub archive_info {
+        my $db = shift;
+	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
+        my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
+        print Dump($archivedata);
+        return;
 }
 
 # List the contents of an archive

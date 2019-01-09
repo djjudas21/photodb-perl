@@ -34,6 +34,7 @@ our %handlers = (
 	archive => {
 		'add'    => { 'handler' => \&archive_add,    'desc' => 'Add a new physical archive for prints or films' },
 		'films'  => { 'handler' => \&archive_films,  'desc' => 'Bulk-add multiple films to an archive' },
+		'info'   => { 'handler' => \&archive_info,   'desc' => 'Show information about an archive'},
 		'list'   => { 'handler' => \&archive_list,   'desc' => 'List the contents of an archive' },
 		'move'   => { 'handler' => \&archive_move,   'desc' => 'Move an archive to a new location' },
 		'seal'   => { 'handler' => \&archive_seal,   'desc' => 'Seal an archive and prevent new items from being added to it' },
@@ -74,6 +75,7 @@ our %handlers = (
 	},
 	enlarger => {
 		'add'  => { 'handler' => \&enlarger_add,  'desc' => 'Add a new enlarger to the database' },
+		'info' => { 'handler' => \&enlarger_info, 'desc' => 'Show information about an enlarger' },
 		'sell' => { 'handler' => \&enlarger_sell, 'desc' => 'Sell an enlarger' },
 	},
 	exhibition => {

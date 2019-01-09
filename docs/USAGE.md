@@ -171,12 +171,16 @@ Add a new projector to the database
 ## `enlarger`
 ### `enlarger add`
 Add a new enlarger to the database
+### `enlarger info`
+Show information about an enlarger
 ### `enlarger sell`
 Sell an enlarger
 
 ## `archive`
 ### `archive add`
 Add a new physical archive for prints or films
+### `archive info`
+Show information about an archive
 ### `archive list`
 List the contents of an archive
 ### `archive move`
