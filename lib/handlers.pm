@@ -673,9 +673,7 @@ sub negative_bulkadd {
 	}
 
 	# Delete empty strings from data hash
-	foreach (keys %data) {
-		delete $data{$_} unless (defined $data{$_} and $data{$_} ne '');
-	}
+	my $thindata = &thin(\%data);
 
 	# Build query
 	my $sql = SQL::Abstract->new;
@@ -689,13 +687,13 @@ sub negative_bulkadd {
 	# Execute query
 	for my $i (1..$num) {
 		# Now inside the loop, add an incremented frame number for each neg
-		$data{frame} = $i;
+		$$thindata{frame} = $i;
 
 		# Create a new row
-		&newrecord({db=>$db, data=>\%data, table=>'NEGATIVE', silent=>1});
+		&newrecord({db=>$db, data=>\%$thindata, table=>'NEGATIVE', silent=>1});
 	}
 
-	print "Inserted $num negatives into film #$data{film_id}\n";
+	print "Inserted $num negatives into film #$$data{film_id}\n";
 	return;
 }
 
