@@ -128,11 +128,11 @@ sub film_develop {
 
 # Show information about a negative
 sub film_info {
-        my $db = shift;
+	my $db = shift;
 	my $film_id = shift || &film_choose($db);
-        my $filmdata = &lookupcol({db=>$db, table=>'film_info', where=>{'`Film ID`'=>$film_id}});
-        print Dump($filmdata);
-        return;
+	my $filmdata = &lookupcol({db=>$db, table=>'film_info', where=>{'`Film ID`'=>$film_id}});
+	print Dump($filmdata);
+	return;
 }
 
 # Write EXIF tags to scans from a film
@@ -708,11 +708,11 @@ sub negative_bulkadd {
 
 # Show information about a negative
 sub negative_info {
-        my $db = shift;
-        my $negative_id = shift || &chooseneg({db=>$db});
-        my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
-        print Dump($negativedata);
-        return;
+	my $db = shift;
+	my $negative_id = shift || &chooseneg({db=>$db});
+	my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
+	print Dump($negativedata);
+	return;
 }
 
 # Show statistics about a negative
@@ -1109,7 +1109,7 @@ sub print_worklist {
 
 	foreach my $row (@$data) {
 		print "\t$row->{opt}\n";
-        }
+	}
 	return;
 }
 
@@ -1463,11 +1463,11 @@ sub archive_films {
 
 # Display info about an archive
 sub archive_info {
-        my $db = shift;
+	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
-        my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
-        print Dump($archivedata);
-        return;
+	my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
+	print Dump($archivedata);
+	return;
 }
 
 # List the contents of an archive
@@ -1669,13 +1669,13 @@ sub choose_manufacturer {
 		return $default if (!&prompt({prompt=>"Current manufacturer is $manufacturer. Change this?", type=>'boolean', default=>'no'}));
 	}
 
-        # Loop until we get valid input
-        my $initial;
-        do {
-                $initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
-        } while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
-        $initial = lc($initial);
-        return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
+	# Loop until we get valid input
+	my $initial;
+	do {
+		$initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
+	} while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
+	$initial = lc($initial);
+	return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
 }
 
 # Audit cameras without display lenses set
