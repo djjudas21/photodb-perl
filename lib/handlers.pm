@@ -24,7 +24,7 @@ our @EXPORT_OK = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints negative_info
-	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
+	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
 	paperstock_add
 	developer_add
@@ -900,10 +900,13 @@ sub lens_repair {
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 }
 
-# Show statistics about a lens
-sub lens_stats {
+# Show information about a lens
+sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
+	print Dump($lensdata);
+
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $total_shots_with_lens = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
@@ -921,15 +924,6 @@ sub lens_stats {
 		my $meanf = &lookupval({db=>$db, col=>'avg(focal_length)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
-	return;
-}
-
-# Show information about a lens
-sub lens_info {
-	my $db = shift;
-	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
-	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
-	print Dump($lensdata);
 	return;
 }
 

@@ -102,8 +102,6 @@ Add a new lens to the database
 Sell a lens
 ### `lens repair`
 Repair a lens
-### `lens stats`
-Show statistics about a lens
 ### `lens accessory`
 Add accessory compatibility info to a lens
 ### `lens info`

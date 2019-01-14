@@ -102,7 +102,6 @@ our %handlers = (
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
 		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
 		'sell'      => { 'handler' => \&lens_sell,      'desc' => 'Sell a lens' },
-		'stats'     => { 'handler' => \&lens_stats,     'desc' => 'Show statistics about a lens' },
 	},
 	material => {
 		'developer'  => { 'handler' => \&developer_add,  'desc' => 'Add a new developer to the database' },
