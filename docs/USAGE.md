@@ -50,8 +50,6 @@ Associate a camera with a lens for display purposes
 Sell a camera
 ### `camera repair`
 Repair a camera
-### `camera stats`
-Show statistics about a camera
 ### `camera info`
 Show information about a camera
 ### `camera exposureprogram`

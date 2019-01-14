@@ -59,7 +59,6 @@ our %handlers = (
 		'sell'            => { 'handler' => \&camera_sell,            'desc' => 'Sell a camera' },
 		'show-lenses'     => { 'handler' => \&notimplemented,         'desc' => 'Not yet implemented' },
 		'shutterspeeds'   => { 'handler' => \&camera_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera' },
-		'stats'           => { 'handler' => \&camera_stats,           'desc' => 'Show statistics about a camera' },
 	},
 	data => {
 		'bodytype'      => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' },

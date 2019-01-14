@@ -21,7 +21,7 @@ use queries;
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints negative_info
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
@@ -558,13 +558,7 @@ sub camera_info {
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
 	print Dump($cameradata);
-	return;
-}
 
-# Show statistics about a camera
-sub camera_stats {
-	my $db = shift;
-	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $camera = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{camera_id=>$camera_id}});
 	print "\tShowing statistics for $camera\n";
 	my $total_shots_with_cam = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE join FILM on NEGATIVE.film_id=FILM.film_id', where=>{camera_id=>$camera_id}});
