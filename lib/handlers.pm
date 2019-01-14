@@ -706,9 +706,6 @@ sub negative_info {
 	my $negative_id = shift || &chooseneg({db=>$db});
 	my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
 	print Dump($negativedata);
-
-	my $noprints = &lookupval({db=>$db, col=>'count(*)', table=>'PRINT', where=>{negative_id=>$negative_id}});
-	print "\tThis negative has been printed $noprints times\n";
 	return;
 }
 
