@@ -120,7 +120,6 @@ our %handlers = (
 		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
 		'info'     => { 'handler' => \&negative_info,    'desc' => 'Show information about a negative' },
 		'prints'   => { 'handler' => \&negative_prints,  'desc' => 'Find all prints made from a negative' },
-		'stats'    => { 'handler' => \&negative_stats,   'desc' => 'Show statistics about a negative' },
 	},
 	person => {
 		'add' => { 'handler' => \&person_add, 'desc' => 'Add a new person to the database' },

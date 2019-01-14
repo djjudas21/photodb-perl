@@ -75,8 +75,6 @@ It is useful only for blocking out e.g. 24 negatives for a 24-exp film. They wil
 Bulk add multiple negatives to the database as part of a film
 ### `negative info`
 Show information about a negative
-### `negative stats`
-Show statistics about a negative
 ### `negative prints`
 Find all prints made from a negative
 
