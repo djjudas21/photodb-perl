@@ -111,8 +111,8 @@ our %handlers = (
 		'toner'      => { 'handler' => \&toner_add,      'desc' => 'Add a new chemical toner to the database' },
 	},
 	mount => {
-		'add'   => { 'handler' => \&mount_add,   'desc' => 'Add a new lens mount to the database' },
-		'view'  => { 'handler' => \&mount_view,  'desc' => 'View compatible cameras and lenses for a mount' },
+		'add'  => { 'handler' => \&mount_add,  'desc' => 'Add a new lens mount to the database' },
+		'info' => { 'handler' => \&mount_info, 'desc' => 'View compatible cameras and lenses for a mount' },
 	},
 	movie => {
 		'add' => { 'handler' => \&movie_add, 'desc' => 'Add a new movie to the database' },

@@ -91,7 +91,7 @@ Add a new movie to the database
 The `mount` command provides subcommands for working with lens mounts (aka camera systems)
 ### `mount add`
 Add a new lens mount to the database
-### `mount view`
+### `mount info`
 View compatible cameras and lenses for a mount
 
 ## `lens`

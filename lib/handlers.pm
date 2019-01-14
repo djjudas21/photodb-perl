@@ -22,7 +22,7 @@ use queries;
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
-	mount_add mount_view mount_adapt
+	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_stats negative_prints negative_info
 	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
@@ -1154,7 +1154,7 @@ sub mount_add {
 }
 
 # View compatible cameras and lenses for a mount
-sub mount_view {
+sub mount_info {
 	my $db = shift;
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
 	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
