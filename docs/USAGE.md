@@ -82,6 +82,8 @@ Find all prints made from a negative
 The `movie` command provides subcommands for working with movies (cine films)
 ### `movie add`
 Add a new movie to the database
+### `movie info`
+Show information about a movie
 
 ## `mount`
 The `mount` command provides subcommands for working with lens mounts (aka camera systems)

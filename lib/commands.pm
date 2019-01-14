@@ -113,7 +113,8 @@ our %handlers = (
 		'info' => { 'handler' => \&mount_info, 'desc' => 'View compatible cameras and lenses for a mount' },
 	},
 	movie => {
-		'add' => { 'handler' => \&movie_add, 'desc' => 'Add a new movie to the database' },
+		'add'  => { 'handler' => \&movie_add,  'desc' => 'Add a new movie to the database' },
+		'info' => { 'handler' => \&movie_info, 'desc' => 'Show information about a movie' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },

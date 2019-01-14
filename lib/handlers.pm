@@ -44,7 +44,7 @@ our @EXPORT_OK = qw(
 	process_add
 	person_add
 	projector_add
-	movie_add
+	movie_add movie_info
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1557,6 +1557,15 @@ sub movie_add {
 	$data{process_id} = &listchoices({db=>$db, keyword=>'process', cols=>['process_id as id', 'name as opt'], table=>'PROCESS', inserthandler=>\&process_add});
 	$data{description} = &prompt({prompt=>'Please enter a description of the movie'});
 	return &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
+}
+
+# Show info about a movie
+sub movie_info {
+	my $db = shift;
+	my $movie_id = &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
+	my $moviedata = &lookupcol({db=>$db, table=>'movie_info', where=>{'`Movie ID`'=>$movie_id}});
+	print Dump($moviedata);
+	return;
 }
 
 # Audit cameras without shutter speed data
