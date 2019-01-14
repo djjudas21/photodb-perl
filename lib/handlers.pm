@@ -885,12 +885,6 @@ sub lens_info {
 
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
-	my $total_shots_with_lens = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
-	my $total_shots = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE'});
-	if ($total_shots > 0) {
-		my $percentage = round(100 * $total_shots_with_lens / $total_shots);
-		print "\tThis lens has been used to take $total_shots_with_lens frames, which is ${percentage}% of the frames in your collection\n";
-	}
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
 	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
