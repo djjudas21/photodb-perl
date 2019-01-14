@@ -48,7 +48,7 @@ our @EXPORT_OK = qw(
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
-	exhibition_add exhibition_review
+	exhibition_add exhibition_info
 	choose_manufacturer
 );
 
@@ -1631,7 +1631,7 @@ sub exhibition_add {
 }
 
 # Review which prints were exhibited at an exhibition
-sub exhibition_review {
+sub exhibition_info {
 	my $db = shift;
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', required=>1});
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});

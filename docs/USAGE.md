@@ -244,5 +244,5 @@ Audit cameras without a display lens set
 The `exhibition` command provides a set of subcommands for managing exhibitions.
 ### `exhibition add`
 Add a new exhibition to the database
-### `exhibition review`
-View the prints which were exhibited at an exhibition
+### `exhibition info`
+Show information about an exhibition

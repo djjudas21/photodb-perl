@@ -79,8 +79,8 @@ our %handlers = (
 		'sell' => { 'handler' => \&enlarger_sell, 'desc' => 'Sell an enlarger' },
 	},
 	exhibition => {
-		'add'    => { 'handler' => \&exhibition_add,    'desc' => 'Add a new exhibition to the database' },
-		'review' => { 'handler' => \&exhibition_review, 'desc' => 'Review which prints were exhibited at an exhibition' },
+		'add'  => { 'handler' => \&exhibition_add,  'desc' => 'Add a new exhibition to the database' },
+		'info' => { 'handler' => \&exhibition_info, 'desc' => 'Show information about an exhibition' },
 	},
 	film => {
 		'add'      => { 'handler' => \&film_add,      'desc' => 'Add a new film to the database' },
