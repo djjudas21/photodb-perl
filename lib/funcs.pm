@@ -12,7 +12,7 @@ use SQL::Abstract;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
-use Image::ExifTool::Location;
+use Image::ExifTool;
 
 our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag);
 
@@ -771,6 +771,7 @@ sub tag {
 
 	# Crank up an instance of ExifTool
 	my $exifTool = Image::ExifTool->new;
+	$exifTool->Options(CoordFormat => q{%+.6f});
 
 	# Specify which attributes we want to write
 	# If any are specified here but not available, they will be ignored
@@ -791,6 +792,8 @@ sub tag {
 		'ExposureProgram',
 		'MeteringMode',
 		'Flash',
+		'GPSLatitude',
+		'GPSLongitude',
 	);
 
 	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
@@ -821,37 +824,13 @@ sub tag {
 				foreach my $var (@attributes) {
 					#  Test if it exists in the DB
 					if (defined($ref->{$var})) {
-						# Test if it already exists in the file AND has the correct value
-						if (defined($exif->{$var}) && ($exif->{$var} eq $ref->{$var})) {
+						# Test if it already exists in the file AND has the correct value, either string OR numeric format
+						if (defined($exif->{$var}) && (($exif->{$var} eq $ref->{$var}) || ($exif->{$var} == $ref->{$var}))) {
 							# Tag already has correct value, skip
 						} else {
 							# Set the value of the tag and flag that a change was made
 							print "    Setting $var: $ref->{$var}\n";
 							$exifTool->SetNewValue($var => $ref->{$var});
-							$changeflag = 1;
-						}
-					}
-				}
-
-				# Handle the geotags separately
-				# If the data exists in the DB...
-				if (defined($ref->{'GPSLatitude'}) && defined($ref->{'GPSLongitude'})) {
-					# And the image doesn't already have the same geotag
-					if (!$exifTool->HasLocation()) {
-						# image doesn't have any geotag, write one
-						print "    Setting GPSLatitude: $ref->{'GPSLatitude'}\n";
-						print "    Setting GPSLongitude: $ref->{'GPSLongitude'}\n";
-						$exifTool->SetLocation($ref->{'GPSLatitude'}, $ref->{'GPSLongitude'});
-						$changeflag = 1;
-					} else {
-						my ($imglat, $imglon) = $exifTool->GetLocation();
-						if ($imglat == $ref->{'GPSLatitude'} && $imglon == $ref->{'GPSLongitude'}) {
-						# image is already tagged with correct tag, skip
-						} else {
-							# Image has wrong geotag, write the correct geotag
-							print "    Setting GPSLatitude: $ref->{'GPSLatitude'}\n";
-							print "    Setting GPSLongitude: $ref->{'GPSLongitude'}\n";
-							$exifTool->SetLocation($ref->{'GPSLatitude'}, $ref->{'GPSLongitude'});
 							$changeflag = 1;
 						}
 					}
