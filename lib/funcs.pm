@@ -825,11 +825,18 @@ sub tag {
 					#  Test if it exists in the DB
 					if (defined($ref->{$var})) {
 						# Test if it already exists in the file AND has the correct value, either string OR numeric format
-						if (defined($exif->{$var}) && (($exif->{$var} eq $ref->{$var}) || ($exif->{$var} == $ref->{$var}))) {
+						if (defined($exif->{$var}) && ($exif->{$var} ~~ $ref->{$var})) {
 							# Tag already has correct value, skip
+							next;
 						} else {
 							# Set the value of the tag and flag that a change was made
-							print "    Setting $var: $ref->{$var}\n";
+							if (defined($exif->{$var})) {
+								# Already defined, update it
+								print "\tChanging $var: $exif->{$var} => $ref->{$var}\n";
+							} else {
+								# Not defined, set it
+								print "\tSetting $var: $ref->{$var}\n";
+							}
 							$exifTool->SetNewValue($var => $ref->{$var});
 							$changeflag = 1;
 						}
