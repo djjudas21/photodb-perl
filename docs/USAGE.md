@@ -35,6 +35,8 @@ Create a text file in the film scan directory with summary info about the film &
 List the films that are currently in stock
 ### `film current`
 List films that are currently loaded into cameras
+### `film info`
+Show information about a film
 
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
@@ -48,8 +50,6 @@ Associate a camera with a lens for display purposes
 Sell a camera
 ### `camera repair`
 Repair a camera
-### `camera stats`
-Show statistics about a camera
 ### `camera info`
 Show information about a camera
 ### `camera exposureprogram`
@@ -73,8 +73,8 @@ Add a new negative to the database as part of a film
 `negative bulk-add` registers a number of negatives to an existing film, but doesn't collect any data.
 It is useful only for blocking out e.g. 24 negatives for a 24-exp film. They will need to have data added later.
 Bulk add multiple negatives to the database as part of a film
-### `negative stats`
-Show statistics about a negative
+### `negative info`
+Show information about a negative
 ### `negative prints`
 Find all prints made from a negative
 
@@ -82,12 +82,14 @@ Find all prints made from a negative
 The `movie` command provides subcommands for working with movies (cine films)
 ### `movie add`
 Add a new movie to the database
+### `movie info`
+Show information about a movie
 
 ## `mount`
 The `mount` command provides subcommands for working with lens mounts (aka camera systems)
 ### `mount add`
 Add a new lens mount to the database
-### `mount view`
+### `mount info`
 View compatible cameras and lenses for a mount
 
 ## `lens`
@@ -98,8 +100,6 @@ Add a new lens to the database
 Sell a lens
 ### `lens repair`
 Repair a lens
-### `lens stats`
-Show statistics about a lens
 ### `lens accessory`
 Add accessory compatibility info to a lens
 ### `lens info`
@@ -171,12 +171,16 @@ Add a new projector to the database
 ## `enlarger`
 ### `enlarger add`
 Add a new enlarger to the database
+### `enlarger info`
+Show information about an enlarger
 ### `enlarger sell`
 Sell an enlarger
 
 ## `archive`
 ### `archive add`
 Add a new physical archive for prints or films
+### `archive info`
+Show information about an archive
 ### `archive list`
 List the contents of an archive
 ### `archive move`
@@ -236,5 +240,5 @@ Audit cameras without a display lens set
 The `exhibition` command provides a set of subcommands for managing exhibitions.
 ### `exhibition add`
 Add a new exhibition to the database
-### `exhibition review`
-View the prints which were exhibited at an exhibition
+### `exhibition info`
+Show information about an exhibition

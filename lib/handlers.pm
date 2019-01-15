@@ -20,11 +20,11 @@ use funcs qw(/./);
 use queries;
 
 our @EXPORT_OK = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_stats camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
-	mount_add mount_view mount_adapt
-	negative_add negative_bulkadd negative_stats negative_prints
-	lens_add lens_sell lens_repair lens_stats lens_accessory lens_info lens_edit
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
+	mount_add mount_info mount_adapt
+	negative_add negative_bulkadd negative_prints negative_info
+	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
 	paperstock_add
 	developer_add
@@ -35,7 +35,7 @@ our @EXPORT_OK = qw(
 	filter_add filter_adapt
 	manufacturer_add
 	accessory_add accessory_type
-	enlarger_add enlarger_sell
+	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
 	format_add
@@ -44,11 +44,11 @@ our @EXPORT_OK = qw(
 	process_add
 	person_add
 	projector_add
-	movie_add
-	archive_add archive_films archive_list archive_seal archive_unseal archive_move
+	movie_add movie_info
+	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
-	exhibition_add exhibition_review
+	exhibition_add exhibition_info
 	choose_manufacturer
 );
 
@@ -123,6 +123,15 @@ sub film_develop {
 	if (&prompt({default=>'no', prompt=>'Archive this film now?', type=>'boolean'})) {
 		&film_archive($db, $film_id);
 	}
+	return;
+}
+
+# Show information about a negative
+sub film_info {
+	my $db = shift;
+	my $film_id = shift || &film_choose($db);
+	my $filmdata = &lookupcol({db=>$db, table=>'film_info', where=>{'`Film ID`'=>$film_id}});
+	print Dump($filmdata);
 	return;
 }
 
@@ -552,21 +561,6 @@ sub camera_info {
 	return;
 }
 
-# Show statistics about a camera
-sub camera_stats {
-	my $db = shift;
-	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
-	my $camera = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{camera_id=>$camera_id}});
-	print "\tShowing statistics for $camera\n";
-	my $total_shots_with_cam = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE join FILM on NEGATIVE.film_id=FILM.film_id', where=>{camera_id=>$camera_id}});
-	my $total_shots = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE'});
-	if ($total_shots > 0) {
-		my $percentage = round(100 * $total_shots_with_cam / $total_shots);
-		print "\tThis camera has been used to take $total_shots_with_cam frames, which is ${percentage}% of the frames in your collection\n";
-	}
-	return;
-}
-
 # Choose a camera based on several criteria
 sub camera_choose {
 	my $db = shift;
@@ -697,12 +691,12 @@ sub negative_bulkadd {
 	return;
 }
 
-# Show statistics about a negative
-sub negative_stats {
+# Show information about a negative
+sub negative_info {
 	my $db = shift;
-	my $neg_id = &chooseneg({db=>$db});
-	my $noprints = &lookupval({db=>$db, col=>'count(*)', table=>'PRINT', where=>{negative_id=>$neg_id}});
-	print "\tThis negative has been printed $noprints times\n";
+	my $negative_id = shift || &chooseneg({db=>$db});
+	my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
+	print Dump($negativedata);
 	return;
 }
 
@@ -882,18 +876,15 @@ sub lens_repair {
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
 }
 
-# Show statistics about a lens
-sub lens_stats {
+# Show information about a lens
+sub lens_info {
 	my $db = shift;
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
+	print Dump($lensdata);
+
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
-	my $total_shots_with_lens = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
-	my $total_shots = &lookupval({db=>$db, col=>'count(*)', table=>'NEGATIVE'});
-	if ($total_shots > 0) {
-		my $percentage = round(100 * $total_shots_with_lens / $total_shots);
-		print "\tThis lens has been used to take $total_shots_with_lens frames, which is ${percentage}% of the frames in your collection\n";
-	}
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
 	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
@@ -903,15 +894,6 @@ sub lens_stats {
 		my $meanf = &lookupval({db=>$db, col=>'avg(focal_length)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
-	return;
-}
-
-# Show information about a lens
-sub lens_info {
-	my $db = shift;
-	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
-	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
-	print Dump($lensdata);
 	return;
 }
 
@@ -1091,7 +1073,7 @@ sub print_worklist {
 
 	foreach my $row (@$data) {
 		print "\t$row->{opt}\n";
-        }
+	}
 	return;
 }
 
@@ -1136,7 +1118,7 @@ sub mount_add {
 }
 
 # View compatible cameras and lenses for a mount
-sub mount_view {
+sub mount_info {
 	my $db = shift;
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
 	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
@@ -1284,6 +1266,15 @@ sub enlarger_add {
 	$data{acquired} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
 	$data{cost} = &prompt({prompt=>'Purchase price', type=>'decimal'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
+}
+
+# Display info about an enlarger
+sub enlarger_info {
+	my $db = shift;
+	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
+	my $enlargerdata = &lookupcol({db=>$db, table=>'enlarger_info', where=>{'`Enlarger ID`'=>$enlarger_id}});
+	print Dump($enlargerdata);
+	return;
 }
 
 # Sell an enlarger
@@ -1434,6 +1425,15 @@ sub archive_films {
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id >= $minfilm and film_id <= $maxfilm and archive_id is null"});
 }
 
+# Display info about an archive
+sub archive_info {
+	my $db = shift;
+	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
+	my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
+	print Dump($archivedata);
+	return;
+}
+
 # List the contents of an archive
 sub archive_list {
 	my $db = shift;
@@ -1559,6 +1559,15 @@ sub movie_add {
 	return &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});
 }
 
+# Show info about a movie
+sub movie_info {
+	my $db = shift;
+	my $movie_id = &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
+	my $moviedata = &lookupcol({db=>$db, table=>'movie_info', where=>{'`Movie ID`'=>$movie_id}});
+	print Dump($moviedata);
+	return;
+}
+
 # Audit cameras without shutter speed data
 sub audit_shutterspeeds {
 	my $db = shift;
@@ -1595,7 +1604,7 @@ sub exhibition_add {
 }
 
 # Review which prints were exhibited at an exhibition
-sub exhibition_review {
+sub exhibition_info {
 	my $db = shift;
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', required=>1});
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});
@@ -1633,13 +1642,13 @@ sub choose_manufacturer {
 		return $default if (!&prompt({prompt=>"Current manufacturer is $manufacturer. Change this?", type=>'boolean', default=>'no'}));
 	}
 
-        # Loop until we get valid input
-        my $initial;
-        do {
-                $initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
-        } while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
-        $initial = lc($initial);
-        return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
+	# Loop until we get valid input
+	my $initial;
+	do {
+		$initial = &prompt({prompt=>'Enter the first initial of the manufacturer', type=>'text'});
+	} while (!($initial =~ m/^[a-z]$/i || $initial eq ''));
+	$initial = lc($initial);
+	return &listchoices({db=>$db, cols=>['manufacturer_id as id', 'manufacturer as opt'], table=>'MANUFACTURER', where=>{'lower(left(manufacturer, 1))'=>$initial}, inserthandler=>\&handlers::manufacturer_add, required=>1});
 }
 
 # Audit cameras without display lenses set

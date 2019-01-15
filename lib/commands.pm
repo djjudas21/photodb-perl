@@ -34,6 +34,7 @@ our %handlers = (
 	archive => {
 		'add'    => { 'handler' => \&archive_add,    'desc' => 'Add a new physical archive for prints or films' },
 		'films'  => { 'handler' => \&archive_films,  'desc' => 'Bulk-add multiple films to an archive' },
+		'info'   => { 'handler' => \&archive_info,   'desc' => 'Show information about an archive'},
 		'list'   => { 'handler' => \&archive_list,   'desc' => 'List the contents of an archive' },
 		'move'   => { 'handler' => \&archive_move,   'desc' => 'Move an archive to a new location' },
 		'seal'   => { 'handler' => \&archive_seal,   'desc' => 'Seal an archive and prevent new items from being added to it' },
@@ -58,7 +59,6 @@ our %handlers = (
 		'sell'            => { 'handler' => \&camera_sell,            'desc' => 'Sell a camera' },
 		'show-lenses'     => { 'handler' => \&notimplemented,         'desc' => 'Not yet implemented' },
 		'shutterspeeds'   => { 'handler' => \&camera_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera' },
-		'stats'           => { 'handler' => \&camera_stats,           'desc' => 'Show statistics about a camera' },
 	},
 	data => {
 		'bodytype'      => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' },
@@ -74,11 +74,12 @@ our %handlers = (
 	},
 	enlarger => {
 		'add'  => { 'handler' => \&enlarger_add,  'desc' => 'Add a new enlarger to the database' },
+		'info' => { 'handler' => \&enlarger_info, 'desc' => 'Show information about an enlarger' },
 		'sell' => { 'handler' => \&enlarger_sell, 'desc' => 'Sell an enlarger' },
 	},
 	exhibition => {
-		'add'    => { 'handler' => \&exhibition_add,    'desc' => 'Add a new exhibition to the database' },
-		'review' => { 'handler' => \&exhibition_review, 'desc' => 'Review which prints were exhibited at an exhibition' },
+		'add'  => { 'handler' => \&exhibition_add,  'desc' => 'Add a new exhibition to the database' },
+		'info' => { 'handler' => \&exhibition_info, 'desc' => 'Show information about an exhibition' },
 	},
 	film => {
 		'add'      => { 'handler' => \&film_add,      'desc' => 'Add a new film to the database' },
@@ -87,6 +88,7 @@ our %handlers = (
 		'bulk'     => { 'handler' => \&film_bulk,     'desc' => 'Add a new bulk film to the database' },
 		'current'  => { 'handler' => \&film_current,  'desc' => 'List films that are currently loaded into cameras' },
 		'develop'  => { 'handler' => \&film_develop,  'desc' => 'Develop a film' },
+		'info'     => { 'handler' => \&film_info,     'desc' => 'Show information about a film' },
 		'load'     => { 'handler' => \&film_load,     'desc' => 'Load a film into a camera' },
 		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
 		'stocks'   => { 'handler' => \&film_stocks,   'desc' => 'List the films that are currently in stock' },
@@ -99,7 +101,6 @@ our %handlers = (
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
 		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
 		'sell'      => { 'handler' => \&lens_sell,      'desc' => 'Sell a lens' },
-		'stats'     => { 'handler' => \&lens_stats,     'desc' => 'Show statistics about a lens' },
 	},
 	material => {
 		'developer'  => { 'handler' => \&developer_add,  'desc' => 'Add a new developer to the database' },
@@ -108,17 +109,18 @@ our %handlers = (
 		'toner'      => { 'handler' => \&toner_add,      'desc' => 'Add a new chemical toner to the database' },
 	},
 	mount => {
-		'add'   => { 'handler' => \&mount_add,   'desc' => 'Add a new lens mount to the database' },
-		'view'  => { 'handler' => \&mount_view,  'desc' => 'View compatible cameras and lenses for a mount' },
+		'add'  => { 'handler' => \&mount_add,  'desc' => 'Add a new lens mount to the database' },
+		'info' => { 'handler' => \&mount_info, 'desc' => 'View compatible cameras and lenses for a mount' },
 	},
 	movie => {
-		'add' => { 'handler' => \&movie_add, 'desc' => 'Add a new movie to the database' },
+		'add'  => { 'handler' => \&movie_add,  'desc' => 'Add a new movie to the database' },
+		'info' => { 'handler' => \&movie_info, 'desc' => 'Show information about a movie' },
 	},
 	negative => {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
 		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
+		'info'     => { 'handler' => \&negative_info,    'desc' => 'Show information about a negative' },
 		'prints'   => { 'handler' => \&negative_prints,  'desc' => 'Find all prints made from a negative' },
-		'stats'    => { 'handler' => \&negative_stats,   'desc' => 'Show statistics about a negative' },
 	},
 	person => {
 		'add' => { 'handler' => \&person_add, 'desc' => 'Add a new person to the database' },
