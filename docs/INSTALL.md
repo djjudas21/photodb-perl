@@ -100,7 +100,7 @@ curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/scrip
 2. Install all of the deps in one go
 ```
 sudo dnf install "perl(Config::IniHash)" "perl(YAML)" "perl(DBD::mysql)" "perl(DBI)" \
-"perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(Image::ExifTool::Location)" \
+"perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" \
 "perl(SQL::Abstract)" "perl(strict)" "perl(Term::ReadKey)" "perl(warnings)"
 ```
 

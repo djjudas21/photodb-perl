@@ -3,7 +3,6 @@ requires 'DBD::mysql';
 requires 'DBI';
 requires 'Exporter';
 requires 'Image::ExifTool';
-requires 'Image::ExifTool::Location';
 requires 'SQL::Abstract';
 requires 'strict';
 requires 'warnings';
