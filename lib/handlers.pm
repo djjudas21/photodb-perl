@@ -242,81 +242,12 @@ sub film_choose {
 # Add a new camera to the database
 sub camera_add {
 	my $db = shift;
-	my %data;
-	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
-	$data{model} = &prompt({prompt=>'What model is the camera?', required=>1});
-	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', required=>1});
-	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1) {
-		# Get info about lens
-		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add($db);
-	} else {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add});
-	}
-	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
-	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add});
-	$data{metering} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean'});
-	if (defined($data{metering}) && $data{metering} == 1) {
-		$data{coupled_metering} = &prompt({prompt=>'Is the metering coupled?', type=>'boolean'});
-		$data{metering_type_id} = &listchoices({db=>$db, cols=>['metering_type_id as id', 'metering as opt'], table=>'METERING_TYPE', inserthandler=>\&meteringtype_add});
-		$data{meter_min_ev} = &prompt({prompt=>'What\'s the lowest EV the meter can handle?', type=>'integer'});
-		$data{meter_max_ev} = &prompt({prompt=>'What\'s the highest EV the meter can handle?', type=>'integer'});
-	}
-	$data{body_type_id} = &listchoices({db=>$db, cols=>['body_type_id as id', 'body_type as opt'], table=>'BODY_TYPE', inserthandler=>\&camera_addbodytype});
-	$data{weight} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer'});
-	$data{acquired} = &prompt({default=>&today($db), prompt=>'When was it acquired?', type=>'date'});
-	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
-	$data{introduced} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer'});
-	$data{discontinued} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer'});
-	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
-	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?'});
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer'});
-	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
-	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
-	$data{shutter_type_id} = &listchoices({db=>$db, cols=>['shutter_type_id as id', 'shutter_type as opt'], table=>'SHUTTER_TYPE', inserthandler=>\&shuttertype_add});
-	$data{shutter_model} = &prompt({prompt=>'What is the shutter model?'});
-	$data{cable_release} = &prompt({prompt=>'Does this camera have a cable release?', type=>'boolean'});
-	$data{viewfinder_coverage} = &prompt({prompt=>'What is the viewfinder coverage?', type=>'integer'});
-	$data{power_drive} = &prompt({prompt=>'Does this camera have power drive?', type=>'boolean'});
-	if (defined($data{power_drive}) && $data{power_drive} == 1) {
-		$data{continuous_fps} = &prompt({prompt=>'How many frames per second can this camera manage?', type=>'decimal'});
-	}
-	$data{video} = &prompt({default=>'no', prompt=>'Does this camera have a video/movie function?', type=>'boolean'});
-	$data{digital} = &prompt({default=>'no', prompt=>'Is this a digital camera?', type=>'boolean'});
-	$data{battery_qty} = &prompt({prompt=>'How many batteries does this camera take?', type=>'integer'});
-	if (defined($data{battery_qty}) && $data{battery_qty} > 0) {
-		$data{battery_type} = &listchoices({db=>$db, keyword=>'battery type', table=>'choose_battery', inserthandler=>\&battery_add});
-	}
-	$data{notes} = &prompt({prompt=>'Additional notes'});
-	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
-	$data{min_shutter} = &prompt({prompt=>'What\'s the fastest shutter speed?'});
-	$data{max_shutter} = &prompt({prompt=>'What\'s the slowest shutter speed?'});
-	$data{bulb} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean'});
-	$data{time} = &prompt({prompt=>'Does the camera have time exposure mode?', type=>'boolean'});
-	$data{min_iso} = &prompt({prompt=>'What\'s the lowest ISO the camera can do?', type=>'integer'});
-	$data{max_iso} = &prompt({prompt=>'What\'s the highest ISO the camera can do?', type=>'integer'});
-	$data{af_points} = &prompt({prompt=>'How many autofocus points does the camera have?', type=>'integer'});
-	$data{int_flash} = &prompt({prompt=>'Does the camera have an internal flash?', type=>'boolean'});
-	if (defined($data{int_flash}) && $data{int_flash} == 1) {
-		$data{int_flash_gn} = &prompt({prompt=>'What\'s the guide number of the internal flash?', type=>'integer'});
-	}
-	$data{ext_flash} = &prompt({prompt=>'Does the camera support an external flash?', type=>'boolean'});
-	if ($data{ext_flash} == 1) {
-		$data{pc_sync} = &prompt({prompt=>'Does the camera have a PC sync socket?', type=>'boolean'});
-		$data{hotshoe} = &prompt({prompt=>'Does the camera have a hot shoe?', type=>'boolean'});
-	}
-	if ($data{int_flash} == 1 || $data{ext_flash} == 1) {
-		$data{coldshoe} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean'});
-		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text'});
-		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add});
-	}
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
-	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean'});
-	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean'});
-	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean'});
-	if (defined($data{mount_id})) {
-		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}});
-	}
+
+	# Gather data from user
+	my $datahr = &camera_prompt($db);
+	my %data = %$datahr;
+
+	# Insert new record into DB
 	my $cameraid = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
@@ -349,83 +280,10 @@ sub camera_edit {
 	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$existing = @$existing[0];
-	my %data;
-	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$existing{manufacturer_id}});
-	$data{model} = &prompt({prompt=>'What model is the camera?', default=>$$existing{model}});
-	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', default=>$$existing{fixed_mount}});
-	if ($data{fixed_mount} == 1) {
-		if ($$existing{lens_id} eq '') {
-			# Get info about lens
-			print "Please enter some information about the lens\n";
-			$data{lens_id} = &lens_add($db);
-		}
-	} else {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add, default=>$$existing{mount_id}});
-	}
-	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, default=>$$existing{format_id}});
-	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add, default=>$$existing{focus_type_id}});
-	$data{metering} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean', default=>$$existing{metering}});
-	if ($data{metering} == 1) {
-		$data{coupled_metering} = &prompt({prompt=>'Is the metering coupled?', type=>'boolean', default=>$$existing{coupled_metering}});
-		$data{metering_type_id} = &listchoices({db=>$db, cols=>['metering_type_id as id', 'metering as opt'], table=>'METERING_TYPE', inserthandler=>\&meteringtype_add, default=>$$existing{metering_type_id}});
-		$data{meter_min_ev} = &prompt({prompt=>'What\'s the lowest EV the meter can handle?', type=>'integer', default=>$$existing{meter_min_ev}});
-		$data{meter_max_ev} = &prompt({prompt=>'What\'s the highest EV the meter can handle?', type=>'integer', default=>$$existing{meter_max_ev}});
-	}
-	$data{body_type_id} = &listchoices({db=>$db, cols=>['body_type_id as id', 'body_type as opt'], table=>'BODY_TYPE', inserthandler=>\&camera_addbodytypei, default=>$$existing{body_type_id}});
-	$data{weight} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer', default=>$$existing{weight}});
-	$data{acquired} = &prompt({default=>$$existing{acquired}, prompt=>'When was it acquired?', type=>'date'});
-	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal', default=>$$existing{cost}});
-	$data{introduced} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer', default=>$$existing{introduced}});
-	$data{discontinued} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer', default=>$$existing{discontinued}});
-	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?', default=>$$existing{serial}});
-	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?', default=>$$existing{datecode}});
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$$existing{manufactured}});
-	$data{own} = &prompt({default=>$$existing{own}, prompt=>'Do you own this camera?', type=>'boolean'});
-	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$existing{negative_size_id}});
-	$data{shutter_type_id} = &listchoices({db=>$db, cols=>['shutter_type_id as id', 'shutter_type as opt'], table=>'SHUTTER_TYPE', inserthandler=>\&shuttertype_add, default=>$$existing{shutter_type_id}});
-	$data{shutter_model} = &prompt({prompt=>'What is the shutter model?', default=>$$existing{shutter_model}});
-	$data{cable_release} = &prompt({prompt=>'Does this camera have a cable release?', type=>'boolean', default=>$$existing{cable_release}});
-	$data{viewfinder_coverage} = &prompt({prompt=>'What is the viewfinder coverage?', type=>'integer', default=>$$existing{viewfinder_coverage}});
-	$data{power_drive} = &prompt({prompt=>'Does this camera have power drive?', type=>'boolean', default=>$$existing{power_drive}});
-	if ($data{power_drive} == 1) {
-		$data{continuous_fps} = &prompt({prompt=>'How many frames per second can this camera manage?', type=>'decimal', default=>$$existing{continuous_fps}});
-	}
-	$data{video} = &prompt({default=>$$existing{video}, prompt=>'Does this camera have a video/movie function?', type=>'boolean'});
-	$data{digital} = &prompt({default=>$$existing{digital}, prompt=>'Is this a digital camera?', type=>'boolean'});
-	$data{battery_qty} = &prompt({prompt=>'How many batteries does this camera take?', type=>'integer', default=>$$existing{battery_qty}});
-	if ($data{battery_qty} > 0) {
-		$data{battery_type} = &listchoices({db=>$db, keyword=>'battery type', table=>'choose_battery', inserthandler=>\&battery_add, default=>$$existing{battery_type}});
-	}
-	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$existing{notes}});
-	$data{source} = &prompt({prompt=>'Where was the camera acquired from?', default=>$$existing{source}});
-	$data{min_shutter} = &prompt({prompt=>'What\'s the fastest shutter speed?', default=>$$existing{min_shutter}});
-	$data{max_shutter} = &prompt({prompt=>'What\'s the slowest shutter speed?', default=>$$existing{max_shutter}});
-	$data{bulb} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean', default=>$$existing{bulb}});
-	$data{time} = &prompt({prompt=>'Does the camera have time exposure mode?', type=>'boolean', default=>$$existing{time}});
-	$data{min_iso} = &prompt({prompt=>'What\'s the lowest ISO the camera can do?', type=>'integer', default=>$$existing{min_iso}});
-	$data{max_iso} = &prompt({prompt=>'What\'s the highest ISO the camera can do?', type=>'integer', default=>$$existing{max_iso}});
-	$data{af_points} = &prompt({prompt=>'How many autofocus points does the camera have?', type=>'integer'}, default=>$$existing{af_points});
-	$data{int_flash} = &prompt({prompt=>'Does the camera have an internal flash?', type=>'boolean', default=>$$existing{int_flash}});
-	if ($data{int_flash} == 1) {
-		$data{int_flash_gn} = &prompt({prompt=>'What\'s the guide number of the internal flash?', type=>'integer', default=>$$existing{int_flash_gn}});
-	}
-	$data{ext_flash} = &prompt({prompt=>'Does the camera support an external flash?', type=>'boolean', default=>$$existing{ext_flash}});
-	if ($data{ext_flash} == 1) {
-		$data{pc_sync} = &prompt({prompt=>'Does the camera have a PC sync socket?', type=>'boolean', default=>$$existing{pc_sync}});
-		$data{hotshoe} = &prompt({prompt=>'Does the camera have a hot shoe?', type=>'boolean', default=>$$existing{hotshoe}});
-	}
-	if ($data{int_flash} == 1 || $data{ext_flash} == 1) {
-		$data{coldshoe} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean', default=>$$existing{coldshoe}});
-		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text', default=>$$existing{x_sync}});
-		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add, default=>$$existing{flash_metering}});
-	}
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$existing{condition_id}});
-	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean', default=>$$existing{oem_case}});
-	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean', default=>$$existing{dof_preview}});
-	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean', default=>$$existing{tripod}});
-	if (defined($data{mount_id})) {
-		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}});
-	}
+
+	# Gather data from user
+	my $datahr = &camera_prompt($db, $existing);
+	my %data = %$datahr;
 
 	# Compare new and old data to find changed fields
 	my %changes;
@@ -436,6 +294,87 @@ sub camera_edit {
 		}
 	}
 	return &updaterecord({db=>$db, data=>\%changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
+}
+
+sub camera_prompt {
+	my $db = shift;
+	my $defaults = shift;
+	my %data;
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$defaults{manufacturer_id}});
+	$data{model} = &prompt({prompt=>'What model is the camera?', required=>1, default=>$$defaults{model}});
+	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', required=>1, default=>$$defaults{fixed_mount}});
+	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1 && !defined($$defaults{lens_id})) {
+		# Get info about lens
+		print "Please enter some information about the lens\n";
+		$data{lens_id} = &lens_add($db);
+	} else {
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
+	}
+	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1, default=>$$defaults{format_id}});
+	$data{focus_type_id} = &listchoices({db=>$db, cols=>['focus_type_id as id', 'focus_type as opt'], table=>'FOCUS_TYPE', inserthandler=>\&focustype_add, default=>$$defaults{focus_type_id}});
+	$data{metering} = &prompt({prompt=>'Does this camera have metering?', type=>'boolean', default=>$$defaults{metering}});
+	if (defined($data{metering}) && $data{metering} == 1) {
+		$data{coupled_metering} = &prompt({prompt=>'Is the metering coupled?', type=>'boolean', default=>$$defaults{coupled_metering}});
+		$data{metering_type_id} = &listchoices({db=>$db, cols=>['metering_type_id as id', 'metering as opt'], table=>'METERING_TYPE', inserthandler=>\&meteringtype_add, default=>$$defaults{metering_type_id}});
+		$data{meter_min_ev} = &prompt({prompt=>'What\'s the lowest EV the meter can handle?', type=>'integer', default=>$$defaults{meter_min_ev}});
+		$data{meter_max_ev} = &prompt({prompt=>'What\'s the highest EV the meter can handle?', type=>'integer', default=>$$defaults{meter_max_ev}});
+	}
+	$data{body_type_id} = &listchoices({db=>$db, cols=>['body_type_id as id', 'body_type as opt'], table=>'BODY_TYPE', inserthandler=>\&camera_addbodytype, default=>$$defaults{body_type_id}});
+	$data{weight} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer', default=>$$defaults{weight}});
+	$data{acquired} = &prompt({default=>$$defaults{acquired}//&today($db), prompt=>'When was it acquired?', type=>'date'});
+	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal', default=>$$defaults{cost}});
+	$data{introduced} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer', default=>$$defaults{introduced}});
+	$data{discontinued} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer', default=>$$defaults{discontinued}});
+	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?', default=>$$defaults{serial}});
+	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?', default=>$$defaults{datecode}});
+	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$$defaults{manufactured}});
+	$data{own} = &prompt({default=>$$defaults{own}//'yes', prompt=>'Do you own this camera?', type=>'boolean'});
+	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$defaults{negative_size_id}});
+	$data{shutter_type_id} = &listchoices({db=>$db, cols=>['shutter_type_id as id', 'shutter_type as opt'], table=>'SHUTTER_TYPE', inserthandler=>\&shuttertype_add, default=>$$defaults{shutter_type_id}});
+	$data{shutter_model} = &prompt({prompt=>'What is the shutter model?', default=>$$defaults{shutter_model}});
+	$data{cable_release} = &prompt({prompt=>'Does this camera have a cable release?', type=>'boolean', default=>$$defaults{cable_release}});
+	$data{viewfinder_coverage} = &prompt({prompt=>'What is the viewfinder coverage?', type=>'integer', default=>$$defaults{viewfinder_coverage}});
+	$data{power_drive} = &prompt({prompt=>'Does this camera have power drive?', type=>'boolean', default=>$$defaults{power_drive}});
+	if (defined($data{power_drive}) && $data{power_drive} == 1) {
+		$data{continuous_fps} = &prompt({prompt=>'How many frames per second can this camera manage?', type=>'decimal', default=>$$defaults{continuous_fps}});
+	}
+	$data{video} = &prompt({default=>$$defaults{video}//'no', prompt=>'Does this camera have a video/movie function?', type=>'boolean'});
+	$data{digital} = &prompt({default=>$$defaults{digital}//'no', prompt=>'Is this a digital camera?', type=>'boolean'});
+	$data{battery_qty} = &prompt({prompt=>'How many batteries does this camera take?', type=>'integer', default=>$$defaults{battery_qty}});
+	if (defined($data{battery_qty}) && $data{battery_qty} > 0) {
+		$data{battery_type} = &listchoices({db=>$db, keyword=>'battery type', table=>'choose_battery', inserthandler=>\&battery_add, default=>$$defaults{battery_type}});
+	}
+	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$defaults{notes}});
+	$data{source} = &prompt({prompt=>'Where was the camera acquired from?', default=>$$defaults{source}});
+	$data{min_shutter} = &prompt({prompt=>'What\'s the fastest shutter speed?', default=>$$defaults{min_shutter}});
+	$data{max_shutter} = &prompt({prompt=>'What\'s the slowest shutter speed?', default=>$$defaults{max_shutter}});
+	$data{bulb} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean', default=>$$defaults{bulb}});
+	$data{time} = &prompt({prompt=>'Does the camera have time exposure mode?', type=>'boolean', default=>$$defaults{time}});
+	$data{min_iso} = &prompt({prompt=>'What\'s the lowest ISO the camera can do?', type=>'integer', default=>$$defaults{min_iso}});
+	$data{max_iso} = &prompt({prompt=>'What\'s the highest ISO the camera can do?', type=>'integer', default=>$$defaults{max_iso}});
+	$data{af_points} = &prompt({prompt=>'How many autofocus points does the camera have?', type=>'integer', default=>$$defaults{af_points}});
+	$data{int_flash} = &prompt({prompt=>'Does the camera have an internal flash?', type=>'boolean', default=>$$defaults{int_flash}});
+	if (defined($data{int_flash}) && $data{int_flash} == 1) {
+		$data{int_flash_gn} = &prompt({prompt=>'What\'s the guide number of the internal flash?', type=>'integer', default=>$$defaults{int_flash_gn}});
+	}
+	$data{ext_flash} = &prompt({prompt=>'Does the camera support an external flash?', type=>'boolean', default=>$$defaults{ext_flash}});
+	if ($data{ext_flash} == 1) {
+		$data{pc_sync} = &prompt({prompt=>'Does the camera have a PC sync socket?', type=>'boolean', default=>$$defaults{pc_sync}});
+		$data{hotshoe} = &prompt({prompt=>'Does the camera have a hot shoe?', type=>'boolean', default=>$$defaults{hotshoe}});
+	}
+	if ($data{int_flash} == 1 || $data{ext_flash} == 1) {
+		$data{coldshoe} = &prompt({prompt=>'Does the camera have a cold/accessory shoe?', type=>'boolean', default=>$$defaults{coldshoe}});
+		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text', default=>$$defaults{x_sync}});
+		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add, default=>$$defaults{flash_metering}});
+	}
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$defaults{condition_id}});
+	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean', default=>$$defaults{oem_case}});
+	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean', default=>$$defaults{dof_preview}});
+	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean', default=>$$defaults{tripod}});
+	if (defined($data{mount_id})) {
+		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}, default=>$$defaults{display_lens}, skipok=>1});
+	}
+	return \%data;
 }
 
 # Add accessory compatibility info to a camera
@@ -711,57 +650,11 @@ sub negative_prints {
 # Add a new lens to the database
 sub lens_add {
 	my $db = shift;
-	my %data;
-	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
-	$data{model} = &prompt({prompt=>'What is the lens model?'});
-	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>&parselensmodel($data{model}, 'zoom')});
-	if ($data{zoom} == 0) {
-		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'minfocal')});
-		$data{max_focal_length} = $data{min_focal_length};
-		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer'});
-		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
-	} else {
-		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'minfocal')});
-		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>&parselensmodel($data{model}, 'maxfocal')});
-		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer'});
-		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer'});
-	}
-	$data{fixed_mount} = &prompt({default=>'no', prompt=>'Does this lens have a fixed mount?', type=>'boolean'});
-	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add});
-		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer'});
-		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
-		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer'});
-		$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer'});
-	}
-	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>&parselensmodel($data{model}, 'aperture')});
-	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal'});
-	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer'});
-	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer'});
-	$data{groups} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer'});
-	$data{aperture_blades} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer'});
-	$data{autofocus} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean'});
-	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal'});
-	$data{magnification} = &prompt({prompt=>'What is the maximum magnification possible with this lens?', type=>'decimal'});
-	$data{url} = &prompt({prompt=>'Informational URL for this lens'});
-	$data{serial} = &prompt({prompt=>'What is the serial number of the lens?'});
-	$data{date_code} = &prompt({prompt=>'What is the date code of the lens?'});
-	$data{introduced} = &prompt({prompt=>'When was this lens introduced?', type=>'integer'});
-	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer'});
-	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer'});
-	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
-	$data{acquired} = &prompt({default=>&today($db), prompt=>'When was this lens acquired?', type=>'date'});
-	$data{notes} = &prompt({prompt=>'Notes'});
-	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this lens?', type=>'boolean'});
-	$data{source} = &prompt({prompt=>'Where was this lens sourced from?'});
-	$data{coating} = &prompt({prompt=>'What coating does this lens have?'});
-	$data{hood} = &prompt({prompt=>'What is the model number of the suitable hood for this lens?'});
-	$data{exif_lenstype} = &prompt({prompt=>'EXIF lens type code'});
-	$data{rectilinear} = &prompt({default=>'yes', prompt=>'Is this a rectilinear lens?', type=>'boolean'});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
-	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer'});
-	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?'});
-	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?'});
+
+	# Gather data from user
+	my $datahr = &lens_prompt($db);
+	my %data = %$datahr;
+
 	my $lensid = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens?', type=>'boolean'})) {
@@ -773,60 +666,13 @@ sub lens_add {
 # Edit an existing lens
 sub lens_edit {
 	my $db = shift;
-	my %data;
 	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	my $existing = &lookupcol({db=>$db, table=>'LENS', where=>{lens_id=>$lensid}});
 	$existing = @$existing[0];
-	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$existing{manufacturer_id}});
-	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$existing{model}});
-	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>$$existing{zoom}});
-	if ($data{zoom} == 0) {
-		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>$$existing{min_focal_length}});
-		$data{max_focal_length} = $data{min_focal_length};
-		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
-		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
-	} else {
-		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>$$existing{min_focal_length}});
-		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>$$existing{max_focal_length}});
-		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_min_angle_diag}});
-		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer', default=>$$existing{nominal_max_angle_diag}});
-	}
-	$data{fixed_mount} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$existing{fixed_mount}});
-	if ($data{fixed_mount} == 0) {
-		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add, default=>$$existing{mount_id}});
-		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer', default=>$$existing{weight}});
-		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$existing{cost}});
-		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$existing{length}});
-		$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer', default=>$$existing{diameter}});
-	}
-	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>$$existing{max_aperture}});
-	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal', default=>$$existing{min_aperture}});
-	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer', default=>$$existing{closest_focus}});
-	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer', default=>$$existing{elements}});
-	$data{groups} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer', default=>$$existing{groups}});
-	$data{aperture_blades} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer', default=>$$existing{aperture_blades}});
-	$data{autofocus} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean', default=>$$existing{autofocus}});
-	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal', default=>$$existing{filter_thread}});
-	$data{magnification} = &prompt({prompt=>'What is the maximum magnification possible with this lens?', type=>'decimal', default=>$$existing{magnification}});
-	$data{url} = &prompt({prompt=>'Informational URL for this lens', default=>$$existing{url}});
-	$data{serial} = &prompt({prompt=>'What is the serial number of the lens?', default=>$$existing{serial}});
-	$data{date_code} = &prompt({prompt=>'What is the date code of the lens?', default=>$$existing{date_code}});
-	$data{introduced} = &prompt({prompt=>'When was this lens introduced?', type=>'integer', default=>$$existing{introduced}});
-	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$existing{discontinued}});
-	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$existing{manufactured}});
-	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$existing{negative_size_id}});
-	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$existing{acquired}});
-	$data{notes} = &prompt({prompt=>'Notes', default=>$$existing{notes}});
-	$data{own} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$existing{own}});
-	$data{source} = &prompt({prompt=>'Where was this lens sourced from?', default=>$$existing{source}});
-	$data{coating} = &prompt({prompt=>'What coating does this lens have?', default=>$$existing{coating}});
-	$data{hood} = &prompt({prompt=>'What is the model number of the suitable hood for this lens?', default=>$$existing{hood}});
-	$data{exif_lenstype} = &prompt({prompt=>'EXIF lens type code', default=>$$existing{exif_lenstype}});
-	$data{rectilinear} = &prompt({prompt=>'Is this a rectilinear lens?', type=>'boolean', default=>$$existing{rectilinear}});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$existing{condition_id}});
-	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer', default=>$$existing{image_circle}});
-	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?', default=>$$existing{formula}});
-	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?', default=>$$existing{shutter_model}});
+
+	# Gather data from user
+	my $datahr = &lens_prompt($db, $existing);
+	my %data = %$datahr;
 
 	# Compare new and old data to find changed fields
 	my %changes;
@@ -837,6 +683,63 @@ sub lens_edit {
 		}
 	}
 	return &updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
+}
+
+sub lens_prompt {
+	my $db = shift;
+	my $defaults = shift;
+	my %data;
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$defaults{manufacturer_id}});
+	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$defaults{model}});
+	$data{zoom} = &prompt({prompt=>'Is this a zoom lens?', type=>'boolean', default=>$$defaults{zoom}//&parselensmodel($data{model}, 'zoom')});
+	if ($data{zoom} == 0) {
+		$data{min_focal_length} = &prompt({prompt=>'What is the focal length?', type=>'integer', default=>$$defaults{min_focal_length}//&parselensmodel($data{model}, 'minfocal')});
+		$data{max_focal_length} = $data{min_focal_length};
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the diagonal angle of view?', type=>'integer', default=>$$defaults{nominal_min_angle_diag}});
+		$data{nominal_max_angle_diag} = $data{nominal_min_angle_diag};
+	} else {
+		$data{min_focal_length} = &prompt({prompt=>'What is the minimum focal length?', type=>'integer', default=>$$defaults{min_focal_length}//&parselensmodel($data{model}, 'minfocal')});
+		$data{max_focal_length} = &prompt({prompt=>'What is the maximum focal length?', type=>'integer', default=>$$defaults{max_focal_length}//&parselensmodel($data{model}, 'maxfocal')});
+		$data{nominal_min_angle_diag} = &prompt({prompt=>'What is the minimum diagonal angle of view?', type=>'integer', default=>$$defaults{nominal_min_angle_diag}});
+		$data{nominal_max_angle_diag} = &prompt({prompt=>'What is the maximum diagonal angle of view?', type=>'integer', default=>$$defaults{nominal_max_angle_diag}});
+	}
+	$data{fixed_mount} = &prompt({prompt=>'Does this lens have a fixed mount?', type=>'boolean', default=>$$defaults{fixed_mount}//'no'});
+	if ($data{fixed_mount} == 0) {
+		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
+		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer', default=>$$defaults{weight}});
+		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$defaults{cost}});
+		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$defaults{length}});
+		$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer', default=>$$defaults{diameter}});
+	}
+	$data{max_aperture} = &prompt({prompt=>'What is the largest lens aperture?', type=>'decimal', default=>$$defaults{max_aperture}//&parselensmodel($data{model}, 'aperture')});
+	$data{min_aperture} = &prompt({prompt=>'What is the smallest lens aperture?', type=>'decimal', default=>$$defaults{min_aperture}});
+	$data{closest_focus} = &prompt({prompt=>'How close can the lens focus? (cm)', type=>'integer', default=>$$defaults{closest_focus}});
+	$data{elements} = &prompt({prompt=>'How many elements does the lens have?', type=>'integer', default=>$$defaults{elements}});
+	$data{groups} = &prompt({prompt=>'How many groups are these elements in?', type=>'integer', default=>$$defaults{groups}});
+	$data{aperture_blades} = &prompt({prompt=>'How many aperture blades does the lens have?', type=>'integer', default=>$$defaults{aperture_blades}});
+	$data{autofocus} = &prompt({prompt=>'Does this lens have autofocus?', type=>'boolean', default=>$$defaults{autofocus}});
+	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal', default=>$$defaults{filter_thread}});
+	$data{magnification} = &prompt({prompt=>'What is the maximum magnification possible with this lens?', type=>'decimal', default=>$$defaults{magnification}});
+	$data{url} = &prompt({prompt=>'Informational URL for this lens', default=>$$defaults{url}});
+	$data{serial} = &prompt({prompt=>'What is the serial number of the lens?', default=>$$defaults{serial}});
+	$data{date_code} = &prompt({prompt=>'What is the date code of the lens?', default=>$$defaults{date_code}});
+	$data{introduced} = &prompt({prompt=>'When was this lens introduced?', type=>'integer', default=>$$defaults{introduced}});
+	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$defaults{discontinued}});
+	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$defaults{manufactured}});
+	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$defaults{negative_size_id}});
+	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$defaults{acquired}//&today($db)});
+	$data{notes} = &prompt({prompt=>'Notes', default=>$$defaults{notes}});
+	$data{own} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$defaults{own}//'yes'});
+	$data{source} = &prompt({prompt=>'Where was this lens sourced from?', default=>$$defaults{source}});
+	$data{coating} = &prompt({prompt=>'What coating does this lens have?', default=>$$defaults{coating}});
+	$data{hood} = &prompt({prompt=>'What is the model number of the suitable hood for this lens?', default=>$$defaults{hood}});
+	$data{exif_lenstype} = &prompt({prompt=>'EXIF lens type code', default=>$$defaults{exif_lenstype}});
+	$data{rectilinear} = &prompt({prompt=>'Is this a rectilinear lens?', type=>'boolean', default=>$$defaults{rectilinear}//'yes'});
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$defaults{condition_id}});
+	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer', default=>$$defaults{image_circle}});
+	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?', default=>$$defaults{formula}});
+	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?', default=>$$defaults{shutter_model}});
+	return \%data;
 }
 
 # Add accessory compatibility info to a lens
