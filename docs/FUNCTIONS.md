@@ -17,6 +17,7 @@
 ## `updatedata`
 ## `today`
 ## `friendlybool`
+## `printbool`
 ## `writeconfig`
 ## `round`
 ## `pad`

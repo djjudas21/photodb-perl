@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -30,6 +30,11 @@ sub prompt {
 	my $char = $href->{char} // ':';		# Character to print at the end of the prompt
 
 	die "Must provide value for \$prompt\n" if !($prompt);
+
+	# Rewrite binary bools as strings
+	if ($type eq 'boolean' && $default ne '') {
+		$default = &printbool($default);
+	}
 
 	my $rv;
 	# Repeatedly prompt user until we get a response of the correct type
@@ -509,6 +514,18 @@ sub friendlybool {
 		return 1;
 	} elsif ($val =~ m/^n(o)?$/i || $val =~ m/^false$/i || $val eq 0) {
 		return 0;
+	} else {
+		return '';
+	}
+}
+
+# Translate numeric bools to strings
+sub printbool {
+	my $val = shift;
+	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
+		return 'yes';
+	} elsif ($val =~ m/^n(o)?$/i || $val =~ m/^false$/i || $val eq 0) {
+		return 'no';
 	} else {
 		return '';
 	}
