@@ -300,7 +300,7 @@ sub camera_prompt {
 	my $db = shift;
 	my $defaults = shift;
 	my %data;
-	$data{manufacturer_id} = $$defaults{manufacturer_id} || &choose_manufacturer({db=>$db});
+	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$defaults{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What model is the camera?', required=>1, default=>$$defaults{model}});
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', required=>1, default=>$$defaults{fixed_mount}});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1 && !defined($$defaults{lens_id})) {
