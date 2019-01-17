@@ -4,7 +4,7 @@ Note that some of these functions take traditional argument lists which must
 be in order, while the more complex functions take a hashref of arguments
 which can be passed in any order. Examples of each function are given
 
-
+---
 ## `annotatefilm`
 Write out a text file in the film scans directory
 #### Usage
@@ -17,7 +17,7 @@ Write out a text file in the film scans directory
 #### Returns
 Nothing
 
-
+---
 ## `chooseneg`
 Select a negative by drilling down
 #### Usage
@@ -31,7 +31,7 @@ my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
 Integer representing the negative ID
 
 
-
+---
 ## `db`
 Connect to the database
 #### Usage
@@ -43,7 +43,7 @@ None
 #### Returns
 Variable representing the database handle
 
-
+---
 ## `duration`
 Calculate duration of a shutter speed from its string representation
 #### Usage
@@ -56,7 +56,7 @@ my $duration = &duration($shutter_speed);
 Numeric representation of the duration of the shutter speed, e.g. `0.05`
 
 
-
+---
 ## `friendlybool`
 Translate "friendly" bools to integers so we can accept human input and map it to binary boolean values
 #### Usage
@@ -69,7 +69,7 @@ my $binarybool = &friendlybool($friendlybool);
 `1` if `$bool` represents a true value and `0` if it represents a false value
 
 
-
+---
 ## `hashdiff`
 Compare new and old data to find changed keys.
 #### Usage
@@ -83,7 +83,7 @@ my $diff = &hashdiff($old, $new);
 #### Returns
 Hashref containing values that are new or different.
 
-
+---
 ## `ini`
 Find PhotoDB config ini file
 #### Usage
@@ -95,7 +95,7 @@ None
 #### Returns
 File path to the config ini file
 
-
+---
 ## `keyword`
 Figure out the human-readable keyword of an SQL statement, e.g. statements that select from
 `CAMERA` or `choose_camera` would return `camera`. Selecting from `CAMERA_MOUNT` or
@@ -111,7 +111,7 @@ my $keyword = &keyword($query);
 A human-readable keyword representing the "subject" of the SQL query
 
 
-
+---
 ## `listchoices`
 List arbitrary choices from the DB and return ID of the selected one
 #### Usage
@@ -135,7 +135,7 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 #### Returns
 ID of the selected option
 
-
+---
 ## `lookupcol`
 Return values from an arbitrary column from database as an arrayref
 #### Usage
@@ -147,7 +147,7 @@ Return values from an arbitrary column from database as an arrayref
 #### Returns
 
 
-
+---
 ## `lookupval`
 Return arbitrary value from database
 #### Usage
@@ -159,7 +159,7 @@ Return arbitrary value from database
 #### Returns
 
 
-
+---
 ## `newrecord`
 Insert a record into any table
 #### Usage
@@ -171,7 +171,7 @@ Insert a record into any table
 #### Returns
 
 
-
+---
 ## `nocommand`
 Print list of commands
 #### Usage
@@ -183,7 +183,7 @@ Print list of commands
 #### Returns
 
 
-
+---
 ## `nosubcommand`
 Print list of subcommands for a given command
 #### Usage
@@ -195,7 +195,7 @@ Print list of subcommands for a given command
 #### Returns
 
 
-
+---
 ## `notimplemented`
 Print a warning that this command/subcommand is not yet implemented
 #### Usage
@@ -207,7 +207,7 @@ Print a warning that this command/subcommand is not yet implemented
 #### Returns
 
 
-
+---
 ## `pad`
 Pad a string with spaces up to a fixed length
 #### Usage
@@ -219,7 +219,7 @@ Pad a string with spaces up to a fixed length
 #### Returns
 
 
-
+---
 ## `parselensmodel`
 Parse lens model name to guess some data about the lens
 #### Usage
@@ -231,7 +231,7 @@ Parse lens model name to guess some data about the lens
 #### Returns
 
 
-
+---
 ## `printbool`
 Translate numeric bools to strings
 #### Usage
@@ -243,7 +243,7 @@ Translate numeric bools to strings
 #### Returns
 
 
-
+---
 ## `printlist`
 List arbitrary rows
 #### Usage
@@ -255,7 +255,7 @@ List arbitrary rows
 #### Returns
 
 
-
+---
 ## `prompt`
 Prompt the user for an arbitrary value
 #### Usage
@@ -267,7 +267,7 @@ Prompt the user for an arbitrary value
 #### Returns
 
 
-
+---
 ## `resolvenegid`
 Get a negative ID either from the neg ID or the film/frame ID
 #### Usage
@@ -279,7 +279,7 @@ Get a negative ID either from the neg ID or the film/frame ID
 #### Returns
 
 
-
+---
 ## `round`
 Round numbers to any precision
 #### Usage
@@ -291,7 +291,7 @@ Round numbers to any precision
 #### Returns
 
 
-
+---
 ## `tag`
 This func reads data from PhotoDB and writes EXIF tags
 to the JPGs that have been scanned from negatives
@@ -304,7 +304,7 @@ to the JPGs that have been scanned from negatives
 #### Returns
 
 
-
+---
 ## `thin`
 Thin out keys will null values from a sparse hash
 #### Usage
@@ -316,7 +316,7 @@ Thin out keys will null values from a sparse hash
 #### Returns
 
 
-
+---
 ## `today`
 Return today's date according to the DB
 #### Usage
@@ -328,7 +328,7 @@ Return today's date according to the DB
 #### Returns
 
 
-
+---
 ## `unsetdisplaylens`
 Unset the display lens from a camera
 #### Usage
@@ -340,7 +340,7 @@ Unset the display lens from a camera
 #### Returns
 
 
-
+---
 ## `updatedata`
 Update data using a bare `UPDATE` statement
 Avoid using if possible
@@ -353,7 +353,7 @@ Avoid using if possible
 #### Returns
 
 
-
+---
 ## `updaterecord`
 Update an existing record in any table
 #### Usage
@@ -365,7 +365,7 @@ Update an existing record in any table
 #### Returns
 
 
-
+---
 ## `validate`
 Validate that a value is a certain data type
 #### Usage
@@ -377,7 +377,7 @@ Validate that a value is a certain data type
 #### Returns
 
 
-
+---
 ## `welcome`
 Print welcome message
 #### Usage
@@ -389,7 +389,7 @@ Print welcome message
 #### Returns
 
 
-
+---
 ## `writeconfig`
 Write out a config file
 #### Usage
