@@ -531,6 +531,7 @@ sub printbool {
 	}
 }
 
+# Write out a config file
 sub writeconfig {
 	my $inifile = shift;
 
