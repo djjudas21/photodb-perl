@@ -126,7 +126,7 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 * `$default` ID of default choice
 * `$autodefault` if default not set, count number of allowed options and if there's just 1, make it the default
 * `$skipok` whether it is ok to return `undef` if there are no options to choose from
-* `$table` table to run query again. Part of the SQL::Abstract tuple
+* `$table` table to run query against. Part of the SQL::Abstract tuple
 * `$cols` columns to select for the ID and the description. Defaults to `('id', 'opt)`. Part of the SQL::Abstract tuple
 * `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
 * `$keyword` keyword to describe the thing being chosen, e.g. `camera`. Defaults to attempting to figure it out with `&keyword`
@@ -140,24 +140,32 @@ ID of the selected option
 Return values from an arbitrary column from database as an arrayref
 #### Usage
 ```perl
-&
+my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$query` (legacy) bare SQL query to run
+* `$table` table to run query against. Part of the SQL::Abstract tuple
+* `$cols` columns to select for the ID and the description. Defaults to `*`. Part of the SQL::Abstract tuple
+* `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
 #### Returns
-
+An arrayref containing a hashref of columns and values
 
 ---
 ## `lookupval`
-Return arbitrary value from database
+Return arbitrary single value from database
 #### Usage
 ```perl
-&
+my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$query` (legacy) bare SQL query to run
+* `$table` table to run query against. Part of the SQL::Abstract tuple
+* `$col` column to select. Part of the SQL::Abstract tuple
+* `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
 #### Returns
-
+Single value from the database
 
 ---
 ## `newrecord`
