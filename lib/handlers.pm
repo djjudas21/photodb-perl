@@ -671,18 +671,13 @@ sub lens_edit {
 	$existing = @$existing[0];
 
 	# Gather data from user
-	my $datahr = &lens_prompt($db, $existing);
-	my %data = %$datahr;
+	my $data = &lens_prompt($db, $existing);
 
 	# Compare new and old data to find changed fields
-	my %changes;
-	my $thindata = &thin(\%data);
-	foreach my $key (keys %$thindata) {
-		if (!defined($$existing{$key}) || $data{$key} ne $$existing{$key}) {
-			$changes{$key} = $data{$key};
-		}
-	}
-	return &updaterecord({db=>$db, data=>\%changes, table=>'LENS', where=>"lens_id=$lensid"});
+	my $changes = &hashdiff($existing, $data);
+
+	# Update the DB
+	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>"lens_id=$lensid"});
 }
 
 sub lens_prompt {
