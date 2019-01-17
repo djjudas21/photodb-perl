@@ -7,78 +7,78 @@ which can be passed in any order. Examples of each function are given
 
 ## `annotatefilm`
 Write out a text file in the film scans directory
-### Usage
+#### Usage
 ```perl
 &annotatefilm($db, $film_id);
 ```
-### Arguments
+#### Arguments
 * `$db` variable containing database handle as returned by `&db`
 * `$film_id` integer variable containing ID of the film to be annotated
-### Returns
+#### Returns
 Nothing
 
 
 ## `chooseneg`
 Select a negative by drilling down
-### Usage
+#### Usage
 ```perl
 &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
 ```
-### Arguments
+#### Arguments
 * `$db` variable containing database handle as returned by `&db`
 * `$oktoreturnundef` optional boolean to specify whether it is OK to fail to find a negative
-### Returns
+#### Returns
 Integer representing the negative ID
 
 
 
 ## `db`
 Connect to the database
-### Usage
+#### Usage
 ```perl
 &db;
 ```
-### Arguments
+#### Arguments
 None
-### Returns
+#### Returns
 Variable representing the database handle
 
 
 ## `duration`
 Calculate duration of a shutter speed from its string representation
-### Usage
+#### Usage
 ```perl
 &duration($shutter_speed);
 ```
-### Arguments
+#### Arguments
 * `$shutter_speed` string containing a representation of a shutter speed, e.g. `1/125`, `0.7`, `3`, or `3"`
-### Returns
+#### Returns
 Numeric representation of the duration of the shutter speed, e.g. `0.05`
 
 
 
 ## `friendlybool`
 Translate "friendly" bools to integers so we can accept human input and map it to binary boolean values
-### Usage
+#### Usage
 ```perl
 &friendlybool($bool);
 ```
-### Arguments
+#### Arguments
 * `$bool` string representation of a boolean, e.g. `yes`, `y`, `true`, `1`, `no`, `n`, `false`, `0`, etc
-### Returns
+#### Returns
 `1` if `$bool` represents a true value and `0` if it represents a false value
 
 
 
 ## `hashdiff`
 Compare new and old data to find changed fields
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
@@ -90,289 +90,289 @@ Find ini file
 Figure out the keyword of an SQL statement, e.g. statements that select from
 `CAMERA` or `choose_camera` would return `camera`. Selecting from
 `CAMERA_MOUNT` or `choose_camera_mount` would return `camera mount`.
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `listchoices`
 List arbitrary choices from the DB and return ID of the selected one
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `lookupcol`
 Return values from an arbitrary column from database as an arrayref
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `lookupval`
 Return arbitrary value from database
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `newrecord`
 Insert a record into any table
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `nocommand`
 Print list of commands
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `nosubcommand`
 Print list of subcommands for a given command
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `notimplemented`
 Print a warning that this command/subcommand is not yet implemented
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `pad`
 Pad a string with spaces up to a fixed length
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `parselensmodel`
 Parse lens model name to guess some data about the lens
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `printbool`
 Translate numeric bools to strings
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `printlist`
 List arbitrary rows
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `prompt`
 Prompt the user for an arbitrary value
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `resolvenegid`
 Get a negative ID either from the neg ID or the film/frame ID
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `round`
 Round numbers to any precision
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `tag`
 This func reads data from PhotoDB and writes EXIF tags
 to the JPGs that have been scanned from negatives
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `thin`
 Thin out keys will null values from a sparse hash
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `today`
 Return today's date according to the DB
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `unsetdisplaylens`
 Unset the display lens from a camera
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `updatedata`
 Update data using a bare `UPDATE` statement
 Avoid using if possible
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `updaterecord`
 Update an existing record in any table
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `validate`
 Validate that a value is a certain data type
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `welcome`
 Print welcome message
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
 
 
 ## `writeconfig`
 Write out a config file
-### Usage
+#### Usage
 ```perl
 &
 ```
-### Arguments
+#### Arguments
 * `$`
-### Returns
+#### Returns
 
