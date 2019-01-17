@@ -22,7 +22,7 @@ Nothing
 Select a negative by drilling down
 #### Usage
 ```perl
-&chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
+my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
 ```
 #### Arguments
 * `$db` variable containing database handle as returned by `&db`
@@ -36,7 +36,7 @@ Integer representing the negative ID
 Connect to the database
 #### Usage
 ```perl
-&db;
+my $db = &db;
 ```
 #### Arguments
 None
@@ -48,7 +48,7 @@ Variable representing the database handle
 Calculate duration of a shutter speed from its string representation
 #### Usage
 ```perl
-&duration($shutter_speed);
+my $duration = &duration($shutter_speed);
 ```
 #### Arguments
 * `$shutter_speed` string containing a representation of a shutter speed, e.g. `1/125`, `0.7`, `3`, or `3"`
@@ -61,42 +61,54 @@ Numeric representation of the duration of the shutter speed, e.g. `0.05`
 Translate "friendly" bools to integers so we can accept human input and map it to binary boolean values
 #### Usage
 ```perl
-&friendlybool($bool);
+my $binarybool = &friendlybool($friendlybool);
 ```
 #### Arguments
-* `$bool` string representation of a boolean, e.g. `yes`, `y`, `true`, `1`, `no`, `n`, `false`, `0`, etc
+* `$friendlybool` string representation of a boolean, e.g. `yes`, `y`, `true`, `1`, `no`, `n`, `false`, `0`, etc
 #### Returns
 `1` if `$bool` represents a true value and `0` if it represents a false value
 
 
 
 ## `hashdiff`
-Compare new and old data to find changed fields
+Compare new and old data to find changed keys.
 #### Usage
 ```perl
-&
+my $diff = &hashdiff(\%old, \%new);
+my $diff = &hashdiff($old, $new);
 ```
 #### Arguments
-* `$`
+* `$old` hashref of old values
+* `$new` hashref of new values
 #### Returns
-
+Hashref containing values that are new or different.
 
 
 ## `ini`
-Find ini file
+Find PhotoDB config ini file
+#### Usage
+```perl
+my $ini = &ini;
+```
+#### Arguments
+None
+#### Returns
+File path to the config ini file
 
 
 ## `keyword`
-Figure out the keyword of an SQL statement, e.g. statements that select from
-`CAMERA` or `choose_camera` would return `camera`. Selecting from
-`CAMERA_MOUNT` or `choose_camera_mount` would return `camera mount`.
+Figure out the human-readable keyword of an SQL statement, e.g. statements that select from
+`CAMERA` or `choose_camera` would return `camera`. Selecting from `CAMERA_MOUNT` or
+`choose_camera_mount` would return `camera mount`. This can be helpful when automating
+user messages.
 #### Usage
 ```perl
-&
+my $keyword = &keyword($query);
 ```
 #### Arguments
-* `$`
+* `$query` an SQL statement, e.g. `SELECT * FROM CAMERA;`
 #### Returns
+A human-readable keyword representing the "subject" of the SQL query
 
 
 
@@ -104,12 +116,24 @@ Figure out the keyword of an SQL statement, e.g. statements that select from
 List arbitrary choices from the DB and return ID of the selected one
 #### Usage
 ```perl
-&
+my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$query` (legacy) the SQL to generate the list of choices
+* `$type` Data type of choice to be made. Defaults to `text`
+* `$inserthandler` function ref to handler that can be used to insert a new row if necessary
+* `$default` ID of default choice
+* `$autodefault` if default not set, count number of allowed options and if there's just 1, make it the default
+* `$skipok` whether it is ok to return `undef` if there are no options to choose from
+* `$table` table to run query again. Part of the SQL::Abstract tuple
+* `$cols` columns to select for the ID and the description. Defaults to `('id', 'opt)`. Part of the SQL::Abstract tuple
+* `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
+* `$keyword` keyword to describe the thing being chosen, e.g. `camera`. Defaults to attempting to figure it out with `&keyword`
+* `$required` whether this is a required choice, or whether we allow the user to enter an empty input. Defaults to `0`
+* `$char` character to use to signal that you want to enter a new row, if `inserthandler` is set. Defaults to `+`
 #### Returns
-
+ID of the selected option
 
 
 ## `lookupcol`
