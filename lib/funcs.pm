@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -878,6 +878,25 @@ sub tag {
 	print "Changed EXIF data in $changedcount images\n";
 	print 'Found ' . ($#missingfiles + 1) . " missing files\n";
 	return;
+}
+
+# Compare new and old data to find changed fields
+sub hashdiff {
+	my $old = shift;
+	my $new = shift;
+
+	# Strip out empty keys
+        $old = &thin($old);
+        $new = &thin($new);
+
+	# Save new or changed keys
+        my %diff;
+        foreach my $key (keys %$new) {
+                if (!defined($$old{$key}) || $$new{$key} ne $$old{$key}) {
+                        $diff{$key} = $$new{$key};
+                }
+        }
+	return \%diff;
 }
 
 # This ensures the lib loads smoothly

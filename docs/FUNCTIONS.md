@@ -30,3 +30,4 @@
 ## `welcome`
 ## `duration`
 ## `tag`
+## `hashdiff`
