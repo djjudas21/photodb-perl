@@ -172,35 +172,41 @@ Single value from the database
 Insert a record into any table
 #### Usage
 ```perl
-&
+my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$data` reference to hash of new values to insert
+* `$table` Name of table to insert into
+* `$silent` Suppress user output and don't ask for confirmation. Defaults to `0`.
 #### Returns
-
+Primary key of inserted row
 
 ---
 ## `nocommand`
-Print list of commands
+Print list of available op-level command
 #### Usage
 ```perl
-&
+&nocommand(\%handlers);
 ```
 #### Arguments
-* `$`
+* `$handlers` reference to hash of handlers from `handlers.pm`
 #### Returns
+Nothing
 
 
 ---
 ## `nosubcommand`
-Print list of subcommands for a given command
+Print list of available subcommands for a given command
 #### Usage
 ```perl
-&
+&nosubcommand(\%{$handlers{$command}}, $command);
 ```
 #### Arguments
-* `$`
+* `$command` name of command whose subcommands you want
+* `$handlers` reference to hash slice of handlers from `handlers.pm`
 #### Returns
+Nothing
 
 
 ---
@@ -208,72 +214,100 @@ Print list of subcommands for a given command
 Print a warning that this command/subcommand is not yet implemented
 #### Usage
 ```perl
-&
+&notimplemented
 ```
 #### Arguments
-* `$`
+None
 #### Returns
+Nothing
 
 
 ---
 ## `pad`
-Pad a string with spaces up to a fixed length
+Pad a string with spaces up to a fixed length, to make it easier to print fixed-width tables
 #### Usage
 ```perl
-&
+my $paddedstring = &pad('Hello', 8);
 ```
 #### Arguments
-* `$`
+* `$string` Text to pad
+* `$totallength` Total number of characters to pad to, defaults to `18`
 #### Returns
-
+Padded string
 
 ---
 ## `parselensmodel`
-Parse lens model name to guess some data about the lens
+Parse lens model name to guess some data about the lens. Either specify which parameter you want
+to be returned as a string, or expect a hashref of all params to be returned. Currently supports guessing
+`minfocal` (minimum focal length), `maxfocal` (maximum focal length), `zoom` (whether this is a zoom lens)
+and `aperture` (maximum aperture of lens).
 #### Usage
 ```perl
-&
+my $aperture = &parselensmodel($model, 'aperture');
+my $lensparams = &parselensmodel($model);
 ```
 #### Arguments
-* `$`
+* `$model` Model name of the lens
+* `$param` The name of the desired parameter. Optional, choose from `minfocal`, `maxfocal`, `zoom` or `aperture`.
 #### Returns
+* If `$param` is specified, returns the value of this parameter as a string
+* If `$param` is undefined, returns a hashref of all parameters
 
 
 ---
 ## `printbool`
-Translate numeric bools to strings
+Translate numeric bools to strings for friendly printing of user messages
 #### Usage
 ```perl
-&
+my $string = &printbool($bool);
 ```
 #### Arguments
-* `$`
+* `$bool` boolean value to rewrite
 #### Returns
-
+Returns `yes` if `$bool` is true and `no` if `$bool` is false.
 
 ---
 ## `printlist`
-List arbitrary rows
+Print arbitrary rows from the database as an easy way of displaying data
 #### Usage
 ```perl
-&
+&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$msg` Message to display to user to describe what is being displayed. Shows up as `Now showing $msg\n`
+* `$query` (legacy) bare SQL query to run
+* `$table` Part of the SQL::Abstract tuple
+* `$cols` Columns to display. Defaults to `(id, opt)`. Part of the SQL::Abstract tuple
+* `$where` Where clause for the query. Part of the SQL::Abstract tuple
+* `$order` Order by clause for the query. Part of the SQL::Abstract tuple
 #### Returns
+Nothing
 
 
 ---
 ## `prompt`
-Prompt the user for an arbitrary value
+Prompt the user for an arbitrary value. Has various options for data validation and customisation of the prompt.
+If the provided input fails validation, or if a blank string is given when `required=1` then the prompt is
+repeated.
 #### Usage
 ```perl
-&
+my $camera = &prompt({prompt=>'What model is the camera?', required=>1, default=>$$defaults{model}, type=>'text'});
+```
+would give a prompt like
+```
+What model is the camera? (text) []: 
 ```
 #### Arguments
-* `$`
+* `$default` Default value that will be used if no input from user. Default empty string.
+* `$prompt` Prompt message for the user
+* `$type` Data type that this input expects, out of `text`, `integer`, `boolean`, `date`, `decimal`, `hh:mm:ss`
+* `$required` Whether this input is required, or whether it can return an empty value. Default `0`
+* `$showtype` Whether to show the user what data type is expected, in parentheses. Default `1`
+* `$showdefault` Whether to show the user what the default value is set to, in square brackets. Default `1`
+* `$char` Character to print at the end of the prompt. Defaults to `:`
 #### Returns
-
+The value the user provided
 
 ---
 ## `resolvenegid`
