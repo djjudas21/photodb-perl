@@ -563,10 +563,20 @@ sub round {
 sub pad {
 	my $string = shift;		# Text to pad
 	my $totallength = shift || 18;	# Total number of characters to pad to
-	my $lengthofstring = length($string);
-	my $pad = $totallength - $lengthofstring;
-	my $newstring = $string . ' ' x $pad;
-	return $newstring;
+
+	# Work out required pad
+	my $pad = $totallength - length($string);
+
+	if ($pad > 0) {
+		# Return the padded string
+		return $string . ' ' x $pad;
+	} elsif ($pad = 0) {
+		# No pad required, just return the original
+		return $string;
+	} else {
+		# If the input is longer than the target, truncate it
+		return substr($string, 0, $totallength);
+	}
 }
 
 # Get a negative ID either from the neg ID or the film/frame ID
