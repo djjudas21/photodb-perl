@@ -314,11 +314,13 @@ The value the user provided
 Get a negative ID either from the neg ID or the film/frame ID
 #### Usage
 ```perl
-&
+my $negID = &resolvenegid($db, '10/4');
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$string` String to represent a negative ID, either as an integer or in film/frame format, e.g. `10/4`
 #### Returns
+Integer negative ID
 
 
 ---
