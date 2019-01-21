@@ -353,51 +353,58 @@ Nothing
 
 ---
 ## `thin`
-Thin out keys will null values from a sparse hash
+Thin out keys with empty values from a sparse hash
 #### Usage
 ```perl
-&
+# Delete empty strings from data hash
+$data = &thin($data);
 ```
 #### Arguments
-* `$`
+* `$data` Hashref containing data to be thinned
 #### Returns
-
+Hashref containing thinned data
 
 ---
 ## `today`
 Return today's date according to the DB
 #### Usage
 ```perl
-&
+my $todaysdate = &today($db);
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
 #### Returns
-
+Today's date, formatted `YYYY-MM-DD`
 
 ---
 ## `unsetdisplaylens`
-Unset the display lens from a camera
+Unassociate a display lens from a camera by passing in either the camera ID or
+the lens ID. It is not harmful to pass in both, but it is pointless.
 #### Usage
 ```perl
-&
+&unsetdisplaylens({db=>$db, camera_id=>$camera_id});
+&unsetdisplaylens({db=>$db, lens_id=>$lens_id});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$camera_id` ID of camera whose display lens you want to unassociate
+* `$lens_id` ID of lens you want to unassociate
 #### Returns
-
+Result of SQL update
 
 ---
 ## `updatedata`
-Update data using a bare `UPDATE` statement
-Avoid using if possible
+Update data using a bare SQL `UPDATE` statement. Avoid using this if possible,
+as it is dangerous. Use `&updaterecord` instead.
 #### Usage
 ```perl
-&
+my $rows = &updatedata($db, $sql);
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$query` Plain SQL UPDATE query to execute
 #### Returns
+The number of rows updated
 
 
 ---
@@ -405,11 +412,16 @@ Avoid using if possible
 Update an existing record in any table
 #### Usage
 ```perl
-&
+my $rows = &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$data` Hash of new values to update
+* `$table` Name of table to update
+* `$where` Where clause, formatted for SQL::Abstract
+* `$silent` Suppress output
 #### Returns
+The number of rows updated
 
 
 ---
@@ -417,33 +429,36 @@ Update an existing record in any table
 Validate that a value is a certain data type
 #### Usage
 ```perl
-&
+my $result = &validate({val => 'hello', type => 'text'});
 ```
 #### Arguments
-* `$`
+* `$val` The value to be validated
+* `$type` Data type to validate as, out of `text`, `integer`, `boolean`, `date`, `decimal`, `hh:mm:ss`. Defaults to `text`.
 #### Returns
+Returns `1` if the value passes validation as the requested type, and `0` if it doesn't.
 
 
 ---
 ## `welcome`
-Print welcome message
+Print a friendly welcome message
 #### Usage
 ```perl
-&
+&welcome;
 ```
 #### Arguments
-* `$`
+None
 #### Returns
+Nothing
 
 
 ---
 ## `writeconfig`
-Write out a config file
+Write out an initial config file by prompting the user interactively.
 #### Usage
 ```perl
-&
+&writeconfig($path);
 ```
 #### Arguments
-* `$`
+* `$path` path to the config file that should be written
 #### Returns
-
+Nothing
