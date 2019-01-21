@@ -325,15 +325,16 @@ Integer negative ID
 
 ---
 ## `round`
-Round numbers to any precision
+Round a number to any precision
 #### Usage
 ```perl
-&
+my $rounded = &round($num, 3);
 ```
 #### Arguments
-* `$`
+* `$num` Number to round
+* `$pow10` Number of decimal places to round to. Defaults to `0` i.e. round to an integer
 #### Returns
-
+Rounded number
 
 ---
 ## `tag`
@@ -341,11 +342,13 @@ This func reads data from PhotoDB and writes EXIF tags
 to the JPGs that have been scanned from negatives
 #### Usage
 ```perl
-&
+&tag($db, $film_id);
 ```
 #### Arguments
-* `$`
+* `$db` DB handle
+* `$film_id` ID of film to be tagged. Tags all films if not set!
 #### Returns
+Nothing
 
 
 ---
