@@ -778,10 +778,18 @@ sub lens_repair {
 # Show information about a lens
 sub lens_info {
 	my $db = shift;
+
+	# Choose lens
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
+
+	# Get lens data
 	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
 	print Dump($lensdata);
 
+	# Show compatible accessories
+	&listcompataccessories({db=>$db, lens_id=>$lens_id});
+
+	# Generate and print lens statistics
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
