@@ -114,7 +114,7 @@ sub film_develop {
 	$data{directory} = &prompt({prompt=>'What directory are these scans in?'});
 	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', table=> 'PERSON', cols=>['person_id as id', 'name as opt'], inserthandler=>\&person_add});
 	$data{dev_uses} = &prompt({prompt=>'How many previous uses has the developer had?', type=>'integer'});
-	$data{dev_time} = &prompt({prompt=>'How long was the film developed for?', type=>'hh:mm:ss'});
+	$data{dev_time} = &prompt({prompt=>'How long was the film developed for?', type=>'time'});
 	$data{dev_temp} = &prompt({prompt=>'What temperature was the developer?', type=>'decimal'});
 	$data{dev_n} = &prompt({default=>0, prompt=>'What push/pull was used?', type=>'integer'});
 	$data{development_notes} = &prompt({prompt=>'Any other development notes'});
@@ -363,7 +363,6 @@ sub camera_prompt {
 		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add, default=>$$defaults{flash_metering}});
 	}
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$defaults{condition_id}});
-	$data{oem_case} = &prompt({prompt=>'Do you have the original case for this camera?', type=>'boolean', default=>$$defaults{oem_case}});
 	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean', default=>$$defaults{dof_preview}});
 	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean', default=>$$defaults{tripod}});
 	if (defined($data{mount_id})) {
@@ -851,16 +850,16 @@ sub print_tone {
 	my $db = shift;
 	my %data;
 	my $print_id = shift || &prompt({prompt=>'Which print did you tone?', type=>'integer', required=>1});
-	$data{bleach_time} = &prompt({default=>'00:00:00', prompt=>'How long did you bleach for? (HH:MM:SS)', type=>'hh:mm:ss'});
+	$data{bleach_time} = &prompt({default=>'00:00:00', prompt=>'How long did you bleach for? (HH:MM:SS)', type=>'time'});
 	$data{toner_id} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
 	my $dilution1 = &lookupval({db=>$db, col=>'stock_dilution', table=>'TONER', where=>{toner_id=>$data{toner_id}}});
 	$data{toner_dilution} = &prompt({default=>$dilution1, prompt=>'What was the dilution of the first toner?'});
-	$data{toner_time} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
+	$data{toner_time} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'time'});
 	if (&prompt({default=>'no', prompt=>'Did you use a second toner?', type=>'boolean'}) == 1) {
 		$data{'2nd_toner_id'} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
 		my $dilution2 = &lookupval({db=>$db, col=>'stock_dilution', table=>'TONER', where=>{toner_id=>$data{'2nd_toner_id'}}});
 		$data{'2nd_toner_dilution'} = &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
-		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'hh:mm:ss'});
+		$data{'2nd_toner_time'} = &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'time'});
 	}
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }

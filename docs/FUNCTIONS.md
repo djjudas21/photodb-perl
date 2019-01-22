@@ -301,7 +301,7 @@ What model is the camera? (text) []:
 #### Arguments
 * `$default` Default value that will be used if no input from user. Default empty string.
 * `$prompt` Prompt message for the user
-* `$type` Data type that this input expects, out of `text`, `integer`, `boolean`, `date`, `decimal`, `hh:mm:ss`
+* `$type` Data type that this input expects, out of `text`, `integer`, `boolean`, `date`, `decimal`, `time`
 * `$required` Whether this input is required, or whether it can return an empty value. Default `0`
 * `$showtype` Whether to show the user what data type is expected, in parentheses. Default `1`
 * `$showdefault` Whether to show the user what the default value is set to, in square brackets. Default `1`
@@ -433,7 +433,7 @@ my $result = &validate({val => 'hello', type => 'text'});
 ```
 #### Arguments
 * `$val` The value to be validated
-* `$type` Data type to validate as, out of `text`, `integer`, `boolean`, `date`, `decimal`, `hh:mm:ss`. Defaults to `text`.
+* `$type` Data type to validate as, out of `text`, `integer`, `boolean`, `date`, `decimal`, `time`. Defaults to `text`.
 #### Returns
 Returns `1` if the value passes validation as the requested type, and `0` if it doesn't.
 

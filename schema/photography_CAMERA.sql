@@ -55,7 +55,6 @@ CREATE TABLE `CAMERA` (
   `meter_min_ev` tinyint(4) DEFAULT NULL COMMENT 'Lowest EV/LV the built-in meter supports',
   `meter_max_ev` tinyint(4) DEFAULT NULL COMMENT 'Highest EV/LV the built-in meter supports',
   `condition_id` int(11) DEFAULT NULL COMMENT 'Denotes the cosmetic condition of the camera',
-  `oem_case` tinyint(1) DEFAULT NULL COMMENT 'Whether we also own the original case',
   `dof_preview` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has depth of field preview',
   `tripod` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has a tripod bush',
   `display_lens` int(11) DEFAULT NULL COMMENT 'Lens ID of the lens that this camera should normally be displayed with',
