@@ -492,6 +492,7 @@ sub camera_info {
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
 	print Dump($cameradata);
+	&listcompataccessories({db=>$db, camera_id=>$camera_id});
 	return;
 }
 
