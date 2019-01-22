@@ -23,7 +23,7 @@ sub prompt {
 	# Unpack the hashref and set default values
 	my $default = $href->{default} // '';		# Default value that will be used if no input from user
 	my $prompt = $href->{prompt};			# Prompt message for the user
-	my $type = $href->{type} || 'text';		# Data type that this input expects, out of text, integer, boolean, date, decimal, hh:mm:ss
+	my $type = $href->{type} || 'text';		# Data type that this input expects, out of text, integer, boolean, date, decimal, time
 	my $required = $href->{required} // 0;		# Whether this input is required, or whether it can return an empty value
 	my $showtype = $href->{showtype} // 1;		# Whether to show the user what data type is expected
 	my $showdefault = $href->{showdefault} // 1;	# Whether to show the user what the default value is
@@ -66,7 +66,7 @@ sub validate {
 	my $href = shift;
 	# Unpack the hashref and set default values
 	my $val = $href->{val};			# The value to be validated
-	my $type = $href->{type} || 'text';	# Data type to validate as, out of text, integer, boolean, date, decimal, hh:mm:ss
+	my $type = $href->{type} || 'text';	# Data type to validate as, out of text, integer, boolean, date, decimal, time
 
 	die "Must provide value for \$val\n" if !defined($val);
 
@@ -104,7 +104,7 @@ sub validate {
 		} else {
 			return 0;
 		}
-	} elsif ($type eq 'hh:mm:ss') {
+	} elsif ($type eq 'time') {
 		if ($val =~ m/^\d\d?:\d\d?:\d\d?$/) {
 			return 1;
 		} else {
