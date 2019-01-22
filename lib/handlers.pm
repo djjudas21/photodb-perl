@@ -488,9 +488,15 @@ sub camera_repair {
 # Show information about a camera
 sub camera_info {
 	my $db = shift;
+
+	# Choose camera
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
+
+	# Get camera data
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
 	print Dump($cameradata);
+
+	# Show compatible accessories
 	&listcompataccessories({db=>$db, camera_id=>$camera_id});
 	return;
 }
