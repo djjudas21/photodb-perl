@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices listcompataccessories lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -375,18 +375,6 @@ sub listchoices {
 		# Return input
 		return $input;
 	}
-}
-
-# List compatible accessories
-sub listcompataccessories {
-        my $href = shift;
-        my $db = $href->{db};
-        my %where;
-        $where{camera_id} = $href->{camera_id};
-        $where{lens_id} = $href->{lens_id};
-        my $thinwhere = &thin(\%where);
-	&printlist({db=>$db, msg=>'compatible accessories', table=>'choose_accessory_compat', where=>\%where});
-	return;
 }
 
 # List arbitrary rows

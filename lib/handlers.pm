@@ -494,10 +494,12 @@ sub camera_info {
 
 	# Get camera data
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
-	print Dump($cameradata);
 
 	# Show compatible accessories
-	&listcompataccessories({db=>$db, camera_id=>$camera_id});
+	my $accessories = &lookupcol({db=>$db, cols=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
+	${@$cameradata[0]}{'Accessories'} = $accessories;
+
+	print Dump($cameradata);
 	return;
 }
 
@@ -784,10 +786,12 @@ sub lens_info {
 
 	# Get lens data
 	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
-	print Dump($lensdata);
 
 	# Show compatible accessories
-	&listcompataccessories({db=>$db, lens_id=>$lens_id});
+	my $accessories = &lookupcol({db=>$db, cols=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
+	${@$lensdata[0]}{'Accessories'} = $accessories;
+
+	print Dump($lensdata);
 
 	# Generate and print lens statistics
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
