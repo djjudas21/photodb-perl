@@ -25,6 +25,7 @@ our %handlers = (
 		'filter'        => { 'handler' => \&filter_add,        'desc' => 'Add a new (optical) filter to the database' },
 		'filteradapter' => { 'handler' => \&filter_adapt,      'desc' => 'Add a filter adapter to the database' },
 		'flash'         => { 'handler' => \&flash_add,         'desc' => 'Add a new flash to the database' },
+		'info'          => { 'handler' => \&accessory_info,    'desc' => 'Display info about an accessory' },
 		'meter'         => { 'handler' => \&lightmeter_add,    'desc' => 'Add a new light meter to the database' },
 		'mountadapter'  => { 'handler' => \&mount_adapt,       'desc' => 'Add a new mount adapter to the database' },
 		'projector'     => { 'handler' => \&projector_add,     'desc' => 'Add a new projector to the database' },

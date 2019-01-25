@@ -34,7 +34,7 @@ our @EXPORT_OK = qw(
 	teleconverter_add
 	filter_add filter_adapt
 	manufacturer_add
-	accessory_add accessory_type
+	accessory_add accessory_type accessory_info
 	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
@@ -1163,6 +1163,15 @@ sub accessory_type {
 	my %data;
 	$data{accessory_type} = &prompt({prompt=>'What type of accessory do you want to add?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
+}
+
+# Display info about an accessory
+sub accessory_info {
+	my $db = shift;
+	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
+	my $accessorydata = &lookupcol({db=>$db, table=>'accessory_info', where=>{'`Accessory ID`'=>$accessory_id}});
+	print Dump($accessorydata);
+	return;
 }
 
 # Add a new enlarger to the database

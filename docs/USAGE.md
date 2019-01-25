@@ -155,6 +155,8 @@ Add a new type of "other" accessory to the database
 Add a new flash to the database
 ### `accessory battery`
 Add a new type of battery to the database
+### `accessory info`
+Display info about an accessory
 ### `accessory meter`
 Add a new light meter to the database
 ### `accessory teleconverter`
