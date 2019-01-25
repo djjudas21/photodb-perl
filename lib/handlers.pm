@@ -499,6 +499,10 @@ sub camera_info {
 	my $accessories = &lookupcol({db=>$db, cols=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
 	${@$cameradata[0]}{'Accessories'} = $accessories;
 
+	# Show compatible lenses
+	my $lenses = &lookupcol({db=>$db, cols=>'lens', table=>'cameralens_compat', where=>{camera_id=>$camera_id}});
+	${@$cameradata[0]}{'Lenses'} = $lenses;
+
 	print Dump($cameradata);
 	return;
 }
@@ -790,6 +794,10 @@ sub lens_info {
 	# Show compatible accessories
 	my $accessories = &lookupcol({db=>$db, cols=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
 	${@$lensdata[0]}{'Accessories'} = $accessories;
+
+	# Show compatible cameras
+	my $cameras = &lookupcol({db=>$db, cols=>'camera', table=>'cameralens_compat', where=>{lens_id=>$lens_id}});
+	${@$lensdata[0]}{'Cameras'} = $cameras;
 
 	print Dump($lensdata);
 
