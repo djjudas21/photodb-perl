@@ -34,7 +34,7 @@ our @EXPORT_OK = qw(
 	teleconverter_add
 	filter_add filter_adapt
 	manufacturer_add
-	accessory_add accessory_type
+	accessory_add accessory_type accessory_info
 	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
@@ -488,8 +488,21 @@ sub camera_repair {
 # Show information about a camera
 sub camera_info {
 	my $db = shift;
+
+	# Choose camera
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
+
+	# Get camera data
 	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
+
+	# Show compatible accessories
+	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
+	${@$cameradata[0]}{'Accessories'} = $accessories;
+
+	# Show compatible lenses
+	my $lenses = &lookuplist({db=>$db, col=>'lens', table=>'cameralens_compat', where=>{camera_id=>$camera_id}});
+	${@$cameradata[0]}{'Lenses'} = $lenses;
+
 	print Dump($cameradata);
 	return;
 }
@@ -771,10 +784,24 @@ sub lens_repair {
 # Show information about a lens
 sub lens_info {
 	my $db = shift;
+
+	# Choose lens
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
+
+	# Get lens data
 	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
+
+	# Show compatible accessories
+	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
+	${@$lensdata[0]}{'Accessories'} = $accessories;
+
+	# Show compatible cameras
+	my $cameras = &lookuplist({db=>$db, col=>'camera', table=>'cameralens_compat', where=>{lens_id=>$lens_id}});
+	${@$lensdata[0]}{'Cameras'} = $cameras;
+
 	print Dump($lensdata);
 
+	# Generate and print lens statistics
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
@@ -1144,6 +1171,15 @@ sub accessory_type {
 	my %data;
 	$data{accessory_type} = &prompt({prompt=>'What type of accessory do you want to add?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
+}
+
+# Display info about an accessory
+sub accessory_info {
+	my $db = shift;
+	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
+	my $accessorydata = &lookupcol({db=>$db, table=>'accessory_info', where=>{'`Accessory ID`'=>$accessory_id}});
+	print Dump($accessorydata);
+	return;
 }
 
 # Add a new enlarger to the database

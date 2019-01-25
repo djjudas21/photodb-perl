@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -487,6 +487,35 @@ sub lookupval {
 	return $row;
 }
 
+# Return arbitrary lists from database
+sub lookuplist {
+	# Pass in a hashref of arguments
+	my $href = shift;
+
+	my $db = $href->{db};		   # DB handle
+	my $table = $href->{table};	     # Part of the SQL::Abstract tuple
+	my $col = $href->{col};		 # Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};       # Part of the SQL::Abstract tuple
+
+	my ($sth, $rows);
+	if ($table && $col && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $col, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		print "Must pass in table, col, where\n";
+		return;
+	}
+
+	my @list;
+	while (my $row = $sth->fetchrow_array()) {
+		push(@list, $row);
+	}
+	return \@list;
+}
+
 # Update data using a bare UPDATE statement
 # Avoid using if possible
 sub updatedata {
@@ -760,7 +789,7 @@ sub welcome {
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-        print "$ascii\n\n";
+	print "$ascii\n\n";
 	return;
 }
 
@@ -769,12 +798,12 @@ sub duration {
 	my $shutter_speed = shift;
 	my $duration = 0;
 	# Expressed like 1/125
-        if ($shutter_speed =~ m/1\/(\d+)/) {
-                $duration = 1 / $1;
+	if ($shutter_speed =~ m/1\/(\d+)/) {
+		$duration = 1 / $1;
 	# Expressed like 0.3 or 1
-        } elsif ($shutter_speed =~ m/((0\.)?\d+)/) {
-                $duration = $1;
-        }
+	} elsif ($shutter_speed =~ m/((0\.)?\d+)/) {
+		$duration = $1;
+	}
 	return $duration;
 }
 
@@ -897,16 +926,16 @@ sub hashdiff {
 	my $new = shift;
 
 	# Strip out empty keys
-        $old = &thin($old);
-        $new = &thin($new);
+	$old = &thin($old);
+	$new = &thin($new);
 
 	# Save new or changed keys
-        my %diff;
-        foreach my $key (keys %$new) {
-                if (!defined($$old{$key}) || $$new{$key} ne $$old{$key}) {
-                        $diff{$key} = $$new{$key};
-                }
-        }
+	my %diff;
+	foreach my $key (keys %$new) {
+		if (!defined($$old{$key}) || $$new{$key} ne $$old{$key}) {
+			$diff{$key} = $$new{$key};
+		}
+	}
 	return \%diff;
 }
 
