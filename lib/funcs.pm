@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -485,6 +485,35 @@ sub lookupval {
 
 	my $row = $sth->fetchrow_array();
 	return $row;
+}
+
+# Return arbitrary lists from database
+sub lookuplist {
+	# Pass in a hashref of arguments
+	my $href = shift;
+
+	my $db = $href->{db};		   # DB handle
+	my $table = $href->{table};	     # Part of the SQL::Abstract tuple
+	my $col = $href->{col};		 # Part of the SQL::Abstract tuple
+	my $where = $href->{where} // {};       # Part of the SQL::Abstract tuple
+
+	my ($sth, $rows);
+	if ($table && $col && $where) {
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($table, $col, $where);
+		$sth = $db->prepare($stmt);
+		$rows = $sth->execute(@bind);
+	} else {
+		print "Must pass in table, col, where\n";
+		return;
+	}
+
+	my @list;
+	while (my $row = $sth->fetchrow_array()) {
+		push(@list, $row);
+	}
+	return \@list;
 }
 
 # Update data using a bare UPDATE statement
