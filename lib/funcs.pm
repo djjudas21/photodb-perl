@@ -760,7 +760,7 @@ sub welcome {
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-        print "$ascii\n\n";
+	print "$ascii\n\n";
 	return;
 }
 
@@ -769,12 +769,12 @@ sub duration {
 	my $shutter_speed = shift;
 	my $duration = 0;
 	# Expressed like 1/125
-        if ($shutter_speed =~ m/1\/(\d+)/) {
-                $duration = 1 / $1;
+	if ($shutter_speed =~ m/1\/(\d+)/) {
+		$duration = 1 / $1;
 	# Expressed like 0.3 or 1
-        } elsif ($shutter_speed =~ m/((0\.)?\d+)/) {
-                $duration = $1;
-        }
+	} elsif ($shutter_speed =~ m/((0\.)?\d+)/) {
+		$duration = $1;
+	}
 	return $duration;
 }
 
@@ -897,16 +897,16 @@ sub hashdiff {
 	my $new = shift;
 
 	# Strip out empty keys
-        $old = &thin($old);
-        $new = &thin($new);
+	$old = &thin($old);
+	$new = &thin($new);
 
 	# Save new or changed keys
-        my %diff;
-        foreach my $key (keys %$new) {
-                if (!defined($$old{$key}) || $$new{$key} ne $$old{$key}) {
-                        $diff{$key} = $$new{$key};
-                }
-        }
+	my %diff;
+	foreach my $key (keys %$new) {
+		if (!defined($$old{$key}) || $$new{$key} ne $$old{$key}) {
+			$diff{$key} = $$new{$key};
+		}
+	}
 	return \%diff;
 }
 
