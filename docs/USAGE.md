@@ -239,6 +239,8 @@ Add a new type of metering system to the database
 The `db` command provides a set of subcommands for managing the database backend.
 ### `db backup`
 Back up the contents of the database
+### `db logs`
+Show activity logs from the database
 ### `db stats`
 Show statistics about database usage
 ### `db test`
