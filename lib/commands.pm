@@ -75,7 +75,7 @@ our %handlers = (
 	},
 	db => {
 		'backup' => { 'handler' => \&notimplemented, 'desc' => 'Back up the contents of the database' },
-		'stats'  => { 'handler' => \&notimplemented, 'desc' => 'Show statistics about database usage' },
+		'stats'  => { 'handler' => \&db_stats,       'desc' => 'Show statistics about database usage' },
 		'test'   => { 'handler' => \&notimplemented, 'desc' => 'Test database connectivity' },
 	},
 	enlarger => {
