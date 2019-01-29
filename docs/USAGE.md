@@ -38,6 +38,7 @@ List films that are currently loaded into cameras
 ### `film info`
 Show information about a film
 
+---
 ## `camera`
 The `camera` command provides subcommands for working with cameras.
 ### `camera add`
@@ -65,6 +66,7 @@ Choose a camera based on multiple usage criteria
 ### `camera edit`
 Edit an existing camera
 
+---
 ## `negative`
 The `negative` command provides subcommands for working with negatives (or slides, etc) which are part of a film.
 ### `negative add`
@@ -78,6 +80,7 @@ Show information about a negative
 ### `negative prints`
 Find all prints made from a negative
 
+---
 ## `movie`
 The `movie` command provides subcommands for working with movies (cine films)
 ### `movie add`
@@ -85,6 +88,7 @@ Add a new movie to the database
 ### `movie info`
 Show information about a movie
 
+---
 ## `mount`
 The `mount` command provides subcommands for working with lens mounts (aka camera systems)
 ### `mount add`
@@ -92,6 +96,7 @@ Add a new lens mount to the database
 ### `mount info`
 View compatible cameras and lenses for a mount
 
+---
 ## `lens`
 The `lens` command provides subcommands for working with lenses (for cameras, enlargers and projectors).
 ### `lens add`
@@ -107,6 +112,7 @@ Show information about a lens
 ### `lens edit`
 Edit an existing lens
 
+---
 ## `print`
 The `print` command provides subcommands for working with prints which have been made from negatives.
 ### `print add`
@@ -134,6 +140,7 @@ Generate text to label a print
 ### `print worklist`
 Display print todo list
 
+---
 ## `material`
 The `material` command provides subcommands for adding materials, i.e. film, paper and chemicals to the database.
 ### `material paperstock`
@@ -145,6 +152,7 @@ Add a new chemical toner to the database
 ### `material filmstock`
 Add a new type of filmstock to the database
 
+---
 ## `accessory`
 The `accessory` command provides subcommands for adding photographic accessories to the database.
 ### `accessory add`
@@ -170,6 +178,7 @@ Add a new mount adapter to the database
 ### `accessory projector`
 Add a new projector to the database
 
+---
 ## `enlarger`
 ### `enlarger add`
 Add a new enlarger to the database
@@ -178,6 +187,7 @@ Show information about an enlarger
 ### `enlarger sell`
 Sell an enlarger
 
+---
 ## `archive`
 ### `archive add`
 Add a new physical archive for prints or films
@@ -194,11 +204,13 @@ Seal an archive and prevent new items from being added to it
 ### `archive unseal`
 Unseal an archive and allow new items to be added to it
 
+---
 ## `person`
 The `person` command provides a set of subcommands for managing data about people (e.g. photographers)
 ### `person add`
 Add a new person to the database
 
+---
 ## `data`
 The `data` command provides a set of subcommands for entering sundry data. You shouldn't really need these as data can be entered inline at the point of use.
 ### `data format`
@@ -222,6 +234,7 @@ Add a new flash protocol to the database
 ### `data meteringtype`
 Add a new type of metering system to the database
 
+---
 ## `db`
 The `db` command provides a set of subcommands for managing the database backend.
 ### `backup`
@@ -231,11 +244,13 @@ Show statistics about database usage
 ### `test`
 Test database connectivity
 
+---
 ## `task`
 The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
 ### `task run`
 Run a selection of maintenance tasks on the database
 
+---
 ## `audit`
 The `audit` command provides a set of subcommands for checking and entering incomplete data.
 ### `audit shutterspeeds`
@@ -247,6 +262,7 @@ Audit cameras without metering mode data
 ### `audit displaylenses`
 Audit cameras without a display lens set
 
+---
 ## `exhibition`
 The `exhibition` command provides a set of subcommands for managing exhibitions.
 ### `exhibition add`
