@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff log now);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -169,7 +169,7 @@ sub updaterecord {
 	my $table = $href->{table};		# Name of table to update
 	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
 	my $silent = $href->{silent} // 0;	# Suppress output
-	my $log = $href->{log} // 1;              # Write event to log
+	my $log = $href->{log} // 1;            # Write event to log
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -207,7 +207,7 @@ sub updaterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n" unless $silent;
-	&log({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
+	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 
@@ -255,7 +255,7 @@ sub newrecord {
 	# Display inserted row
 	my $insertedrow = $sth->{mysql_insertid};
 	print "Inserted $table $insertedrow\n" unless $silent;
-	&log({db=>$db, type=>'ADD', message=>"$table #$insertedrow"}) if $log;
+	&logger({db=>$db, type=>'ADD', message=>"$table #$insertedrow"}) if $log;
 
 	return $insertedrow;
 }
@@ -951,7 +951,7 @@ sub hashdiff {
 }
 
 # Write an event to the log
-sub log {
+sub logger {
 	my $href = shift;
 	my $db = $href->{db};
 	my $type = $href->{type};

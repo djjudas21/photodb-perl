@@ -136,11 +136,11 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 ID of the selected option
 
 ---
-## `log`
+## `logger`
 Record a database event in the log
 #### Usage
 ```perl
-&log({db=>$db, type=>$type, message=>$message});
+&logger({db=>$db, type=>$type, message=>$message});
 ```
 #### Arguments
 * `$db` DB handle
