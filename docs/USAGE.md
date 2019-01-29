@@ -200,7 +200,7 @@ The `person` command provides a set of subcommands for managing data about peopl
 Add a new person to the database
 
 ## `data`
-The `data` subcommand provides a set of subcommands for entering sundry data. You shouldn't really need these as data can be entered inline at the point of use.
+The `data` command provides a set of subcommands for entering sundry data. You shouldn't really need these as data can be entered inline at the point of use.
 ### `data format`
 Add a new film format to the database
 ### `data negsize`
@@ -221,6 +221,15 @@ Add a new type of focus system to the database
 Add a new flash protocol to the database
 ### `data meteringtype`
 Add a new type of metering system to the database
+
+## `db`
+The `db` command provides a set of subcommands for managing the database backend.
+### `backup`
+Back up the contents of the database
+### `stats`
+Show statistics about database usage
+### `test`
+Test database connectivity
 
 ## `task`
 The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
