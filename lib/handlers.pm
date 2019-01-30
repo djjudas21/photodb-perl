@@ -50,7 +50,7 @@ our @EXPORT_OK = qw(
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_info
 	choose_manufacturer
-	db_stats
+	db_stats db_logs
 );
 
 # Add a new film to the database
@@ -1597,6 +1597,14 @@ sub db_stats {
 	$data{'Total negatives'} = &lookupval({db=>$db, col=>'count(negative_id)', table=>'NEGATIVE'});
 	$data{'Total prints'} = &lookupval({db=>$db, col=>'count(print_id)', table=>'PRINT'});
 	print Dump(\%data);
+	return;
+}
+
+# Show database logs
+sub db_logs {
+	my $db = shift;
+	my $logs = &lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'});
+	print Dump($logs);
 	return;
 }
 

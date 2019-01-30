@@ -136,6 +136,20 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 ID of the selected option
 
 ---
+## `logger`
+Record a database event in the log
+#### Usage
+```perl
+&logger({db=>$db, type=>$type, message=>$message});
+```
+#### Arguments
+* `$db` DB handle
+* `$type` Type of log message. Currently `ADD` or `EDIT` to reflect database changes.
+* `$message` Message to write to the log file
+#### Returns
+ID of the log message
+
+---
 ## `lookupcol`
 Return values from an arbitrary column from database as an arrayref
 #### Usage
@@ -179,6 +193,7 @@ my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 * `$data` reference to hash of new values to insert
 * `$table` Name of table to insert into
 * `$silent` Suppress user output and don't ask for confirmation. Defaults to `0`.
+* `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 Primary key of inserted row
 
@@ -420,6 +435,7 @@ my $rows = &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=
 * `$table` Name of table to update
 * `$where` Where clause, formatted for SQL::Abstract
 * `$silent` Suppress output
+* `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 The number of rows updated
 

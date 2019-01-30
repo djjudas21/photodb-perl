@@ -75,7 +75,7 @@ our %handlers = (
 	},
 	db => {
 		'backup' => { 'handler' => \&notimplemented, 'desc' => 'Back up the contents of the database' },
-		'logs'   => { 'handler' => \&notimplemented, 'desc' => 'Show activity logs from the database' },
+		'logs'   => { 'handler' => \&db_logs,        'desc' => 'Show activity logs from the database' },
 		'stats'  => { 'handler' => \&db_stats,       'desc' => 'Show statistics about database usage' },
 		'test'   => { 'handler' => \&notimplemented, 'desc' => 'Test database connectivity' },
 	},
