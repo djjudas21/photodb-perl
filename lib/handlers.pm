@@ -50,7 +50,7 @@ our @EXPORT_OK = qw(
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_info
 	choose_manufacturer
-	db_stats db_logs
+	db_stats db_logs db_test
 );
 
 # Add a new film to the database
@@ -1605,6 +1605,16 @@ sub db_logs {
 	my $db = shift;
 	my $logs = &lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'});
 	print Dump($logs);
+	return;
+}
+
+# Print basic database info
+sub db_test {
+	my $db = shift;
+	my $hostname = $db->{'mysql_hostinfo'};
+	my $version = $db->{'mysql_serverinfo'};
+	my $stats = $db->{'mysql_stat'};
+	print "\tConnected to $hostname\n\tRunning version $version\n\t$stats\n";
 	return;
 }
 
