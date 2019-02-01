@@ -73,6 +73,12 @@ our %handlers = (
 		'shutterspeed'  => { 'handler' => \&shutterspeed_add,   'desc' => 'Add a new shutter speed to the database' },
 		'shuttertype'   => { 'handler' => \&shuttertype_add,    'desc' => 'Add a new type of shutter to the database' },
 	},
+	db => {
+		'backup' => { 'handler' => \&notimplemented, 'desc' => 'Back up the contents of the database' },
+		'logs'   => { 'handler' => \&db_logs,        'desc' => 'Show activity logs from the database' },
+		'stats'  => { 'handler' => \&db_stats,       'desc' => 'Show statistics about database usage' },
+		'test'   => { 'handler' => \&db_test,        'desc' => 'Test database connectivity' },
+	},
 	enlarger => {
 		'add'  => { 'handler' => \&enlarger_add,  'desc' => 'Add a new enlarger to the database' },
 		'info' => { 'handler' => \&enlarger_info, 'desc' => 'Show information about an enlarger' },

@@ -50,6 +50,7 @@ our @EXPORT_OK = qw(
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_info
 	choose_manufacturer
+	db_stats db_logs db_test
 );
 
 # Add a new film to the database
@@ -1584,6 +1585,36 @@ sub audit_displaylenses {
 	my $db = shift;
 	my $camera_id = &listchoices({db=>$db, keyword=>'camera', table=>'camera_chooser', where=>{mount_id=>{'!=', undef}, display_lens=>{'=', undef}}, required=>1 });
 	&camera_displaylens($db, $camera_id);
+	return;
+}
+
+# Show statistics about the database
+sub db_stats {
+	my $db = shift;
+	my %data;
+	$data{'Total cameras'} = &lookupval({db=>$db, col=>'count(camera_id)', table=>'CAMERA'});
+	$data{'Total lenses'} = &lookupval({db=>$db, col=>'count(lens_id)', table=>'LENS'});
+	$data{'Total negatives'} = &lookupval({db=>$db, col=>'count(negative_id)', table=>'NEGATIVE'});
+	$data{'Total prints'} = &lookupval({db=>$db, col=>'count(print_id)', table=>'PRINT'});
+	print Dump(\%data);
+	return;
+}
+
+# Show database logs
+sub db_logs {
+	my $db = shift;
+	my $logs = &lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'});
+	print Dump($logs);
+	return;
+}
+
+# Print basic database info
+sub db_test {
+	my $db = shift;
+	my $hostname = $db->{'mysql_hostinfo'};
+	my $version = $db->{'mysql_serverinfo'};
+	my $stats = $db->{'mysql_stat'};
+	print "\tConnected to $hostname\n\tRunning version $version\n\t$stats\n";
 	return;
 }
 

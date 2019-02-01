@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -169,6 +169,7 @@ sub updaterecord {
 	my $table = $href->{table};		# Name of table to update
 	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
 	my $silent = $href->{silent} // 0;	# Suppress output
+	my $log = $href->{log} // 1;            # Write event to log
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -206,6 +207,7 @@ sub updaterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n" unless $silent;
+	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 
@@ -219,6 +221,7 @@ sub newrecord {
 	my $data = $href->{data};		# Hash of new values to insert
 	my $table = $href->{table};		# Table to insert into
 	my $silent = $href->{silent} // 0;	# Suppress output
+	my $log = $href->{log} // 1;		# Log this event
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -252,6 +255,7 @@ sub newrecord {
 	# Display inserted row
 	my $insertedrow = $sth->{mysql_insertid};
 	print "Inserted $table $insertedrow\n" unless $silent;
+	&logger({db=>$db, type=>'ADD', message=>"$table #$insertedrow"}) if $log;
 
 	return $insertedrow;
 }
@@ -533,6 +537,13 @@ sub today {
 	my $db = shift;		# DB handle
 	return &lookupval({db=>$db, query=>'select curdate()'});
 }
+
+# Return today's date & time according to the DB
+sub now {
+        my $db = shift;         # DB handle
+        return &lookupval({db=>$db, query=>'select now()'});
+}
+
 
 # Translate "friendly" bools to integers
 # y/yes/true/1
@@ -937,6 +948,16 @@ sub hashdiff {
 		}
 	}
 	return \%diff;
+}
+
+# Write an event to the log
+sub logger {
+	my $href = shift;
+	my $db = $href->{db};
+	my $type = $href->{type};
+	my $message = $href->{message};
+
+	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
 }
 
 # This ensures the lib loads smoothly
