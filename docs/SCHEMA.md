@@ -451,6 +451,17 @@ Table to catalog light meters
 | min_lv          | int(11)     | Minimum light value (LV/EV) that this meter is capable of handling |
 | max_lv          | int(11)     | Maximum light value (LV/EV) that this meter is capable of handling |
 
+## LOG
+
+Table to store data modification logs
+
+| COLUMN_NAME | COLUMN_TYPE  | COLUMN_COMMENT                      |
+|-------------|--------------|-------------------------------------|
+| log_id      | int(11)      | Unique ID of the log entry          |
+| datetime    | datetime     | Timestamp for the log entry         |
+| type        | varchar(45)  | Type of log message, e.g. ADD, EDIT |
+| message     | varchar(450) | Log message                         |
+
 ## MANUFACTURER
 
 Table to catalog manufacturers of equipment and consumables
