@@ -51,6 +51,7 @@ our @EXPORT_OK = qw(
 	exhibition_add exhibition_info
 	choose_manufacturer
 	db_stats db_logs db_test
+	scan_add scan_edit scan_delete scan_search
 );
 
 # Add a new film to the database
