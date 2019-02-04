@@ -1624,14 +1624,22 @@ sub scan_add {
 	my $href = shift;
 	my $db = $href->{db};
 
+	my %data;
+	$data{negative_id} = $href->{negative_id};
+	$data{print_id} = $href->{print_id};
+
 	if (!defined($href->{negative_id}) && !defined($href->{print_id})) {
 		if (&prompt({prompt=>'Is this a scan of a negative?', type=>'boolean'})) {
 			# choose negative
+			$data{negative_id} = &chooseneg($db);
+
 		} else {
 			# choose print
+			$data{print_id} = &prompt({prompt=>'Which print did you scan?', type=>'integer'});
 		}
 	}
-	return;
+	$data{filename} = &prompt({prompt=>'Enter the filename of this scan', type=>'text'});
+	return &newrecord({db=>$db, data=>\%data, table=>'SCAN'});
 }
 
 # Add a new scan which is a derivative of an existing one
