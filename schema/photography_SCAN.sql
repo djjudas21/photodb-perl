@@ -4,7 +4,7 @@ CREATE TABLE `SCAN` (
   `scan_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Unique ID for this scan',
   `negative_id` int(11) DEFAULT NULL COMMENT 'ID of the negative that was scanned',
   `print_id` int(11) DEFAULT NULL COMMENT 'ID of the print  that was scanned',
-  `filename` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '''Filename of the scan''',
+  `filename` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '''Filename of the scan''',
   PRIMARY KEY (`scan_id`),
   KEY `fk_SCAN_1_idx` (`negative_id`),
   KEY `fk_SCAN_2_idx` (`print_id`),
