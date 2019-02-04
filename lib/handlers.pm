@@ -1644,22 +1644,22 @@ sub scan_add {
 
 # Add a new scan which is a derivative of an existing one
 sub scan_edit {
+	my $db = shift;
 	my $href = shift;
-	my $db = $href->{db};
 	return;
 }
 
 # Delete a scan from the database and optionally from the filesystem
 sub scan_delete {
+	my $db = shift;
 	my $href = shift;
-	my $db = $href->{db};
 	return;
 }
 
 # Search the filesystem for scans which are not in the database
 sub scan_search {
+	my $db = shift;
 	my $href = shift;
-	my $db = $href->{db};
 	return;
 }
 
