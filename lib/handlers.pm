@@ -1618,5 +1618,37 @@ sub db_test {
 	return;
 }
 
+# Add a new scan of a negative or print
+sub scan_add {
+	my $href = shift;
+	my $db = $href->{db};
+
+	if (!defined($href->{negative_id}) && !defined($href->{print_id})) {
+		if (&prompt({prompt=>'Is this a scan of a negative?', type=>'boolean'})) {
+			# choose negative
+		} else {
+			# choose print
+		}
+	}
+}
+
+# Add a new scan which is a derivative of an existing one
+sub scan_edit {
+	my $href = shift;
+	my $db = $href->{db};
+}
+
+# Delete a scan from the database and optionally from the filesystem
+sub scan_delete {
+	my $href = shift;
+	my $db = $href->{db};
+}
+
+# Search the filesystem for scans which are not in the database
+sub scan_search {
+	my $href = shift;
+	my $db = $href->{db};
+}
+
 # This ensures the lib loads smoothly
 1;

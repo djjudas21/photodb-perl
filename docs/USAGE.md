@@ -247,6 +247,17 @@ Show statistics about database usage
 Test database connectivity
 
 ---
+## `scan`
+### `scan add`
+Add a new scan of a negative or print to the database
+### `scan edit`
+Add a new scan which is a derivative of an existing one
+### `scan delete`
+Delete a scan from the database and optionally from the filesystem
+### `scan search`
+Search the filesystem for scans which are not in the database, and import them
+
+---
 ## `task`
 The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
 ### `task run`
