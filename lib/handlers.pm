@@ -1621,8 +1621,8 @@ sub db_test {
 
 # Add a new scan of a negative or print
 sub scan_add {
+	my $db = shift;
 	my $href = shift;
-	my $db = $href->{db};
 
 	my %data;
 	$data{negative_id} = $href->{negative_id};
@@ -1631,7 +1631,7 @@ sub scan_add {
 	if (!defined($href->{negative_id}) && !defined($href->{print_id})) {
 		if (&prompt({prompt=>'Is this a scan of a negative?', type=>'boolean'})) {
 			# choose negative
-			$data{negative_id} = &chooseneg($db);
+			$data{negative_id} = &chooseneg({db=>$db});
 
 		} else {
 			# choose print
