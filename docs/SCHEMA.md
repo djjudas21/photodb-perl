@@ -691,6 +691,17 @@ Tabe to catalog all repairs and servicing undertaken on cameras and lenses in th
 | summary     | varchar(100) | Brief summary of the repair      |
 | description | varchar(500) | Longer description of the repair |
 
+## SCAN
+
+Table to record all the images that have been scanned digitally
+
+| COLUMN_NAME | COLUMN_TYPE | COLUMN_COMMENT                      |
+|-------------|-------------|-------------------------------------|
+| scan_id     | int(11)     | Unique ID for this scan             |
+| negative_id | int(11)     | ID of the negative that was scanned |
+| print_id    | int(11)     | ID of the print  that was scanned   |
+| filename    | varchar(45) | 'Filename of the scan'              |
+
 ## SHUTTER_SPEED
 
 Table to list all possible shutter speeds
