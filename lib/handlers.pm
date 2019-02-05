@@ -1662,10 +1662,16 @@ sub scan_edit {
 sub scan_delete {
 	my $db = shift;
 	my $href = shift;
-	# prompt user for filename of scan
+
+	# Prompt user for filename of scan
 	my $scan_id = &choosescan($db);
-	# offer to delete the file
-	# remove record from SCAN
+
+	# Work out file path
+	my $filepath = &lookupval({db=>$db, col=>'concat(directory, '/', filename)', table=>'scans_negs', where=>{scan_id=>$scan_id});
+
+	# Offer to delete the file
+
+	# Remove record from SCAN
 	return;
 }
 
