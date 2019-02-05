@@ -967,7 +967,7 @@ sub choosescan {
 	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
 
         # should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
-	return &listchoices({db=>$db, table=>'choose_scan', cols=>'scan_id as id, filename as opt', where=>{'SCAN.filename'=>$filename}, type=>'text'});
+	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
 }
 
 # This ensures the lib loads smoothly

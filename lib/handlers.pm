@@ -1646,12 +1646,16 @@ sub scan_add {
 sub scan_edit {
 	my $db = shift;
 	my $href = shift;
-	# prompt user for filename of scan
+
+	# Prompt user for filename of scan
 	my $scan_id = &choosescan($db);
 
-	# work out negative_id or print_id
-	# insert new scan
-	return;
+	# Work out negative_id or print_id
+	my $scan_data = &lookupcol({db=>$db, cols=>['negative_id', 'print_id'], table=>'SCAN', where=>{scan_id=>$scan_id}});
+	$scan_data = &thin($$scan_data[0]);
+
+	# Insert new scan from same source
+	return &scan_add($db, $scan_data);
 }
 
 # Delete a scan from the database and optionally from the filesystem
