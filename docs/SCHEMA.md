@@ -574,7 +574,6 @@ Table to catalog negatives (which includes positives/slide too). Negatives are c
 | focal_length     | int(11)      | If a zoom lens was used, specify the focal length of the lens                            |
 | latitude         | decimal(9,6) | Latitude of the location where the picture was taken                                     |
 | longitude        | decimal(9,6) | Longitude of the location where the picture was taken                                    |
-| filename         | varchar(100) | Filename of the scanned image file from this negative                                    |
 | flash            | tinyint(1)   | Whether flash was used                                                                   |
 | metering_mode    | int(11)      | MeteringMode ID as defined in EXIF spec                                                  |
 | exposure_program | int(11)      | ExposureProgram ID as defined in EXIF spec                                               |
@@ -649,7 +648,6 @@ Table to catalog prints made from negatives
 | developer_id       | int(11)      | ID of the developer used to develop this print                          |
 | fine               | tinyint(1)   | Whether this is a fine print                                            |
 | notes              | text         | Freeform notes about this print, e.g. dodging, burning & complex toning |
-| filename           | varchar(100) | The filename of the image scanned from this print                       |
 | archive_id         | int(11)      | ID of the archive to which this print belongs                           |
 | printer_id         | int(11)      | ID of the person who made this print                                    |
 
