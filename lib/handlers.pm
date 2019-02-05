@@ -1648,6 +1648,9 @@ sub scan_edit {
 	my $href = shift;
 	# prompt user for filename of scan
 	my $scan_id = &choosescan($db);
+
+	# work out negative_id or print_id
+	# insert new scan
 	return;
 }
 
@@ -1657,6 +1660,8 @@ sub scan_delete {
 	my $href = shift;
 	# prompt user for filename of scan
 	my $scan_id = &choosescan($db);
+	# offer to delete the file
+	# remove record from SCAN
 	return;
 }
 
@@ -1664,6 +1669,13 @@ sub scan_delete {
 sub scan_search {
 	my $db = shift;
 	my $href = shift;
+	# search filesystem basepath to enumerate all *.jpg
+	# loop through list to see if the file already exists in the db
+	# if not, try to add it
+	# try to guess the negative it's of if the filename is X-Y-img1234.jpg
+	# try to guess the print if it's of if the filename is P123-img1234.jpg
+	# otherwise prompt the user to choose the negative or print is it from
+	# call scan_add with parameterised filename etc
 	return;
 }
 
