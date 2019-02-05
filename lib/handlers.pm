@@ -1646,6 +1646,8 @@ sub scan_add {
 sub scan_edit {
 	my $db = shift;
 	my $href = shift;
+	# prompt user for filename of scan
+	my $scan_id = &choosescan($db);
 	return;
 }
 
@@ -1653,6 +1655,8 @@ sub scan_edit {
 sub scan_delete {
 	my $db = shift;
 	my $href = shift;
+	# prompt user for filename of scan
+	my $scan_id = &choosescan($db);
 	return;
 }
 

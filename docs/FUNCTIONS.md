@@ -30,6 +30,17 @@ my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
 #### Returns
 Integer representing the negative ID
 
+---
+## `choosescan`
+Select a scan by specifying a filename. Allows user to pick if there are multiple matching filenames.
+#### Usage
+```perl
+my $id = &choosescan($db);
+```
+#### Arguments
+* `$db` variable containing database handle as returned by `&db`
+#### Returns
+Integer representing the scan ID
 
 ---
 ## `db`

@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now);
+our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -958,6 +958,16 @@ sub logger {
 	my $message = $href->{message};
 
 	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
+}
+
+# Choose a scan by filename
+sub choosescan {
+	my $db = shift;
+        # prompt user for filename of scan
+	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
+
+        # should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
+	return &listchoices({db=>$db, table=>'choose_scan', cols=>'scan_id as id, filename as opt', where=>{'SCAN.filename'=>$filename}, type=>'text'});
 }
 
 # This ensures the lib loads smoothly
