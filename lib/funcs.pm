@@ -169,7 +169,7 @@ sub updaterecord {
 	my $table = $href->{table};		# Name of table to update
 	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
 	my $silent = $href->{silent} // 0;	# Suppress output
-	my $log = $href->{log} // 1;            # Write event to log
+	my $log = $href->{log} // 1;	    # Write event to log
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -581,8 +581,8 @@ sub today {
 
 # Return today's date & time according to the DB
 sub now {
-        my $db = shift;         # DB handle
-        return &lookupval({db=>$db, query=>'select now()'});
+	my $db = shift;	 # DB handle
+	return &lookupval({db=>$db, query=>'select now()'});
 }
 
 
@@ -1004,10 +1004,10 @@ sub logger {
 # Choose a scan by filename
 sub choosescan {
 	my $db = shift;
-        # prompt user for filename of scan
+	# prompt user for filename of scan
 	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
 
-        # should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
+	# should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
 	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
 }
 
