@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -705,8 +705,7 @@ sub annotatefilm {
 	my $db = shift;
 	my $film_id = shift;
 
-	my $inidata = ReadINI(&ini);
-	my $path = $$inidata{'filesystem'}{'basepath'};
+	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
 		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
@@ -868,15 +867,7 @@ sub tag {
 	my $film_id = shift // '%';
 
 	# Make sure basepath is valid
-	my $connect = ReadINI(&ini);
-	if (!defined($$connect{'filesystem'}{'basepath'})) {
-		print "Config file did not contain basepath";
-		return;
-	}
-	my $basepath = $$connect{'filesystem'}{'basepath'};
-	if (substr($basepath, -1, 1) ne '/') {
-		$basepath .= '/';
-	}
+	my $basepath = &basepath;
 
 	# Crank up an instance of ExifTool
 	my $exifTool = Image::ExifTool->new;
@@ -1009,6 +1000,20 @@ sub choosescan {
 
 	# should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
 	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
+}
+
+# Return filesystem basepath which contains scans
+sub basepath {
+	# Work out file path
+	my $connect = ReadINI(&ini);
+	if (!defined($$connect{'filesystem'}{'basepath'})) {
+		die "Config file did not contain basepath";
+	}
+	my $basepath = $$connect{'filesystem'}{'basepath'};
+	if (substr($basepath, -1, 1) ne '/') {
+		$basepath .= '/';
+	}
+	return $basepath;
 }
 
 # This ensures the lib loads smoothly

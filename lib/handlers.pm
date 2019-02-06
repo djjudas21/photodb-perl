@@ -1667,16 +1667,7 @@ sub scan_delete {
 	my $scan_id = &choosescan($db);
 
 	# Work out file path
-        my $connect = ReadINI(&ini);
-        if (!defined($$connect{'filesystem'}{'basepath'})) {
-                print "Config file did not contain basepath";
-                return;
-        }
-        my $basepath = $$connect{'filesystem'}{'basepath'};
-        if (substr($basepath, -1, 1) ne '/') {
-                $basepath .= '/';
-        }
-
+	my $basepath = &basepath;
 	my $relativepath = &lookupval({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs', where=>{scan_id=>$scan_id}});
 	my $fullpath = $basepath . $relativepath;
 
