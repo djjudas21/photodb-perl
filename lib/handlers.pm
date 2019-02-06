@@ -1667,12 +1667,26 @@ sub scan_delete {
 	my $scan_id = &choosescan($db);
 
 	# Work out file path
-	my $filepath = &lookupval({db=>$db, col=>'concat(directory, '/', filename)', table=>'scans_negs', where=>{scan_id=>$scan_id});
+        my $connect = ReadINI(&ini);
+        if (!defined($$connect{'filesystem'}{'basepath'})) {
+                print "Config file did not contain basepath";
+                return;
+        }
+        my $basepath = $$connect{'filesystem'}{'basepath'};
+        if (substr($basepath, -1, 1) ne '/') {
+                $basepath .= '/';
+        }
+
+	my $relativepath = &lookupval({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs', where=>{scan_id=>$scan_id}});
+	my $fullpath = $basepath . $relativepath;
 
 	# Offer to delete the file
+	if (&prompt({prompt=>"Delete the file $fullpath ?", type=>'boolean', default=>'no'})) {
+		unlink $fullpath or print "Could not delete file $fullpath: $!\n";
+	}
 
 	# Remove record from SCAN
-	return;
+	return &deleterecord({db=>$db, table=>'SCAN', where=>{scan_id=>$scan_id}});
 }
 
 # Search the filesystem for scans which are not in the database
