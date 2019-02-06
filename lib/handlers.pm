@@ -8,7 +8,8 @@ use warnings;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
-use File::Find::Rule;
+use Array::Utils qw(:all);
+use Path::Iterator::Rule;
 
 my $path;
 BEGIN {
@@ -1688,17 +1689,31 @@ sub scan_search {
 
 	# Search filesystem basepath to enumerate all *.jpg
 	my $basepath = &basepath;
-	my @fsfiles = File::Find::Rule->file()
-		->name( '*.jpg', '*.JPG' )
-		->in( $basepath )
-		->extras({ untaint => 1 });
+	my $rule = Path::Iterator::Rule->new;
+	$rule->iname( '*.jpg' );
+	my @fsfiles = $rule->all($basepath);
+	print "first fsfile: $fsfiles[0]\n";
+	print Dump(@fsfiles);
 
 	# Query DB to find all known scans
-	my @dbfiles = &lookupcol({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs'});
+	my $dbfilesref = &lookuplist({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs'});
+	my @dbfiles = @$dbfilesref;
+	print "first dbfile: $dbfiles[0]\n";
+	print Dump(@dbfiles);
 
 	# loop through list to see if the file already exists in the db
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
 	my @dbonly = array_minus(@dbfiles, @fsfiles);
+
+	print "Files only on the filesystem:\n";
+	for my $fsonlyfile (@fsonly) {
+		#		print "\t$fsonlyfile\n";
+	}
+
+	print "Files only in the database:\n";
+	for my $dbonlyfile (@dbonly) {
+		#		print "\t$dbonlyfile\n";
+	}
 
 	# if not, try to add it
 	# try to guess the negative it's of if the filename is X-Y-img1234.jpg

@@ -555,8 +555,8 @@ sub lookuplist {
 	}
 
 	my @list;
-	while (my $row = $sth->fetchrow_array()) {
-		push(@list, $row);
+	while (my @row = $sth->fetchrow_array()) {
+		push(@list, $row[0]);
 	}
 	return \@list;
 }
