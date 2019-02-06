@@ -8,6 +8,7 @@ use warnings;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
+use File::Find::Rule;
 
 my $path;
 BEGIN {
@@ -1684,8 +1685,21 @@ sub scan_delete {
 sub scan_search {
 	my $db = shift;
 	my $href = shift;
-	# search filesystem basepath to enumerate all *.jpg
+
+	# Search filesystem basepath to enumerate all *.jpg
+	my $basepath = &basepath;
+	my @fsfiles = File::Find::Rule->file()
+		->name( '*.jpg', '*.JPG' )
+		->in( $basepath )
+		->extras({ untaint => 1 });
+
+	# Query DB to find all known scans
+	my @dbfiles = &lookupcol({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs'});
+
 	# loop through list to see if the file already exists in the db
+	my @fsonly = array_minus(@fsfiles, @dbfiles);
+	my @dbonly = array_minus(@dbfiles, @fsfiles);
+
 	# if not, try to add it
 	# try to guess the negative it's of if the filename is X-Y-img1234.jpg
 	# try to guess the print if it's of if the filename is P123-img1234.jpg
