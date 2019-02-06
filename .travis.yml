@@ -2,7 +2,7 @@ language: "perl"
 perl:
   - "5.26"
 install:
-        - "cpanm --verbose --installdeps ."
+        - "cpanm --installdeps ."
 script:
         - "perl -cT photodb"
         - "perl -w check-usage-docs.pl"
