@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -208,6 +208,47 @@ sub updaterecord {
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n" unless $silent;
 	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
+	return $rows;
+}
+
+# Delete an existing record in any table
+sub deleterecord {
+	# Pass in a hashref of arguments
+	my $href = shift;
+
+	# Unpack the hashref and set default values
+	my $db = $href->{db};		   # DB handle
+	my $table = $href->{table};	     # Name of table to delete from
+	my $where = $href->{where};	     # Where clause, formatted for SQL::Abstract
+	my $silent = $href->{silent} // 0;      # Suppress output
+	my $log = $href->{log} // 1;	    # Write event to log
+
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $table' if !($table);
+	die 'Must pass in $where' if !($where);
+
+	# Dump data for debugging
+	print "\n\nI will delete from $table where $where\n" unless $silent;
+
+	# Build query
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->delete($table, $where);
+
+	# Final confirmation
+	unless ($silent) {
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
+	}
+
+	# Execute query
+	my $sth = $db->prepare($stmt);
+	my $rows = $sth->execute(@bind);
+	$rows = 0 if ($rows eq  '0E0');
+	print "Deleted $rows rows\n" unless $silent;
+	&logger({db=>$db, type=>'DELETE', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 

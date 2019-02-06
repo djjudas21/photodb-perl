@@ -452,6 +452,23 @@ The number of rows updated
 
 
 ---
+## `deleterecord`
+Delete an existing record from any table
+#### Usage
+```perl
+my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
+```
+#### Arguments
+* `$db` DB handle
+* `$table` Name of table to delete from
+* `$where` Where clause, formatted for SQL::Abstract
+* `$silent` Suppress output
+* `$log` Write an event to the database log. Defaults to `1`.
+#### Returns
+The number of rows deleted
+
+
+---
 ## `validate`
 Validate that a value is a certain data type
 #### Usage
