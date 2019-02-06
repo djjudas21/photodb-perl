@@ -1671,7 +1671,7 @@ sub scan_delete {
 	# Work out file path
 	my $basepath = &basepath;
 	my $relativepath = &lookupval({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs', where=>{scan_id=>$scan_id}});
-	my $fullpath = $basepath . $relativepath;
+	my $fullpath = "$basepath/$relativepath";
 
 	# Offer to delete the file
 	if (&prompt({prompt=>"Delete the file $fullpath ?", type=>'boolean', default=>'no'})) {
@@ -1696,7 +1696,7 @@ sub scan_search {
 	print Dump(@fsfiles);
 
 	# Query DB to find all known scans
-	my $dbfilesref = &lookuplist({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs'});
+	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
 	my @dbfiles = @$dbfilesref;
 	print "first dbfile: $dbfiles[0]\n";
 	print Dump(@dbfiles);

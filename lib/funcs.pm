@@ -913,10 +913,10 @@ sub tag {
 		# First check the path is defined in MySQL
 		if (defined($ref->{'path'})) {
 			# Now make sure the path actually exists on the system
-			if (-e "$basepath$ref->{'path'}") {
+			if (-e "$basepath/$ref->{'path'}") {
 				# File exists, so we go on and do stuff to it.
 				# Grab the existing EXIF tags for comparison
-				my $exif = $exifTool->ImageInfo("$basepath$ref->{'path'}");
+				my $exif = $exifTool->ImageInfo("$basepath/$ref->{'path'}");
 				my $changeflag = 0;
 				$foundcount++;
 
@@ -945,13 +945,13 @@ sub tag {
 
 				# If a change has been made to the EXIF data, write out the data
 				if ($changeflag == 1) {
-					$exifTool->WriteInfo("$basepath$ref->{'path'}");
-					print "Wrote tags to $basepath$ref->{'path'}\n\n";
+					$exifTool->WriteInfo("$basepath/$ref->{'path'}");
+					print "Wrote tags to $basepath/$ref->{'path'}\n\n";
 					$changedcount++;
 				}
 			} else {
-				print "$basepath$ref->{'path'} not found - skipping\n";
-				push (@missingfiles, "$basepath$ref->{'path'}");
+				print "$basepath/$ref->{'path'} not found - skipping\n";
+				push (@missingfiles, "$basepath/$ref->{'path'}");
 			}
 		}
 	}
@@ -1010,9 +1010,8 @@ sub basepath {
 		die "Config file did not contain basepath";
 	}
 	my $basepath = $$connect{'filesystem'}{'basepath'};
-	if (substr($basepath, -1, 1) ne '/') {
-		$basepath .= '/';
-	}
+	# Strip off trailing slash
+	$basepath =~ s/\/$//;
 	return $basepath;
 }
 
