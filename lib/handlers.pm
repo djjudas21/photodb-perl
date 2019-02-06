@@ -10,6 +10,7 @@ use Config::IniHash;
 use YAML;
 use Array::Utils qw(:all);
 use Path::Iterator::Rule;
+use File::Basename;
 
 my $path;
 BEGIN {
@@ -1640,7 +1641,7 @@ sub scan_add {
 			$data{print_id} = &prompt({prompt=>'Which print did you scan?', type=>'integer'});
 		}
 	}
-	$data{filename} = &prompt({prompt=>'Enter the filename of this scan', type=>'text'});
+	$data{filename} = $href->{filename} // &prompt({prompt=>'Enter the filename of this scan', type=>'text'});
 	return &newrecord({db=>$db, data=>\%data, table=>'SCAN'});
 }
 
@@ -1692,34 +1693,46 @@ sub scan_search {
 	my $rule = Path::Iterator::Rule->new;
 	$rule->iname( '*.jpg' );
 	my @fsfiles = $rule->all($basepath);
-	print "first fsfile: $fsfiles[0]\n";
-	print Dump(@fsfiles);
 
 	# Query DB to find all known scans
 	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
 	my @dbfiles = @$dbfilesref;
-	print "first dbfile: $dbfiles[0]\n";
-	print Dump(@dbfiles);
 
-	# loop through list to see if the file already exists in the db
-	my @fsonly = array_minus(@fsfiles, @dbfiles);
-	my @dbonly = array_minus(@dbfiles, @fsfiles);
-
-	print "Files only on the filesystem:\n";
-	for my $fsonlyfile (@fsonly) {
-		#		print "\t$fsonlyfile\n";
+	# Scans only on the fs
+	if (&prompt({prompt=>'Audit scans that exist only on the filesystem and not in the database?', type=>'boolean', default=>'yes'})) {
+		my @fsonly = array_minus(@fsfiles, @dbfiles);
+		for my $fsonlyfile (@fsonly) {
+			if (&prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean'})) {
+				my $filename = fileparse($fsonlyfile);
+				if ($filename =~ m/^(\d+)-(\d+)-.+\.jpg$/i) {
+					my $film_id = $1;
+					my $frame = $2;
+					if (&prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes'})) {
+						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
+						&scan_add($db, {negative_id=>$neg_id, filename=>$filename});
+					}
+				} elsif ($filename =~ m/^p(\d+)-.+\.jpg$/i) {
+					my $print_id = $1;
+					if (&prompt({prompt=>"This looks like a scan of print #$print_id. Add it?", type=>'boolean', default=>'yes'})) {
+						&scan_add($db, {print_id=>$print_id, filename=>$filename});
+					}
+				} else {
+					if (&prompt({prompt=>"Can't automatically determine the source of this scan. Add it manually?", type=>'boolean', default=>'yes'})) {
+						&scan_add($db);
+					}
+				}
+			}
+		}
 	}
 
-	print "Files only in the database:\n";
-	for my $dbonlyfile (@dbonly) {
-		#		print "\t$dbonlyfile\n";
+	# Scans only in the db
+	if (&prompt({prompt=>'Audit scans that exist only in the database and not on the filesystem?', type=>'boolean', default=>'no'})) {
+		my @dbonly = array_minus(@dbfiles, @fsfiles);
+		for my $dbonlyfile (@dbonly) {
+			print "\t$dbonlyfile\n";
+		}
 	}
 
-	# if not, try to add it
-	# try to guess the negative it's of if the filename is X-Y-img1234.jpg
-	# try to guess the print if it's of if the filename is P123-img1234.jpg
-	# otherwise prompt the user to choose the negative or print is it from
-	# call scan_add with parameterised filename etc
 	return;
 }
 

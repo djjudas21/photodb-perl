@@ -12,3 +12,4 @@ requires 'Perl::Critic';
 requires 'experimental';
 requires 'Path::Iterator::Rule';
 requires 'Array::Utils';
+requires 'File::Basename';
