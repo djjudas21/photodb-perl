@@ -6,4 +6,5 @@ install:
 script:
         - "perl -cT photodb"
         - "perl -w check-usage-docs.pl"
+        - "perl -w check-func-docs.pl"
         - "perlcritic --stern ."
