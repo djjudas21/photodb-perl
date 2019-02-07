@@ -17,6 +17,7 @@ Write out a text file in the film scans directory
 #### Returns
 Nothing
 
+
 ---
 ## `basepath`
 Returns filesystem basepath which contains scans
@@ -28,6 +29,7 @@ my $basepath = &basepath;
 None
 #### Returns
 Path to directory which contains scans
+
 
 ---
 ## `chooseneg`
@@ -42,6 +44,7 @@ my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
 #### Returns
 Integer representing the negative ID
 
+
 ---
 ## `choosescan`
 Select a scan by specifying a filename. Allows user to pick if there are multiple matching filenames.
@@ -54,6 +57,7 @@ my $id = &choosescan($db);
 #### Returns
 Integer representing the scan ID
 
+
 ---
 ## `db`
 Connect to the database
@@ -65,6 +69,7 @@ my $db = &db;
 None
 #### Returns
 Variable representing the database handle
+
 
 ---
 ## `duration`
@@ -106,6 +111,7 @@ my $diff = &hashdiff($old, $new);
 #### Returns
 Hashref containing values that are new or different.
 
+
 ---
 ## `ini`
 Find PhotoDB config ini file
@@ -117,6 +123,7 @@ my $ini = &ini;
 None
 #### Returns
 File path to the config ini file
+
 
 ---
 ## `keyword`
@@ -158,6 +165,7 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 #### Returns
 ID of the selected option
 
+
 ---
 ## `logger`
 Record a database event in the log
@@ -171,6 +179,7 @@ Record a database event in the log
 * `$message` Message to write to the log file
 #### Returns
 ID of the log message
+
 
 ---
 ## `lookupcol`
@@ -221,6 +230,7 @@ my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$f
 #### Returns
 Single value from the database
 
+
 ---
 ## `newrecord`
 Insert a record into any table
@@ -236,6 +246,7 @@ my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 * `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 Primary key of inserted row
+
 
 ---
 ## `nocommand`
@@ -303,6 +314,7 @@ my $paddedstring = &pad('Hello', 8);
 #### Returns
 Padded string
 
+
 ---
 ## `parselensmodel`
 Parse lens model name to guess some data about the lens. Either specify which parameter you want
@@ -333,6 +345,7 @@ my $string = &printbool($bool);
 * `$bool` boolean value to rewrite
 #### Returns
 Returns `yes` if `$bool` is true and `no` if `$bool` is false.
+
 
 ---
 ## `printlist`
@@ -377,6 +390,7 @@ What model is the camera? (text) []:
 #### Returns
 The value the user provided
 
+
 ---
 ## `resolvenegid`
 Get a negative ID either from the neg ID or the film/frame ID
@@ -403,6 +417,7 @@ my $rounded = &round($num, 3);
 * `$pow10` Number of decimal places to round to. Defaults to `0` i.e. round to an integer
 #### Returns
 Rounded number
+
 
 ---
 ## `tag`
@@ -432,6 +447,7 @@ $data = &thin($data);
 #### Returns
 Hashref containing thinned data
 
+
 ---
 ## `today`
 Return today's date according to the DB
@@ -443,6 +459,7 @@ my $todaysdate = &today($db);
 * `$db` DB handle
 #### Returns
 Today's date, formatted `YYYY-MM-DD`
+
 
 ---
 ## `unsetdisplaylens`
@@ -459,6 +476,7 @@ the lens ID. It is not harmful to pass in both, but it is pointless.
 * `$lens_id` ID of lens you want to unassociate
 #### Returns
 Result of SQL update
+
 
 ---
 ## `updatedata`
