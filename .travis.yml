@@ -2,8 +2,16 @@ language: "perl"
 perl:
   - "5.26"
 install:
-        - "cpanm --verbose --installdeps --notest ."
-script:
-        - "perl -cT photodb"
-        - "perl -w check-usage-docs.pl"
-        - "perlcritic --stern ."
+  - "cpanm --installdeps ."
+jobs:
+  include:
+    - stage: syntax
+      name: "Perl syntax"
+      script: "perl -cT photodb"
+    - name: "PerlCritic"
+      script: "perlcritic --stern ."
+    - stage: docs
+      name: "Usage documentation"
+      script: "perl -w check-usage-docs.pl"
+    - name: "Function documentation"
+      script: "perl -w check-func-docs.pl"

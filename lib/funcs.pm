@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -169,7 +169,7 @@ sub updaterecord {
 	my $table = $href->{table};		# Name of table to update
 	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
 	my $silent = $href->{silent} // 0;	# Suppress output
-	my $log = $href->{log} // 1;            # Write event to log
+	my $log = $href->{log} // 1;	    # Write event to log
 
 	# Quit if we didn't get params
 	die 'Must pass in $db' if !($db);
@@ -208,6 +208,47 @@ sub updaterecord {
 	$rows = 0 if ($rows eq  '0E0');
 	print "Updated $rows rows\n" unless $silent;
 	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
+	return $rows;
+}
+
+# Delete an existing record in any table
+sub deleterecord {
+	# Pass in a hashref of arguments
+	my $href = shift;
+
+	# Unpack the hashref and set default values
+	my $db = $href->{db};		   # DB handle
+	my $table = $href->{table};	     # Name of table to delete from
+	my $where = $href->{where};	     # Where clause, formatted for SQL::Abstract
+	my $silent = $href->{silent} // 0;      # Suppress output
+	my $log = $href->{log} // 1;	    # Write event to log
+
+	# Quit if we didn't get params
+	die 'Must pass in $db' if !($db);
+	die 'Must pass in $table' if !($table);
+	die 'Must pass in $where' if !($where);
+
+	# Dump data for debugging
+	print "\n\nI will delete from $table where $where\n" unless $silent;
+
+	# Build query
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->delete($table, $where);
+
+	# Final confirmation
+	unless ($silent) {
+		if (!&prompt({default=>'yes', prompt=>'Proceed?', type=>'boolean'})) {
+		       print "Aborted!\n";
+		       return;
+	       }
+	}
+
+	# Execute query
+	my $sth = $db->prepare($stmt);
+	my $rows = $sth->execute(@bind);
+	$rows = 0 if ($rows eq  '0E0');
+	print "Deleted $rows rows\n" unless $silent;
+	&logger({db=>$db, type=>'DELETE', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 
@@ -514,8 +555,8 @@ sub lookuplist {
 	}
 
 	my @list;
-	while (my $row = $sth->fetchrow_array()) {
-		push(@list, $row);
+	while (my @row = $sth->fetchrow_array()) {
+		push(@list, $row[0]);
 	}
 	return \@list;
 }
@@ -540,8 +581,8 @@ sub today {
 
 # Return today's date & time according to the DB
 sub now {
-        my $db = shift;         # DB handle
-        return &lookupval({db=>$db, query=>'select now()'});
+	my $db = shift;	 # DB handle
+	return &lookupval({db=>$db, query=>'select now()'});
 }
 
 
@@ -664,8 +705,7 @@ sub annotatefilm {
 	my $db = shift;
 	my $film_id = shift;
 
-	my $inidata = ReadINI(&ini);
-	my $path = $$inidata{'filesystem'}{'basepath'};
+	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
 		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
@@ -827,15 +867,7 @@ sub tag {
 	my $film_id = shift // '%';
 
 	# Make sure basepath is valid
-	my $connect = ReadINI(&ini);
-	if (!defined($$connect{'filesystem'}{'basepath'})) {
-		print "Config file did not contain basepath";
-		return;
-	}
-	my $basepath = $$connect{'filesystem'}{'basepath'};
-	if (substr($basepath, -1, 1) ne '/') {
-		$basepath .= '/';
-	}
+	my $basepath = &basepath;
 
 	# Crank up an instance of ExifTool
 	my $exifTool = Image::ExifTool->new;
@@ -881,10 +913,10 @@ sub tag {
 		# First check the path is defined in MySQL
 		if (defined($ref->{'path'})) {
 			# Now make sure the path actually exists on the system
-			if (-e "$basepath$ref->{'path'}") {
+			if (-e "$basepath/$ref->{'path'}") {
 				# File exists, so we go on and do stuff to it.
 				# Grab the existing EXIF tags for comparison
-				my $exif = $exifTool->ImageInfo("$basepath$ref->{'path'}");
+				my $exif = $exifTool->ImageInfo("$basepath/$ref->{'path'}");
 				my $changeflag = 0;
 				$foundcount++;
 
@@ -913,13 +945,13 @@ sub tag {
 
 				# If a change has been made to the EXIF data, write out the data
 				if ($changeflag == 1) {
-					$exifTool->WriteInfo("$basepath$ref->{'path'}");
-					print "Wrote tags to $basepath$ref->{'path'}\n\n";
+					$exifTool->WriteInfo("$basepath/$ref->{'path'}");
+					print "Wrote tags to $basepath/$ref->{'path'}\n\n";
 					$changedcount++;
 				}
 			} else {
-				print "$basepath$ref->{'path'} not found - skipping\n";
-				push (@missingfiles, "$basepath$ref->{'path'}");
+				print "$basepath/$ref->{'path'} not found - skipping\n";
+				push (@missingfiles, "$basepath/$ref->{'path'}");
 			}
 		}
 	}
@@ -958,6 +990,29 @@ sub logger {
 	my $message = $href->{message};
 
 	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
+}
+
+# Choose a scan by filename
+sub choosescan {
+	my $db = shift;
+	# prompt user for filename of scan
+	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
+
+	# should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
+	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
+}
+
+# Return filesystem basepath which contains scans
+sub basepath {
+	# Work out file path
+	my $connect = ReadINI(&ini);
+	if (!defined($$connect{'filesystem'}{'basepath'})) {
+		die "Config file did not contain basepath";
+	}
+	my $basepath = $$connect{'filesystem'}{'basepath'};
+	# Strip off trailing slash
+	$basepath =~ s/\/$//;
+	return $basepath;
 }
 
 # This ensures the lib loads smoothly

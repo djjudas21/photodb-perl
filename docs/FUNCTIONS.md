@@ -17,6 +17,20 @@ Write out a text file in the film scans directory
 #### Returns
 Nothing
 
+
+---
+## `basepath`
+Returns filesystem basepath which contains scans
+#### Usage
+```perl
+my $basepath = &basepath;
+```
+#### Arguments
+None
+#### Returns
+Path to directory which contains scans
+
+
 ---
 ## `chooseneg`
 Select a negative by drilling down
@@ -32,6 +46,19 @@ Integer representing the negative ID
 
 
 ---
+## `choosescan`
+Select a scan by specifying a filename. Allows user to pick if there are multiple matching filenames.
+#### Usage
+```perl
+my $id = &choosescan($db);
+```
+#### Arguments
+* `$db` variable containing database handle as returned by `&db`
+#### Returns
+Integer representing the scan ID
+
+
+---
 ## `db`
 Connect to the database
 #### Usage
@@ -42,6 +69,7 @@ my $db = &db;
 None
 #### Returns
 Variable representing the database handle
+
 
 ---
 ## `duration`
@@ -83,6 +111,7 @@ my $diff = &hashdiff($old, $new);
 #### Returns
 Hashref containing values that are new or different.
 
+
 ---
 ## `ini`
 Find PhotoDB config ini file
@@ -94,6 +123,7 @@ my $ini = &ini;
 None
 #### Returns
 File path to the config ini file
+
 
 ---
 ## `keyword`
@@ -135,6 +165,7 @@ my $id = &listchoices({db=>$db, table=>$table, where=>$where});
 #### Returns
 ID of the selected option
 
+
 ---
 ## `logger`
 Record a database event in the log
@@ -148,6 +179,7 @@ Record a database event in the log
 * `$message` Message to write to the log file
 #### Returns
 ID of the log message
+
 
 ---
 ## `lookupcol`
@@ -165,6 +197,23 @@ my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_
 #### Returns
 An arrayref containing a hashref of columns and values
 
+
+---
+## `lookuplist`
+Return multiple values from a single database column as an arrayref
+#### Usage
+```perl
+my $values = &lookuplist({db=>$db, col=>$column, table=>$table, where{key=>value}});
+```
+#### Arguments
+* `$db` DB handle
+* `$table` table to run query against. Part of the SQL::Abstract tuple
+* `$col` column to select. Part of the SQL::Abstract tuple
+* `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
+#### Returns
+An arreyref containing a list of values
+
+
 ---
 ## `lookupval`
 Return arbitrary single value from database
@@ -181,6 +230,7 @@ my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$f
 #### Returns
 Single value from the database
 
+
 ---
 ## `newrecord`
 Insert a record into any table
@@ -196,6 +246,7 @@ my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 * `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 Primary key of inserted row
+
 
 ---
 ## `nocommand`
@@ -238,6 +289,19 @@ Nothing
 
 
 ---
+## `now`
+Return an SQL-formatted timestamp for the current time
+#### Usage
+```perl
+my $time = &now($db);
+```
+#### Arguments
+* `$db` Database handle
+#### Returns
+String containing the current time, formatted `YYYY-MM-DD HH:MM:SS`
+
+
+---
 ## `pad`
 Pad a string with spaces up to a fixed length, to make it easier to print fixed-width tables
 #### Usage
@@ -249,6 +313,7 @@ my $paddedstring = &pad('Hello', 8);
 * `$totallength` Total number of characters to pad to, defaults to `18`
 #### Returns
 Padded string
+
 
 ---
 ## `parselensmodel`
@@ -280,6 +345,7 @@ my $string = &printbool($bool);
 * `$bool` boolean value to rewrite
 #### Returns
 Returns `yes` if `$bool` is true and `no` if `$bool` is false.
+
 
 ---
 ## `printlist`
@@ -324,6 +390,7 @@ What model is the camera? (text) []:
 #### Returns
 The value the user provided
 
+
 ---
 ## `resolvenegid`
 Get a negative ID either from the neg ID or the film/frame ID
@@ -350,6 +417,7 @@ my $rounded = &round($num, 3);
 * `$pow10` Number of decimal places to round to. Defaults to `0` i.e. round to an integer
 #### Returns
 Rounded number
+
 
 ---
 ## `tag`
@@ -379,6 +447,7 @@ $data = &thin($data);
 #### Returns
 Hashref containing thinned data
 
+
 ---
 ## `today`
 Return today's date according to the DB
@@ -390,6 +459,7 @@ my $todaysdate = &today($db);
 * `$db` DB handle
 #### Returns
 Today's date, formatted `YYYY-MM-DD`
+
 
 ---
 ## `unsetdisplaylens`
@@ -406,6 +476,7 @@ the lens ID. It is not harmful to pass in both, but it is pointless.
 * `$lens_id` ID of lens you want to unassociate
 #### Returns
 Result of SQL update
+
 
 ---
 ## `updatedata`
@@ -438,6 +509,23 @@ my $rows = &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=
 * `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 The number of rows updated
+
+
+---
+## `deleterecord`
+Delete an existing record from any table
+#### Usage
+```perl
+my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
+```
+#### Arguments
+* `$db` DB handle
+* `$table` Name of table to delete from
+* `$where` Where clause, formatted for SQL::Abstract
+* `$silent` Suppress output
+* `$log` Write an event to the database log. Defaults to `1`.
+#### Returns
+The number of rows deleted
 
 
 ---

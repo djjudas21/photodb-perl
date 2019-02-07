@@ -8,6 +8,9 @@ use warnings;
 use Exporter qw(import);
 use Config::IniHash;
 use YAML;
+use Array::Utils qw(:all);
+use Path::Iterator::Rule;
+use File::Basename;
 
 my $path;
 BEGIN {
@@ -51,6 +54,7 @@ our @EXPORT_OK = qw(
 	exhibition_add exhibition_info
 	choose_manufacturer
 	db_stats db_logs db_test
+	scan_add scan_edit scan_delete scan_search
 );
 
 # Add a new film to the database
@@ -1615,6 +1619,123 @@ sub db_test {
 	my $version = $db->{'mysql_serverinfo'};
 	my $stats = $db->{'mysql_stat'};
 	print "\tConnected to $hostname\n\tRunning version $version\n\t$stats\n";
+	return;
+}
+
+# Add a new scan of a negative or print
+sub scan_add {
+	my $db = shift;
+	my $href = shift;
+
+	my %data;
+	$data{negative_id} = $href->{negative_id};
+	$data{print_id} = $href->{print_id};
+
+	if (!defined($href->{negative_id}) && !defined($href->{print_id})) {
+		if (&prompt({prompt=>'Is this a scan of a negative?', type=>'boolean'})) {
+			# choose negative
+			$data{negative_id} = &chooseneg({db=>$db});
+
+		} else {
+			# choose print
+			$data{print_id} = &prompt({prompt=>'Which print did you scan?', type=>'integer'});
+		}
+	}
+	$data{filename} = $href->{filename} // &prompt({prompt=>'Enter the filename of this scan', type=>'text'});
+	return &newrecord({db=>$db, data=>\%data, table=>'SCAN'});
+}
+
+# Add a new scan which is a derivative of an existing one
+sub scan_edit {
+	my $db = shift;
+	my $href = shift;
+
+	# Prompt user for filename of scan
+	my $scan_id = &choosescan($db);
+
+	# Work out negative_id or print_id
+	my $scan_data = &lookupcol({db=>$db, cols=>['negative_id', 'print_id'], table=>'SCAN', where=>{scan_id=>$scan_id}});
+	$scan_data = &thin($$scan_data[0]);
+
+	# Insert new scan from same source
+	return &scan_add($db, $scan_data);
+}
+
+# Delete a scan from the database and optionally from the filesystem
+sub scan_delete {
+	my $db = shift;
+	my $href = shift;
+
+	# Prompt user for filename of scan
+	my $scan_id = &choosescan($db);
+
+	# Work out file path
+	my $basepath = &basepath;
+	my $relativepath = &lookupval({db=>$db, col=>"concat(directory, '/', filename)", table=>'scans_negs', where=>{scan_id=>$scan_id}});
+	my $fullpath = "$basepath/$relativepath";
+
+	# Offer to delete the file
+	if (&prompt({prompt=>"Delete the file $fullpath ?", type=>'boolean', default=>'no'})) {
+		unlink $fullpath or print "Could not delete file $fullpath: $!\n";
+	}
+
+	# Remove record from SCAN
+	return &deleterecord({db=>$db, table=>'SCAN', where=>{scan_id=>$scan_id}});
+}
+
+# Search the filesystem for scans which are not in the database
+sub scan_search {
+	my $db = shift;
+	my $href = shift;
+
+	# Search filesystem basepath to enumerate all *.jpg
+	my $basepath = &basepath;
+	my $rule = Path::Iterator::Rule->new;
+	$rule->iname( '*.jpg' );
+	my @fsfiles = $rule->all($basepath);
+
+	# Query DB to find all known scans
+	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
+	my @dbfiles = @$dbfilesref;
+
+	# Scans only on the fs
+	if (&prompt({prompt=>'Audit scans that exist only on the filesystem and not in the database?', type=>'boolean', default=>'yes'})) {
+		my @fsonly = array_minus(@fsfiles, @dbfiles);
+		for my $fsonlyfile (@fsonly) {
+			if (&prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean'})) {
+				my $filename = fileparse($fsonlyfile);
+				if ($filename =~ m/^(\d+)-(\d+)-.+\.jpg$/i) {
+					my $film_id = $1;
+					my $frame = $2;
+					if (&prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes'})) {
+						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
+						&scan_add($db, {negative_id=>$neg_id, filename=>$filename});
+					}
+				} elsif ($filename =~ m/^p(\d+)-.+\.jpg$/i) {
+					my $print_id = $1;
+					if (&prompt({prompt=>"This looks like a scan of print #$print_id. Add it?", type=>'boolean', default=>'yes'})) {
+						&scan_add($db, {print_id=>$print_id, filename=>$filename});
+					}
+				} else {
+					if (&prompt({prompt=>"Can't automatically determine the source of this scan. Add it manually?", type=>'boolean', default=>'yes'})) {
+						&scan_add($db);
+					}
+				}
+			}
+		}
+	}
+
+	# Scans only in the db
+	if (&prompt({prompt=>'Audit scans that exist only in the database and not on the filesystem?', type=>'boolean', default=>'no'})) {
+		my @dbonly = array_minus(@dbfiles, @fsfiles);
+		for my $dbonlyfile (@dbonly) {
+			if (&prompt({prompt=>"Delete $dbonlyfile from the database?", type=>'boolean', default=>'no'})) {
+				my $filename = fileparse($dbonlyfile);
+				&deleterecord({db=>$db, table=>'SCAN', where=>{filename=>$filename}});
+			}
+		}
+	}
+
 	return;
 }
 

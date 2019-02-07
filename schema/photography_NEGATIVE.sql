@@ -16,7 +16,6 @@ CREATE TABLE `NEGATIVE` (
   `focal_length` int(11) DEFAULT NULL COMMENT 'If a zoom lens was used, specify the focal length of the lens',
   `latitude` decimal(9,6) DEFAULT NULL COMMENT 'Latitude of the location where the picture was taken',
   `longitude` decimal(9,6) DEFAULT NULL COMMENT 'Longitude of the location where the picture was taken',
-  `filename` varchar(100) DEFAULT NULL COMMENT 'Filename of the scanned image file from this negative',
   `flash` tinyint(1) DEFAULT NULL COMMENT 'Whether flash was used',
   `metering_mode` int(11) DEFAULT NULL COMMENT 'MeteringMode ID as defined in EXIF spec',
   `exposure_program` int(11) DEFAULT NULL COMMENT 'ExposureProgram ID as defined in EXIF spec',
