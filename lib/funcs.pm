@@ -185,9 +185,13 @@ sub updaterecord {
 		return 0;
 	}
 
+	# Work out affected rows
+	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n" unless $silent;
 	print Dump($data) unless $silent;
+	print "$rowcount records will be updated\n" unless $silent;
 	print "\n" unless $silent;
 
 	# Build query
@@ -228,8 +232,12 @@ sub deleterecord {
 	die 'Must pass in $table' if !($table);
 	die 'Must pass in $where' if !($where);
 
+	# Work out affected rows
+	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+
 	# Dump data for debugging
 	print "\n\nI will delete from $table where $where\n" unless $silent;
+	print "$rowcount records will be deleted\n" unless $silent;
 
 	# Build query
 	my $sql = SQL::Abstract->new;
