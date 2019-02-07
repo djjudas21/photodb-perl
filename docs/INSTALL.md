@@ -46,8 +46,8 @@ sudo service mysqld start
 Fedora:
 ```
 sudo dnf install mariadb-server
-sudo systemctl mariadb on
-sudo systemctl mariadb start
+sudo systemctl start mariadb
+sudo systemctl enable mariadb
 ```
 
 Ubuntu:
@@ -91,26 +91,24 @@ There are several different ways to install the application. Choose your favouri
 
 ### Fedora
 
-Run on Fedora or compatible RPM-based Linux, and install dependencies with dnf/yum
+Run on Fedora or compatible RPM-based Linux, and install dependencies with dnf/yum. Unfortunately,
+CentOS does not package all the perl modules required.
 
-1. Set up a new yum repo to provide one package that isn't packaged by Fedora
-```
-curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.rpm.sh | sudo bash
-```
-2. Install all of the deps in one go
+1. Install all of the deps in one go
 ```
 sudo dnf install "perl(Config::IniHash)" "perl(YAML)" "perl(DBD::mysql)" "perl(DBI)" \
-"perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" \
-"perl(SQL::Abstract)" "perl(strict)" "perl(Term::ReadKey)" "perl(warnings)"
+"perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(SQL::Abstract)" \
+"perl(strict)" "perl(Term::ReadKey)" "perl(warnings)" "perl(FindBin)" \
+"perl(Perl::Critic)" "perl(experimental)" "perl(Path::Iterator::Rule)" "perl(Array::Utils)"
 ```
 
-3. Check out the PhotoDB application code directly from git
+2. Check out the PhotoDB application code directly from git
 
 ```
 git clone https://github.com/djjudas21/photography-database.git
 ```
 
-4. You can run the application directly from its current location but it is recommended to symlink it
+3. You can run the application directly from its current location but it is recommended to symlink it
 into your path, for ease of use.
 ```
 ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
@@ -120,25 +118,22 @@ ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
 
 Run on Ubuntu or Debian compatible DEB-based Linux, and install dependencies with apt
 
-1. Set up a new apt repo to provide one package that isn't packaged by Ubuntu
-```
-curl -s https://packagecloud.io/install/repositories/jgazeley/perl-modules/script.deb.sh | sudo bash
-```
-
-2. Install all of the deps in one go
+1. Install all of the deps in one go
 ```
 sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
 libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl \
-libterm-readkey-perl libimage-exiftool-location-perl
+libterm-readkey-perl libimage-exiftool-location-perl libperl-critic-perl \
+libpath-iterator-rule-perl libarray-utils-perl libyaml-libyaml-perl \
+libfindbin-libs-perl
 ```
 
-3. Check out the PhotoDB application code directly from git
+2. Check out the PhotoDB application code directly from git
 
 ```
 git clone https://github.com/djjudas21/photography-database.git
 ```
 
-4. You can run the application directly from its current location but it is recommended to symlink it
+3. You can run the application directly from its current location but it is recommended to symlink it
 into your path, for ease of use.
 ```
 ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
