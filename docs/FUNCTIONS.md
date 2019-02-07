@@ -18,6 +18,18 @@ Write out a text file in the film scans directory
 Nothing
 
 ---
+## `basepath`
+Returns filesystem basepath which contains scans
+#### Usage
+```perl
+my $basepath = &basepath;
+```
+#### Arguments
+None
+#### Returns
+Path to directory which contains scans
+
+---
 ## `chooseneg`
 Select a negative by drilling down
 #### Usage
