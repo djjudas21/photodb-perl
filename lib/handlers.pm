@@ -1698,9 +1698,14 @@ sub scan_search {
 	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
 	my @dbfiles = @$dbfilesref;
 
+	# Calculate the diffs
+	my @fsonly = array_minus(@fsfiles, @dbfiles);
+	my @dbonly = array_minus(@dbfiles, @fsfiles);
+	my $numfsonly = scalar @fsonly;
+	my $numdbonly = scalar @dbonly;
+
 	# Scans only on the fs
-	if (&prompt({prompt=>'Audit scans that exist only on the filesystem and not in the database?', type=>'boolean', default=>'yes'})) {
-		my @fsonly = array_minus(@fsfiles, @dbfiles);
+	if ($numfsonly>0 && &prompt({prompt=>"Audit $numfsonly scans that exist only on the filesystem and not in the database?", type=>'boolean', default=>'yes'})) {
 		for my $fsonlyfile (@fsonly) {
 			if (&prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean'})) {
 				my $filename = fileparse($fsonlyfile);
@@ -1726,8 +1731,7 @@ sub scan_search {
 	}
 
 	# Scans only in the db
-	if (&prompt({prompt=>'Audit scans that exist only in the database and not on the filesystem?', type=>'boolean', default=>'no'})) {
-		my @dbonly = array_minus(@dbfiles, @fsfiles);
+	if ($numdbonly>0 && &prompt({prompt=>"Audit $numdbonly scans that exist only in the database and not on the filesystem?", type=>'boolean', default=>'no'})) {
 		for my $dbonlyfile (@dbonly) {
 			if (&prompt({prompt=>"Delete $dbonlyfile from the database?", type=>'boolean', default=>'no'})) {
 				my $filename = fileparse($dbonlyfile);
