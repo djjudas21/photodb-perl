@@ -188,6 +188,23 @@ my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_
 #### Returns
 An arrayref containing a hashref of columns and values
 
+
+---
+## `lookuplist`
+Return multiple values from a single database column as an arrayref
+#### Usage
+```perl
+my $values = &lookuplist({db=>$db, col=>$column, table=>$table, where{key=>value}});
+```
+#### Arguments
+* `$db` DB handle
+* `$table` table to run query against. Part of the SQL::Abstract tuple
+* `$col` column to select. Part of the SQL::Abstract tuple
+* `$where` where clause passed in as a hash, e.g. `{'field'=>'value'}`. Part of the SQL::Abstract tuple
+#### Returns
+An arreyref containing a list of values
+
+
 ---
 ## `lookupval`
 Return arbitrary single value from database
@@ -258,6 +275,19 @@ Print a warning that this command/subcommand is not yet implemented
 None
 #### Returns
 Nothing
+
+
+---
+## `now`
+Return an SQL-formatted timestamp for the current time
+#### Usage
+```perl
+my $time = &now($db);
+```
+#### Arguments
+* `$db` Database handle
+#### Returns
+String containing the current time, formatted `YYYY-MM-DD HH:MM:SS`
 
 
 ---
