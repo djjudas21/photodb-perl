@@ -1704,15 +1704,15 @@ sub scan_search {
 		for my $fsonlyfile (@fsonly) {
 			if (&prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean'})) {
 				my $filename = fileparse($fsonlyfile);
-				if ($filename =~ m/^(\d+)-(\d+)-.+\.jpg$/i) {
+				if ($filename =~ m/^(\d+)-([0-9a-z]+).*\.jpg$/i) {
 					my $film_id = $1;
 					my $frame = $2;
 					if (&prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes'})) {
-						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
+						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, '$frame')"});
 						&scan_add($db, {negative_id=>$neg_id, filename=>$filename});
 					}
-				} elsif ($filename =~ m/^p(\d+)-.+\.jpg$/i) {
-					my $print_id = $1;
+				} elsif ($filename =~ m/^p(rint)?(\d+).*\.jpg$/i) {
+					my $print_id = $2;
 					if (&prompt({prompt=>"This looks like a scan of print #$print_id. Add it?", type=>'boolean', default=>'yes'})) {
 						&scan_add($db, {print_id=>$print_id, filename=>$filename});
 					}
