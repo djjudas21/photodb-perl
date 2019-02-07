@@ -1729,7 +1729,10 @@ sub scan_search {
 	if (&prompt({prompt=>'Audit scans that exist only in the database and not on the filesystem?', type=>'boolean', default=>'no'})) {
 		my @dbonly = array_minus(@dbfiles, @fsfiles);
 		for my $dbonlyfile (@dbonly) {
-			print "\t$dbonlyfile\n";
+			if (&prompt({prompt=>"Delete $dbonlyfile from the database?", type=>'boolean', default=>'no'})) {
+				my $filename = fileparse($dbonlyfile);
+				&deleterecord({db=>$db, table=>'SCAN', where=>{filename=>$filename}});
+			}
 		}
 	}
 
