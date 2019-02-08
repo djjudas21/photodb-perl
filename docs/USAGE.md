@@ -79,6 +79,8 @@ Bulk add multiple negatives to the database as part of a film
 Show information about a negative
 ### `negative prints`
 Find all prints made from a negative
+### `negative tag`
+Write EXIF tags to a scan from a negative
 
 ---
 ## `movie`
