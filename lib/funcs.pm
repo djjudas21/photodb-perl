@@ -905,11 +905,12 @@ sub tag {
 	);
 
 	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
-	my $sql = 'SELECT * from exifdata where film_id = ?';
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select('exifdata', '*', {film_id=>$film_id});
 
 	# Prepare and execute the SQL
-	my $sth = $db->prepare($sql) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute($film_id);
+	my $sth = $db->prepare($stmt) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute(@bind);
 
 	# Set some globals
 	my $foundcount=0;
