@@ -26,7 +26,7 @@ our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
 	mount_add mount_info mount_adapt
-	negative_add negative_bulkadd negative_prints negative_info
+	negative_add negative_bulkadd negative_prints negative_info negative_tag
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
 	paperstock_add
@@ -144,13 +144,7 @@ sub film_info {
 sub film_tag {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
-	if ($film_id eq '') {
-		if (!&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'})) {
-			print "Aborted!\n";
-			return;
-		}
-	}
-	&tag($db, $film_id);
+	&tag($db, {film_id=>$film_id});
 	return;
 }
 
@@ -657,6 +651,14 @@ sub negative_prints {
 	my $neg_id = &chooseneg({db=>$db});
 	&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
 	return;
+}
+
+# Write EXIF tags to scans from a negative
+sub negative_tag {
+        my $db = shift;
+	my $neg_id = &chooseneg({db=>$db});
+        &tag($db, {negative_id=>$neg_id});
+        return;
 }
 
 # Add a new lens to the database
@@ -1372,7 +1374,7 @@ sub archive_list {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
-	my $query = "select * from (select concat('Film #', film_id) as id, notes as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
+	my $query = "select * from (select concat('Film #', film_id) as id, notes COLLATE utf8mb4_unicode_ci as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
 	&printlist({db=>$db, msg=>"items in archive $archive_name", query=>$query});
 	return;
 }

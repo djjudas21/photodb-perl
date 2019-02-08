@@ -185,9 +185,13 @@ sub updaterecord {
 		return 0;
 	}
 
+	# Work out affected rows
+	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n" unless $silent;
 	print Dump($data) unless $silent;
+	print "\n$rowcount records will be updated\n" unless $silent;
 	print "\n" unless $silent;
 
 	# Build query
@@ -228,8 +232,12 @@ sub deleterecord {
 	die 'Must pass in $table' if !($table);
 	die 'Must pass in $where' if !($where);
 
+	# Work out affected rows
+	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+
 	# Dump data for debugging
 	print "\n\nI will delete from $table where $where\n" unless $silent;
+	print "$rowcount records will be deleted\n" unless $silent;
 
 	# Build query
 	my $sql = SQL::Abstract->new;
@@ -864,7 +872,7 @@ sub tag {
 
 	# Read in cmdline args
 	my $db = shift;
-	my $film_id = shift // '%';
+	my $where = shift;
 
 	# Make sure basepath is valid
 	my $basepath = &basepath;
@@ -897,11 +905,15 @@ sub tag {
 	);
 
 	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
-	my $sql = 'SELECT * from exifdata where film_id = ?';
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select('exifdata', '*', $where);
 
 	# Prepare and execute the SQL
-	my $sth = $db->prepare($sql) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute($film_id);
+	my $sth = $db->prepare($stmt) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute(@bind);
+
+	# Get confirmation
+	return unless &prompt({prompt=>"This will review and potentially update the tags of $rows scans. Proceed?", type=>'boolean'});
 
 	# Set some globals
 	my $foundcount=0;
