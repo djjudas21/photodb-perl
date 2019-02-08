@@ -191,7 +191,7 @@ sub updaterecord {
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where $where:\n" unless $silent;
 	print Dump($data) unless $silent;
-	print "$rowcount records will be updated\n" unless $silent;
+	print "\n$rowcount records will be updated\n" unless $silent;
 	print "\n" unless $silent;
 
 	# Build query
