@@ -144,13 +144,7 @@ sub film_info {
 sub film_tag {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
-	if ($film_id eq '') {
-		if (!&prompt({default=>'no', prompt=>'This will write EXIF tags to ALL scans in the database. Are you sure?', type=>'boolean'})) {
-			print "Aborted!\n";
-			return;
-		}
-	}
-	&tag($db, $film_id);
+	&tag($db, {film_id=>$film_id});
 	return;
 }
 

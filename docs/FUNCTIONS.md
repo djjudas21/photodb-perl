@@ -425,11 +425,13 @@ This func reads data from PhotoDB and writes EXIF tags
 to the JPGs that have been scanned from negatives
 #### Usage
 ```perl
-&tag($db, $film_id);
+&tag($db, $where);
+&tag($db, {film_id=1});
+&tag($db, {negative_id=100});
 ```
 #### Arguments
 * `$db` DB handle
-* `$film_id` ID of film to be tagged. Tags all films if not set!
+* `$where` hash to specify which scans should be tagged. Tags all scans if not set!
 #### Returns
 Nothing
 
