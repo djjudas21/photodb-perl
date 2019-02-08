@@ -1734,7 +1734,7 @@ sub scan_search {
 				} else {
 					next if $auto;
 					if (&prompt({prompt=>"Can't automatically determine the source of this scan. Add it manually?", type=>'boolean', default=>'yes'})) {
-						&scan_add($db);
+						&scan_add($db, {filename=>$filename});
 					}
 				}
 			}
