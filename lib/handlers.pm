@@ -1716,6 +1716,10 @@ sub scan_search {
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes'})) {
 						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, '$frame')"});
+						if (!$neg_id || $neg_id !~ /\d+/) {
+							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
+							next;
+						}
 						&newrecord({db=>$db, data=>{negative_id=>$neg_id, filename=>$filename}, table=>'SCAN', silent=>$auto});
 						print "Added $filename as scan of negative $film_id/$frame\n" if $auto;
 						$x++;
