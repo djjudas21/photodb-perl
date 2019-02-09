@@ -55,7 +55,8 @@ Scans refer to digital versions of negatives, slides or prints that can be made 
 more than once. Each scan must be recorded separately.
 
 PhotoDB needs you to set a directory on your computer for scans to be saved in. It prefers if its scans are the only thing in that directory. It is strongly
-recommended to make a directory just for scans of your negatives and prints, e.g. `/home/you/Pictures/Scans` or similar.
+recommended to make a directory just for scans of your negatives and prints, e.g. `/home/you/Pictures/Scans` or similar. If you access PhotoDB on more than one
+computer, you can configure a different directory on each computer.
 
 Under this directory, PhotoDB expects there to be a subdirectory for each film. There is no mandatory naming specification, but the preferred convention is
 the number of the film ID followed by a brief human-readable title, e.g. `55 Holiday in Rome`.
@@ -65,3 +66,7 @@ is the number of the film ID, `3` is the frame number (as written on the edge of
 
 PhotoDB does not create these directories or the scans inside them. It is up to you to name the scans this way. However, if you stick to the above naming
 convention, PhotoDB will at least record your scans and associate them with the right negative, to save you too much tedious data entry.
+
+Once the scanned JPGs have been entered into the database and associated with negatives or prints, you can add EXIF tags to the JPGs - the same as would be
+automatically written to JPGs taken by a digital camera. Supported tags include date, caption, geotag, exposure data, etc. This allows you to use almost any
+digital photo management app to sort, browse, and view your images with ease.
