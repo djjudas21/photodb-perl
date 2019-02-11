@@ -1716,7 +1716,7 @@ sub scan_search {
 					my $film_id = $1;
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes', required=>1})) {
-						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, '$frame')"});
+						my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 						if (!$neg_id || $neg_id !~ /\d+/) {
 							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
 							next;

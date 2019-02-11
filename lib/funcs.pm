@@ -675,7 +675,7 @@ sub resolvenegid {
 		# 999/99A - a film/frame ID
 		my $film_id = $1;
 		my $frame = $2;
-		my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
+		my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 		return $neg_id;
 	} else {
 		# Could not resolve
@@ -694,7 +694,7 @@ sub chooseneg {
 
 	#  Choose a negative from this film
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
-	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
+	my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
