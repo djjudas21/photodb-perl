@@ -715,7 +715,7 @@ sub annotatefilm {
 
 	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
-		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
+		my $filmdir = &lookupval({db=>$db, col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";
