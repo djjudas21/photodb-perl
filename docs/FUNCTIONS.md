@@ -357,8 +357,7 @@ Print arbitrary rows from the database as an easy way of displaying data
 #### Arguments
 * `$db` DB handle
 * `$msg` Message to display to user to describe what is being displayed. Shows up as `Now showing $msg\n`
-* `$query` (legacy) bare SQL query to run
-* `$table` Part of the SQL::Abstract tuple
+* `$table` Table to select from. Part of the SQL::Abstract tuple
 * `$cols` Columns to display. Defaults to `(id, opt)`. Part of the SQL::Abstract tuple
 * `$where` Where clause for the query. Part of the SQL::Abstract tuple
 * `$order` Order by clause for the query. Part of the SQL::Abstract tuple

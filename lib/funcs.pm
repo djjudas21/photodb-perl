@@ -437,7 +437,6 @@ sub printlist {
 
 	my $db = $href->{db};				# DB handle
 	my $msg = $href->{msg};				# Message to display to user
-	my $query = $href->{query};			# (legacy) SQL query to run
 	my $table = $href->{table};			# Part of the SQL::Abstract tuple
 	my $cols = $href->{cols} // ('id, opt');	# Part of the SQL::Abstract tuple
 	my $where = $href->{where} // {};		# Part of the SQL::Abstract tuple
@@ -446,17 +445,14 @@ sub printlist {
 	print "Now showing $msg\n";
 
 	my ($sth, $rows);
-	if ($query) {
-		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-		$rows = $sth->execute();
-	} elsif ($table && $cols && $where) {
+	if ($table && $cols && $where) {
 		# Use SQL::Abstract
 		my $sql = SQL::Abstract->new;
 		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		print "Must pass in either query OR table, cols, where\n";
+		print "Must pass in table, cols, where\n";
 		return;
 	}
 
