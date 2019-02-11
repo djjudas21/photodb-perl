@@ -62,7 +62,8 @@ Under this directory, PhotoDB expects there to be a subdirectory for each film. 
 the number of the film ID followed by a brief human-readable title, e.g. `55 Holiday in Rome`.
 
 Inside each subdirectory individual scans should be named `<film_id>-<frame>-<filename>.jpg`, for example `55-3-img123.jpg` or `55-3-Coliseum.jpg` where `55`
-is the number of the film ID, `3` is the frame number (as written on the edge of the film) and the rest can be anything you like.
+is the number of the film ID, `3` is the frame number (as written on the edge of the film) and the rest can be anything you like. The scans should not be put
+inside another subdirectory.
 
 PhotoDB does not create these directories or the scans inside them. It is up to you to name the scans this way. However, if you stick to the above naming
 convention, PhotoDB will at least record your scans and associate them with the right negative, to save you too much tedious data entry.
