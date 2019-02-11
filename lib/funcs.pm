@@ -189,7 +189,8 @@ sub updaterecord {
 	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
 
 	# Dump data for debugging
-	print "\n\nThis is what I will update into $table where $where:\n" unless $silent;
+	print "\n\nThis is what I will update into $table where:\n" unless $silent;
+	print Dump($where) unless $silent;
 	print Dump($data) unless $silent;
 	print "\n$rowcount records will be updated\n" unless $silent;
 	print "\n" unless $silent;
@@ -236,7 +237,8 @@ sub deleterecord {
 	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
 
 	# Dump data for debugging
-	print "\n\nI will delete from $table where $where\n" unless $silent;
+	print "\n\nI will delete from $table where:\n" unless $silent;
+	print Dump($where) unless $silent;
 	print "$rowcount records will be deleted\n" unless $silent;
 
 	# Build query
