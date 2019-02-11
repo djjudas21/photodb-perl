@@ -20,17 +20,17 @@ use handlers qw)/./);
 # Define handlers for each command
 our %handlers = (
 	accessory => {
-		'add'           => { 'handler' => \&accessory_add,     'desc' => 'Add a new "other" accessory to the database' },
-		'battery'       => { 'handler' => \&battery_add,       'desc' => 'Add a new type of battery to the database' },
-		'filter'        => { 'handler' => \&filter_add,        'desc' => 'Add a new (optical) filter to the database' },
-		'filteradapter' => { 'handler' => \&filter_adapt,      'desc' => 'Add a filter adapter to the database' },
-		'flash'         => { 'handler' => \&flash_add,         'desc' => 'Add a new flash to the database' },
-		'info'          => { 'handler' => \&accessory_info,    'desc' => 'Display info about an accessory' },
-		'meter'         => { 'handler' => \&lightmeter_add,    'desc' => 'Add a new light meter to the database' },
-		'mountadapter'  => { 'handler' => \&mount_adapt,       'desc' => 'Add a new mount adapter to the database' },
-		'projector'     => { 'handler' => \&projector_add,     'desc' => 'Add a new projector to the database' },
-		'teleconverter' => { 'handler' => \&teleconverter_add, 'desc' => 'Add a new teleconverter to the database' },
-		'type'          => { 'handler' => \&accessory_type,    'desc' => 'Add a new type of "other" accessory to the database' },
+		'add'           => { 'handler' => \&accessory_add,      'desc' => 'Add a new general accessory to the database' },
+		'battery'       => { 'handler' => \&battery_add,        'desc' => 'Add a new type of battery to the database' },
+		'filter'        => { 'handler' => \&filter_add,         'desc' => 'Add a new (optical) filter to the database' },
+		'filteradapter' => { 'handler' => \&filter_adapt,       'desc' => 'Add a filter adapter to the database' },
+		'flash'         => { 'handler' => \&flash_add,          'desc' => 'Add a new flash to the database' },
+		'info'          => { 'handler' => \&accessory_info,     'desc' => 'Display info about an accessory' },
+		'meter'         => { 'handler' => \&lightmeter_add,     'desc' => 'Add a new light meter to the database' },
+		'mountadapter'  => { 'handler' => \&mount_adapt,        'desc' => 'Add a new mount adapter to the database' },
+		'projector'     => { 'handler' => \&projector_add,      'desc' => 'Add a new projector to the database' },
+		'teleconverter' => { 'handler' => \&teleconverter_add,  'desc' => 'Add a new teleconverter to the database' },
+		'category'      => { 'handler' => \&accessory_category, 'desc' => 'Add a new category of general accessory to the database' },
 	},
 	archive => {
 		'add'    => { 'handler' => \&archive_add,    'desc' => 'Add a new physical archive for prints or films' },

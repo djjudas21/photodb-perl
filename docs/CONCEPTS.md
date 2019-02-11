@@ -70,3 +70,20 @@ convention, PhotoDB will at least record your scans and associate them with the 
 Once the scanned JPGs have been entered into the database and associated with negatives or prints, you can add EXIF tags to the JPGs - the same as would be
 automatically written to JPGs taken by a digital camera. Supported tags include date, caption, geotag, exposure data, etc. This allows you to use almost any
 digital photo management app to sort, browse, and view your images with ease.
+
+## Accessories
+
+PhotoDB allows you to track your collection of camera and lens accessories, too. There are several "special" kinds of accessories that have their own
+properties, commands and relationships, and there are general accessories with no special properties. You can create your own types of general accessory.
+
+Special types of accessory with their own properties include:
+* battery
+* filter
+* filter adapter
+* flash
+* meter
+* mount adapter
+* projector
+* teleconverter
+
+Types of general accessory with no special properties could include cases or straps.

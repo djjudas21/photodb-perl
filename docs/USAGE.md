@@ -158,9 +158,9 @@ Add a new type of filmstock to the database
 ## `accessory`
 The `accessory` command provides subcommands for adding photographic accessories to the database.
 ### `accessory add`
-Add a new "other" accessory to the database
-### `accessory type`
-Add a new type of "other" accessory to the database
+Add a new general accessory to the database
+### `accessory category`
+Add a new category of general accessory to the database
 ### `accessory flash`
 Add a new flash to the database
 ### `accessory battery`
