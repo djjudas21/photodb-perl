@@ -40,7 +40,7 @@ PhotoDB lets you record a stash of films, which you can then load into a camera.
 When you take pictures, we recommend you take notes about your exposures using a smartphone app, a piece of paper, or what ever method suits you. Then you can
 enter the data into PhotoDB at a later date. Negatives are associated with films and inherit some of their properties from the film they belong to.
 
-Lenses are also associated with a lens, as on many cameras it is possible to change lens between exposures.
+Negatives are also associated with a lens, as on many cameras it is possible to change lens between exposures.
 
 ## Prints
 
