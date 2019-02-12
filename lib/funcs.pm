@@ -580,13 +580,13 @@ sub updatedata {
 # Return today's date according to the DB
 sub today {
 	my $db = shift;		# DB handle
-	return &lookupval({db=>$db, query=>'select curdate()'});
+	return &lookupval({db=>$db, col=>'curdate()', table=>'CAMERA'});
 }
 
 # Return today's date & time according to the DB
 sub now {
 	my $db = shift;	 # DB handle
-	return &lookupval({db=>$db, query=>'select now()'});
+	return &lookupval({db=>$db, col=>'()', table=>'CAMERA'});
 }
 
 
