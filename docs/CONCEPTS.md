@@ -87,4 +87,4 @@ Special types of accessory with their own properties include:
 * projector
 * teleconverter
 
-Types of general accessory with no special properties could include cases or straps.
+Types of general accessory with no special properties could include cases or straps. General accessories can be associated with cameras or lenses, or neither.
