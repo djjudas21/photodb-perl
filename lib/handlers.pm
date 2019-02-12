@@ -812,7 +812,7 @@ sub lens_info {
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
-	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
+	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from NEGATIVE where aperture is not null and lens_id=$lens_id group by aperture order by count(aperture) desc limit 1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
 	if (&lookupval({db=>$db, col=>'zoom', table=>'LENS', where=>{lens_id=>$lens_id}})) {
 		my $minf = &lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$lens_id}});
