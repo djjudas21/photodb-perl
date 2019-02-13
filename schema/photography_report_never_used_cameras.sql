@@ -1,12 +1,10 @@
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-/*!50001 CREATE TABLE `print_locations` (
-  `id` tinyint NOT NULL,
-  `negative_id` tinyint NOT NULL,
-  `opt` tinyint NOT NULL
+/*!50001 CREATE TABLE `report_never_used_cameras` (
+  `Camera` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
-/*!50001 DROP TABLE IF EXISTS `print_locations`*/;
+/*!50001 DROP TABLE IF EXISTS `report_never_used_cameras`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -15,7 +13,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `print_locations` AS select `PRINT`.`print_id` AS `id`,`PRINT`.`negative_id` AS `negative_id`,concat(ifnull(`PRINT`.`date`,'????-??-??'),' ',`displaysize`(`PRINT`.`width`,`PRINT`.`height`),' - ',(case `PRINT`.`own` when 1 then ifnull(`ARCHIVE`.`name`,'Owned; location unknown') when 0 then ifnull(`PRINT`.`location`,'Not owned; location unknown') else 'No location information' end)) AS `opt` from (`PRINT` left join `ARCHIVE` on((`PRINT`.`archive_id` = `ARCHIVE`.`archive_id`))) */;
+/*!50001 VIEW `report_never_used_cameras` AS select concat('#',`CAMERA`.`camera_id`,' ',`MANUFACTURER`.`manufacturer`,' ',`CAMERA`.`model`) AS `Camera` from ((`CAMERA` left join `FILM` on((`CAMERA`.`camera_id` = `FILM`.`camera_id`))) left join `MANUFACTURER` on((`CAMERA`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`))) where (isnull(`FILM`.`camera_id`) and (`CAMERA`.`own` <> 0) and (`CAMERA`.`digital` = 0) and (`CAMERA`.`video` = 0)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

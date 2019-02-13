@@ -352,7 +352,7 @@ Returns `yes` if `$bool` is true and `no` if `$bool` is false.
 Print arbitrary rows from the database as an easy way of displaying data
 #### Usage
 ```perl
-&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
+&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'info_print', where=>{'`Negative ID`'=>$neg_id}});
 ```
 #### Arguments
 * `$db` DB handle

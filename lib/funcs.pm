@@ -718,7 +718,7 @@ sub annotatefilm {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";
 
-			my $sth = $db->prepare('SELECT * FROM photography.film_info where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
+			my $sth = $db->prepare('SELECT * FROM photography.info_film where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
 			my $rows = $sth->execute($film_id);
 			my @output;
 
@@ -736,7 +736,7 @@ sub annotatefilm {
 			}
 
 			# Now work out the negative details
-			my $sth2 = $db->prepare('SELECT * FROM photography.negative_info where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
+			my $sth2 = $db->prepare('SELECT * FROM photography.info_negative where `Film ID`=?') or die "Couldn't prepare statement: " . $db->errstr;
 			my $rows2 = $sth2->execute($film_id);
 
 			# Print a block for each negative
