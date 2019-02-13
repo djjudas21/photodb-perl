@@ -421,17 +421,6 @@ Table to catalog lenses
 | formula                | varchar(45)  | Name of the type of lens formula (e.g. Tessar)                                                                                              |
 | shutter_model          | varchar(45)  | Name of the integrated shutter, if any                                                                                                      |
 
-## LENS_TYPE
-
-Table to categorise lenses by type based on angle of view
-
-| COLUMN_NAME        | COLUMN_TYPE | COLUMN_COMMENT                                               |
-|--------------------|-------------|--------------------------------------------------------------|
-| lens_type_id       | int(11)     | Unique ID for the type of lens                               |
-| diagonal_angle_min | int(11)     | Minimum diagonal angle of view to quality for this lens type |
-| diagonal_angle_max | int(11)     | Maximum diagonal angle of view to quality for this lens type |
-| lens_type          | varchar(45) | Name of the lens type (e.g. Wide Angle, Telephoto, etc)      |
-
 ## LIGHT_METER
 
 Table to catalog light meters

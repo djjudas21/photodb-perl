@@ -33,9 +33,11 @@ CREATE TABLE `FILM` (
   KEY `fk_FILM_1` (`developer_id`),
   KEY `fk_FILM_2_idx` (`photographer_id`),
   KEY `fk_FILM_3_idx` (`archive_id`),
+  KEY `fk_FILM_4_idx` (`film_bulk_id`),
   CONSTRAINT `fk_FILM_1` FOREIGN KEY (`developer_id`) REFERENCES `DEVELOPER` (`developer_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_FILM_2` FOREIGN KEY (`photographer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_FILM_3` FOREIGN KEY (`archive_id`) REFERENCES `ARCHIVE` (`archive_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_FILM_4` FOREIGN KEY (`film_bulk_id`) REFERENCES `FILM_BULK` (`film_bulk_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_camera_id` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_filmstock_id` FOREIGN KEY (`filmstock_id`) REFERENCES `FILMSTOCK` (`filmstock_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `FORMAT` (`format_id`) ON DELETE CASCADE ON UPDATE CASCADE
