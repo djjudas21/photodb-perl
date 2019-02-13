@@ -260,9 +260,9 @@ Delete a scan from the database and optionally from the filesystem
 Search the filesystem for scans which are not in the database, and import them
 
 ---
-## `task`
-The `task` command provides a set of useful tasks for automatically setting/fixing/cleaning data in the database.
-### `task run`
+## `run`
+The `task` command provides a set of useful tasks for reporting/fixing/cleaning data in the database.
+### `run task`
 Run a selection of maintenance tasks on the database
 
 ---

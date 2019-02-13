@@ -32,7 +32,7 @@ our @EXPORT_OK = qw(
 	paperstock_add
 	developer_add
 	toner_add
-	task_run
+	run_task
 	filmstock_add
 	teleconverter_add
 	filter_add filter_adapt
@@ -1549,7 +1549,7 @@ sub exhibition_info {
 }
 
 # Run a selection of maintenance tasks on the database
-sub task_run {
+sub run_task {
 	my $db = shift;
 
 	my @tasks = @queries::tasks;

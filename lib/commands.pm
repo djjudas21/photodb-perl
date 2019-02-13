@@ -153,8 +153,8 @@ our %handlers = (
 		'delete' => { 'handler' => \&scan_delete, 'desc' => 'Delete a scan from the database and optionally from the filesystem' },
 		'search' => { 'handler' => \&scan_search, 'desc' => 'Search the filesystem for scans which are not in the database, and import them' },
 	},
-	task => {
-		'run' => { 'handler' => \&task_run, 'desc' => 'Run a selection of maintenance tasks on the database' },
+	run => {
+		'task' => { 'handler' => \&run_task, 'desc' => 'Run a selection of maintenance tasks on the database' },
 	},
 );
 
