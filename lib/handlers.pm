@@ -567,7 +567,7 @@ sub negative_add {
 	$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	my $filter_dia = 0;
 	if ($data{lens_id}) {
-		$filter_dia = &lookupval({db=>$db, query=>"select if(filter_thread, filter_thread, 0) from LENS where lens_id=$data{lens_id}"});
+		$filter_dia = &lookupval({db=>$db, col=>'if(filter_thread, filter_thread, 0)', table=>'LENS', where=>{lens_id=>$data{lens_id}}});
 	}
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', where=>{'thread'=>{'>=', $filter_dia}}, inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
@@ -812,7 +812,7 @@ sub lens_info {
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
-	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
+	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from NEGATIVE where aperture is not null and lens_id=$lens_id group by aperture order by count(aperture) desc limit 1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
 	if (&lookupval({db=>$db, col=>'zoom', table=>'LENS', where=>{lens_id=>$lens_id}})) {
 		my $minf = &lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$lens_id}});
@@ -1374,8 +1374,7 @@ sub archive_list {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
-	my $query = "select * from (select concat('Film #', film_id) as id, notes COLLATE utf8mb4_unicode_ci as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
-	&printlist({db=>$db, msg=>"items in archive $archive_name", query=>$query});
+	&printlist({db=>$db, msg=>"items in archive $archive_name", table=>'archive_contents', where=>{archive_id=>$archive_id}});
 	return;
 }
 
@@ -1717,7 +1716,7 @@ sub scan_search {
 					my $film_id = $1;
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes', required=>1})) {
-						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, '$frame')"});
+						my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 						if (!$neg_id || $neg_id !~ /\d+/) {
 							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
 							next;
