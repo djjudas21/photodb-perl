@@ -142,8 +142,8 @@ our @tasks = (
 
 our @reports = (
 	{
-		desc => 'Report on how many cameras are from each decade',
-		view => 'cameras_by_decade',
+		desc => 'Report on how many cameras in the collection are from each decade',
+		view => 'report_cameras_by_decade',
 	},
 );
 
