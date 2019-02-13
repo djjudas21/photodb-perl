@@ -136,7 +136,7 @@ sub film_develop {
 sub film_info {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
-	my $filmdata = &lookupcol({db=>$db, table=>'film_info', where=>{'`Film ID`'=>$film_id}});
+	my $filmdata = &lookupcol({db=>$db, table=>'info_film', where=>{'`Film ID`'=>$film_id}});
 	print Dump($filmdata);
 	return;
 }
@@ -493,7 +493,7 @@ sub camera_info {
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 
 	# Get camera data
-	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
+	my $cameradata = &lookupcol({db=>$db, table=>'info_camera', where=>{'`Camera ID`'=>$camera_id}});
 
 	# Show compatible accessories
 	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
@@ -641,7 +641,7 @@ sub negative_bulkadd {
 sub negative_info {
 	my $db = shift;
 	my $negative_id = shift || &chooseneg({db=>$db});
-	my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
+	my $negativedata = &lookupcol({db=>$db, table=>'info_negative', where=>{'`Negative ID`'=>$negative_id}});
 	print Dump($negativedata);
 	return;
 }
@@ -797,7 +797,7 @@ sub lens_info {
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
 
 	# Get lens data
-	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
+	my $lensdata = &lookupcol({db=>$db, table=>'info_lens', where=>{'`Lens ID`'=>$lens_id}});
 
 	# Show compatible accessories
 	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
@@ -966,7 +966,7 @@ sub print_locate {
 sub print_info {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
-	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
+	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	print Dump($data);
 	return;
 }
@@ -984,7 +984,7 @@ sub print_exhibit {
 sub print_label {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer', required=>1});
-	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
+	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	my $row = @$data[0];
 	print "\t#$row->{'Print'} $row->{'Description'}\n" if ($row->{'Print'} && $row->{Description});
 	print "\tPhotographed $row->{'Photo date'}\n" if ($row->{'Photo date'});
@@ -1185,7 +1185,7 @@ sub accessory_type {
 sub accessory_info {
 	my $db = shift;
 	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
-	my $accessorydata = &lookupcol({db=>$db, table=>'accessory_info', where=>{'`Accessory ID`'=>$accessory_id}});
+	my $accessorydata = &lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}});
 	print Dump($accessorydata);
 	return;
 }
@@ -1208,7 +1208,7 @@ sub enlarger_add {
 sub enlarger_info {
 	my $db = shift;
 	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
-	my $enlargerdata = &lookupcol({db=>$db, table=>'enlarger_info', where=>{'`Enlarger ID`'=>$enlarger_id}});
+	my $enlargerdata = &lookupcol({db=>$db, table=>'info_enlarger', where=>{'`Enlarger ID`'=>$enlarger_id}});
 	print Dump($enlargerdata);
 	return;
 }
@@ -1365,7 +1365,7 @@ sub archive_films {
 sub archive_info {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
-	my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
+	my $archivedata = &lookupcol({db=>$db, table=>'info_archive', where=>{'`Archive ID`'=>$archive_id}});
 	print Dump($archivedata);
 	return;
 }
@@ -1498,7 +1498,7 @@ sub movie_add {
 sub movie_info {
 	my $db = shift;
 	my $movie_id = &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
-	my $moviedata = &lookupcol({db=>$db, table=>'movie_info', where=>{'`Movie ID`'=>$movie_id}});
+	my $moviedata = &lookupcol({db=>$db, table=>'info_movie', where=>{'`Movie ID`'=>$movie_id}});
 	print Dump($moviedata);
 	return;
 }
