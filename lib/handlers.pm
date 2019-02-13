@@ -11,6 +11,7 @@ use YAML;
 use Array::Utils qw(:all);
 use Path::Iterator::Rule;
 use File::Basename;
+use Text::TabularDisplay;
 
 my $path;
 BEGIN {
@@ -32,7 +33,7 @@ our @EXPORT_OK = qw(
 	paperstock_add
 	developer_add
 	toner_add
-	run_task
+	run_task run_report
 	filmstock_add
 	teleconverter_add
 	filter_add filter_adapt
@@ -1564,6 +1565,38 @@ sub run_task {
 	my $rows = &updatedata($db, $sql);
 	print "Updated $rows rows\n";
 	return;
+}
+
+# Run a selection of reports on the database
+sub run_report {
+	my $db = shift;
+
+	my @reports = @queries::reports;
+	for my $i (0 .. $#reports) {
+		print "\t$i\t$reports[$i]{desc}\n";
+	}
+
+	# Wait for input
+	my $input = &prompt({prompt=>'Please select a report', type=>'integer', required=>1});
+
+	my $view = $reports[$input]{'view'};
+
+	# Use SQL::Abstract
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select($view);
+
+	my $sth = $db->prepare($stmt);
+	my $rows = $sth->execute(@bind);
+	my $cols = $sth->{'NAME'};
+	my @array;
+	my $table = Text::TabularDisplay->new(@$cols);
+	while (my @row = $sth->fetchrow) {
+		$table->add(@row);
+	}
+
+	print "$reports[$input]{'desc'}\n";
+	print $table->render;
+	print "\n";
 }
 
 # Select a manufacturer using the first initial

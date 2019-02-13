@@ -154,7 +154,8 @@ our %handlers = (
 		'search' => { 'handler' => \&scan_search, 'desc' => 'Search the filesystem for scans which are not in the database, and import them' },
 	},
 	run => {
-		'task' => { 'handler' => \&run_task, 'desc' => 'Run a selection of maintenance tasks on the database' },
+		'task'   => { 'handler' => \&run_task,   'desc' => 'Run a selection of maintenance tasks on the database' },
+		'report' => { 'handler' => \&run_report, 'desc' => 'Run a selection of reports on the database' },
 	},
 );
 

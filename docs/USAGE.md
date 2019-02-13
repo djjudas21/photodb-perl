@@ -264,6 +264,8 @@ Search the filesystem for scans which are not in the database, and import them
 The `task` command provides a set of useful tasks for reporting/fixing/cleaning data in the database.
 ### `run task`
 Run a selection of maintenance tasks on the database
+### `run report`
+Run a selection of reports on the database
 
 ---
 ## `audit`

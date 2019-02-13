@@ -140,5 +140,12 @@ our @tasks = (
 	},
 );
 
+our @reports = (
+	{
+		desc => 'Report on how many cameras are from each decade',
+		view => 'cameras_by_decade',
+	},
+);
+
 # This ensures the lib loads smoothly
 1;
