@@ -439,7 +439,6 @@ sub printlist {
 
 	my $db = $href->{db};				# DB handle
 	my $msg = $href->{msg};				# Message to display to user
-	my $query = $href->{query};			# (legacy) SQL query to run
 	my $table = $href->{table};			# Part of the SQL::Abstract tuple
 	my $cols = $href->{cols} // ('id, opt');	# Part of the SQL::Abstract tuple
 	my $where = $href->{where} // {};		# Part of the SQL::Abstract tuple
@@ -448,17 +447,14 @@ sub printlist {
 	print "Now showing $msg\n";
 
 	my ($sth, $rows);
-	if ($query) {
-		$sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-		$rows = $sth->execute();
-	} elsif ($table && $cols && $where) {
+	if ($table && $cols && $where) {
 		# Use SQL::Abstract
 		my $sql = SQL::Abstract->new;
 		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
 	} else {
-		print "Must pass in either query OR table, cols, where\n";
+		print "Must pass in table, cols, where\n";
 		return;
 	}
 
@@ -586,13 +582,13 @@ sub updatedata {
 # Return today's date according to the DB
 sub today {
 	my $db = shift;		# DB handle
-	return &lookupval({db=>$db, query=>'select curdate()'});
+	return &lookupval({db=>$db, col=>'curdate()', table=>'CAMERA'});
 }
 
 # Return today's date & time according to the DB
 sub now {
 	my $db = shift;	 # DB handle
-	return &lookupval({db=>$db, query=>'select now()'});
+	return &lookupval({db=>$db, col=>'()', table=>'CAMERA'});
 }
 
 
@@ -681,7 +677,7 @@ sub resolvenegid {
 		# 999/99A - a film/frame ID
 		my $film_id = $1;
 		my $frame = $2;
-		my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, $frame)"});
+		my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 		return $neg_id;
 	} else {
 		# Could not resolve
@@ -700,7 +696,7 @@ sub chooseneg {
 
 	#  Choose a negative from this film
 	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
-	my $neg_id = &lookupval({db=>$db, query=>"select lookupneg('$film_id', '$frame')"});
+	my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
@@ -717,7 +713,7 @@ sub annotatefilm {
 
 	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
-		my $filmdir = &lookupval({db=>$db, query=>"select directory from FILM where film_id=$film_id"});
+		my $filmdir = &lookupval({db=>$db, col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";
