@@ -14,7 +14,10 @@ multiple database tables at once.
 
 * Tables should be given names in UPPERCASE
 * Views should be given names in LOWERCASE
-* Views whose name starts `choose_` are specifically for use with the `listchoices()` function
+* Most views have a naming convention:
+  * views whose name starts `choose_` are specifically for use with the `listchoices()` function and only return columns `id`, `opt`
+  * views whose name starts `info_` are for displaying datasets about single items to the user and should have human-readable column names
+  * views whose name starts `report_` are for displaying datasets about multiple items to the user and should have human-readable column names
 
 ### Altering the schema
 

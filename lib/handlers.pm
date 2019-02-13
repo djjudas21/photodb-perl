@@ -11,6 +11,7 @@ use YAML;
 use Array::Utils qw(:all);
 use Path::Iterator::Rule;
 use File::Basename;
+use Text::TabularDisplay;
 
 my $path;
 BEGIN {
@@ -32,7 +33,7 @@ our @EXPORT_OK = qw(
 	paperstock_add
 	developer_add
 	toner_add
-	task_run
+	run_task run_report
 	filmstock_add
 	teleconverter_add
 	filter_add filter_adapt
@@ -135,7 +136,7 @@ sub film_develop {
 sub film_info {
 	my $db = shift;
 	my $film_id = shift || &film_choose($db);
-	my $filmdata = &lookupcol({db=>$db, table=>'film_info', where=>{'`Film ID`'=>$film_id}});
+	my $filmdata = &lookupcol({db=>$db, table=>'info_film', where=>{'`Film ID`'=>$film_id}});
 	print Dump($filmdata);
 	return;
 }
@@ -492,7 +493,7 @@ sub camera_info {
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
 
 	# Get camera data
-	my $cameradata = &lookupcol({db=>$db, table=>'camera_summary', where=>{'`Camera ID`'=>$camera_id}});
+	my $cameradata = &lookupcol({db=>$db, table=>'info_camera', where=>{'`Camera ID`'=>$camera_id}});
 
 	# Show compatible accessories
 	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
@@ -567,7 +568,7 @@ sub negative_add {
 	$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
 	my $filter_dia = 0;
 	if ($data{lens_id}) {
-		$filter_dia = &lookupval({db=>$db, query=>"select if(filter_thread, filter_thread, 0) from LENS where lens_id=$data{lens_id}"});
+		$filter_dia = &lookupval({db=>$db, col=>'if(filter_thread, filter_thread, 0)', table=>'LENS', where=>{lens_id=>$data{lens_id}}});
 	}
 	$data{filter_id} = &listchoices({db=>$db, table=>'choose_filter', where=>{'thread'=>{'>=', $filter_dia}}, inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 	$data{teleconverter_id} = &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
@@ -640,7 +641,7 @@ sub negative_bulkadd {
 sub negative_info {
 	my $db = shift;
 	my $negative_id = shift || &chooseneg({db=>$db});
-	my $negativedata = &lookupcol({db=>$db, table=>'negative_info', where=>{'`Negative ID`'=>$negative_id}});
+	my $negativedata = &lookupcol({db=>$db, table=>'info_negative', where=>{'`Negative ID`'=>$negative_id}});
 	print Dump($negativedata);
 	return;
 }
@@ -649,7 +650,7 @@ sub negative_info {
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-	&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
+	&printlist({db=>$db, msg=>"prints from negative $neg_id", cols=>'Print as id, concat(Size, \' - \', Location) as opt', table=>'info_print', where=>{'`Negative ID`'=>$neg_id}});
 	return;
 }
 
@@ -796,7 +797,7 @@ sub lens_info {
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
 
 	# Get lens data
-	my $lensdata = &lookupcol({db=>$db, table=>'lens_summary', where=>{'`Lens ID`'=>$lens_id}});
+	my $lensdata = &lookupcol({db=>$db, table=>'info_lens', where=>{'`Lens ID`'=>$lens_id}});
 
 	# Show compatible accessories
 	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
@@ -812,7 +813,7 @@ sub lens_info {
 	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
 	print "\tShowing statistics for $lens\n";
 	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
-	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from (select aperture, count(aperture) from NEGATIVE where lens_id=$lens_id and aperture is not null group by aperture order by count(aperture) desc limit 1) as t1"});
+	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from NEGATIVE where aperture is not null and lens_id=$lens_id group by aperture order by count(aperture) desc limit 1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
 	if (&lookupval({db=>$db, col=>'zoom', table=>'LENS', where=>{lens_id=>$lens_id}})) {
 		my $minf = &lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$lens_id}});
@@ -965,7 +966,7 @@ sub print_locate {
 sub print_info {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
-	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
+	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	print Dump($data);
 	return;
 }
@@ -983,7 +984,7 @@ sub print_exhibit {
 sub print_label {
 	my $db = shift;
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer', required=>1});
-	my $data = &lookupcol({db=>$db, table=>'print_info', where=>{Print=>$print_id}});
+	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	my $row = @$data[0];
 	print "\t#$row->{'Print'} $row->{'Description'}\n" if ($row->{'Print'} && $row->{Description});
 	print "\tPhotographed $row->{'Photo date'}\n" if ($row->{'Photo date'});
@@ -1184,7 +1185,7 @@ sub accessory_category {
 sub accessory_info {
 	my $db = shift;
 	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
-	my $accessorydata = &lookupcol({db=>$db, table=>'accessory_info', where=>{'`Accessory ID`'=>$accessory_id}});
+	my $accessorydata = &lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}});
 	print Dump($accessorydata);
 	return;
 }
@@ -1207,7 +1208,7 @@ sub enlarger_add {
 sub enlarger_info {
 	my $db = shift;
 	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
-	my $enlargerdata = &lookupcol({db=>$db, table=>'enlarger_info', where=>{'`Enlarger ID`'=>$enlarger_id}});
+	my $enlargerdata = &lookupcol({db=>$db, table=>'info_enlarger', where=>{'`Enlarger ID`'=>$enlarger_id}});
 	print Dump($enlargerdata);
 	return;
 }
@@ -1364,7 +1365,7 @@ sub archive_films {
 sub archive_info {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
-	my $archivedata = &lookupcol({db=>$db, table=>'archive_info', where=>{'`Archive ID`'=>$archive_id}});
+	my $archivedata = &lookupcol({db=>$db, table=>'info_archive', where=>{'`Archive ID`'=>$archive_id}});
 	print Dump($archivedata);
 	return;
 }
@@ -1374,8 +1375,7 @@ sub archive_list {
 	my $db = shift;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
-	my $query = "select * from (select concat('Film #', film_id) as id, notes COLLATE utf8mb4_unicode_ci as opt from FILM where archive_id=$archive_id union select concat('Print #', print_id) as id, description as opt from PRINT, NEGATIVE where PRINT.negative_id=NEGATIVE.negative_id and archive_id=$archive_id) as test order by id;";
-	&printlist({db=>$db, msg=>"items in archive $archive_name", query=>$query});
+	&printlist({db=>$db, msg=>"items in archive $archive_name", table=>'archive_contents', where=>{archive_id=>$archive_id}});
 	return;
 }
 
@@ -1498,7 +1498,7 @@ sub movie_add {
 sub movie_info {
 	my $db = shift;
 	my $movie_id = &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
-	my $moviedata = &lookupcol({db=>$db, table=>'movie_info', where=>{'`Movie ID`'=>$movie_id}});
+	my $moviedata = &lookupcol({db=>$db, table=>'info_movie', where=>{'`Movie ID`'=>$movie_id}});
 	print Dump($moviedata);
 	return;
 }
@@ -1549,7 +1549,7 @@ sub exhibition_info {
 }
 
 # Run a selection of maintenance tasks on the database
-sub task_run {
+sub run_task {
 	my $db = shift;
 
 	my @tasks = @queries::tasks;
@@ -1564,6 +1564,39 @@ sub task_run {
 	my $rows = &updatedata($db, $sql);
 	print "Updated $rows rows\n";
 	return;
+}
+
+# Run a selection of reports on the database
+sub run_report {
+	my $db = shift;
+
+	my @reports = @queries::reports;
+	for my $i (0 .. $#reports) {
+		print "\t$i\t$reports[$i]{desc}\n";
+	}
+
+	# Wait for input
+	my $input = &prompt({prompt=>'Please select a report', type=>'integer', required=>1});
+
+	my $view = $reports[$input]{'view'};
+
+	# Use SQL::Abstract
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select($view);
+
+	my $sth = $db->prepare($stmt);
+	my $rows = $sth->execute(@bind);
+	my $cols = $sth->{'NAME'};
+	my @array;
+	my $table = Text::TabularDisplay->new(@$cols);
+	while (my @row = $sth->fetchrow) {
+		$table->add(@row);
+	}
+
+	print "$reports[$input]{'desc'}\n";
+	print $table->render;
+	print "\n";
+	return $rows;
 }
 
 # Select a manufacturer using the first initial
@@ -1717,7 +1750,7 @@ sub scan_search {
 					my $film_id = $1;
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes', required=>1})) {
-						my $neg_id = &lookupval({db=>$db, query=>"select lookupneg($film_id, '$frame')"});
+						my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 						if (!$neg_id || $neg_id !~ /\d+/) {
 							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
 							next;
