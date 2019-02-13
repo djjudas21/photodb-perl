@@ -53,6 +53,10 @@ this in random paths on your system!
 After running the script, check which files have been added, removed or changed, and then commit
 the diffs with a meaningful commit message.
 
+## Entity relationship diagram
+
+![Entity relationship diagram](images/photography-erd.png "Entity relationship diagram")
+
 ## Application conventions
 
 The application frontend, `photodb`, is the smallest possible script to determine which command

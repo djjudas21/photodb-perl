@@ -28,6 +28,33 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
+CREATE DEFINER=`jonathan`@`%` FUNCTION `lenstype`(n int) RETURNS varchar(32) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+BEGIN
+declare x varchar(32);
+if n <= 8 then set x = 'Super telephoto' ;
+elseif n > 8 and n <= 25 then set x ='Medium telephoto';
+elseif n > 25 and n <= 39 then set x ='Short telephoto';
+elseif n > 39 and n <= 62 then set x ='Normal';
+elseif n > 62 and n <= 84 then set x ='Wide angle';
+elseif n > 84 and n <= 120 then set x ='Super wide angle';
+else set x = 'Fisheye';
+end if;
+RETURN x;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
 CREATE DEFINER=`jonathan`@`%` FUNCTION `lookupneg`(p_film_id int, p_frame varchar(5)) RETURNS int(11)
     DETERMINISTIC
 BEGIN

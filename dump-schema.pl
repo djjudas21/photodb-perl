@@ -61,7 +61,6 @@ if ($dumpdata) {
 		'EXPOSURE_PROGRAM',
 		'FILMSTOCK',
 		'FORMAT',
-		'LENS_TYPE',
 		'MANUFACTURER',
 		'METERING_MODE',
 		'METERING_TYPE',

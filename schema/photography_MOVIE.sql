@@ -15,6 +15,16 @@ CREATE TABLE `MOVIE` (
   `date_processed` date DEFAULT NULL COMMENT 'Date on which this movie was processed',
   `process_id` int(11) DEFAULT NULL COMMENT 'ID of the process used to develop this film',
   `description` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Table to catalog motion picture films (movies)',
-  PRIMARY KEY (`movie_id`)
+  PRIMARY KEY (`movie_id`),
+  KEY `fk_MOVIE_1_idx` (`camera_id`),
+  KEY `fk_MOVIE_2_idx` (`lens_id`),
+  KEY `fk_MOVIE_3_idx` (`format_id`),
+  KEY `fk_MOVIE_4_idx` (`filmstock_id`),
+  KEY `fk_MOVIE_5_idx` (`process_id`),
+  CONSTRAINT `fk_MOVIE_1` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MOVIE_2` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MOVIE_3` FOREIGN KEY (`format_id`) REFERENCES `FORMAT` (`format_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MOVIE_4` FOREIGN KEY (`filmstock_id`) REFERENCES `FILMSTOCK` (`filmstock_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_MOVIE_5` FOREIGN KEY (`process_id`) REFERENCES `PROCESS` (`process_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog motion picture films (movies)';
 /*!40101 SET character_set_client = @saved_cs_client */;
