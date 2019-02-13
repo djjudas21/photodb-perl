@@ -650,7 +650,7 @@ sub negative_info {
 sub negative_prints {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-	&printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'print_locations', where=>{negative_id=>$neg_id}});
+	&printlist({db=>$db, msg=>"prints from negative $neg_id", cols=>'Print as id, concat(Size, \' - \', Location) as opt', table=>'info_print', where=>{'`Negative ID`'=>$neg_id}});
 	return;
 }
 
