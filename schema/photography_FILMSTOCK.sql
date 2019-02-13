@@ -10,6 +10,8 @@ CREATE TABLE `FILMSTOCK` (
   `panchromatic` tinyint(1) DEFAULT NULL COMMENT 'Whether this film is panchromatic',
   PRIMARY KEY (`filmstock_id`),
   KEY `fk_manufacturer_id` (`manufacturer_id`),
+  KEY `fk_FILMSTOCK_1_idx` (`process_id`),
+  CONSTRAINT `fk_FILMSTOCK_1` FOREIGN KEY (`process_id`) REFERENCES `PROCESS` (`process_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_manufacturer_id` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list different brands of film stock';
 /*!40101 SET character_set_client = @saved_cs_client */;
