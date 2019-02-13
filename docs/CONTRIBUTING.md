@@ -55,7 +55,7 @@ the diffs with a meaningful commit message.
 
 ## Entity relationship diagram
 
-[Entity relationship diagram](images/photography-erd.png "Entity relationship diagram")
+![Entity relationship diagram](images/photography-erd.png "Entity relationship diagram")
 
 ## Application conventions
 
