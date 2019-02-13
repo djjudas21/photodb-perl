@@ -1597,6 +1597,7 @@ sub run_report {
 	print "$reports[$input]{'desc'}\n";
 	print $table->render;
 	print "\n";
+	return $rows;
 }
 
 # Select a manufacturer using the first initial
