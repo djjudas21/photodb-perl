@@ -23,6 +23,15 @@ this data to suit your own needs but you shouldn't need to edit anything that al
 The command `photodb data` has subcommands for adding various pieces of data. Normally, you shouldn't need to go out of your way to add this type of data, as
 PhotoDB will prompt you if you need to add any while adding cameras, lenses, films, etc.
 
+## Unique identifiers
+
+Every object registered in PhotoDB (e.g. camera, lenses, films, negatives, etc) is allocated a unique ID number, starting at 1 and counting up. This number is
+used to reference other objects. This number is often prefixed with a `#` for readability, e.g. _Film #99_.
+
+One exception where alternative naming is also used is for negatives. A negative might have an ID of #100 but it may also be referred to in the format 18/6,
+where 18 is the ID number of the film it belongs to, and 6 is the number of the frame, separated by a forward slash. This alternative system makes it easier
+to handle negatives in the darkroom. It is accepted in most places in PhotoDB where a negative ID is needed.
+
 ## Cameras and lenses
 
 Cameras and lenses are the central component of PhotoDB. Cameras and lenses can relate to each other in one of two ways:
