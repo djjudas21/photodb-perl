@@ -588,7 +588,7 @@ sub today {
 # Return today's date & time according to the DB
 sub now {
 	my $db = shift;	 # DB handle
-	return &lookupval({db=>$db, col=>'()', table=>'CAMERA'});
+	return &lookupval({db=>$db, col=>'now()', table=>'CAMERA'});
 }
 
 
