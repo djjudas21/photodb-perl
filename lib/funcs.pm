@@ -900,6 +900,7 @@ sub tag {
 		'Flash',
 		'GPSLatitude',
 		'GPSLongitude',
+		'FocalLengthIn35mmFormat',
 	);
 
 	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
