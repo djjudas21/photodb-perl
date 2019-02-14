@@ -165,6 +165,10 @@ our @reports = (
 		desc => 'Report on the lenses that have taken most frames',
 		view => 'report_total_negatives_per_lens',
 	},
+	{
+		desc => 'Report on negatives that have not been scanned',
+		view => 'report_unscanned_negs',
+	}
 );
 
 # This ensures the lib loads smoothly
