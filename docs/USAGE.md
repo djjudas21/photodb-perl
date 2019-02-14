@@ -80,7 +80,7 @@ Show information about a negative
 ### `negative prints`
 Find all prints made from a negative
 ### `negative tag`
-Write EXIF tags to a scan from a negative
+Write EXIF tags to scans from a negative
 
 ---
 ## `movie`
