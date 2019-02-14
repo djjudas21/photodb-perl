@@ -146,6 +146,7 @@ our %handlers = (
 		'sell'      => { 'handler' => \&print_sell,      'desc' => 'Sell a print' },
 		'unarchive' => { 'handler' => \&print_unarchive, 'desc' => 'Remove a print from a physical archive' },
 		'worklist'  => { 'handler' => \&print_worklist,  'desc' => 'Display print todo list' },
+		'tag'       => { 'handler' => \&print_tag,       'desc' => 'Write EXIF tags to scans from a print' },
 	},
 	scan => {
 		'add'    => { 'handler' => \&scan_add,    'desc' => 'Add a new scan of a negative or print to the database' },

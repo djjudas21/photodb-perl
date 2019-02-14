@@ -29,7 +29,7 @@ our @EXPORT_OK = qw(
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
-	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist
+	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
 	toner_add
@@ -1001,6 +1001,14 @@ sub print_worklist {
 	foreach my $row (@$data) {
 		print "\t$row->{opt}\n";
 	}
+	return;
+}
+
+# Write EXIF tags to scans from a print
+sub print_tag {
+	my $db = shift;
+	my $print_id = &prompt({prompt=>'Which print do you want to tag?', type=>'integer', required=>1});
+	&tag($db, {print_id=>$print_id});
 	return;
 }
 

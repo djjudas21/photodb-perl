@@ -141,6 +141,8 @@ Exhibit a print at an exhibition
 Generate text to label a print
 ### `print worklist`
 Display print todo list
+### `print tag`
+Write EXIF tags to scans from a print
 
 ---
 ## `material`
