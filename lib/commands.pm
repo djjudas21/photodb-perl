@@ -128,7 +128,7 @@ our %handlers = (
 		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
 		'info'     => { 'handler' => \&negative_info,    'desc' => 'Show information about a negative' },
 		'prints'   => { 'handler' => \&negative_prints,  'desc' => 'Find all prints made from a negative' },
-		'tag'      => { 'handler' => \&negative_tag,     'desc' => 'Write EXIF tags to a scan from a negative' },
+		'tag'      => { 'handler' => \&negative_tag,     'desc' => 'Write EXIF tags to scans from a negative' },
 	},
 	person => {
 		'add' => { 'handler' => \&person_add, 'desc' => 'Add a new person to the database' },
@@ -146,6 +146,7 @@ our %handlers = (
 		'sell'      => { 'handler' => \&print_sell,      'desc' => 'Sell a print' },
 		'unarchive' => { 'handler' => \&print_unarchive, 'desc' => 'Remove a print from a physical archive' },
 		'worklist'  => { 'handler' => \&print_worklist,  'desc' => 'Display print todo list' },
+		'tag'       => { 'handler' => \&print_tag,       'desc' => 'Write EXIF tags to scans from a print' },
 	},
 	scan => {
 		'add'    => { 'handler' => \&scan_add,    'desc' => 'Add a new scan of a negative or print to the database' },

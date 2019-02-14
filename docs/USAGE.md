@@ -80,7 +80,7 @@ Show information about a negative
 ### `negative prints`
 Find all prints made from a negative
 ### `negative tag`
-Write EXIF tags to a scan from a negative
+Write EXIF tags to scans from a negative
 
 ---
 ## `movie`
@@ -141,6 +141,8 @@ Exhibit a print at an exhibition
 Generate text to label a print
 ### `print worklist`
 Display print todo list
+### `print tag`
+Write EXIF tags to scans from a print
 
 ---
 ## `material`

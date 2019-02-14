@@ -911,6 +911,10 @@ sub tag {
 	my $rows = $sth->execute(@bind);
 
 	# Get confirmation
+	if ($rows eq  '0E0') {
+		print "No scans be will tagged\n";
+		return;
+	}
 	return unless &prompt({prompt=>"This will review and potentially update the tags of $rows scans. Proceed?", type=>'boolean'});
 
 	# Set some globals
