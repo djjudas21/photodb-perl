@@ -98,10 +98,9 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `print_unarchive`(print_id int) RETURNS int(11)
+CREATE DEFINER=`jonathan`@`%` PROCEDURE `print_unarchive`(IN printId int)
 BEGIN
-    UPDATE PRINT set archive_id = null WHERE print_id = print_id;
-RETURN 1;
+UPDATE PRINT set archive_id = null WHERE print_id = printId;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
