@@ -38,7 +38,7 @@ our @EXPORT_OK = qw(
 	teleconverter_add
 	filter_add filter_adapt
 	manufacturer_add
-	accessory_add accessory_type accessory_info
+	accessory_add accessory_category accessory_info
 	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
@@ -1182,10 +1182,10 @@ sub accessory_add {
 }
 
 # Add a new type of "other" accessory to the database
-sub accessory_type {
+sub accessory_category {
 	my $db = shift;
 	my %data;
-	$data{accessory_type} = &prompt({prompt=>'What type of accessory do you want to add?'});
+	$data{accessory_type} = &prompt({prompt=>'What category of accessory do you want to add?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
 }
 
