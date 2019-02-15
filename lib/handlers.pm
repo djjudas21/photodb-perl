@@ -939,7 +939,7 @@ sub print_unarchive {
 	# Remove a print from an archive
 	my $db = shift;
 	my $print_id = shift || &prompt({prompt=>'Which print did you remove from its archive?', type=>'integer', required=>1});
-	return &lookupval({db=>$db, query=>"call print_unarchive($print_id)"});
+	return &call({db=>$db, procedure=>'print_unarchive', args=>[$print_id]});
 }
 
 # Locate a print in an archive
