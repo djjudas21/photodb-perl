@@ -1787,14 +1787,16 @@ sub scan_search {
 
 	# Scans only in the db
 	if ($numdbonly>0 && &prompt({prompt=>"Audit $numdbonly scans that exist only in the database and not on the filesystem?", type=>'boolean', default=>'no', required=>1})) {
+		my $x = 0;
 		for my $dbonlyfile (@dbonly) {
 			if (&prompt({prompt=>"Delete $dbonlyfile from the database?", type=>'boolean', default=>'no', required=>1})) {
 				my $filename = fileparse($dbonlyfile);
-				&deleterecord({db=>$db, table=>'SCAN', where=>{filename=>$filename}});
+				&deleterecord({db=>$db, table=>'SCAN', where=>{filename=>$filename}, silent=>1});
+				$x++;
 			}
 		}
+		print "Deleted $x scans from the database\n";
 	}
-
 	return;
 }
 
