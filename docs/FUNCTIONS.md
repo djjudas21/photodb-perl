@@ -42,7 +42,7 @@ Call a stored procedure from the database
 * `$db` DB handle
 * `$procedure` name of the database stored procedure to call
 * `$args` arrayref of arguments to pass to the stored procedure
-####
+#### Returns
 Number of affected rows
 
 
