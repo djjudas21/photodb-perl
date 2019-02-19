@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -536,6 +536,21 @@ sub lookupval {
 
 	my $row = $sth->fetchrow_array();
 	return $row;
+}
+
+# Call a database stored procedure
+sub call {
+	my $href = shift;
+
+	my $db = $href->{db};
+	my $procedure = $href->{procedure};
+	my $args = $href->{args};
+
+	my $arglist = join(',', @$args);
+	my $query = "call $procedure($arglist)";
+	my $sth = $db->prepare($query);
+	my $rows = $sth->execute();
+	return $rows;
 }
 
 # Return arbitrary lists from database

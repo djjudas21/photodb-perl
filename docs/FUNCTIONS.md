@@ -32,6 +32,21 @@ Path to directory which contains scans
 
 
 ---
+## `call`
+Call a stored procedure from the database
+#### Usage
+```perl
+&call({db=>$db, procedure=>'print_unarchive', args=>['123']});
+```
+#### Arguments
+* `$db` DB handle
+* `$procedure` name of the database stored procedure to call
+* `$args` arrayref of arguments to pass to the stored procedure
+#### Returns
+Number of affected rows
+
+
+---
 ## `chooseneg`
 Select a negative by drilling down
 #### Usage
