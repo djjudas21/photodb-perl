@@ -1759,6 +1759,17 @@ sub scan_search {
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes', required=>1})) {
 						my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, '$frame')", table=>'NEGATIVE'});
+						my $subdir = &lookupval({db=>$db, col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
+						my $basepath = &basepath;
+						my $correctpath = "$basepath/$subdir/$filename";
+
+						# Test to make sure it's in a valid directory
+						if ($fsonlyfile ne $correctpath) {
+							if (&prompt({prompt=>"Move scan $fsonlyfile to its correct path $correctpath?", type=>'boolean', default=>'yes'})) {
+								rename($fsonlyfile, $correctpath);
+							}
+						}
+
 						if (!$neg_id || $neg_id !~ /\d+/) {
 							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
 							next;
