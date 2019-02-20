@@ -54,7 +54,7 @@ our @EXPORT_OK = qw(
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
 	exhibition_add exhibition_info
 	choose_manufacturer
-	db_stats db_logs db_test
+	db_stats db_logs db_test db_upgrade
 	scan_add scan_edit scan_delete scan_search
 );
 
@@ -1662,6 +1662,29 @@ sub db_test {
 	my $version = $db->{'mysql_serverinfo'};
 	my $stats = $db->{'mysql_stat'};
 	print "\tConnected to $hostname\n\tRunning version $version\n\t$stats\n";
+	return;
+}
+
+# Upgrade database schema to latest version
+sub db_upgrade {
+	my $db = shift;
+        my $connect = ReadINI(&ini);
+
+        # host, schema, user, pass
+        if (!defined($$connect{'database'}{'host'}) || !defined($$connect{'database'}{'schema'}) || !defined($$connect{'database'}{'user'}) || !defined($$connect{'database'}{'pass'})) {
+                print "Config file did not contain correct values";
+                exit;
+        }
+
+	use DB::SQL::Migrations;
+	my $migrator = DB::SQL::Migrations->new(dbh=>$db, migrations_directory=>'migrations');
+
+	# Creates migrations table if it doesn't exist
+	$migrator->create_migrations_table();
+
+	# Run migrations
+	$migrator->apply();
+
 	return;
 }
 
