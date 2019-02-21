@@ -12,6 +12,10 @@ ENV PATH="$PERL_PATH/bin:$PATH"
 COPY . /opt/photodb
 WORKDIR /opt/photodb
 
+# Persistent storage for ini file
+RUN mkdir /photodb
+VOLUME /photodb
+
 # install deps
 RUN cpanm --installdeps -q -n --force -l $PERL_PATH . \
 	&& rm -rf ~/.cpanm
