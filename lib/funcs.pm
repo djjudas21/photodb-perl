@@ -859,14 +859,15 @@ sub unsetdisplaylens {
 
 # Print welcome message
 sub welcome {
-       my $ascii = <<'END_ASCII';
+	my $photodbversion = &version;
+	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )
 | |_) | '_ \ / _ \| __/ _ \| | | |  _ \
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-	print "$ascii\n\n";
+	print "$ascii                             $photodbversion\n\n";
 	return;
 }
 
@@ -1048,6 +1049,15 @@ sub basepath {
 	# Strip off trailing slash
 	$basepath =~ s/\/$//;
 	return $basepath;
+}
+
+# Return version of this PhotoDB installation
+sub version {
+	my $filename = 'version';
+	open my $fh, '<', $filename or die "error opening $filename: $!";
+	my $data = <$fh>;
+	close $fh;
+	return $data;
 }
 
 # This ensures the lib loads smoothly
