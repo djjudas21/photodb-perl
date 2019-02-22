@@ -117,21 +117,25 @@ sub validate {
 
 # Find ini file
 sub ini {
-	# Look for ini file
-	my $path = "$ENV{HOME}/.photodb/photodb.ini";
-	if (-r $path) {
-		return glob('~/.photodb/photodb.ini');
-	} elsif (-r '/etc/photodb.ini') {
-		return '/etc/photodb.ini';
-	} elsif (-r '/photodb/photodb.ini') {
-		return '/photodb/photodb.ini';
+	# Places to look for ini file in descending order of preference
+	my @paths = (
+		"$ENV{HOME}/.photodb/photodb.ini",
+		"/etc/photodb.ini",
+		"/photodb/photodb.ini",
+	);
+
+	# Loop through paths and checkt they're readable
+	for my $path (@paths) {
+		return $path if (-r $path);
+	}
+
+	# If no file was found, write one out in the preferred location
+	if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
+		my $path = $paths[0];
+		&writeconfig($path);
+		return $path;
 	} else {
-		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
-			&writeconfig($path);
-			return $path;
-		} else {
-			exit;
-		}
+		exit;
 	}
 }
 
@@ -649,7 +653,8 @@ sub writeconfig {
 	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
-	WriteINI($inifile, \%inidata);
+	WriteINI($inifile, \%inidata)
+		or die "Could write to ini file at $inifile\n";
 	return;
 }
 
