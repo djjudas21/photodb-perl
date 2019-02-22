@@ -654,7 +654,7 @@ sub writeconfig {
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata)
-		or die "Could write to ini file at $inifile\n";
+		or die "Could not write to ini file at $inifile\n";
 	return;
 }
 
