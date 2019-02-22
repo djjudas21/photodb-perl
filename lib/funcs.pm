@@ -859,7 +859,7 @@ sub unsetdisplaylens {
 
 # Print welcome message
 sub welcome {
-	my $photodbversion = &version;
+	my $version = &version;
 	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )
@@ -867,7 +867,7 @@ sub welcome {
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-	print "$ascii                             $photodbversion\n\n";
+	print $ascii . ' ' x 29 . $version . "\n\n";
 	return;
 }
 
