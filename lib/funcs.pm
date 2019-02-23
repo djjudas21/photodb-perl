@@ -117,21 +117,25 @@ sub validate {
 
 # Find ini file
 sub ini {
-	# Look for ini file
-	my $path = "$ENV{HOME}/.photodb.ini";
-	if (-r $path) {
-		return glob('~/.photodb.ini');
-	} elsif (-r '/etc/photodb.ini') {
-		return '/etc/photodb.ini';
-	} elsif (-r '/photodb.ini') {
-		return '/photodb.ini';
+	# Places to look for ini file in descending order of preference
+	my @paths = (
+		"$ENV{HOME}/.photodb/photodb.ini",
+		"/etc/photodb.ini",
+		"/photodb/photodb.ini",
+	);
+
+	# Loop through paths and checkt they're readable
+	for my $path (@paths) {
+		return $path if (-r $path);
+	}
+
+	# If no file was found, write one out in the preferred location
+	if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
+		my $path = $paths[0];
+		&writeconfig($path);
+		return $path;
 	} else {
-		if (&prompt({default=>'yes', prompt=>'Could not find config file. Generate one now?', type=>'boolean'})) {
-			&writeconfig($path);
-			return $path;
-		} else {
-			exit;
-		}
+		exit;
 	}
 }
 
@@ -649,7 +653,8 @@ sub writeconfig {
 	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
-	WriteINI($inifile, \%inidata);
+	WriteINI($inifile, \%inidata)
+		or die "Could not write to ini file at $inifile\n";
 	return;
 }
 
@@ -854,14 +859,15 @@ sub unsetdisplaylens {
 
 # Print welcome message
 sub welcome {
-       my $ascii = <<'END_ASCII';
+	my $version = &version;
+	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )
 | |_) | '_ \ / _ \| __/ _ \| | | |  _ \
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-	print "$ascii\n\n";
+	print $ascii . ' ' x 29 . $version . "\n\n";
 	return;
 }
 
@@ -1043,6 +1049,15 @@ sub basepath {
 	# Strip off trailing slash
 	$basepath =~ s/\/$//;
 	return $basepath;
+}
+
+# Return version of this PhotoDB installation
+sub version {
+	my $filename = 'version';
+	open my $fh, '<', $filename or die "error opening $filename: $!";
+	my $data = <$fh>;
+	close $fh;
+	return $data;
 }
 
 # This ensures the lib loads smoothly
