@@ -1741,6 +1741,10 @@ sub scan_search {
 	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
 	my @dbfiles = @$dbfilesref;
 
+	# Filter out empty elements
+	@fsfiles = grep $_, @fsfiles;
+	@dbfiles = grep $_, @dbfiles;
+
 	# Calculate the diffs
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
 	my @dbonly = array_minus(@dbfiles, @fsfiles);
