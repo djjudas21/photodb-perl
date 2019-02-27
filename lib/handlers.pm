@@ -1795,6 +1795,8 @@ sub scan_search {
 			}
 		}
 		print "Added $x scans to the database\n";
+	} else {
+		print "All scans on the filesystem are already in the database\n";
 	}
 
 	# Scans only in the db
@@ -1808,6 +1810,8 @@ sub scan_search {
 			}
 		}
 		print "Deleted $x scans from the database\n";
+	} else {
+		print "All scans in the database exist on the filesystem\n";
 	}
 	return;
 }
