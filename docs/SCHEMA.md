@@ -761,3 +761,12 @@ Table to catalogue negatives that should be printed
 | print_id    | int(11)     | ID of print made                |
 | recipient   | varchar(45) | Recipient of the print          |
 | added       | date        | Date that record was added      |
+
+## schema_migrations
+
+Table to record schema migrations
+
+| COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT                |
+|--------------|--------------|-------------------------------|
+| name         | varchar(255) | Filename of applied migration |
+| date_applied | datetime     | Date migration was applied    |
