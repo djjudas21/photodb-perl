@@ -922,6 +922,11 @@ sub tag {
 		'GPSLatitude',
 		'GPSLongitude',
 		'FocalLengthIn35mmFormat',
+		'LensSerialNumber',
+		'SerialNumber',
+		'LensMake',
+		'Copyright',
+		'UserComment',
 	);
 
 	# This is the query that fetches (and calculates) values from the DB that we want to write as EXIF tags
