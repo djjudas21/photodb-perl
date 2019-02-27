@@ -1766,7 +1766,8 @@ sub scan_search {
 						# Test to make sure it's in a valid directory
 						if ($fsonlyfile ne $correctpath) {
 							if (&prompt({prompt=>"Move scan $fsonlyfile to its correct path $correctpath?", type=>'boolean', default=>'yes'})) {
-								rename($fsonlyfile, $correctpath);
+								rename(&untaint($fsonlyfile), &untaint($correctpath));
+								$fsonlyfile = $correctpath;
 							}
 						}
 
