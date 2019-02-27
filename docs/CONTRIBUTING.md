@@ -23,8 +23,16 @@ multiple database tables at once.
 
 This section describes how to alter the schema, and document the changes.
 
-Make your edits to the schema using any tool you prefer (I like MySQL Workbench). Then use
-the included Perl script `dump-schema.pl` to export the dump files in the right format.
+Draft your edits to the schema using any tool you prefer (I like MySQL Workbench).
+Don't actually apply the edits, but copy the script and save it in the `migrations`
+directory with the next incremented number, e.g. `025-add-table.sql`.
+
+Then PhotoDB can upgrade its own database schema to match the application version by
+running `photodb db upgrade`. This system of migrations means it is easy for users
+to keep their schema up to date.
+
+Then use the included Perl script `dump-schema.pl` to export the dump files as a safeguard
+and also to generate documentation, etc.
 
 You'll need the following CPAN modules on your system:
  * `Getopt::Long`
