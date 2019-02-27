@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -1043,6 +1043,14 @@ sub basepath {
 	# Strip off trailing slash
 	$basepath =~ s/\/$//;
 	return $basepath;
+}
+
+# Untaint input
+sub untaint {
+	my $input = shift;
+	$input =~ m/^(.*)$/;
+	my $output = $1;
+	return $output;
 }
 
 # This ensures the lib loads smoothly

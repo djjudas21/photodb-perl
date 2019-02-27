@@ -543,6 +543,18 @@ my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
 #### Returns
 The number of rows deleted
 
+---
+## `untaint`
+Untaint a tainted value
+#### Usage
+```perl
+my $untainted = &untaint($tainted);
+```
+### Arguments
+* `$tainted` Tainted value to untaint
+### Returns
+Returns the untained string
+
 
 ---
 ## `validate`
