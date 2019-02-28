@@ -14,7 +14,7 @@ use Config::IniHash;
 use YAML;
 use Image::ExifTool;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles);
 
 # Prompt the user for an arbitrary value
 sub prompt {
@@ -1051,6 +1051,34 @@ sub untaint {
 	$input =~ m/^(.*)$/;
 	my $output = $1;
 	return $output;
+}
+
+# List all scan files on fs
+sub fsfiles {
+	# Search filesystem basepath to enumerate all *.jpg
+	my $basepath = &basepath;
+	my $rule = Path::Iterator::Rule->new;
+	$rule->iname( '*.jpg' );
+	my @fsfiles = $rule->all($basepath);
+
+	# Filter out empty elements
+	@fsfiles = grep $_, @fsfiles;
+
+	return @fsfiles;
+}
+
+# List all scan files in db
+sub dbfiles {
+	my $db = shift;
+	my $basepath = &basepath;
+	# Query DB to find all known scans
+	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
+	my @dbfiles = @$dbfilesref;
+
+	# Filter out empty elements
+	@dbfiles = grep $_, @dbfiles;
+
+	return @dbfiles;
 }
 
 # This ensures the lib loads smoothly

@@ -1731,19 +1731,9 @@ sub scan_search {
 	my $db = shift;
 	my $href = shift;
 
-	# Search filesystem basepath to enumerate all *.jpg
-	my $basepath = &basepath;
-	my $rule = Path::Iterator::Rule->new;
-	$rule->iname( '*.jpg' );
-	my @fsfiles = $rule->all($basepath);
-
-	# Query DB to find all known scans
-	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
-	my @dbfiles = @$dbfilesref;
-
-	# Filter out empty elements
-	@fsfiles = grep $_, @fsfiles;
-	@dbfiles = grep $_, @dbfiles;
+	# Search filesystem basepath & DB to enumerate all *.jpg scans
+	my @fsfiles = &fsfiles;
+	my @dbfiles = &dbfiles($db);
 
 	# Calculate the diffs
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
