@@ -1090,6 +1090,7 @@ sub dbfiles {
 	@dbfiles = grep {$_} @dbfiles;
 
 	return @dbfiles;
+}
 
 # Return version of this PhotoDB installation
 sub version {
