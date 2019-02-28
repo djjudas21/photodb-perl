@@ -1758,6 +1758,8 @@ sub scan_search {
 		for my $fsonlyfile (@fsonly) {
 			if ($auto || &prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean', required=>1})) {
 				my $filename = fileparse($fsonlyfile);
+
+				# Test to see if this is from a negative, e.g. 123-12-image012.jpg
 				if ($filename =~ m/^(\d+)-([0-9a-z]+)-.+\.jpg$/i) {
 					my $film_id = $1;
 					my $frame = $2;
@@ -1770,6 +1772,7 @@ sub scan_search {
 						# Test to make sure it's in a valid directory
 						if ($fsonlyfile ne $correctpath) {
 							if (&prompt({prompt=>"Move scan $fsonlyfile to its correct path $correctpath?", type=>'boolean', default=>'yes'})) {
+								# Rename it to the correct dir and continue using the new path
 								rename(&untaint($fsonlyfile), &untaint($correctpath));
 								$fsonlyfile = $correctpath;
 							}
@@ -1783,6 +1786,7 @@ sub scan_search {
 						print "Added $filename as scan of negative $film_id/$frame\n" if $auto;
 						$x++;
 					}
+				# Test to see if this is from a print, e.g. P232-image012.jpg
 				} elsif ($filename =~ m/^p(rint)?(\d+).*\.jpg$/i) {
 					my $print_id = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of print #$print_id. Add it?", type=>'boolean', default=>'yes', required=>1})) {
