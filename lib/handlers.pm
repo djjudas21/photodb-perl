@@ -1802,7 +1802,8 @@ sub scan_search {
 				}
 			}
 		}
-		print "Added $x scans to the database\n";
+		my $stillfsonly = $numfsonly - $x;
+		print "Added $x scans to the database. There are still $stillfsonly scans on the filesystem but not in the database.\n";
 	} else {
 		print "All scans on the filesystem are already in the database\n";
 	}
@@ -1817,7 +1818,8 @@ sub scan_search {
 				$x++;
 			}
 		}
-		print "Deleted $x scans from the database\n";
+		my $stilldbonly = $numdbonly - $x;
+		print "Deleted $x scans from the database. There are still $stilldbonly scans in the database but not on the filesystem.\n";
 	} else {
 		print "All scans in the database exist on the filesystem\n";
 	}
