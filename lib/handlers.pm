@@ -1735,11 +1735,9 @@ sub scan_search {
 	my @fsfiles = &fsfiles;
 	my @dbfiles = &dbfiles($db);
 
-	# Calculate the diffs
+	# Find the scans only on the filesystem
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
-	my @dbonly = array_minus(@dbfiles, @fsfiles);
 	my $numfsonly = scalar @fsonly;
-	my $numdbonly = scalar @dbonly;
 
 	# Scans only on the fs
 	if ($numfsonly>0 && &prompt({prompt=>"Audit $numfsonly scans that exist only on the filesystem and not in the database?", type=>'boolean', default=>'yes', required=>1})) {
@@ -1793,10 +1791,18 @@ sub scan_search {
 			}
 		}
 		my $stillfsonly = $numfsonly - $x;
-		print "Added $x scans to the database. There are still $stillfsonly scans on the filesystem but not in the database.\n";
+		print "Added $x scans to the database. There are $stillfsonly scans on the filesystem but not in the database.\n";
 	} else {
 		print "All scans on the filesystem are already in the database\n";
 	}
+
+	# Re-search filesystem basepath & DB in case it was updated above
+	@fsfiles = &fsfiles;
+	@dbfiles = &dbfiles($db);
+
+	# Find scans only in the database
+	my @dbonly = array_minus(@dbfiles, @fsfiles);
+	my $numdbonly = scalar @dbonly;
 
 	# Scans only in the db
 	if ($numdbonly>0 && &prompt({prompt=>"Audit $numdbonly scans that exist only in the database and not on the filesystem?", type=>'boolean', default=>'no', required=>1})) {
@@ -1809,7 +1815,7 @@ sub scan_search {
 			}
 		}
 		my $stilldbonly = $numdbonly - $x;
-		print "Deleted $x scans from the database. There are still $stilldbonly scans in the database but not on the filesystem.\n";
+		print "Deleted $x scans from the database. There are $stilldbonly scans in the database but not on the filesystem.\n";
 	} else {
 		print "All scans in the database exist on the filesystem\n";
 	}
