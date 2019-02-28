@@ -249,6 +249,8 @@ Show activity logs from the database
 Show statistics about database usage
 ### `db test`
 Test database connectivity
+### `db upgrade`
+Upgrade database to the latest schema
 
 ---
 ## `scan`

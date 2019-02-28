@@ -597,6 +597,18 @@ Returns `1` if the value passes validation as the requested type, and `0` if it 
 
 
 ---
+## `version`
+Return the version string of the currently-running release of PhotoDB
+#### USage
+```perl
+my $version = &version;
+```
+#### Arguments
+None
+#### Returns
+The version string
+
+---
 ## `welcome`
 Print a friendly welcome message
 #### Usage
