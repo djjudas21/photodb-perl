@@ -1062,7 +1062,7 @@ sub fsfiles {
 	my @fsfiles = $rule->all($basepath);
 
 	# Filter out empty elements
-	@fsfiles = grep $_, @fsfiles;
+	@fsfiles = grep {$_} @fsfiles;
 
 	return @fsfiles;
 }
@@ -1076,7 +1076,7 @@ sub dbfiles {
 	my @dbfiles = @$dbfilesref;
 
 	# Filter out empty elements
-	@dbfiles = grep $_, @dbfiles;
+	@dbfiles = grep {$_} @dbfiles;
 
 	return @dbfiles;
 }
