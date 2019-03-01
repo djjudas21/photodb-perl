@@ -71,7 +71,6 @@ if ($dumpdata) {
 		'PROCESS',
 		'SHUTTER_SPEED',
 		'SHUTTER_TYPE',
-		'schema_migrations'
 	);
 
 	# Delete all existing *.sql files in the sample-data subdir
