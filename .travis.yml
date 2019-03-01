@@ -1,6 +1,8 @@
 language: "perl"
 perl:
   - "5.26"
+env:
+  - "PERL5LIBS=./lib"
 install:
   - "cpanm --installdeps ."
 jobs:
