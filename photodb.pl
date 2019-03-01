@@ -1,5 +1,7 @@
 #!/usr/bin/perl -wT
 
+package photodb;
+
 # Interactive user interface for interacting with the PhotoDB database backend
 
 use strict;
@@ -14,13 +16,14 @@ BEGIN {
 		$path = $1;
 	}
 }
-use lib "$path/lib";
-use funcs qw(/./);
-use handlers;
-use commands;
+
+use lib "$path";
+use photodb::funcs qw(/./);
+use photodb::handlers;
+use photodb::commands;
 
 # Define handlers for each command
-my %handlers = %commands::handlers;
+my %handlers = %photodb::commands::handlers;
 
 # Check if any args were passed in
 if (defined($ARGV[0])) {

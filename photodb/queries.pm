@@ -1,4 +1,4 @@
-package queries;
+package photodb::queries;
 
 # This package contains reusable SQL queries as single variables
 # This keeps the rest of the project clean

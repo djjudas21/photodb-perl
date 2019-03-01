@@ -24,4 +24,4 @@ RUN cpanm --no-wget --installdeps -q -n --force -l $PERL_PATH . \
 	&& rm -rf ~/.cpanm
 
 # Run PhotoDB in interactive mode
-ENTRYPOINT ["perl", "-wT", "-I/opt/photodb/lib/perl5", "/opt/photodb/photodb"]
+ENTRYPOINT ["perl", "-wT", "-I/opt/photodb/lib/perl5", "/opt/photodb/photodb.pl"]

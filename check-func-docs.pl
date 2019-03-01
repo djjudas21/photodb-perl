@@ -2,8 +2,8 @@
 
 use strict;
 use warnings;
-use lib 'lib';
-use funcs;
+use lib 'photodb';
+use photodb::funcs;
 
 # Default to a clean return code
 my $return = 0;

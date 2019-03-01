@@ -1,4 +1,4 @@
-package handlers;
+package photodb::handlers;
 
 # This package provides reusable handlers to be interact with the user
 
@@ -19,9 +19,9 @@ BEGIN {
 		$path = $1;
 	}
 }
-use lib "$path/lib";
-use funcs qw(/./);
-use queries;
+use lib "$path";
+use photodb::funcs qw(/./);
+use photodb::queries;
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
@@ -1560,7 +1560,7 @@ sub exhibition_info {
 sub run_task {
 	my $db = shift;
 
-	my @tasks = @queries::tasks;
+	my @tasks = @photodb::queries::tasks;
 	for my $i (0 .. $#tasks) {
 		print "\t$i\t$tasks[$i]{desc}\n";
 	}
@@ -1578,7 +1578,7 @@ sub run_task {
 sub run_report {
 	my $db = shift;
 
-	my @reports = @queries::reports;
+	my @reports = @photodb::queries::reports;
 	for my $i (0 .. $#reports) {
 		print "\t$i\t$reports[$i]{desc}\n";
 	}

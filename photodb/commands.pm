@@ -1,4 +1,4 @@
-package commands;
+package photodb::commands;
 
 # This package contains the authoritative list of commands and subcommands
 # It is used by the app and also to generate docs
@@ -14,7 +14,7 @@ BEGIN {
 		$path = $1;
 	}
 }
-use lib "$path/lib";
+use lib "$path";
 use handlers qw)/./);
 
 # Define handlers for each command
