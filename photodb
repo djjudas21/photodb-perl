@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl -w
 
 package photodb;
 
@@ -6,18 +6,9 @@ package photodb;
 
 use strict;
 use warnings;
-use FindBin;
 binmode(STDOUT, ":encoding(UTF-8)");
 binmode(STDIN, ":encoding(utf8)");
 
-my $path;
-BEGIN {
-	if ($FindBin::Bin =~ /(.*)/) {
-		$path = $1;
-	}
-}
-
-use lib "$path";
 use photodb::funcs qw(/./);
 use photodb::handlers;
 use photodb::commands;

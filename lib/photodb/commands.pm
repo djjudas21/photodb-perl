@@ -6,16 +6,8 @@ package photodb::commands;
 
 use strict;
 use warnings;
-use FindBin;
 
-my $path;
-BEGIN {
-	if ($FindBin::Bin =~ /(.*)/) {
-		$path = $1;
-	}
-}
-use lib "$path";
-use handlers qw)/./);
+use photodb::handlers qw)/./);
 
 # Define handlers for each command
 our %handlers = (

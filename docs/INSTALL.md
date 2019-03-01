@@ -98,7 +98,7 @@ CentOS does not package all the perl modules required.
 ```
 sudo dnf install "perl(Config::IniHash)" "perl(YAML)" "perl(DBD::mysql)" "perl(DBI)" \
 "perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(SQL::Abstract)" \
-"perl(strict)" "perl(Term::ReadKey)" "perl(warnings)" "perl(FindBin)" \
+"perl(strict)" "perl(Term::ReadKey)" "perl(warnings)" \
 "perl(Perl::Critic)" "perl(experimental)" "perl(Path::Iterator::Rule)" "perl(Array::Utils)"
 ```
 

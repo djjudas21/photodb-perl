@@ -10,6 +10,14 @@ multiple database tables at once.
 * Documentation should be kept up to date with the project. Database schema docs are generated automatically but application usage documentation needs to be written by hand.
 * CI tests need to be passing before a pull request will be accepted. At the moment this is just a syntax check but I hope to expand the tests in the future.
 
+## The application
+
+For development, you will have to add your checked-out copy of the application directory to `PERL5LIB`.
+
+```
+export PERL5LIB=/path/to/photodb:$PERL5LIB
+```
+
 ## Database conventions
 
 * Tables should be given names in UPPERCASE

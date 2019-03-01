@@ -7,7 +7,6 @@ requires 'SQL::Abstract';
 requires 'strict';
 requires 'warnings';
 requires 'YAML';
-requires 'FindBin';
 requires 'Perl::Critic';
 requires 'experimental';
 requires 'Path::Iterator::Rule';

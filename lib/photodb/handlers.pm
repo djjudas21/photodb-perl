@@ -13,13 +13,6 @@ use Path::Iterator::Rule;
 use File::Basename;
 use Text::TabularDisplay;
 
-my $path;
-BEGIN {
-	if ($FindBin::Bin =~ /(.*)/) {
-		$path = $1;
-	}
-}
-use lib "$path";
 use photodb::funcs qw(/./);
 use photodb::queries;
 
