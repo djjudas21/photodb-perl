@@ -13,3 +13,5 @@ requires 'Path::Iterator::Rule';
 requires 'Array::Utils';
 requires 'File::Basename';
 requires 'Text::TabularDisplay';
+requires 'Getopt::Long';
+requires 'Term::ReadKey';
