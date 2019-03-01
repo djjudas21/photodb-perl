@@ -6,7 +6,6 @@
 use strict;
 use warnings;
 
-use lib 'photodb';
 use photodb::commands;
 
 my %handlers = %photodb::commands::handlers;

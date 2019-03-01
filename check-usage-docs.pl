@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use lib 'photodb';
 use photodb::commands;
 
 # Default to a clean return code
