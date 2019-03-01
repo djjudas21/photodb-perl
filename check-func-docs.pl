@@ -11,7 +11,7 @@ my $return = 0;
 my $docs = 'docs/FUNCTIONS.md';
 
 # Filename of FUNCS module
-my $funcs = 'lib/funcs.pm';
+my $funcs = $INC{'photodb/funcs.pm'};
 
 # List all funcs in the module
 my @funclist = `grep ^sub $funcs`;
