@@ -1731,21 +1731,13 @@ sub scan_search {
 	my $db = shift;
 	my $href = shift;
 
-	# Search filesystem basepath to enumerate all *.jpg
-	my $basepath = &basepath;
-	my $rule = Path::Iterator::Rule->new;
-	$rule->iname( '*.jpg' );
-	my @fsfiles = $rule->all($basepath);
+	# Search filesystem basepath & DB to enumerate all *.jpg scans
+	my @fsfiles = &fsfiles;
+	my @dbfiles = &dbfiles($db);
 
-	# Query DB to find all known scans
-	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
-	my @dbfiles = @$dbfilesref;
-
-	# Calculate the diffs
+	# Find the scans only on the filesystem
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
-	my @dbonly = array_minus(@dbfiles, @fsfiles);
 	my $numfsonly = scalar @fsonly;
-	my $numdbonly = scalar @dbonly;
 
 	# Scans only on the fs
 	if ($numfsonly>0 && &prompt({prompt=>"Audit $numfsonly scans that exist only on the filesystem and not in the database?", type=>'boolean', default=>'yes', required=>1})) {
@@ -1754,11 +1746,26 @@ sub scan_search {
 		for my $fsonlyfile (@fsonly) {
 			if ($auto || &prompt({prompt=>"Add $fsonlyfile to the database?", type=>'boolean', required=>1})) {
 				my $filename = fileparse($fsonlyfile);
+
+				# Test to see if this is from a negative, e.g. 123-12-image012.jpg
 				if ($filename =~ m/^(\d+)-([0-9a-z]+)-.+\.jpg$/i) {
 					my $film_id = $1;
 					my $frame = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of negative $film_id/$frame. Add it?", type=>'boolean', default=>'yes', required=>1})) {
 						my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, '$frame')", table=>'NEGATIVE'});
+						my $subdir = &lookupval({db=>$db, col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
+						my $basepath = &basepath;
+						my $correctpath = "$basepath/$subdir/$filename";
+
+						# Test to make sure it's in a valid directory
+						if ($fsonlyfile ne $correctpath) {
+							if (&prompt({prompt=>"Move scan $fsonlyfile to its correct path $correctpath?", type=>'boolean', default=>'yes'})) {
+								# Rename it to the correct dir and continue using the new path
+								rename(&untaint($fsonlyfile), &untaint($correctpath));
+								$fsonlyfile = $correctpath;
+							}
+						}
+
 						if (!$neg_id || $neg_id !~ /\d+/) {
 							print "Could not determine negative ID for negative $film_id/$frame, skipping\n";
 							next;
@@ -1767,6 +1774,7 @@ sub scan_search {
 						print "Added $filename as scan of negative $film_id/$frame\n" if $auto;
 						$x++;
 					}
+				# Test to see if this is from a print, e.g. P232-image012.jpg
 				} elsif ($filename =~ m/^p(rint)?(\d+).*\.jpg$/i) {
 					my $print_id = $2;
 					if ($auto || &prompt({prompt=>"This looks like a scan of print #$print_id. Add it?", type=>'boolean', default=>'yes', required=>1})) {
@@ -1782,8 +1790,19 @@ sub scan_search {
 				}
 			}
 		}
-		print "Added $x scans to the database\n";
+		my $stillfsonly = $numfsonly - $x;
+		print "Added $x scans to the database. There are $stillfsonly scans on the filesystem but not in the database.\n";
+	} else {
+		print "All scans on the filesystem are already in the database\n";
 	}
+
+	# Re-search filesystem basepath & DB in case it was updated above
+	@fsfiles = &fsfiles;
+	@dbfiles = &dbfiles($db);
+
+	# Find scans only in the database
+	my @dbonly = array_minus(@dbfiles, @fsfiles);
+	my $numdbonly = scalar @dbonly;
 
 	# Scans only in the db
 	if ($numdbonly>0 && &prompt({prompt=>"Audit $numdbonly scans that exist only in the database and not on the filesystem?", type=>'boolean', default=>'no', required=>1})) {
@@ -1795,7 +1814,10 @@ sub scan_search {
 				$x++;
 			}
 		}
-		print "Deleted $x scans from the database\n";
+		my $stilldbonly = $numdbonly - $x;
+		print "Deleted $x scans from the database. There are $stilldbonly scans in the database but not on the filesystem.\n";
+	} else {
+		print "All scans in the database exist on the filesystem\n";
 	}
 	return;
 }

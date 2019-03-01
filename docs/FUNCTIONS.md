@@ -87,6 +87,19 @@ Variable representing the database handle
 
 
 ---
+## `dbfiles`
+List all scan files in the database
+#### Usage
+```perl
+my @scansindb = &dbfiles;
+```
+#### Arguments
+* `$db` database handle
+#### Returns
+Array of file paths of scans recorded in the database
+
+
+---
 ## `duration`
 Calculate duration of a shutter speed from its string representation
 #### Usage
@@ -110,6 +123,19 @@ my $binarybool = &friendlybool($friendlybool);
 * `$friendlybool` string representation of a boolean, e.g. `yes`, `y`, `true`, `1`, `no`, `n`, `false`, `0`, etc
 #### Returns
 `1` if `$bool` represents a true value and `0` if it represents a false value
+
+
+---
+## `fsfiles`
+List all scan files on the filesystem
+#### Usage
+```perl
+my @scansondisk = &fsfiles;
+```
+#### Arguments
+None
+#### Returns
+Array of file paths of scans found on the filesystem
 
 
 ---
@@ -542,6 +568,18 @@ my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
 * `$log` Write an event to the database log. Defaults to `1`.
 #### Returns
 The number of rows deleted
+
+---
+## `untaint`
+Untaint a tainted value
+#### Usage
+```perl
+my $untainted = &untaint($tainted);
+```
+### Arguments
+* `$tainted` Tainted value to untaint
+### Returns
+Returns the untained string
 
 
 ---
