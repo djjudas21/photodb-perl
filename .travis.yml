@@ -2,7 +2,7 @@ language: "perl"
 perl:
   - "5.26"
 env:
-  - "PERL5LIBS=./lib"
+  - "PERL5LIB=$TRAVIS_BUILD_DIR/lib"
 install:
   - "cpanm --installdeps ."
 jobs:
