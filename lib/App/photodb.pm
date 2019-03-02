@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 
 package App::photodb;
+our $VERSION = '0.0.0';
 
 # Interactive user interface for interacting with the PhotoDB database backend
 
@@ -14,7 +15,7 @@ use App::photodb::handlers;
 use App::photodb::commands;
 
 # Define handlers for each command
-my %handlers = %photodb::commands::handlers;
+my %handlers = %App::photodb::commands::handlers;
 
 # Check if any args were passed in
 if (defined($ARGV[0])) {

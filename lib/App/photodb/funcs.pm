@@ -859,7 +859,7 @@ sub unsetdisplaylens {
 
 # Print welcome message
 sub welcome {
-	my $version = &version;
+	my $version = $App::photodb::VERSION;
 	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )
@@ -867,7 +867,7 @@ sub welcome {
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-	print $ascii . ' ' x 29 . $version . "\n\n";
+	print $ascii . ' ' x 29 . 'v' . $version . "\n\n";
 	return;
 }
 
@@ -1090,15 +1090,6 @@ sub dbfiles {
 	@dbfiles = grep {$_} @dbfiles;
 
 	return @dbfiles;
-}
-
-# Return version of this PhotoDB installation
-sub version {
-	my $filename = 'version';
-	open my $fh, '<', $filename or die "error opening $filename: $!";
-	my $data = <$fh>;
-	close $fh;
-	return $data;
 }
 
 # This ensures the lib loads smoothly
