@@ -1,4 +1,4 @@
-package photodb::funcs;
+package App::photodb::funcs;
 
 # This package provides reusable functions to be consumed by the rest of the application
 

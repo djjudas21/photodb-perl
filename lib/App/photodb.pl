@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-package photodb;
+package App::photodb;
 
 # Interactive user interface for interacting with the PhotoDB database backend
 
@@ -9,9 +9,9 @@ use warnings;
 binmode(STDOUT, ":encoding(UTF-8)");
 binmode(STDIN, ":encoding(utf8)");
 
-use photodb::funcs qw(/./);
-use photodb::handlers;
-use photodb::commands;
+use App::photodb::funcs qw(/./);
+use App::photodb::handlers;
+use App::photodb::commands;
 
 # Define handlers for each command
 my %handlers = %photodb::commands::handlers;

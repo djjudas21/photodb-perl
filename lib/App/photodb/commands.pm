@@ -1,4 +1,4 @@
-package photodb::commands;
+package App::photodb::commands;
 
 # This package contains the authoritative list of commands and subcommands
 # It is used by the app and also to generate docs
@@ -7,7 +7,7 @@ package photodb::commands;
 use strict;
 use warnings;
 
-use photodb::handlers qw)/./);
+use App::photodb::handlers qw)/./);
 
 # Define handlers for each command
 our %handlers = (

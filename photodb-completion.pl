@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use photodb::commands;
+use App::photodb::commands;
 
 my %handlers = %photodb::commands::handlers;
 

@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use photodb::funcs;
+use App::photodb::funcs;
 
 # Default to a clean return code
 my $return = 0;
