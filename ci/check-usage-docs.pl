@@ -11,7 +11,7 @@ my $return = 0;
 my $filename = 'docs/USAGE.md';
 
 # Load command mapping
-my %handlers = %commands::handlers;
+my %handlers = %App::photodb::commands::handlers;
 
 for my $command (sort keys %handlers) {
 	# search for command heading
