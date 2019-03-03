@@ -1,5 +1,4 @@
 package App::photodb;
-our $VERSION = '0.0.0';
 
 # Interactive user interface for interacting with the PhotoDB database backend
 
@@ -11,6 +10,9 @@ binmode(STDIN, ":encoding(utf8)");
 use App::photodb::funcs qw(/./);
 use App::photodb::handlers;
 use App::photodb::commands;
+
+# Authoritative distro version
+our $VERSION = '0.0.0';
 
 sub main {
 
@@ -84,4 +86,8 @@ sub main {
 			}
 		}
 	}
+	return;
 }
+
+# This ensures the lib loads smoothly
+1;
