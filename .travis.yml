@@ -9,7 +9,7 @@ jobs:
   include:
     - stage: syntax
       name: "Perl syntax"
-      script: "perl -cw photodb"
+      script: "perl -cw script/photodb"
     - name: "PerlCritic"
       script: "perlcritic --stern ."
     - stage: docs
