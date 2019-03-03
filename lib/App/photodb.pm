@@ -1,5 +1,3 @@
-#!/usr/bin/env perl
-
 package App::photodb;
 our $VERSION = '0.0.0';
 
