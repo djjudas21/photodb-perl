@@ -3,10 +3,10 @@ use warnings;
  
 use Test::More tests => 5;
  
-use_ok 'App::photodb';
-use_ok 'App::photodb::commands';
-use_ok 'App::photodb::funcs';
-use_ok 'App::photodb::handlers';
-use_ok 'App::photodb::queries';
+use_ok 'App::PhotoDB';
+use_ok 'App::PhotoDB::commands';
+use_ok 'App::PhotoDB::funcs';
+use_ok 'App::PhotoDB::handlers';
+use_ok 'App::PhotoDB::queries';
 
 done_testing();

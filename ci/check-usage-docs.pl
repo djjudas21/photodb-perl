@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use App::photodb::commands;
+use App::PhotoDB::commands;
 
 # Default to a clean return code
 my $return = 0;
@@ -11,7 +11,7 @@ my $return = 0;
 my $filename = 'docs/USAGE.md';
 
 # Load command mapping
-my %handlers = %App::photodb::commands::handlers;
+my %handlers = %App::PhotoDB::commands::handlers;
 
 for my $command (sort keys %handlers) {
 	# search for command heading

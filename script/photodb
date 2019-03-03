@@ -2,6 +2,6 @@
 
 use strict;
 use warnings;
-use App::photodb;
+use App::PhotoDB;
 
-&App::photodb::main;
+&App::PhotoDB::main;

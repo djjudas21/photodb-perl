@@ -1,4 +1,4 @@
-package App::photodb::funcs;
+package App::PhotoDB::funcs;
 
 # This package provides reusable functions to be consumed by the rest of the application
 
@@ -859,7 +859,7 @@ sub unsetdisplaylens {
 
 # Print welcome message
 sub welcome {
-	my $version = $App::photodb::VERSION;
+	my $version = $App::PhotoDB::VERSION;
 	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )

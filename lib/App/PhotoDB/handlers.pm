@@ -1,4 +1,4 @@
-package App::photodb::handlers;
+package App::PhotoDB::handlers;
 
 # This package provides reusable handlers to be interact with the user
 
@@ -13,8 +13,8 @@ use Path::Iterator::Rule;
 use File::Basename;
 use Text::TabularDisplay;
 
-use App::photodb::funcs qw(/./);
-use App::photodb::queries;
+use App::PhotoDB::funcs qw(/./);
+use App::PhotoDB::queries;
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info

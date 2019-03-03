@@ -1,4 +1,4 @@
-package App::photodb;
+package App::PhotoDB;
 
 # Interactive user interface for interacting with the PhotoDB database backend
 
@@ -7,9 +7,9 @@ use warnings;
 binmode(STDOUT, ":encoding(UTF-8)");
 binmode(STDIN, ":encoding(utf8)");
 
-use App::photodb::funcs qw(/./);
-use App::photodb::handlers;
-use App::photodb::commands;
+use App::PhotoDB::funcs qw(/./);
+use App::PhotoDB::handlers;
+use App::PhotoDB::commands;
 
 # Authoritative distro version
 our $VERSION = '0.0.0';
@@ -17,7 +17,7 @@ our $VERSION = '0.0.0';
 sub main {
 
 	# Define handlers for each command
-	my %handlers = %App::photodb::commands::handlers;
+	my %handlers = %App::PhotoDB::commands::handlers;
 
 	# Check if any args were passed in
 	if (defined($ARGV[0])) {
