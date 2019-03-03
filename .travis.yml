@@ -11,7 +11,7 @@ jobs:
       name: "Perl syntax"
       script: "perl -cw script/photodb"
     - name: "PerlCritic"
-      script: "perlcritic --stern ."
+      script: "perlcritic --stern lib"
     - stage: docs
       name: "Usage documentation"
       script: "perl -w check-usage-docs.pl"
