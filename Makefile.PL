@@ -31,6 +31,9 @@ WriteMakefile(
     'Getopt::Long' => 0,
     'Term::ReadKey' => 0,
   },
+  BUILD_REQUIRES => {
+    'Test::More' => '0.47'
+  },
   (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (META_MERGE => {
       'meta-spec' => { version => 2 },
       resources => {

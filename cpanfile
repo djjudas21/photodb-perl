@@ -15,3 +15,4 @@ requires 'File::Basename';
 requires 'Text::TabularDisplay';
 requires 'Getopt::Long';
 requires 'Term::ReadKey';
+requires 'Test::More';
