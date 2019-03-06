@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
   NAME             => 'App::PhotoDB',
   VERSION_FROM     => 'lib/App/PhotoDB.pm',
-#  ABSTRACT_FROM    => 'lib/App/foo.pm',
+  ABSTRACT_FROM    => 'lib/App/PhotoDB.pm',
   AUTHOR           => 'Jonathan Gazeley',
   LICENSE          => 'freebsd',
   MIN_PERL_VERSION => '5.008004',
