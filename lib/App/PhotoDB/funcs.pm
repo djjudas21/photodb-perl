@@ -1,6 +1,10 @@
 package App::PhotoDB::funcs;
 
-# This package provides reusable functions to be consumed by the rest of the application
+=head1 Functions
+
+This package provides reusable functions to be consumed by the rest of the application
+
+=cut
 
 use strict;
 use warnings;
@@ -726,7 +730,30 @@ sub chooseneg {
 	}
 }
 
-# Write out a text file in the film directory
+=head2 annotatefilm
+
+Write out a text file in the film scans directory
+
+=head4 Usage
+
+    &annotatefilm($db, $film_id);
+
+=head4 Arguments
+
+=over
+
+=item * C<$db> variable containing database handle as returned by C<&db>
+
+=item * C<$film_id> integer variable containing ID of the film to be annotated
+
+=back
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub annotatefilm {
 	my $db = shift;
 	my $film_id = shift;
@@ -1043,7 +1070,25 @@ sub choosescan {
 	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
 }
 
-# Return filesystem basepath which contains scans
+
+=head2 basepath
+
+Returns filesystem basepath which contains scans
+
+=head4 Usage
+
+    my $basepath = &basepath;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Path to directory which contains scans
+
+=cut
+
 sub basepath {
 	# Work out file path
 	my $connect = ReadINI(&ini);
