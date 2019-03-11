@@ -20,6 +20,7 @@ nytprof.out
 _build/
 Build
 Build.bat
+App-PhotoDB-*
 
 # Module::Install
 inc/
