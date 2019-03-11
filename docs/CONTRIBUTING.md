@@ -13,6 +13,7 @@ multiple database tables at once.
 ## The application
 
 For development, you will have to add your checked-out copy of the application directory to `PERL5LIB`.
+Execute the following and preferably add it to your `.bashrc` for persistence.
 
 ```
 export PERL5LIB=/path/to/photodb:$PERL5LIB
@@ -63,10 +64,6 @@ this in random paths on your system!
 
 After running the script, check which files have been added, removed or changed, and then commit
 the diffs with a meaningful commit message.
-
-## Entity relationship diagram
-
-![Entity relationship diagram](images/photography-erd.png "Entity relationship diagram")
 
 ## Application conventions
 
