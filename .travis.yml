@@ -9,11 +9,11 @@ jobs:
   include:
     - stage: tests
       name: "Perl syntax"
-      script: "perl -cw script/photodb"
+      script: "perl -cw bin/photodb"
     - name: "PerlCritic"
-      script: "perlcritic --stern lib script"
+      script: "perlcritic --stern lib bin"
     - name: "Perl tests"
-      script: "perl Makefile.PL && make test"
+      script: "perl Build.PL && ./Build test"
     - stage: docs
       name: "Usage documentation"
       script: "perl -w ci/check-usage-docs.pl"

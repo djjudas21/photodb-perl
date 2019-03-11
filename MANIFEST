@@ -1,3 +1,5 @@
+bin/photodb
+Build.PL
 ci/check-func-docs.pl
 ci/check-usage-docs.pl
 cpanfile
