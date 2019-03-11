@@ -23,7 +23,9 @@ my $build = Module::Build->new (
 		'Term::ReadKey' => 0,
 	},
 	test_requires => {
-		'Test::More' => '0.47'
+		'Test::More' => '0.47',
+		'Test::Perl::Critic' => 0,
+		'Test::Compile' => 0,
 	},
 );
 $build->create_build_script;
