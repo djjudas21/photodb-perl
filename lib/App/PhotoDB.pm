@@ -86,7 +86,7 @@ use App::PhotoDB::handlers;
 use App::PhotoDB::commands;
 
 # Authoritative distro version
-our $VERSION = '0.0.0';
+our $VERSION = '0.00';
 
 sub main {
 
