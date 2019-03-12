@@ -7,4 +7,4 @@ jobs:
   include:
     - stage: tests
     - name: "Perl tests"
-      script: "perl Build.PL && ./Build installdeps --cpan_client 'cpanm' && ./Build test"
+      script: "perl Build.PL && ./Build test"
