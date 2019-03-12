@@ -71,7 +71,7 @@ Add a new teleconverter to the database
 Add a new category of general accessory to the database
 
 =cut
-	$handlers{accessory} => {
+	$handlers{accessory} = {
 		'add'           => { 'handler' => \&accessory_add,      'desc' => 'Add a new general accessory to the database' },
 		'battery'       => { 'handler' => \&battery_add,        'desc' => 'Add a new type of battery to the database' },
 		'filter'        => { 'handler' => \&filter_add,         'desc' => 'Add a new (optical) filter to the database' },
@@ -116,7 +116,7 @@ Seal an archive and prevent new items from being added to it
 Unseal an archive and allow new items to be added to it
 
 =cut
-	$handlers{archive} => {
+	$handlers{archive} = {
 		'add'    => { 'handler' => \&archive_add,    'desc' => 'Add a new physical archive for prints or films' },
 		'films'  => { 'handler' => \&archive_films,  'desc' => 'Bulk-add multiple films to an archive' },
 		'info'   => { 'handler' => \&archive_info,   'desc' => 'Show information about an archive'},
@@ -147,7 +147,7 @@ Audit cameras without metering mode data
 Audit cameras without shutter speed data
 
 =cut
-	$handlers{audit} => {
+	$handlers{audit} = {
 		'displaylenses'    => { 'handler' => \&audit_displaylenses,    'desc' => 'Audit cameras without display lenses set' },
 		'exposureprograms' => { 'handler' => \&audit_exposureprograms, 'desc' => 'Audit cameras without exposure program data' },
 		'meteringmodes'    => { 'handler' => \&audit_meteringmodes,    'desc' => 'Audit cameras without metering mode data' },
@@ -207,7 +207,7 @@ C<camera show-lenses> shows all lenses which are compatible with a camera.
 Add available shutter speed info to a camera
 
 =cut
-	$handlers{camera} => {
+	$handlers{camera} = {
 		'accessory'       => { 'handler' => \&camera_accessory,       'desc' => 'Add accessory compatibility info to a camera' },
 		'add'             => { 'handler' => \&camera_add,             'desc' => 'Add a new camera to the database' },
 		'choose'          => { 'handler' => \&camera_choose,          'desc' => 'Choose a camera based on several criteria' },
@@ -267,7 +267,7 @@ Add a new shutter speed to the database
 Add a new type of shutter to the database
 
 =cut
-	$handlers{data} => {
+	$handlers{data} = {
 		'bodytype'      => { 'handler' => \&camera_addbodytype, 'desc' => 'Add a new camera body type' },
 		'flashprotocol' => { 'handler' => \&flashprotocol_add,  'desc' => 'Add a new flash protocol to the database' },
 		'focustype'     => { 'handler' => \&focustype_add,      'desc' => 'Add a new type of focus system to the database' },
@@ -305,7 +305,7 @@ Test database connectivity
 Upgrade database to the latest schema
 
 =cut
-	$handlers{db} => {
+	$handlers{db} = {
 		'backup' => { 'handler' => \&notimplemented, 'desc' => 'Back up the contents of the database' },
 		'logs'   => { 'handler' => \&db_logs,        'desc' => 'Show activity logs from the database' },
 		'stats'  => { 'handler' => \&db_stats,       'desc' => 'Show statistics about database usage' },
@@ -328,7 +328,7 @@ Show information about an enlarger
 Sell an enlarger
 
 =cut
-	$handlers{enlarger} => {
+	$handlers{enlarger} = {
 		'add'  => { 'handler' => \&enlarger_add,  'desc' => 'Add a new enlarger to the database' },
 		'info' => { 'handler' => \&enlarger_info, 'desc' => 'Show information about an enlarger' },
 		'sell' => { 'handler' => \&enlarger_sell, 'desc' => 'Sell an enlarger' },
@@ -347,7 +347,7 @@ Add a new exhibition to the database
 Show information about an exhibition
 
 =cut
-	$handlers{exhibition} => {
+	$handlers{exhibition} = {
 		'add'  => { 'handler' => \&exhibition_add,  'desc' => 'Add a new exhibition to the database' },
 		'info' => { 'handler' => \&exhibition_info, 'desc' => 'Show information about an exhibition' },
 	};
@@ -401,7 +401,7 @@ List the films that are currently in stock
 Write EXIF tags to scans from a film
 
 =cut
-	$handlers{film}	=> {
+	$handlers{film}	= {
 		'add'      => { 'handler' => \&film_add,      'desc' => 'Add a new film to the database' },
 		'annotate' => { 'handler' => \&film_annotate, 'desc' => 'Write out a text file with the scans from the film' },
 		'archive'  => { 'handler' => \&film_archive,  'desc' => 'Put a film in a physical archive' },
@@ -444,7 +444,7 @@ Repair a lens
 Sell a lens
 
 =cut
-	$handlers{lens} => {
+	$handlers{lens} = {
 		'accessory' => { 'handler' => \&lens_accessory, 'desc' => 'Add accessory compatibility info to a lens' },
 		'add'       => { 'handler' => \&lens_add,       'desc' => 'Add a new lens to the database' },
 		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit an existing lens' },
@@ -474,7 +474,7 @@ Add a new type of photo paper to the database
 Add a new chemical toner to the database
 
 =cut
-	$handlers{material} => {
+	$handlers{material} = {
 		'developer'  => { 'handler' => \&developer_add,  'desc' => 'Add a new developer to the database' },
 		'filmstock'  => { 'handler' => \&filmstock_add,  'desc' => 'Add a new type of filmstock to the database' },
 		'paperstock' => { 'handler' => \&paperstock_add, 'desc' => 'Add a new type of photo paper to the database' },
@@ -494,7 +494,7 @@ Add a new lens mount to the database
 View compatible cameras and lenses for a mount
 
 =cut
-	$handlers{mount} => {
+	$handlers{mount} = {
 		'add'  => { 'handler' => \&mount_add,  'desc' => 'Add a new lens mount to the database' },
 		'info' => { 'handler' => \&mount_info, 'desc' => 'View compatible cameras and lenses for a mount' },
 	};
@@ -512,7 +512,7 @@ Add a new movie to the database
 Show information about a movie
 
 =cut
-	$handlers{movie} => {
+	$handlers{movie} = {
 		'add'  => { 'handler' => \&movie_add,  'desc' => 'Add a new movie to the database' },
 		'info' => { 'handler' => \&movie_info, 'desc' => 'Show information about a movie' },
 	};
@@ -544,7 +544,7 @@ Find all prints made from a negative
 Write EXIF tags to scans from a negative
 
 =cut
-	$handlers{negative} => {
+	$handlers{negative} = {
 		'add'      => { 'handler' => \&negative_add,     'desc' => 'Add a new negative to the database as part of a film' },
 		'bulk-add' => { 'handler' => \&negative_bulkadd, 'desc' => 'Bulk add multiple negatives to the database as part of a film' },
 		'info'     => { 'handler' => \&negative_info,    'desc' => 'Show information about a negative' },
@@ -561,7 +561,7 @@ The C<person> command provides a set of subcommands for managing data about peop
 Add a new person to the database
 
 =cut
-	$handlers{person} => {
+	$handlers{person} = {
 		'add' => { 'handler' => \&person_add, 'desc' => 'Add a new person to the database' },
 	};
 
@@ -622,7 +622,7 @@ Display print todo list
 Write EXIF tags to scans from a print
 
 =cut
-	$handlers{print} => {
+	$handlers{print} = {
 		'add'       => { 'handler' => \&print_add,       'desc' => 'Add a new print that has been made from a negative' },
 		'archive'   => { 'handler' => \&print_archive,   'desc' => 'Add a print to a physical archive' },
 		'exhibit'   => { 'handler' => \&print_exhibit,   'desc' => 'Exhibit a print in an exhibition' },
@@ -657,7 +657,7 @@ Delete a scan from the database and optionally from the filesystem
 Search the filesystem for scans which are not in the database, and import them
 
 =cut
-	$handlers{scan} => {
+	$handlers{scan} = {
 		'add'    => { 'handler' => \&scan_add,    'desc' => 'Add a new scan of a negative or print to the database' },
 		'edit'   => { 'handler' => \&scan_edit,   'desc' => 'Add a new scan which is a derivative of an existing one' },
 		'delete' => { 'handler' => \&scan_delete, 'desc' => 'Delete a scan from the database and optionally from the filesystem' },
@@ -677,7 +677,7 @@ Run a selection of maintenance tasks on the database
 Run a selection of reports on the database
 
 =cut
-	$handlers{run} => {
+	$handlers{run} = {
 		'task'   => { 'handler' => \&run_task,   'desc' => 'Run a selection of maintenance tasks on the database' },
 		'report' => { 'handler' => \&run_report, 'desc' => 'Run a selection of reports on the database' },
 	};
