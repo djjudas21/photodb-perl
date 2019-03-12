@@ -13,3 +13,6 @@ deploy:
   file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
   on:
     repo: djjudas21/photography-database
+    branches:
+            only:
+                    - 221_cpan_packaging
