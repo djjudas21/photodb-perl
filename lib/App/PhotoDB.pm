@@ -56,8 +56,6 @@ Jonathan Gazeley
 
 =item * L<Installing PhotoDB|docs/INSTALL.md>
 
-=item * L<Using PhotoDB|docs/USAGE.md>
-
 =item * L<Developing PhotoDB|docs/CONTRIBUTING.md>
 
 =item * L<Schema description|docs/SCHEMA.md>
