@@ -7,7 +7,7 @@ package App::PhotoDB::commands;
 use strict;
 use warnings;
 
-use App::PhotoDB::handlers qw)/./);
+use App::PhotoDB::handlers qw(/./);
 
 # Define handlers for each command
 our %handlers = (
