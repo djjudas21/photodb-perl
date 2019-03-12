@@ -26,6 +26,7 @@ my $builder = $class->new(
 	dist_author => 'Jonathan Gazeley <me@jonathangazeley.com>',
 	license  => 'perl',
 	configure_requires => {
+		'Module::Build' => 0,
 		'Pod::Select' => 0,
 	},
 	build_requires => {
