@@ -1,8 +1,5 @@
 bin/photodb
 Build.PL
-ci/check-func-docs.pl
-ci/check-usage-docs.pl
-cpanfile
 Dockerfile
 docs/CONCEPTS.md
 docs/CONTRIBUTING.md
@@ -22,6 +19,7 @@ photodb-completion.bash
 photodb-completion.pl
 photodb.ini
 README.md
+README.pod
 sample-data/photography_ACCESSORY_TYPE_data.sql
 sample-data/photography_ARCHIVE_TYPE_data.sql
 sample-data/photography_BODY_TYPE_data.sql
