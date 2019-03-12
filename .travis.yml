@@ -5,6 +5,4 @@ env:
   - "PERL5LIB=$TRAVIS_BUILD_DIR/lib"
 jobs:
   include:
-    - stage: tests
-    - name: "Perl tests"
       script: "perl Build.PL && ./Build test"
