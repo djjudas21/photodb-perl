@@ -3,10 +3,8 @@ perl:
   - "5.26"
 env:
   - "PERL5LIB=$TRAVIS_BUILD_DIR/lib"
-install:
-  - "cpanm --installdeps ."
 jobs:
   include:
     - stage: tests
     - name: "Perl tests"
-      script: "perl Build.PL && ./Build test"
+      script: "perl Build.PL && ./Build installdeps && ./Build test"
