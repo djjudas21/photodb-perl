@@ -33,7 +33,6 @@ the tables.
 ## Documentation
 
 * [Installing PhotoDB](docs/INSTALL.md)
-* [Using PhotoDB](docs/USAGE.md)
 * [Developing PhotoDB](docs/CONTRIBUTING.md)
 * [Schema description](docs/SCHEMA.md)
 * [Concepts](docs/CONCEPTS.md)

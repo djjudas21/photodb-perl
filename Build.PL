@@ -1,8 +1,37 @@
 use Module::Build;
-my $build = Module::Build->new (
+use Pod::Select;
+
+my $class = Module::Build->subclass(
+	class => 'My::Builder',
+	code => q{
+		sub ACTION_docs {
+			use Pod::Select;
+
+			my $self = shift;
+
+			my @filelist = (
+				'lib/App/PhotoDB.pm',
+				'lib/App/PhotoDB/commands.pm'
+			);
+
+			podselect({ -output => 'README.pod' }, @filelist);
+
+			return $self->SUPER::ACTION_docs;
+		}
+	}
+);
+
+my $builder = $class->new(
 	module_name => 'App::PhotoDB',
 	dist_author => 'Jonathan Gazeley <me@jonathangazeley.com>',
 	license  => 'perl',
+	configure_requires => {
+		'Pod::Select' => 0,
+	},
+	build_requires => {
+		'Pod::Select' => 0,
+		'Test::More' => 0,
+	},
 	requires => {
 		'Config::IniHash' => 0,
 		'DBD::mysql' => 0,
@@ -28,4 +57,4 @@ my $build = Module::Build->new (
 		'Test::Compile' => 0,
 	},
 );
-$build->create_build_script;
+$builder->create_build_script();

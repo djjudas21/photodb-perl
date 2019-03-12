@@ -8,7 +8,6 @@ docs/CONCEPTS.md
 docs/CONTRIBUTING.md
 docs/INSTALL.md
 docs/SCHEMA.md
-docs/USAGE.md
 dump-schema.pl
 lib/App/PhotoDB.pm
 lib/App/PhotoDB/commands.pm
