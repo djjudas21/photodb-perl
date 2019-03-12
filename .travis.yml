@@ -10,5 +10,3 @@ jobs:
     - stage: tests
     - name: "Perl tests"
       script: "perl Build.PL && ./Build test"
-      name: "Usage documentation"
-      script: "perl -w ci/check-usage-docs.pl"
