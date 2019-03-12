@@ -1,8 +1,15 @@
-language: "perl"
+language: perl
 perl:
-  - "5.26"
+- '5.26'
 env:
-  - "PERL5LIB=$TRAVIS_BUILD_DIR/lib"
+- PERL5LIB=$TRAVIS_BUILD_DIR/lib
 jobs:
   include:
-      script: "perl Build.PL && ./Build test"
+    script: "./Build dist"
+deploy:
+  provider: releases
+  api_key:
+    secure: D16t4VJ9pHLDbdEu6XQ0kVAEWYbjgIRrz6y6S4n72nCU2LBkhdbATyjb/VAVFLesskQVr9aS90b7vJHR+2Jl+ID0D9CpG3pJnBIB+ZB/ECMDN3EVzuqZxHl/pX+FRNPrpH548TShnK0TiRPCOdIr6NCeugBBKchCtSRuXG4Omgs=
+  file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
+  on:
+    repo: djjudas21/photography-database
