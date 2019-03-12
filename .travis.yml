@@ -12,5 +12,3 @@ jobs:
       script: "perl Build.PL && ./Build test"
       name: "Usage documentation"
       script: "perl -w ci/check-usage-docs.pl"
-    - name: "Function documentation"
-      script: "perl -w ci/check-func-docs.pl"

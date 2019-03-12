@@ -62,12 +62,6 @@ Jonathan Gazeley
 
 =item * L<Schema description|docs/SCHEMA.md>
 
-=item * L<Function reference|docs/FUNCTIONS.md>
-
-=item * L<Glossary|docs/GLOSSARY.md>
-
-=item * L<Roadmap|docs/ROADMAP.md>
-
 =item * L<Concepts|docs/CONCEPTS.md>
 
 =back

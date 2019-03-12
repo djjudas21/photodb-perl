@@ -6,7 +6,6 @@ cpanfile
 Dockerfile
 docs/CONCEPTS.md
 docs/CONTRIBUTING.md
-docs/FUNCTIONS.md
 docs/INSTALL.md
 docs/SCHEMA.md
 docs/USAGE.md
