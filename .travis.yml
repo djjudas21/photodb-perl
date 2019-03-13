@@ -5,7 +5,7 @@ env:
 - PERL5LIB=$TRAVIS_BUILD_DIR/lib
 jobs:
   include:
-    script: "./Build dist"
+    script: "perl Build.PL && ./Build && ./Build dist"
 deploy:
   provider: releases
   api_key:
