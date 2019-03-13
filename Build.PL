@@ -32,6 +32,7 @@ my $builder = $class->new(
 	build_requires => {
 		'Pod::Select' => 0,
 		'Test::More' => 0,
+		'CPAN::Uploader' => 0,
 	},
 	requires => {
 		'Config::IniHash' => 0,

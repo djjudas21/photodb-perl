@@ -5,7 +5,7 @@ env:
 - PERL5LIB=$TRAVIS_BUILD_DIR/lib
 jobs:
   include:
-    script: "perl Build.PL && ./Build && ./Build dist"
+    script: "perl Build.PL && ./Build && ./Build dist && cpan-upload --dry-run -u JGAZELEY -p PASSWORD App-PhotoDB-${TRAVIS_TAG}.tar.gz"
 deploy:
   provider: releases
   api_key:
