@@ -13,3 +13,4 @@ deploy:
   file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
   on:
     tags: true
+  skip_cleanup: true
