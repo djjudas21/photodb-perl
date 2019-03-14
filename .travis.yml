@@ -3,6 +3,8 @@ perl:
 - '5.26'
 env:
 - PERL5LIB=$TRAVIS_BUILD_DIR/lib
+before_install:
+  - sudo apt-get install -y libcpan-uploader-perl
 jobs:
   include:
     script: "perl Build.PL && ./Build"
