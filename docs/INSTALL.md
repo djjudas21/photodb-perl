@@ -3,21 +3,17 @@
 ## Table of Contents
 
 2. [Install database backend](#install-database-backend)
-    * [Install MySQL](#install-mysql)
-    * [Create a user](#create-a-user)
 3. [Install application frontend](#install-application-frontend)
 4. [Configure database connection](#configure-database-connection)
 
 ## Install database backend
 
-### Install MySQL
 A pre-requisite for PhotoDB is a functioning MySQL or MariaDB database instance. If you have access to an existing
 MySQL server, e.g. at a hosting provider, note down the details for connecting (hostname or IP address, username, password).
 
 Otherwise, consider installing a MySQL server locally on your computer. If you do this, the hostname will be `localhost`.
 
-### Create a user
-Create a database user with a password for PhotoDB
+Create a database user with a password for PhotoDB with sufficient privileges to SELECT, INSERT, UPDATE, DELETE, CREATE and DROP.
 
 ## Install application frontend
 
