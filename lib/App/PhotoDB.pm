@@ -147,6 +147,8 @@ properties, commands and relationships, and there are general accessories with n
 
 Special types of accessory with their own properties include:
 
+=over
+
 =item * battery
 
 =item * filter
@@ -162,6 +164,8 @@ Special types of accessory with their own properties include:
 =item * projector
 
 =item * teleconverter
+
+=back
 
 All of the above "special" accessories can be added to the database with `photodb accessory <accessory>`.
 
