@@ -6,7 +6,6 @@
 2. [Install database backend](#install-database-backend)
     * [Install MySQL](#install-mysql)
     * [Create a user](#create-a-user)
-    * [Import the schema](#import-the-schema)
 3. [Install application frontend](#install-application-frontend)
 4. [Configure database connection](#configure-database-connection)
     * [Fedora](#fedora)
@@ -57,13 +56,6 @@ sudo systemctl enable mysql
 
 ### Create a user
 Create a database user with a password for PhotoDB
-
-### Import the schema
-Import the schema into your MySQL or MariaDB instance by running the following command to create the database and tables.
-
-```
-mysql -p < schema/*.sql
-```
 
 ## Install application frontend
 
