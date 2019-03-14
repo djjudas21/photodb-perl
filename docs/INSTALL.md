@@ -88,80 +88,27 @@ robust upgrade path after the first tagged release of this project.
 ## Install application frontend
 
 There are several different ways to install the application. Choose your favourite.
+Install PhotoDB from CPAN or from a source tarball.
 
-### Fedora
+### From CPAN
 
-Run on Fedora or compatible RPM-based Linux, and install dependencies with dnf/yum. Unfortunately,
-CentOS does not package all the perl modules required.
-
-1. Install all of the deps in one go
+1. Use the `cpan` client (or an alternative, such as `cpanm`) to install directly:
 ```
-sudo dnf install "perl(Config::IniHash)" "perl(YAML)" "perl(DBD::mysql)" "perl(DBI)" \
-"perl(Exporter)" "perl(Getopt::Long)" "perl(Image::ExifTool)" "perl(SQL::Abstract)" \
-"perl(strict)" "perl(Term::ReadKey)" "perl(warnings)" \
-"perl(Perl::Critic)" "perl(experimental)" "perl(Path::Iterator::Rule)" "perl(Array::Utils)"
+cpan App::PhotoDB
 ```
-
-2. Check out the PhotoDB application code directly from git
-
+or
 ```
-git clone https://github.com/djjudas21/photography-database.git
+cpanm App::PhotoDB
 ```
 
-3. You can run the application directly from its current location but it is recommended to symlink it
-into your path, for ease of use.
+### From source
+
+1. Grab the latest release tarball from the [Releases page](https://github.com/djjudas21/photography-database/releases).
+It's the one with a name like `App-PhotoDB-0.00.tar.gz`.
+
+2. Install it with `cpanm`:
 ```
-ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
-```
-
-### Ubuntu or Debian
-
-Run on Ubuntu or Debian compatible DEB-based Linux, and install dependencies with apt
-
-1. Install all of the deps in one go
-```
-sudo apt-get install libconfig-inihash-perl libdbd-mysql-perl libdbi-perl \
-libgetopt-long-descriptive-perl libimage-exiftool-perl libsql-abstract-perl \
-libterm-readkey-perl libimage-exiftool-location-perl libperl-critic-perl \
-libpath-iterator-rule-perl libarray-utils-perl libyaml-libyaml-perl \
-libfindbin-libs-perl
-```
-
-2. Check out the PhotoDB application code directly from git
-
-```
-git clone https://github.com/djjudas21/photography-database.git
-```
-
-3. You can run the application directly from its current location but it is recommended to symlink it
-into your path, for ease of use.
-```
-ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
-```
-
-### Other Linux
-
-Run on any Linux distribution and install dependencies with cpanm
-
-1. Install cpanm with your package manager or directly from the repo
-
-2. Check out the PhotoDB application code directly from git
-
-```
-git clone https://github.com/djjudas21/photography-database.git
-```
-
-3. Install dependencies
-```
-cd photography-database
-cpanm install .
-```
-
-4. You can run the application directly from its current location but it is recommended to symlink it
-into your path, for ease of use.
-
-```
-ln -s /home/you/photography-database/photodb /usr/local/bin/photodb
+cpanm /path/tp/App-PhotoDB-0.00.tar.gz
 ```
 
 ### Docker
