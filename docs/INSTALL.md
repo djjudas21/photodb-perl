@@ -2,7 +2,6 @@
 
 ## Table of Contents
 
-1. [Requirements](#requirements)
 2. [Install database backend](#install-database-backend)
     * [Install MySQL](#install-mysql)
     * [Create a user](#create-a-user)
@@ -15,18 +14,6 @@
     * [Ubuntu or Debian](#ubuntu-or-debian)
     * [Other Linux](#other-linux)
     * [Docker](#docker)
-
-## Requirements
-
-### Database backend
-
-The database backend can be run anywhere that supports MySQL or MariaDB. It does not have to be
-on the same system as the frontend.
-
-### Application frontend
-
-The application frontend requires Linux. It has been developed and tested on Fedora, but it should
-support Ubuntu. It is very hard to get to work on CentOS, due to the difficulty of building CPAN modules.
 
 ## Install database backend
 
