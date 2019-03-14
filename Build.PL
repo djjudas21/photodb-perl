@@ -6,16 +6,8 @@ my $class = Module::Build->subclass(
 	code => q{
 		sub ACTION_docs {
 			use Pod::Select;
-
 			my $self = shift;
-
-			my @filelist = (
-				'lib/App/PhotoDB.pm',
-				'lib/App/PhotoDB/commands.pm'
-			);
-
-			podselect({ -output => 'README.pod' }, @filelist);
-
+			podselect({ -output => 'README.pod' }, 'lib/App/PhotoDB.pm');
 			return $self->SUPER::ACTION_docs;
 		}
 	}
