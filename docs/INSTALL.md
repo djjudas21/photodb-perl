@@ -6,8 +6,6 @@
     * [Install MySQL](#install-mysql)
     * [Create a user](#create-a-user)
     * [Import the schema](#import-the-schema)
-    * [Import sample data](#import-sample-data)
-    * [Upgrading](#upgrading)
 3. [Install application frontend](#install-application-frontend)
 4. [Configure database connection](#configure-database-connection)
 
@@ -28,24 +26,6 @@ Import the schema into your MySQL or MariaDB instance by running the following c
 ```
 mysql -p < schema/*.sql
 ```
-
-### Import sample data
-
-Some of the tables in this schema contain sample data which could be useful and is not site-specific.
-This includes data like common manufacturers, lens mounts and film types. To import the sample data,
-first [install the schema](#installation) and then execute:
-
-```
-mysql -p photography < sample-data/*.sql
-```
-
-### Upgrading
-
-Upgrading to a new version of the schema is tricky. You can of course do a `git pull` to get the
-latest schema files and then execute `mysql -p photography < *.sql` again, but **this will discard
-all of your data**. The only real upgrade path at the moment is to back up your data, drop and create
-the new schema, and re-import your data, taking account of schema changes. I hope to provide a more
-robust upgrade path after the first tagged release of this project.
 
 ## Install application frontend
 
