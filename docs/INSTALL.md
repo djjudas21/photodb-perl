@@ -10,10 +10,6 @@
     * [Upgrading](#upgrading)
 3. [Install application frontend](#install-application-frontend)
 4. [Configure database connection](#configure-database-connection)
-    * [Fedora](#fedora)
-    * [Ubuntu or Debian](#ubuntu-or-debian)
-    * [Other Linux](#other-linux)
-    * [Docker](#docker)
 
 ## Install database backend
 
@@ -22,27 +18,6 @@ A pre-requisite for PhotoDB is a functioning MySQL or MariaDB database instance.
 MySQL server, e.g. at a hosting provider, note down the details for connecting (hostname or IP address, username, password).
 
 Otherwise, consider installing a MySQL server locally on your computer. If you do this, the hostname will be `localhost`.
-
-CentOS / Red Hat:
-```
-sudo yum install mysql-server
-sudo chkconfig mysqld on
-sudo service mysqld start
-```
-
-Fedora:
-```
-sudo dnf install mariadb-server
-sudo systemctl start mariadb
-sudo systemctl enable mariadb
-```
-
-Ubuntu:
-```
-sudo apt-get install mysql-server
-sudo systemctl start mysql
-sudo systemctl enable mysql
-```
 
 ### Create a user
 Create a database user with a password for PhotoDB
@@ -143,9 +118,3 @@ ssh -L 3306:localhost:3306 -N <username>@<database.example.com>
 Once the tunnel is established, you should be able to connect to the database on `127.0.0.1:3306` and
 your connection will be tunnelled. Configure PhotoDB in the same way as if the database was local.
 You will need to re-establish the tunnel each time you wish to use PhotoDB.
-
-### Test the connection
-
-Test the database connection by running the application with no arguments. If you see a help message,
-then everything is working. If you see an error message the database, the config file or any Perl
-module then something has gone wrong.
