@@ -1,9 +1,7 @@
 bin/photodb
 Build.PL
 Dockerfile
-docs/CONCEPTS.md
 docs/CONTRIBUTING.md
-docs/INSTALL.md
 docs/SCHEMA.md
 dump-schema.pl
 lib/App/PhotoDB.pm
@@ -18,7 +16,6 @@ META.yml
 photodb-completion.bash
 photodb-completion.pl
 photodb.ini
-README.md
 README.pod
 sample-data/photography_ACCESSORY_TYPE_data.sql
 sample-data/photography_ARCHIVE_TYPE_data.sql
