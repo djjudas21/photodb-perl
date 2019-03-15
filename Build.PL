@@ -43,7 +43,7 @@ my $builder = $class->new(
 		'Text::TabularDisplay' => 0,
 		'Getopt::Long' => 0,
 		'Term::ReadKey' => 0,
-		'DB::SQL::Migrations' => 0;
+		'DB::SQL::Migrations' => 0,
 	},
 	test_requires => {
 		'Test::More' => '0.47',
