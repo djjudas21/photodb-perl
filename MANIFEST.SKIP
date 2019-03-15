@@ -88,3 +88,4 @@
 
 # Avoid schema dump files
 ^schema/
+^sample-data/
