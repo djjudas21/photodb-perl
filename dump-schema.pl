@@ -140,8 +140,8 @@ sub dumpdocs {
 	my @output;
 
 	# Print headers
-	push(@output, "# PhotoDB schema documentation\n");
-	push(@output, "This documentation is generated automatically from the database schema itself with the `$0` script, using table and column comments embedded in the database\n");
+	push(@output, "=head1 PhotoDB schema documentation\n\n");
+	push(@output, "This documentation is generated automatically from the database schema itself with the C<$0> script, using table and column comments embedded in the database\n");
 
 	# Generate docs for each table in turn
 	print "Generating schema docs for tables...\n";
@@ -149,7 +149,7 @@ sub dumpdocs {
 		my $table = $row[0];
 
 		print "\tGenerating docs for $table\n";
-		push(@output, "\n## $table\n\n");
+		push(@output, "\n=head2 $table\n\n");
 
 		my $query2 = "select TABLE_COMMENT from information_schema.TABLES where TABLE_NAME='$table' and TABLE_SCHEMA='$database'";
 		my $sth2 = $dbh->prepare($query2) or die "Can't prepare $query2: $dbh->errstr\n";
@@ -161,13 +161,9 @@ sub dumpdocs {
 
 		my @tableoutput = `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
 
-		# Delete first and last elements (table borders)
-		shift(@tableoutput);
-		pop(@tableoutput);
-
-		# Substitute some table chars
+		# Add 4 leading spaces
 		foreach (@tableoutput) {
-			$_ =~ s/\+/\|/g;
+			$_ = '    ' . $_;
 		}
 		push(@output, @tableoutput);
 	}
@@ -176,7 +172,7 @@ sub dumpdocs {
 	$sqlQuery->finish;
 
 	# Open a file and dump compiled array into it
-	open my $fh, '>', "docs/SCHEMA.md" or die "Cannot open docs/SCHEMA.md: $!";
+	open my $fh, '>', "docs/SCHEMA.pod" or die "Cannot open docs/SCHEMA.pod: $!";
 	foreach (@output) {
 		print $fh $_;
 	}

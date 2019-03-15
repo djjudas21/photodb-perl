@@ -6,10 +6,9 @@
 use strict;
 use warnings;
 
-use lib 'lib';
-use commands;
+use App::PhotoDB::commands;
 
-my %handlers = %commands::handlers;
+my %handlers = %photodb::commands::handlers;
 
 if ($ARGV[0] && $ARGV[0] ne '') {
 	#print subcommands

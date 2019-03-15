@@ -1,6 +1,14 @@
-package funcs;
+package App::PhotoDB::funcs;
 
-# This package provides reusable functions to be consumed by the rest of the application
+=head1 Functions
+
+This package provides reusable functions to be consumed by the rest of the PhotoDB application.
+
+Note that some of these functions take traditional argument lists which must
+be in order, while the more complex functions take a hashref of arguments
+which can be passed in any order. Examples of each function are given.
+
+=cut
 
 use strict;
 use warnings;
@@ -16,7 +24,41 @@ use Image::ExifTool;
 
 our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles);
 
-# Prompt the user for an arbitrary value
+=head2 prompt
+
+Prompt the user for an arbitrary value. Has various options for data validation and customisation of the prompt.
+If the provided input fails validation, or if a blank string is given when required=1 then the prompt is repeated.
+
+=head4 Usage
+
+    my $camera = &prompt({prompt=>'What model is the camera?', required=>1, default=>$$defaults{model}, type=>'text'});
+
+would give a prompt like
+
+    What model is the camera? (text) []:
+
+=head4 Arguments
+
+=item * C<$default> Default value that will be used if no input from user. Default empty string.
+
+=item * C<$prompt> Prompt message for the user
+
+=item * C<$type> Data type that this input expects, out of C<text>, C<integer>, C<boolean>, C<date>, C<decimal>, C<time>
+
+=item * C<$required> Whether this input is required, or whether it can return an empty value. Default C<0>
+
+=item * C<$showtype> Whether to show the user what data type is expected, in parentheses. Default C<1>
+
+=item * C<$showdefault> Whether to show the user what the default value is set to, in square brackets. Default C<1>
+
+=item * C<$char> Character to print at the end of the prompt. Defaults to C<:>
+
+=head4 Returns
+
+The value the user provided
+
+=cut
+
 sub prompt {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -60,7 +102,26 @@ sub prompt {
 	}
 }
 
-# Validate that a value is a certain data type
+=head2 validate
+
+Validate that a value is a certain data type
+
+=head4 Usage
+
+    my $result = &validate({val => 'hello', type => 'text'});
+
+=head4 Arguments
+
+=item * C<$val> The value to be validated
+
+=item * C<$type> Data type to validate as, out of C<text>, C<integer>, C<boolean>, C<date>, C<decimal>, C<time>. Defaults to C<text>.
+
+=head4 Returns
+
+Returns C<1>< if the value passes validation as the requested type, and C<0> if it doesn't.
+
+=cut
+
 sub validate {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -115,7 +176,24 @@ sub validate {
 	}
 }
 
-# Find ini file
+=head2 ini
+
+Find PhotoDB config ini file
+
+=head4 Usage
+
+    my $ini = &ini;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+File path to the config ini file
+
+=cut
+
 sub ini {
 	# Places to look for ini file in descending order of preference
 	my @paths = (
@@ -139,7 +217,24 @@ sub ini {
 	}
 }
 
-# Connect to the database
+=head2 db
+
+Connect to the database
+
+=head4 Usage
+
+    my $db = &db;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Variable representing the database handle
+
+=cut
+
 sub db {
 	my $connect = ReadINI(&ini);
 
@@ -163,6 +258,35 @@ sub db {
 }
 
 # Update an existing record in any table
+
+=head2 updaterecord
+
+Update an existing record in any table
+
+=head4 Usage
+
+    my $rows = &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$data> Hash of new values to update
+
+=item * C<$table> Name of table to update
+
+=item * C<$where> Where clause, formatted for SQL::Abstract
+
+=item * C<$silent> Suppress output
+
+=item * C<$log> Write an event to the database log. Defaults to C<1>.
+
+=head4 Returns
+
+The number of rows updated
+
+=cut
+
 sub updaterecord {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -221,6 +345,33 @@ sub updaterecord {
 }
 
 # Delete an existing record in any table
+
+=head2 deleterecord
+
+Delete an existing record from any table
+
+=head4 Usage
+
+    my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$table> Name of table to delete from
+
+=item * C<$where> Where clause, formatted for SQL::Abstract
+
+=item * C<$silent> Suppress output
+
+=item * C<$log> Write an event to the database log. Defaults to C<1>.
+
+=head4 Returns
+
+The number of rows deleted
+
+=cut
+
 sub deleterecord {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -266,7 +417,32 @@ sub deleterecord {
 	return $rows;
 }
 
-# Insert a record into any table
+=head2 newrecord
+
+Insert a record into any table
+
+=head4 Usage
+
+    my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$data> reference to hash of new values to insert
+
+=item * C<$table> Name of table to insert into
+
+=item * C<$silent> Suppress user output and don't ask for confirmation. Defaults to C<0>.
+
+=item * C<$log> Write an event to the database log. Defaults to C<1>.
+
+=head4 Returns
+
+Primary key of inserted row
+
+=cut
+
 sub newrecord {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -315,13 +491,47 @@ sub newrecord {
 	return $insertedrow;
 }
 
-# Print a warning that this command/subcommand is not yet implemented
+=head2 notimplemented
+
+Print a warning that this command/subcommand is not yet implemented
+
+=head4 Usage
+
+    &notimplemented
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub notimplemented {
 	print "This command or subcommand is not yet implemented.\n";
 	return;
 }
 
-# Print list of commands
+=head2 nocommand
+
+Print list of available top-level commands
+
+=head4 Usage
+
+    &nocommand(\%handlers);
+
+=head4 Arguments
+
+=item * C<$handlers> reference to hash of handlers from C<handlers.pm>
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub nocommand {
 	my $handlers = shift;
 	print "photodb <command> <subcommand>\n\n";
@@ -331,6 +541,27 @@ sub nocommand {
 }
 
 # Print list of subcommands for a given command
+
+=head2 nosubcommand
+
+Print list of available subcommands for a given command
+
+=head4 Usage
+
+    &nosubcommand(\%{$handlers{$command}}, $command);
+
+=head4 Arguments
+
+=item * C<$command> name of command whose subcommands you want
+
+=item * C<$handlers> reference to hash slice of handlers from C<handlers.pm>
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
@@ -340,7 +571,48 @@ sub nosubcommand {
 	return;
 }
 
-# List arbitrary choices from the DB and return ID of the selected one
+=head2 listchoices
+
+List arbitrary choices from the DB and return ID of the selected one
+
+=head4 Usage
+
+    my $id = &listchoices({db=>$db, table=>$table, where=>$where});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$query> (legacy) the SQL to generate the list of choices
+
+=item * C<$type> Data type of choice to be made. Defaults to C<text>
+
+=item * C<$inserthandler> function ref to handler that can be used to insert a new row if necessary
+
+=item * C<$default> ID of default choice
+
+=item * C<$autodefault> if default not set, count number of allowed options and if there's just 1, make it the default
+
+=item * C<$skipok> whether it is ok to return C<undef> if there are no options to choose from
+
+=item * C<$table> table to run query against. Part of the SQL::Abstract tuple
+
+=item * C<$cols> columns to select for the ID and the description. Defaults to C<('id', 'opt)>. Part of the SQL::Abstract tuple
+
+=item * C<$where> where clause passed in as a hash, e.g. C<{'field'=>'value'}>. Part of the SQL::Abstract tuple
+
+=item * C<$keyword> keyword to describe the thing being chosen, e.g. C<camera>. Defaults to attempting to figure it out with C<&keyword>
+
+=item * C<$required> whether this is a required choice, or whether we allow the user to enter an empty input. Defaults to C<0>
+
+=item * C<$char> character to use to signal that you want to enter a new row, if C<inserthandler> is set. Defaults to C<+>
+
+=head4 Returns
+
+ID of the selected option
+
+=cut
+
 sub listchoices {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -436,7 +708,34 @@ sub listchoices {
 	}
 }
 
-# List arbitrary rows
+=head2 printlist
+
+Print arbitrary rows from the database as an easy way of displaying data
+
+=head4 Usage
+
+    &printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'info_print', where=>{`Negative ID`=>$neg_id}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$msg> Message to display to user to describe what is being displayed. Shows up as C<Now showing $msg\n>
+
+=item * C<$table> Table to select from. Part of the SQL::Abstract tuple
+
+=item * C<$cols> Columns to display. Defaults to C<(id, opt)>. Part of the SQL::Abstract tuple
+
+=item * C<$where> Where clause for the query. Part of the SQL::Abstract tuple
+
+=item * C<$order> Order by clause for the query. Part of the SQL::Abstract tuple
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub printlist {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -469,6 +768,33 @@ sub printlist {
 }
 
 # Return values from an arbitrary column from database as an arrayref
+
+=head2 lookupcol
+
+Return values from an arbitrary column from database as an arrayref
+
+=head4 Usage
+
+    my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$query> (legacy) bare SQL query to run
+
+=item * C<$table> table to run query against. Part of the SQL::Abstract tuple
+
+=item * C<$cols> columns to select for the ID and the description. Defaults to C<*>. Part of the SQL::Abstract tuple
+
+=item * C<$where> where clause passed in as a hash, e.g. C<{'field'=>'value'}>. Part of the SQL::Abstract tuple
+
+=head4 Returns
+
+An arrayref containing a hashref of columns and values
+
+=cut
+
 sub lookupcol {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -503,6 +829,25 @@ sub lookupcol {
 }
 
 # Thin out keys will null values from a sparse hash
+
+=head2 thin
+
+Thin out keys with empty values from a sparse hash
+
+=head4 Usage
+
+    $data = &thin($data);
+
+=head4 Arguments
+
+=item * C<$data> Hashref containing data to be thinned
+
+=head4 Returns
+
+Hashref containing thinned data
+
+=cut
+
 sub thin {
 	my $data = shift;
 	foreach (keys %$data) {
@@ -511,7 +856,32 @@ sub thin {
 	return \%$data;
 }
 
-# Return arbitrary value from database
+=head2 lookupval
+
+Return arbitrary single value from database
+
+=head4 Usage
+
+    my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$query> (legacy) bare SQL query to run
+
+=item * C<$table> table to run query against. Part of the SQL::Abstract tuple
+
+=item * C<$col> column to select. Part of the SQL::Abstract tuple
+
+=item * C<$where> where clause passed in as a hash, e.g. C<{'field'=>'value'}>. Part of the SQL::Abstract tuple
+
+=head4 Returns
+
+Single value from the database
+
+=cut
+
 sub lookupval {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -542,7 +912,30 @@ sub lookupval {
 	return $row;
 }
 
-# Call a database stored procedure
+
+
+=head2 call
+
+Call a stored procedure from the database
+
+=head4 Usage
+
+    &call({db=>$db, procedure=>'print_unarchive', args=>['123']});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$procedure> name of the database stored procedure to call
+
+=item * C<$args> arrayref of arguments to pass to the stored procedure
+
+=head4 Returns
+
+Number of affected rows
+
+=cut
+
 sub call {
 	my $href = shift;
 
@@ -557,7 +950,30 @@ sub call {
 	return $rows;
 }
 
-# Return arbitrary lists from database
+=head2 lookuplist
+
+Return multiple values from a single database column as an arrayref
+
+=head4 Usage
+
+    my $values = &lookuplist({db=>$db, col=>$column, table=>$table, where{key=>value}});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$table> table to run query against. Part of the SQL::Abstract tuple
+
+=item * C<$col> column to select. Part of the SQL::Abstract tuple
+
+=item * C<$where> where clause passed in as a hash, e.g. C<{'field'=>'value'}>. Part of the SQL::Abstract tuple
+
+=head4 Returns
+
+An arreyref containing a list of values
+
+=cut
+
 sub lookuplist {
 	# Pass in a hashref of arguments
 	my $href = shift;
@@ -586,8 +1002,26 @@ sub lookuplist {
 	return \@list;
 }
 
-# Update data using a bare UPDATE statement
-# Avoid using if possible
+=head2 updatedata
+
+Update data using a bare SQL C<UPDATE> statement. Avoid using this if possible,
+as it is dangerous. Use C<&updaterecord> instead.
+=head4 Usage
+
+    my $rows = &updatedata($db, $sql);
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$query> Plain SQL UPDATE query to execute
+
+=head4 Returns
+
+The number of rows updated
+
+=cut
+
 sub updatedata {
 	my $db = shift;		# DB handle
 	my $query = shift;	# Plain SQL query
@@ -599,12 +1033,48 @@ sub updatedata {
 }
 
 # Return today's date according to the DB
+
+=head2 today
+
+Return today's date according to the DB
+
+=head4 Usage
+
+    my $todaysdate = &today($db);
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=head4 Returns
+
+Today's date, formatted C<YYYY-MM-DD>
+
+=cut
+
 sub today {
 	my $db = shift;		# DB handle
 	return &lookupval({db=>$db, col=>'curdate()', table=>'CAMERA'});
 }
 
-# Return today's date & time according to the DB
+=head2 now
+
+Return an SQL-formatted timestamp for the current time
+
+=head4 Usage
+
+    my $time = &now($db);
+
+=head4 Arguments
+
+=item * C<$db> Database handle
+
+=head4 Returns
+
+String containing the current time, formatted C<YYYY-MM-DD HH:MM:SS>
+
+=cut
+
 sub now {
 	my $db = shift;	 # DB handle
 	return &lookupval({db=>$db, col=>'now()', table=>'CAMERA'});
@@ -612,8 +1082,27 @@ sub now {
 
 
 # Translate "friendly" bools to integers
-# y/yes/true/1
-# n/no/false/0
+
+
+=head2 friendlybool
+
+Translate "friendly" bools to integers so we can accept human input and map it to binary boolean values.
+y/yes/true/1 map to 1 and n/no/false/0 map to 0. See also &printbool.
+
+=head4 Usage
+
+    my $binarybool = &friendlybool($friendlybool);
+
+=head4 Arguments
+
+=item * C<$friendlybool> string representation of a boolean, e.g. C<yes>, C<y>, C<true>, C<1>, C<no>, C<n>, C<false>, C<0>, etc
+
+=head4 Returns
+
+C<1> if C<$bool> represents a true value and C<0> if it represents a false value
+
+=cut
+
 sub friendlybool {
 	my $val = shift;
 	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
@@ -625,7 +1114,25 @@ sub friendlybool {
 	}
 }
 
-# Translate numeric bools to strings
+=head2 printbool
+
+Translate numeric bools to strings for friendly printing of user messages.
+See also &friendlybool.
+
+=head4 Usage
+
+    my $string = &printbool($bool);
+
+=head4 Arguments
+
+=item * C<$bool> boolean value to rewrite
+
+=head4 Returns
+
+Returns C<yes> if C<$bool> is true and C<no> if C<$bool> is false.
+
+=cut
+
 sub printbool {
 	my $val = shift;
 	if ($val =~ m/^y(es)?$/i || $val =~ m/^true$/i || $val eq 1) {
@@ -637,7 +1144,24 @@ sub printbool {
 	}
 }
 
-# Write out a config file
+=head2 writeconfig
+
+Write out an initial config file by prompting the user interactively.
+
+=head4 Usage
+
+    &writeconfig($path);
+
+=head4 Arguments
+
+=item * C<$path> path to the config file that should be written
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub writeconfig {
 	my $inifile = shift;
 
@@ -658,7 +1182,26 @@ sub writeconfig {
 	return;
 }
 
-# Round numbers to any precision
+=head2 round
+
+Round a number to any precision
+
+=head4 Usage
+
+    my $rounded = &round($num, 3);
+
+=head4 Arguments
+
+=item * C<$num> Number to round
+
+=item * C<$pow10> Number of decimal places to round to. Defaults to C<0> i.e. round to an integer
+
+=head4 Returns
+
+Rounded number
+
+=cut
+
 sub round {
 	my $x = shift;		# Number to round
 	my $pow10 = shift || 0;	# Number of decimal places to round to
@@ -666,7 +1209,26 @@ sub round {
 	return int(($x * $a) + 0.5) / $a
 }
 
-# Pad a string with spaces up to a fixed length
+=head2 pad
+
+Pad a string with spaces up to a fixed length, to make it easier to print fixed-width tables
+
+=head4 Usage
+
+    my $paddedstring = &pad('Hello', 8);
+
+=head4 Arguments
+
+=item * C<$string> Text to pad
+
+=item * C<$totallength> Total number of characters to pad to, defaults to C<18>
+
+=head4 Returns
+
+Padded string
+
+=cut
+
 sub pad {
 	my $string = shift;		# Text to pad
 	my $totallength = shift || 18;	# Total number of characters to pad to
@@ -686,7 +1248,26 @@ sub pad {
 	}
 }
 
-# Get a negative ID either from the neg ID or the film/frame ID
+=head2 resolvenegid
+
+Get a negative ID either from the neg ID or the film/frame ID
+
+=head4 Usage
+
+    my $negID = &resolvenegid($db, '10/4');
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$string> String to represent a negative ID, either as an integer or in film/frame format, e.g. C<834> or C<10/4>
+
+=head4 Returns
+
+Integer negative ID
+
+=cut
+
 sub resolvenegid {
 	my $db = shift;
 	my $string = shift;
@@ -705,7 +1286,26 @@ sub resolvenegid {
 	}
 }
 
-# Select a negative by drilling down
+=head2 chooseneg
+
+Select a negative by drilling down
+
+=head4 Usage
+
+    my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
+
+=head4 Arguments
+
+=item * C<$db> variable containing database handle as returned by C<&db>
+
+=item * C<$oktoreturnundef> optional boolean to specify whether it is OK to fail to find a negative
+
+=head4 Returns
+
+Integer representing the negative ID
+
+=cut
+
 sub chooseneg {
 	my $href = shift;
 	my $db = $href->{db};
@@ -726,7 +1326,26 @@ sub chooseneg {
 	}
 }
 
-# Write out a text file in the film directory
+=head2 annotatefilm
+
+Write out a text file in the film scans directory
+
+=head4 Usage
+
+    &annotatefilm($db, $film_id);
+
+=head4 Arguments
+
+=item * C<$db> variable containing database handle as returned by C<&db>
+
+=item * C<$film_id> integer variable containing ID of the film to be annotated
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub annotatefilm {
 	my $db = shift;
 	my $film_id = shift;
@@ -791,9 +1410,27 @@ sub annotatefilm {
 	return;
 }
 
-# Figure out the keyword of an SQL statement, e.g. statements that select FROM
-# CAMERA or choose_camera would return "camera"
-# CAMERA_MOUNT or choose_camera_mount would return "camera mount"
+=head2 keyword
+
+Figure out the human-readable keyword of an SQL statement, e.g. statements that select from
+C<CAMERA> or C<choose_camera> would return C<camera>. Selecting from C<CAMERA_MOUNT> or
+C<choose_camera_mount> would return C<camera mount>. This can be helpful when automating
+user messages.
+
+=head4 Usage
+
+    my $keyword = &keyword($query);
+
+=head4 Arguments
+
+=item * C<$query> an SQL statement, e.g. C<SELECT * FROM CAMERA;>
+
+=head4 Returns
+
+A human-readable keyword representing the "subject" of the SQL query
+
+=cut
+
 sub keyword {
 	my $query = shift;
 	# This matches either a full SQL query, or just the table name
@@ -809,7 +1446,32 @@ sub keyword {
 	}
 }
 
-# Parse lens model name to figure out some data
+=head2 parselensmodel
+
+Parse lens model name to guess some data about the lens. Either specify which parameter you want
+to be returned as a string, or expect a hashref of all params to be returned. Currently supports guessing
+C<minfocal> (minimum focal length), C<maxfocal> (maximum focal length), C<zoom> (whether this is a zoom lens)
+and C<aperture> (maximum aperture of lens).
+
+=head4 Usage
+
+    my $aperture = &parselensmodel($model, 'aperture');
+    my $lensparams = &parselensmodel($model);
+
+=head4 Arguments
+
+=item * C<$model> Model name of the lens
+
+=item * C<$param> The name of the desired parameter. Optional, choose from C<minfocal>, C<maxfocal>, C<zoom> or C<aperture>.
+
+=head4 Returns
+
+=item * If C<$param> is specified, returns the value of this parameter as a string
+
+=item * If C<$param> is undefined, returns a hashref of all parameters
+
+=cut
+
 sub parselensmodel {
 	my $model = shift;
 	my $param = shift;
@@ -839,7 +1501,30 @@ sub parselensmodel {
 	}
 }
 
-# Unset display lens
+=head2 unsetdisplaylens
+
+Unassociate a display lens from a camera by passing in either the camera ID or
+the lens ID. It is not harmful to pass in both, but it is pointless.
+
+=head4 Usage
+
+    &unsetdisplaylens({db=>$db, camera_id=>$camera_id});
+    &unsetdisplaylens({db=>$db, lens_id=>$lens_id});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$camera_id> ID of camera whose display lens you want to unassociate
+
+=item * C<$lens_id> ID of lens you want to unassociate
+
+=head4 Returns
+
+Result of SQL update
+
+=cut
+
 sub unsetdisplaylens {
 	my $href = shift;
 	my $db = $href->{db};
@@ -857,9 +1542,26 @@ sub unsetdisplaylens {
 	return $sth->execute(@bind);
 }
 
-# Print welcome message
+=head2 welcome
+
+Print a friendly welcome message
+
+=head4 Usage
+
+    &welcome;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub welcome {
-	my $version = &version;
+	my $version = $App::PhotoDB::VERSION;
 	my $ascii = <<'END_ASCII';
  ____  _           _        ____  ____
 |  _ \| |__   ___ | |_ ___ |  _ \| __ )
@@ -867,11 +1569,28 @@ sub welcome {
 |  __/| | | | (_) | || (_) | |_| | |_) |
 |_|   |_| |_|\___/ \__\___/|____/|____/
 END_ASCII
-	print $ascii . ' ' x 29 . $version . "\n\n";
+	print $ascii . ' ' x 29 . 'v' . $version . "\n\n";
 	return;
 }
 
-# Calculate duration of a shutter speed from its string representation
+=head2 duration
+
+Calculate duration of a shutter speed from its string representation
+
+=head4 Usage
+
+    my $duration = &duration($shutter_speed);
+
+=head4 Arguments
+
+=item * C<$shutter_speed> string containing a representation of a shutter speed, e.g. C<1/125>, C<0.7>, C<3>, or C<3">
+
+=head4 Returns
+
+Numeric representation of the duration of the shutter speed, e.g. C<0.05>
+
+=cut
+
 sub duration {
 	my $shutter_speed = shift;
 	my $duration = 0;
@@ -885,8 +1604,29 @@ sub duration {
 	return $duration;
 }
 
-# This func reads data from PhotoDB and writes EXIF tags
-# to the JPGs that have been scanned from negatives
+=head2 tag
+
+This func reads data from PhotoDB and writes EXIF tags
+to the JPGs that have been scanned from negatives
+
+=head4 Usage
+
+    &tag($db, $where);
+    &tag($db, {film_id=1});
+    &tag($db, {negative_id=100});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$where> hash to specify which scans should be tagged. Tags all scans if not set!
+
+=head4 Returns
+
+Nothing
+
+=cut
+
 sub tag {
 
 	# Read in cmdline args
@@ -1004,7 +1744,28 @@ sub tag {
 	return;
 }
 
-# Compare new and old data to find changed fields
+
+=head2 hashdiff
+
+Compare new and old data to find changed keys.
+
+=head4 Usage
+
+    my $diff = &hashdiff(\%old, \%new);
+    my $diff = &hashdiff($old, $new);
+
+=head4 Arguments
+
+=item * C<$old> hashref of old values
+
+=item * C<$new> hashref of new values
+
+=head4 Returns
+
+Hashref containing values that are new or different.
+
+=cut
+
 sub hashdiff {
 	my $old = shift;
 	my $new = shift;
@@ -1024,6 +1785,29 @@ sub hashdiff {
 }
 
 # Write an event to the log
+
+=head2 logger
+
+Record a database event in the log
+
+=head4 Usage
+
+    &logger({db=>$db, type=>$type, message=>$message});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$type> Type of log message. Currently C<ADD> or C<EDIT> to reflect database changes.
+
+=item * C<$message> Message to write to the log file
+
+=head4 Returns
+
+ID of the log message
+
+=cut
+
 sub logger {
 	my $href = shift;
 	my $db = $href->{db};
@@ -1033,7 +1817,24 @@ sub logger {
 	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
 }
 
-# Choose a scan by filename
+=head2 choosescan
+
+Select a scan by specifying a filename. Allows user to pick if there are multiple matching filenames.
+
+=head4 Usage
+
+    my $id = &choosescan($db);
+
+=head4 Arguments
+
+=item * C<$db> variable containing database handle as returned by C<&db>
+
+=head4 Returns
+
+Integer representing the scan ID
+
+=cut
+
 sub choosescan {
 	my $db = shift;
 	# prompt user for filename of scan
@@ -1043,7 +1844,25 @@ sub choosescan {
 	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
 }
 
-# Return filesystem basepath which contains scans
+
+=head2 basepath
+
+Returns filesystem basepath which contains scans
+
+=head4 Usage
+
+    my $basepath = &basepath;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Path to directory which contains scans
+
+=cut
+
 sub basepath {
 	# Work out file path
 	my $connect = ReadINI(&ini);
@@ -1057,6 +1876,25 @@ sub basepath {
 }
 
 # Untaint input
+
+=head2 untaint
+
+Untaint a tainted value
+
+=head4 Usage
+
+    my $untainted = &untaint($tainted);
+
+=head4 Arguments
+
+=item * C<$tainted> Tainted value to untaint
+
+=head4 Returns
+
+Returns the untained string
+
+=cut
+
 sub untaint {
 	my $input = shift;
 	$input =~ m/^(.*)$/;
@@ -1064,7 +1902,24 @@ sub untaint {
 	return $output;
 }
 
-# List all scan files on fs
+=head2 fsfiles
+
+List all scan files on the filesystem
+
+=head4 Usage
+
+    my @scansondisk = &fsfiles;
+
+=head4 Arguments
+
+None
+
+=head4 Returns
+
+Array of file paths of scans found on the filesystem
+
+=cut
+
 sub fsfiles {
 	# Search filesystem basepath to enumerate all *.jpg
 	my $basepath = &basepath;
@@ -1078,7 +1933,24 @@ sub fsfiles {
 	return @fsfiles;
 }
 
-# List all scan files in db
+
+=head2 dbfiles
+
+List all scan files in the database
+
+=head4 Usage
+
+    my @scansindb = &dbfiles;
+
+=head4 Arguments
+
+=item * C<$db> database handle
+
+=head4 Returns
+Array of file paths of scans recorded in the database
+
+=cut
+
 sub dbfiles {
 	my $db = shift;
 	my $basepath = &basepath;
@@ -1090,15 +1962,6 @@ sub dbfiles {
 	@dbfiles = grep {$_} @dbfiles;
 
 	return @dbfiles;
-}
-
-# Return version of this PhotoDB installation
-sub version {
-	my $filename = 'version';
-	open my $fh, '<', $filename or die "error opening $filename: $!";
-	my $data = <$fh>;
-	close $fh;
-	return $data;
 }
 
 # This ensures the lib loads smoothly
