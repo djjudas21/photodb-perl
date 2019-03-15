@@ -260,7 +260,7 @@ Jonathan Gazeley
 
 =over
 
-=item * L<Developing PhotoDB|docs/CONTRIBUTING.md>
+=item * L<Developing PhotoDB|docs/CONTRIBUTING.pod>
 
 =item * L<Schema description|docs/SCHEMA.pod>
 
