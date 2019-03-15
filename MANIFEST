@@ -2,7 +2,7 @@ bin/photodb
 Build.PL
 Dockerfile
 docs/CONTRIBUTING.md
-docs/SCHEMA.md
+docs/SCHEMA.pod
 dump-schema.pl
 lib/App/PhotoDB.pm
 lib/App/PhotoDB/commands.pm

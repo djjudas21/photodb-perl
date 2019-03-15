@@ -262,7 +262,7 @@ Jonathan Gazeley
 
 =item * L<Developing PhotoDB|docs/CONTRIBUTING.md>
 
-=item * L<Schema description|docs/SCHEMA.md>
+=item * L<Schema description|docs/SCHEMA.pod>
 
 =back
 
