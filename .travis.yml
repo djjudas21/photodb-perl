@@ -1,17 +1,21 @@
-language: "perl"
+language: perl
 perl:
-  - "5.26"
-install:
-  - "cpanm --installdeps ."
+- '5.26'
+env:
+- PERL5LIB=$TRAVIS_BUILD_DIR/lib
+before_install:
+  - sudo apt-get install -y libcpan-uploader-perl
 jobs:
   include:
-    - stage: syntax
-      name: "Perl syntax"
-      script: "perl -cT photodb"
-    - name: "PerlCritic"
-      script: "perlcritic --stern ."
-    - stage: docs
-      name: "Usage documentation"
-      script: "perl -w check-usage-docs.pl"
-    - name: "Function documentation"
-      script: "perl -w check-func-docs.pl"
+    script: "perl Build.PL && ./Build"
+deploy:
+  provider: releases
+  api_key:
+    secure: D16t4VJ9pHLDbdEu6XQ0kVAEWYbjgIRrz6y6S4n72nCU2LBkhdbATyjb/VAVFLesskQVr9aS90b7vJHR+2Jl+ID0D9CpG3pJnBIB+ZB/ECMDN3EVzuqZxHl/pX+FRNPrpH548TShnK0TiRPCOdIr6NCeugBBKchCtSRuXG4Omgs=
+  file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
+  on:
+    tags: true
+  skip_cleanup: true
+  overwrite: true
+  before_deploy: "./Build dist"
+  after_deploy: "cpan-upload --dry-run -u JGAZELEY -p PASSWORD App-PhotoDB-${TRAVIS_TAG}.tar.gz"
