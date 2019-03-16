@@ -217,12 +217,6 @@ Run PhotoDB on any platform, with Docker
 
     docker run -it --rm -v ~/.photodb:/root/.photodb --name photodb photodb
 
-=head3 Set up autocomplete
-
-PhotoDB ships with Bash completion. Enable it by
-
-    echo "source photodb-completion.bash" >> ~/.bash_profile
-
 =head2 Configure database connection
 
 There are three methods for connecting to the database:
