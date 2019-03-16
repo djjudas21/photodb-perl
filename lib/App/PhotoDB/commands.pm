@@ -310,7 +310,6 @@ Upgrade database to the latest schema
 		'logs'    => { 'handler' => \&db_logs,        'desc' => 'Show activity logs from the database' },
 		'stats'   => { 'handler' => \&db_stats,       'desc' => 'Show statistics about database usage' },
 		'test'    => { 'handler' => \&db_test,        'desc' => 'Test database connectivity' },
-		'upgrade' => { 'handler' => \&db_upgrade,     'desc' => 'Upgrade database schema to latest version' },
 	};
 
 

@@ -219,7 +219,7 @@ sub ini {
 
 =head2 db
 
-Connect to the database
+Connect to the database, run migrations and return database handle
 
 =head4 Usage
 
@@ -254,6 +254,18 @@ sub db {
 			mysql_enable_utf8mb4 => 1,
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
+
+	use DB::SQL::Migrations;
+	my $migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrations');
+
+	print "Checking database schema... ";
+
+	# Creates migrations table if it doesn't exist
+	$migrator->create_migrations_table();
+
+	# Run migrations
+	$migrator->apply();
+
 	return $dbh;
 }
 
