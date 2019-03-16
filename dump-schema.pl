@@ -14,6 +14,7 @@ my $dumptables = 1;
 my $dumpfuncs = 1;
 my $dumpdata = 1;
 my $dumpdocs = 1;
+my $dumpbasemigration = 0;
 
 # Read in our command line options
 GetOptions (
@@ -24,9 +25,10 @@ GetOptions (
 	"funcs!" => \$dumpfuncs,
 	"data!" => \$dumpdata,
 	"docs!" => \$dumpdocs,
+	"basemigration!" => \$dumpbasemigration,
 ) or die("Error in command line arguments\n");
 
-die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $dumpdata || $dumpdocs);
+die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $dumpdata || $dumpdocs || $dumpbasemigration);
 
 # Prompt for password
 my $password = &password($username, $hostname);
@@ -68,7 +70,7 @@ if ($dumpdata) {
 		'NEGATIVE_SIZE',
 		'PROCESS',
 		'SHUTTER_SPEED',
-		'SHUTTER_TYPE'
+		'SHUTTER_TYPE',
 	);
 
 	# Delete all existing *.sql files in the sample-data subdir
@@ -91,11 +93,23 @@ if ($dumpdocs) {
 	&dumpdocs;
 }
 
+if ($dumpbasemigration) {
+	# Dump base migration in single file
+	&dumpmigration;
+}
+
 # Dump schema only
 sub dumptable {
 	my $table = shift;
 	print "\tDumping schema for $table\n";
 	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`;
+	return;
+}
+
+# Dump base migration
+sub dumpmigration {
+	print "\tDumping base migration schema\n";
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --ignore-table=$database.schema_migrations --compact --no-data "$database" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
 	return;
 }
 

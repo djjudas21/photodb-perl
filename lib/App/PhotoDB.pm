@@ -318,6 +318,10 @@ sub main {
 	} else {
 		# No cmdline args, so enter interactive prompt and loop until exited by user
 		&welcome;
+
+		# Connect to the database
+		my $db = &db;
+
 		while (1) {
 			my $rv = &prompt({prompt=>'photodb', type=>'text', showtype=>0, showdefault=>0, char=>'>'});
 			# Trap important keywords first
@@ -338,9 +342,6 @@ sub main {
 					&nosubcommand(\%{$handlers{$command}}, $command);
 					next;
 				}
-
-				# Connect to the database
-				my $db = &db;
 
 				# Execute chosen handler
 				if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
