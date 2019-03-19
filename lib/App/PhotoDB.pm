@@ -12,35 +12,26 @@ All usage of PhotoDB is via the interactive command line, which is launched by r
 
 =head1 DESCRIPTION
 
-PhotoDB is an attempt to create a database for film photography that can be used to track
-cameras, lenses, accessories, films, negatives and prints, to fully catalogue a collection of
-photographic equipment as well as the pictures that are made with them. Read the
-CONCEPTS section for full details on the capabilities of PhotoDB.
+PhotoDB is an attempt to create a database for film photography that can be used to track cameras, lenses, accessories, films, negatives and prints, to fully
+catalogue a collection of photographic equipment as well as the pictures that are made with them. Read the CONCEPTS section for full details on the
+capabilities of PhotoDB.
 
-PhotoDB can also write EXIF tags to scanned images taken with film cameras, so they appear in
-your digital photo library with the correct metadata (time, date, focal length, geotag, etc).
+PhotoDB can also write EXIF tags to scanned images taken with film cameras, so they appear in your digital photo library with the correct metadata (time, date,
+focal length, geotag, etc).
 
-At the moment, the PhotoDB project is unfinished and the code continues to change unpredictably.
-Look for a tagged release in the future!
+At the moment, the PhotoDB project is unfinished and the code continues to change unpredictably. Look for a tagged release in the future!
 
-The heart of PhotoDB is the MySQL/MariaDB backend database schema. This is the most complete
-part of the project and describes all the data that is recorded.
+The heart of PhotoDB is the MySQL/MariaDB backend database schema. This is the most complete part of the project and describes all the data that is recorded.
 
-The application is an interactive command-line tool to make it easier to add and edit data in
-the database. It is not a graphical interface or web application (but someone with the right
-enthusiasm and skills could use the logic I've already written to make a basic graphical
-interface quite quickly).
+The application is an interactive command-line tool to make it easier to add and edit data in the database. It is not a graphical interface or web application
+(but someone with the right enthusiasm and skills could use the logic I've already written to make a basic graphical interface quite quickly).
 
-PhotoDB runs only on Linux systems and there are L<installation instructions|docs/INSTALL.md>
-for Fedora and Ubuntu Linux. However it should be able to run on pretty much any Linux
-distribution and MacOS as the Perl dependencies are portable. Soon there will be Docker support
-which will simplify installation and allow PhotoDB to run anywhere, including on Windows.
+PhotoDB should be able to run on pretty much any Linux distribution and MacOS as the Perl dependencies are portable. Soon there will be Docker support which
+will simplify installation and allow PhotoDB to run anywhere, including on Windows.
 
-The application is not *quite* feature-complete, so for now you may also need to edit parts of
-the database directly in some circumstances. You can access the raw database using the MySQL
-command line, by using an application such as L<MySQL Workbench|http://www.mysql.com/products/workbench/>
-or L<phpMyAdmin|http://www.phpmyadmin.net/home_page/index.php> to obtain a GUI for manipulating
-the tables.
+The application is not *quite* feature-complete, so for now you may also need to edit parts of the database directly in some circumstances. You can access the
+raw database using the MySQL command line, by using an application such as L<MySQL Workbench|http://www.mysql.com/products/workbench/> or
+L<phpMyAdmin|http://www.phpmyadmin.net/home_page/index.php> to obtain a GUI for manipulating the tables.
 
 =head1 CONCEPTS
 
@@ -176,8 +167,8 @@ Add new general accessories with C<photodb accessory add> and add new categories
 
 =head2 Install database backend
 
-A pre-requisite for PhotoDB is a functioning MySQL or MariaDB database instance. If you have access to an existing
-MySQL server, e.g. at a hosting provider, note down the details for connecting (hostname or IP address, username, password).
+A pre-requisite for PhotoDB is a functioning MySQL or MariaDB database instance. If you have access to an existing MySQL server, e.g. at a hosting provider,
+note down the details for connecting (hostname or IP address, username, password).
 
 Otherwise, consider installing a MySQL server locally on your computer. If you do this, the hostname will be C<localhost>.
 
@@ -230,21 +221,18 @@ There are three methods for connecting to the database:
 2. Database and application on different computers, connect via native MySQL
 3. Database and application on different computers, connect via SSH tunnel
 
-The app and accessory scripts need to know how to connect to the database. The first time you run
-PhotoDB, you will be prompted to enter connection details for the database backend. If you need to
-edit the config in future, the config file is created at C</etc/photodb.ini>.
+The app and accessory scripts need to know how to connect to the database. The first time you run PhotoDB, you will be prompted to enter connection details for
+the database backend. If you need to edit the config in future, the config file is created at C</etc/photodb.ini>.
 
 =head3 Tunnelling
 
-If the database is on a remote server and does not have the MySQL port (3306) open to receive connections,
-you will need to set up a tunnel. Run the command below, substituting in the correct hostname and
-username for the database server.
+If the database is on a remote server and does not have the MySQL port (3306) open to receive connections, you will need to set up a tunnel. Run the command
+below, substituting in the correct hostname and username for the database server.
 
     ssh -L 3306:localhost:3306 -N <username>@<database.example.com>
 
-Once the tunnel is established, you should be able to connect to the database on C<127.0.0.1:3306> and
-your connection will be tunnelled. Configure PhotoDB in the same way as if the database was local.
-You will need to re-establish the tunnel each time you wish to use PhotoDB.
+Once the tunnel is established, you should be able to connect to the database on C<127.0.0.1:3306> and your connection will be tunnelled. Configure PhotoDB in
+the same way as if the database was local. You will need to re-establish the tunnel each time you wish to use PhotoDB.
 
 =head1 BUGS/CAVEATS/etc
 
