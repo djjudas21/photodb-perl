@@ -1185,8 +1185,8 @@ sub writeconfig {
 
 	my %inidata;
 	$inidata{'database'}{'host'} = &prompt({default=>'localhost', prompt=>'Database hostname or IP address', type=>'text'});
-	$inidata{'database'}{'schema'} = &prompt({default=>'photography', prompt=>'Schema name of photography database', type=>'text'});
-	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
+	$inidata{'database'}{'schema'} = &prompt({default=>'photodb', prompt=>'Schema name of photography database', type=>'text'});
+	$inidata{'database'}{'user'} = &prompt({default=>'photodb', prompt=>'Username with access to the schema', type=>'text'});
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata)
