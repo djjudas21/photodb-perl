@@ -191,7 +191,7 @@ or
 
 =head3 From source
 
-1. Grab the latest release tarball from the [Releases page](https://github.com/djjudas21/photography-database/releases).
+1. Grab the latest release tarball from the [Releases page](https://github.com/djjudas21/photodb/releases).
 It's the one with a name like C<App-PhotoDB-0.00.tar.gz>.
 
 2. Install it with C<cpanm>:
@@ -232,7 +232,7 @@ the same way as if the database was local. You will need to re-establish the tun
 
 =head1 BUGS/CAVEATS/etc
 
-Report bugs in the L<Github issue tracker|https://github.com/djjudas21/photography-database/issues>
+Report bugs in the L<Github issue tracker|https://github.com/djjudas21/photodb/issues>
 
 =head1 AUTHOR
 
