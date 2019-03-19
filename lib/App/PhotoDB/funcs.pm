@@ -546,7 +546,7 @@ Nothing
 
 sub nocommand {
 	my $handlers = shift;
-	print "photodb <command> <subcommand>\n\n";
+	print "<command> <subcommand>\n\n";
 	print "Please enter a valid command. Valid commands are:\n";
 	print "\t$_\n" for sort keys %$handlers;
 	return;
@@ -577,7 +577,7 @@ Nothing
 sub nosubcommand {
 	my $handlers = shift;
 	my $command = shift;
-	print "photodb $command <subcommand>\n\n";
+	print "$command <subcommand>\n\n";
 	print "Please enter a valid subcommand. Valid subcommands for '$command' are:\n";
 	print "\t" . &pad($_) . $$handlers{$_}{'desc'} . "\n" for sort keys %$handlers;
 	return;
@@ -1185,8 +1185,8 @@ sub writeconfig {
 
 	my %inidata;
 	$inidata{'database'}{'host'} = &prompt({default=>'localhost', prompt=>'Database hostname or IP address', type=>'text'});
-	$inidata{'database'}{'schema'} = &prompt({default=>'photography', prompt=>'Schema name of photography database', type=>'text'});
-	$inidata{'database'}{'user'} = &prompt({default=>'photography', prompt=>'Username with access to the schema', type=>'text'});
+	$inidata{'database'}{'schema'} = &prompt({default=>'photodb', prompt=>'Schema name of photography database', type=>'text'});
+	$inidata{'database'}{'user'} = &prompt({default=>'photodb', prompt=>'Username with access to the schema', type=>'text'});
 	$inidata{'database'}{'pass'} = &prompt({default=>'', prompt=>'Password for this user', type=>'text'});
 	$inidata{'filesystem'}{'basepath'} = &prompt({default=>'', prompt=>'Path to your scanned images', type=>'text'});
 	WriteINI($inifile, \%inidata)
