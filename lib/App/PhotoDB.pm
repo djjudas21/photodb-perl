@@ -181,7 +181,11 @@ MySQL server, e.g. at a hosting provider, note down the details for connecting (
 
 Otherwise, consider installing a MySQL server locally on your computer. If you do this, the hostname will be C<localhost>.
 
-Create a database user with a password for PhotoDB with sufficient privileges to SELECT, INSERT, UPDATE, DELETE, CREATE and DROP.
+Create an empty database schema and database user with a password for PhotoDB with sufficient privileges at least to SELECT, INSERT, UPDATE, DELETE, CREATE and
+DROP. Detailed instructions are beyond the scope of this document but a basic setup would be:
+
+    create schema photodb;
+    grant all privileges on photodb.* to photodb@localhost identified by 'password';
 
 =head2 Install application frontend
 
