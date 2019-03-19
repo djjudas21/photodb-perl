@@ -13,7 +13,6 @@ LICENSE
 MANIFEST			This list of files
 META.json
 META.yml
-photodb.ini
 README.pod
 t/00-compile.t
 t/01-perlcritic.t
