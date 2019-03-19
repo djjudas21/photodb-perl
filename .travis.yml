@@ -7,7 +7,10 @@ before_install:
   - sudo apt-get install -y libcpan-uploader-perl
 jobs:
   include:
-    script: "perl Build.PL && ./Build"
+    - stage: test
+      script: "perl Build.PL && ./Build"
+    - stage: migrations
+      script: tests/migrations.sh
 deploy:
   provider: releases
   api_key:
