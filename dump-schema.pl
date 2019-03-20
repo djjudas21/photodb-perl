@@ -109,7 +109,8 @@ sub dumptable {
 # Dump base migration
 sub dumpmigration {
 	print "\tDumping base migration schema\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --ignore-table=$database.schema_migrations --no-data "$database" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
+	my $tables = 'ACCESSORY_TYPE ACCESSORY PERSON ARCHIVE_TYPE CONDITION LOG BATTERY PROCESS MANUFACTURER EXPOSURE_PROGRAM EXHIBITION FOCUS_TYPE METERING_MODE SHUTTER_SPEED SHUTTER_TYPE PAPER_STOCK METERING_TYPE FORMAT FLASH_PROTOCOL FILTER_ADAPTER FILTER ARCHIVE LIGHT_METER BODY_TYPE NEGATIVE_SIZE MOUNT FILMSTOCK DEVELOPER MOUNT_ADAPTER FILM_BULK TELECONVERTER TONER ENLARGER FLASH PROJECTOR LENS CAMERA MOVIE METERING_MODE_AVAILABLE EXPOSURE_PROGRAM_AVAILABLE ACCESSORY_COMPAT SHUTTER_SPEED_AVAILABLE REPAIR FILM NEGATIVE PRINT SCAN TO_PRINT EXHIBIT';
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-data "$database" --tables $tables | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
 	return;
 }
 
