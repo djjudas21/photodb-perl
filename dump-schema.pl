@@ -125,7 +125,7 @@ sub dumpfuncs {
 sub dumpdata {
 	my $table = shift;
 	print "\tDumping data from $table\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
 }
 
