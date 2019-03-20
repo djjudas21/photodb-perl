@@ -1,3 +1,15 @@
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+DROP TABLE IF EXISTS `ACCESSORY`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ACCESSORY` (
@@ -14,6 +26,7 @@ CREATE TABLE `ACCESSORY` (
   CONSTRAINT `fk_ACCESSORY_1` FOREIGN KEY (`accessory_type_id`) REFERENCES `ACCESSORY_TYPE` (`accessory_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog accessories that are not tracked in more specific tables';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ACCESSORY_COMPAT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ACCESSORY_COMPAT` (
@@ -30,6 +43,7 @@ CREATE TABLE `ACCESSORY_COMPAT` (
   CONSTRAINT `fk_ACCESSORY_COMPAT_3` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to define compatibility between accessories and cameras or lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ACCESSORY_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ACCESSORY_TYPE` (
@@ -38,6 +52,7 @@ CREATE TABLE `ACCESSORY_TYPE` (
   PRIMARY KEY (`accessory_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog types of photographic accessory';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ARCHIVE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ARCHIVE` (
@@ -54,6 +69,7 @@ CREATE TABLE `ARCHIVE` (
   CONSTRAINT `fk_ARCHIVE_3` FOREIGN KEY (`archive_type_id`) REFERENCES `ARCHIVE_TYPE` (`archive_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list all archives that exist for storing physical media';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ARCHIVE_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ARCHIVE_TYPE` (
@@ -62,6 +78,7 @@ CREATE TABLE `ARCHIVE_TYPE` (
   PRIMARY KEY (`archive_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list the different types of archive available for materials';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `BATTERY`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `BATTERY` (
@@ -73,6 +90,7 @@ CREATE TABLE `BATTERY` (
   PRIMARY KEY (`battery_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog of types of battery';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `BODY_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `BODY_TYPE` (
@@ -81,6 +99,7 @@ CREATE TABLE `BODY_TYPE` (
   PRIMARY KEY (`body_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog types of camera body style';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `CAMERA`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `CAMERA` (
@@ -174,6 +193,7 @@ CREATE TABLE `CAMERA` (
   CONSTRAINT `fk_shutter_type` FOREIGN KEY (`shutter_type_id`) REFERENCES `SHUTTER_TYPE` (`shutter_type_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to catalog cameras - both cameras with fixed lenses and cameras with interchangeable lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `CONDITION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `CONDITION` (
@@ -186,6 +206,7 @@ CREATE TABLE `CONDITION` (
   PRIMARY KEY (`condition_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list of physical condition descriptions that can be used to evaluate equipment';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `DEVELOPER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `DEVELOPER` (
@@ -198,6 +219,7 @@ CREATE TABLE `DEVELOPER` (
   PRIMARY KEY (`developer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list film and paper developers';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `ENLARGER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `ENLARGER` (
@@ -218,6 +240,7 @@ CREATE TABLE `ENLARGER` (
   CONSTRAINT `fk_ENLARGER_2` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list enlargers';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `EXHIBIT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EXHIBIT` (
@@ -231,6 +254,7 @@ CREATE TABLE `EXHIBIT` (
   CONSTRAINT `fk_EXHIBIT_2` FOREIGN KEY (`print_id`) REFERENCES `PRINT` (`print_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to record which prints were displayed in which exhibitions';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `EXHIBITION`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EXHIBITION` (
@@ -242,6 +266,7 @@ CREATE TABLE `EXHIBITION` (
   PRIMARY KEY (`exhibition_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to record exhibition events';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `EXPOSURE_PROGRAM`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EXPOSURE_PROGRAM` (
@@ -250,6 +275,7 @@ CREATE TABLE `EXPOSURE_PROGRAM` (
   PRIMARY KEY (`exposure_program_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Exposure programs as defined by EXIF tag ExposureProgram';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `EXPOSURE_PROGRAM_AVAILABLE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `EXPOSURE_PROGRAM_AVAILABLE` (
@@ -262,6 +288,7 @@ CREATE TABLE `EXPOSURE_PROGRAM_AVAILABLE` (
   CONSTRAINT `fk_EXPOSURE_PROGRAM_AVAILABLE_2` FOREIGN KEY (`exposure_program_id`) REFERENCES `EXPOSURE_PROGRAM` (`exposure_program_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to associate cameras with available exposure programs';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FILM`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FILM` (
@@ -307,6 +334,7 @@ CREATE TABLE `FILM` (
   CONSTRAINT `fk_format_id` FOREIGN KEY (`format_id`) REFERENCES `FORMAT` (`format_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list films which consist of one or more negatives. A film can be a roll film, one or more sheets of sheet film, one or more photographic plates, etc.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FILMSTOCK`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FILMSTOCK` (
@@ -324,6 +352,7 @@ CREATE TABLE `FILMSTOCK` (
   CONSTRAINT `fk_manufacturer_id` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to list different brands of film stock';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FILM_BULK`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FILM_BULK` (
@@ -342,6 +371,7 @@ CREATE TABLE `FILM_BULK` (
   CONSTRAINT `fk_FILM_BULK_2` FOREIGN KEY (`filmstock_id`) REFERENCES `FILMSTOCK` (`filmstock_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to record bulk film stock, from which individual films can be cut';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FILTER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FILTER` (
@@ -356,6 +386,7 @@ CREATE TABLE `FILTER` (
   CONSTRAINT `fk_FILTER_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog filters';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FILTER_ADAPTER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FILTER_ADAPTER` (
@@ -365,6 +396,7 @@ CREATE TABLE `FILTER_ADAPTER` (
   PRIMARY KEY (`filter_adapter_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalogue filter adapter rings';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FLASH`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FLASH` (
@@ -397,6 +429,7 @@ CREATE TABLE `FLASH` (
   CONSTRAINT `fk_FLASH_2` FOREIGN KEY (`battery_type_id`) REFERENCES `BATTERY` (`battery_type`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catlog flashes, flashguns and speedlights';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FLASH_PROTOCOL`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FLASH_PROTOCOL` (
@@ -406,6 +439,7 @@ CREATE TABLE `FLASH_PROTOCOL` (
   PRIMARY KEY (`flash_protocol_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different protocols used to communicate with flashes';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FOCUS_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FOCUS_TYPE` (
@@ -414,6 +448,7 @@ CREATE TABLE `FOCUS_TYPE` (
   PRIMARY KEY (`focus_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different focusing methods';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `FORMAT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `FORMAT` (
@@ -423,6 +458,7 @@ CREATE TABLE `FORMAT` (
   PRIMARY KEY (`format_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalogue different film formats. These are distinct from negative sizes.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `LENS`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `LENS` (
@@ -481,6 +517,7 @@ CREATE TABLE `LENS` (
   CONSTRAINT `fk_LENS_4` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `LIGHT_METER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `LIGHT_METER` (
@@ -503,6 +540,7 @@ CREATE TABLE `LIGHT_METER` (
   CONSTRAINT `fk_LIGHT_METER_2` FOREIGN KEY (`metering_type`) REFERENCES `METERING_TYPE` (`metering_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog light meters';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `LOG`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `LOG` (
@@ -513,6 +551,7 @@ CREATE TABLE `LOG` (
   PRIMARY KEY (`log_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to store data modification logs';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `MANUFACTURER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MANUFACTURER` (
@@ -527,6 +566,7 @@ CREATE TABLE `MANUFACTURER` (
   UNIQUE KEY `manufacturer_UNIQUE` (`manufacturer`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog manufacturers of equipment and consumables';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `METERING_MODE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `METERING_MODE` (
@@ -535,6 +575,7 @@ CREATE TABLE `METERING_MODE` (
   PRIMARY KEY (`metering_mode_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Metering modes as defined by EXIF tag MeteringMode';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `METERING_MODE_AVAILABLE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `METERING_MODE_AVAILABLE` (
@@ -546,6 +587,7 @@ CREATE TABLE `METERING_MODE_AVAILABLE` (
   CONSTRAINT `fk_METERING_MODE_AVAILABLE_2` FOREIGN KEY (`metering_mode_id`) REFERENCES `METERING_MODE` (`metering_mode_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to associate cameras with available metering modes';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `METERING_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `METERING_TYPE` (
@@ -554,6 +596,7 @@ CREATE TABLE `METERING_TYPE` (
   PRIMARY KEY (`metering_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different metering technologies and cell types';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `MOUNT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MOUNT` (
@@ -571,6 +614,7 @@ CREATE TABLE `MOUNT` (
   CONSTRAINT `fk_MOUNT_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different lens mount standards. This is mostly used for camera lens mounts, but can also be used for enlarger and projector lenses.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `MOUNT_ADAPTER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MOUNT_ADAPTER` (
@@ -587,6 +631,7 @@ CREATE TABLE `MOUNT_ADAPTER` (
   CONSTRAINT `fk_MOUNT_ADAPTER_2` FOREIGN KEY (`camera_mount`) REFERENCES `MOUNT` (`mount_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog adapters to mount lenses on other cameras';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `MOVIE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `MOVIE` (
@@ -617,6 +662,7 @@ CREATE TABLE `MOVIE` (
   CONSTRAINT `fk_MOVIE_5` FOREIGN KEY (`process_id`) REFERENCES `PROCESS` (`process_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog motion picture films (movies)';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `NEGATIVE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `NEGATIVE` (
@@ -663,6 +709,7 @@ CREATE TABLE `NEGATIVE` (
   CONSTRAINT `fk_NEGATIVE_9` FOREIGN KEY (`shutter_speed`) REFERENCES `SHUTTER_SPEED` (`shutter_speed`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog negatives (which includes positives/slide too). Negatives are created by cameras, belong to films and can be used to create scans or prints.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `NEGATIVE_SIZE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `NEGATIVE_SIZE` (
@@ -676,6 +723,7 @@ CREATE TABLE `NEGATIVE_SIZE` (
   PRIMARY KEY (`negative_size_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different negative sizes available. Negtives sizes are distinct from film formats.';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PAPER_STOCK`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PAPER_STOCK` (
@@ -691,6 +739,7 @@ CREATE TABLE `PAPER_STOCK` (
   CONSTRAINT `fk_PAPER_STOCK_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog different paper stocks available';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PERSON`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PERSON` (
@@ -699,6 +748,7 @@ CREATE TABLE `PERSON` (
   PRIMARY KEY (`person_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog photographers';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PRINT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PRINT` (
@@ -748,6 +798,7 @@ CREATE TABLE `PRINT` (
   CONSTRAINT `fk_PRINT_8` FOREIGN KEY (`printer_id`) REFERENCES `PERSON` (`person_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog prints made from negatives';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PROCESS`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PROCESS` (
@@ -758,6 +809,7 @@ CREATE TABLE `PROCESS` (
   PRIMARY KEY (`process_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog chemical processes that can be used to develop film and paper';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `PROJECTOR`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `PROJECTOR` (
@@ -777,6 +829,7 @@ CREATE TABLE `PROJECTOR` (
   CONSTRAINT `fk_PROJECTOR_3` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog projectors (still and movie)';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `REPAIR`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `REPAIR` (
@@ -793,6 +846,7 @@ CREATE TABLE `REPAIR` (
   CONSTRAINT `fk_REPAIR_2` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Tabe to catalog all repairs and servicing undertaken on cameras and lenses in the collection';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `SCAN`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SCAN` (
@@ -811,6 +865,7 @@ CREATE TABLE `SCAN` (
   CONSTRAINT `fk_SCAN_2` FOREIGN KEY (`print_id`) REFERENCES `PRINT` (`print_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to record all the images that have been scanned digitally';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `SHUTTER_SPEED`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHUTTER_SPEED` (
@@ -819,6 +874,7 @@ CREATE TABLE `SHUTTER_SPEED` (
   PRIMARY KEY (`shutter_speed`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to list all possible shutter speeds';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `SHUTTER_SPEED_AVAILABLE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHUTTER_SPEED_AVAILABLE` (
@@ -831,6 +887,7 @@ CREATE TABLE `SHUTTER_SPEED_AVAILABLE` (
   CONSTRAINT `fk_SHUTTER_SPEED_AVAILABLE_2` FOREIGN KEY (`camera_id`) REFERENCES `CAMERA` (`camera_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to associate cameras with shutter speeds';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `SHUTTER_TYPE`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SHUTTER_TYPE` (
@@ -839,6 +896,7 @@ CREATE TABLE `SHUTTER_TYPE` (
   PRIMARY KEY (`shutter_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog the different types of camera shutter';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `TELECONVERTER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `TELECONVERTER` (
@@ -857,6 +915,7 @@ CREATE TABLE `TELECONVERTER` (
   CONSTRAINT `fk_TELECONVERTER_2` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog teleconverters (multipliers)';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `TONER`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `TONER` (
@@ -868,6 +927,7 @@ CREATE TABLE `TONER` (
   PRIMARY KEY (`toner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalog paper toners that can be used during the printing process';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `TO_PRINT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `TO_PRINT` (
@@ -884,6 +944,8 @@ CREATE TABLE `TO_PRINT` (
   CONSTRAINT `fk_TO_PRINT_1` FOREIGN KEY (`negative_id`) REFERENCES `NEGATIVE` (`negative_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table to catalogue negatives that should be printed';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `archive_contents`;
+/*!50001 DROP VIEW IF EXISTS `archive_contents`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `archive_contents` (
@@ -892,6 +954,8 @@ SET character_set_client = utf8;
   `archive_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `camera_chooser`;
+/*!50001 DROP VIEW IF EXISTS `camera_chooser`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `camera_chooser` (
@@ -941,6 +1005,8 @@ SET character_set_client = utf8;
   `display_lens` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `cameralens_compat`;
+/*!50001 DROP VIEW IF EXISTS `cameralens_compat`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `cameralens_compat` (
@@ -950,6 +1016,8 @@ SET character_set_client = utf8;
   `lens` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_accessory`;
+/*!50001 DROP VIEW IF EXISTS `choose_accessory`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_accessory` (
@@ -957,6 +1025,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_accessory_compat`;
+/*!50001 DROP VIEW IF EXISTS `choose_accessory_compat`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_accessory_compat` (
@@ -966,6 +1036,8 @@ SET character_set_client = utf8;
   `lens_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_battery`;
+/*!50001 DROP VIEW IF EXISTS `choose_battery`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_battery` (
@@ -973,6 +1045,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_bulk_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_bulk_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_bulk_film` (
@@ -980,6 +1054,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_camera`;
+/*!50001 DROP VIEW IF EXISTS `choose_camera`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_camera` (
@@ -988,6 +1064,8 @@ SET character_set_client = utf8;
   `mount_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_camera_by_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_by_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_camera_by_film` (
@@ -996,6 +1074,8 @@ SET character_set_client = utf8;
   `film_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_camera_without_exposure_programs`;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_exposure_programs`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_camera_without_exposure_programs` (
@@ -1003,6 +1083,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_camera_without_metering_data`;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_metering_data`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_camera_without_metering_data` (
@@ -1010,6 +1092,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_camera_without_shutter_data`;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_shutter_data`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_camera_without_shutter_data` (
@@ -1017,6 +1101,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_display_lens`;
+/*!50001 DROP VIEW IF EXISTS `choose_display_lens`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_display_lens` (
@@ -1026,6 +1112,8 @@ SET character_set_client = utf8;
   `mount_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_enlarger`;
+/*!50001 DROP VIEW IF EXISTS `choose_enlarger`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_enlarger` (
@@ -1033,6 +1121,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_enlarger_lens`;
+/*!50001 DROP VIEW IF EXISTS `choose_enlarger_lens`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_enlarger_lens` (
@@ -1040,6 +1130,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_film_to_develop`;
+/*!50001 DROP VIEW IF EXISTS `choose_film_to_develop`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_film_to_develop` (
@@ -1047,6 +1139,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_film_to_load`;
+/*!50001 DROP VIEW IF EXISTS `choose_film_to_load`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_film_to_load` (
@@ -1054,6 +1148,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_filmstock`;
+/*!50001 DROP VIEW IF EXISTS `choose_filmstock`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_filmstock` (
@@ -1061,6 +1157,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_filter`;
+/*!50001 DROP VIEW IF EXISTS `choose_filter`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_filter` (
@@ -1069,6 +1167,8 @@ SET character_set_client = utf8;
   `thread` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_flash_protocol`;
+/*!50001 DROP VIEW IF EXISTS `choose_flash_protocol`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_flash_protocol` (
@@ -1076,6 +1176,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_lens`;
+/*!50001 DROP VIEW IF EXISTS `choose_lens`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_lens` (
@@ -1083,6 +1185,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_lens_by_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_lens_by_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_lens_by_film` (
@@ -1091,6 +1195,8 @@ SET character_set_client = utf8;
   `film_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_mount`;
+/*!50001 DROP VIEW IF EXISTS `choose_mount`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_mount` (
@@ -1099,6 +1205,8 @@ SET character_set_client = utf8;
   `purpose` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_mount_adapter_by_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_mount_adapter_by_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_mount_adapter_by_film` (
@@ -1107,6 +1215,8 @@ SET character_set_client = utf8;
   `film_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_movie_camera`;
+/*!50001 DROP VIEW IF EXISTS `choose_movie_camera`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_movie_camera` (
@@ -1114,6 +1224,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_paper`;
+/*!50001 DROP VIEW IF EXISTS `choose_paper`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_paper` (
@@ -1121,6 +1233,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_scan`;
+/*!50001 DROP VIEW IF EXISTS `choose_scan`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_scan` (
@@ -1129,6 +1243,8 @@ SET character_set_client = utf8;
   `filename` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_shutter_speed_by_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_shutter_speed_by_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_shutter_speed_by_film` (
@@ -1137,6 +1253,8 @@ SET character_set_client = utf8;
   `film_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_teleconverter_by_film`;
+/*!50001 DROP VIEW IF EXISTS `choose_teleconverter_by_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_teleconverter_by_film` (
@@ -1145,6 +1263,8 @@ SET character_set_client = utf8;
   `film_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `choose_todo`;
+/*!50001 DROP VIEW IF EXISTS `choose_todo`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `choose_todo` (
@@ -1152,6 +1272,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `current_films`;
+/*!50001 DROP VIEW IF EXISTS `current_films`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `current_films` (
@@ -1159,6 +1281,8 @@ SET character_set_client = utf8;
   `opt` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `exhibits`;
+/*!50001 DROP VIEW IF EXISTS `exhibits`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `exhibits` (
@@ -1167,6 +1291,8 @@ SET character_set_client = utf8;
   `exhibition_id` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `exifdata`;
+/*!50001 DROP VIEW IF EXISTS `exifdata`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `exifdata` (
@@ -1202,6 +1328,8 @@ SET character_set_client = utf8;
   `UserComment` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_accessory`;
+/*!50001 DROP VIEW IF EXISTS `info_accessory`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_accessory` (
@@ -1214,6 +1342,8 @@ SET character_set_client = utf8;
   `Lost price` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_archive`;
+/*!50001 DROP VIEW IF EXISTS `info_archive`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_archive` (
@@ -1226,6 +1356,8 @@ SET character_set_client = utf8;
   `Archive type` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_camera`;
+/*!50001 DROP VIEW IF EXISTS `info_camera`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_camera` (
@@ -1285,6 +1417,8 @@ SET character_set_client = utf8;
   `Frames shot` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_enlarger`;
+/*!50001 DROP VIEW IF EXISTS `info_enlarger`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_enlarger` (
@@ -1300,6 +1434,8 @@ SET character_set_client = utf8;
   `Lost price` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_film`;
+/*!50001 DROP VIEW IF EXISTS `info_film`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_film` (
@@ -1318,6 +1454,8 @@ SET character_set_client = utf8;
   `Archive` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_lens`;
+/*!50001 DROP VIEW IF EXISTS `info_lens`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_lens` (
@@ -1359,6 +1497,8 @@ SET character_set_client = utf8;
   `Frames shot` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_movie`;
+/*!50001 DROP VIEW IF EXISTS `info_movie`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_movie` (
@@ -1378,6 +1518,8 @@ SET character_set_client = utf8;
   `Description` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_negative`;
+/*!50001 DROP VIEW IF EXISTS `info_negative`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_negative` (
@@ -1400,6 +1542,8 @@ SET character_set_client = utf8;
   `Filmstock` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `info_print`;
+/*!50001 DROP VIEW IF EXISTS `info_print`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `info_print` (
@@ -1422,6 +1566,8 @@ SET character_set_client = utf8;
   `Location` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_cameras_by_decade`;
+/*!50001 DROP VIEW IF EXISTS `report_cameras_by_decade`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_cameras_by_decade` (
@@ -1429,6 +1575,8 @@ SET character_set_client = utf8;
   `Cameras` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_most_popular_lenses_relative`;
+/*!50001 DROP VIEW IF EXISTS `report_most_popular_lenses_relative`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_most_popular_lenses_relative` (
@@ -1438,18 +1586,24 @@ SET character_set_client = utf8;
   `Frames shot per day` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_never_used_cameras`;
+/*!50001 DROP VIEW IF EXISTS `report_never_used_cameras`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_never_used_cameras` (
   `Camera` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_never_used_lenses`;
+/*!50001 DROP VIEW IF EXISTS `report_never_used_lenses`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_never_used_lenses` (
   `Lens` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_total_negatives_per_camera`;
+/*!50001 DROP VIEW IF EXISTS `report_total_negatives_per_camera`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_total_negatives_per_camera` (
@@ -1457,6 +1611,8 @@ SET character_set_client = utf8;
   `Frames shot` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_total_negatives_per_lens`;
+/*!50001 DROP VIEW IF EXISTS `report_total_negatives_per_lens`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_total_negatives_per_lens` (
@@ -1464,6 +1620,8 @@ SET character_set_client = utf8;
   `Frames shot` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `report_unscanned_negs`;
+/*!50001 DROP VIEW IF EXISTS `report_unscanned_negs`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `report_unscanned_negs` (
@@ -1473,6 +1631,8 @@ SET character_set_client = utf8;
   `description` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `scans_negs`;
+/*!50001 DROP VIEW IF EXISTS `scans_negs`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `scans_negs` (
@@ -1501,6 +1661,8 @@ SET character_set_client = utf8;
   `copy_of` tinyint NOT NULL
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
+DROP TABLE IF EXISTS `view_film_stocks`;
+/*!50001 DROP VIEW IF EXISTS `view_film_stocks`*/;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 /*!50001 CREATE TABLE `view_film_stocks` (
@@ -1509,6 +1671,7 @@ SET character_set_client = utf8;
 ) ENGINE=MyISAM */;
 SET character_set_client = @saved_cs_client;
 /*!50001 DROP TABLE IF EXISTS `archive_contents`*/;
+/*!50001 DROP VIEW IF EXISTS `archive_contents`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1522,6 +1685,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `camera_chooser`*/;
+/*!50001 DROP VIEW IF EXISTS `camera_chooser`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1535,6 +1699,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `cameralens_compat`*/;
+/*!50001 DROP VIEW IF EXISTS `cameralens_compat`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1548,6 +1713,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_accessory`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_accessory`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1561,6 +1727,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_accessory_compat`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_accessory_compat`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1574,6 +1741,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_battery`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_battery`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1587,6 +1755,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_bulk_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_bulk_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1600,6 +1769,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_camera`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_camera`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1613,6 +1783,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_camera_by_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_by_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1626,6 +1797,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_camera_without_exposure_programs`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_exposure_programs`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1639,6 +1811,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_camera_without_metering_data`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_metering_data`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1652,6 +1825,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_camera_without_shutter_data`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_camera_without_shutter_data`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1665,6 +1839,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_display_lens`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_display_lens`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1678,6 +1853,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_enlarger`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_enlarger`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1691,6 +1867,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_enlarger_lens`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_enlarger_lens`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1704,6 +1881,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_film_to_develop`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_film_to_develop`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1717,6 +1895,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_film_to_load`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_film_to_load`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1730,6 +1909,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_filmstock`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_filmstock`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1743,6 +1923,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_filter`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_filter`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1756,6 +1937,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_flash_protocol`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_flash_protocol`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1769,6 +1951,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_lens`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_lens`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1782,6 +1965,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_lens_by_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_lens_by_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1795,6 +1979,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_mount`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_mount`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1808,6 +1993,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_mount_adapter_by_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_mount_adapter_by_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1821,6 +2007,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_movie_camera`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_movie_camera`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1834,6 +2021,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_paper`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_paper`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1847,6 +2035,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_scan`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_scan`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1860,6 +2049,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_shutter_speed_by_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_shutter_speed_by_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1873,6 +2063,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_teleconverter_by_film`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_teleconverter_by_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1886,6 +2077,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `choose_todo`*/;
+/*!50001 DROP VIEW IF EXISTS `choose_todo`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1899,6 +2091,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `current_films`*/;
+/*!50001 DROP VIEW IF EXISTS `current_films`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1912,6 +2105,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `exhibits`*/;
+/*!50001 DROP VIEW IF EXISTS `exhibits`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1925,6 +2119,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `exifdata`*/;
+/*!50001 DROP VIEW IF EXISTS `exifdata`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1938,6 +2133,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_accessory`*/;
+/*!50001 DROP VIEW IF EXISTS `info_accessory`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1951,6 +2147,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_archive`*/;
+/*!50001 DROP VIEW IF EXISTS `info_archive`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1964,6 +2161,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_camera`*/;
+/*!50001 DROP VIEW IF EXISTS `info_camera`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1977,6 +2175,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_enlarger`*/;
+/*!50001 DROP VIEW IF EXISTS `info_enlarger`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -1990,6 +2189,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_film`*/;
+/*!50001 DROP VIEW IF EXISTS `info_film`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2003,6 +2203,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_lens`*/;
+/*!50001 DROP VIEW IF EXISTS `info_lens`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2016,6 +2217,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_movie`*/;
+/*!50001 DROP VIEW IF EXISTS `info_movie`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2029,6 +2231,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_negative`*/;
+/*!50001 DROP VIEW IF EXISTS `info_negative`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2042,6 +2245,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `info_print`*/;
+/*!50001 DROP VIEW IF EXISTS `info_print`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2055,6 +2259,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_cameras_by_decade`*/;
+/*!50001 DROP VIEW IF EXISTS `report_cameras_by_decade`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2068,6 +2273,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_most_popular_lenses_relative`*/;
+/*!50001 DROP VIEW IF EXISTS `report_most_popular_lenses_relative`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2081,6 +2287,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_never_used_cameras`*/;
+/*!50001 DROP VIEW IF EXISTS `report_never_used_cameras`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2094,6 +2301,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_never_used_lenses`*/;
+/*!50001 DROP VIEW IF EXISTS `report_never_used_lenses`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2107,6 +2315,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_total_negatives_per_camera`*/;
+/*!50001 DROP VIEW IF EXISTS `report_total_negatives_per_camera`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2120,6 +2329,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_total_negatives_per_lens`*/;
+/*!50001 DROP VIEW IF EXISTS `report_total_negatives_per_lens`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2133,6 +2343,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `report_unscanned_negs`*/;
+/*!50001 DROP VIEW IF EXISTS `report_unscanned_negs`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2146,6 +2357,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `scans_negs`*/;
+/*!50001 DROP VIEW IF EXISTS `scans_negs`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2159,6 +2371,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
 /*!50001 DROP TABLE IF EXISTS `view_film_stocks`*/;
+/*!50001 DROP VIEW IF EXISTS `view_film_stocks`*/;
 /*!50001 SET @saved_cs_client          = @@character_set_client */;
 /*!50001 SET @saved_cs_results         = @@character_set_results */;
 /*!50001 SET @saved_col_connection     = @@collation_connection */;
@@ -2171,3 +2384,13 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
