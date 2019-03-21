@@ -8,19 +8,25 @@ env:
 jobs:
   include:
   - stage: test
-    script: perl Build.PL && ./Build && ./Build dist
-  - stage: migrations
+    name: Perl tests
+    script: perl Build.PL && ./Build test
+  - name: Database migrations
     script: tests/migrations.sh
-deploy:
-- provider: releases
-  api_key:
-    secure: D16t4VJ9pHLDbdEu6XQ0kVAEWYbjgIRrz6y6S4n72nCU2LBkhdbATyjb/VAVFLesskQVr9aS90b7vJHR+2Jl+ID0D9CpG3pJnBIB+ZB/ECMDN3EVzuqZxHl/pX+FRNPrpH548TShnK0TiRPCOdIr6NCeugBBKchCtSRuXG4Omgs=
-  file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
-  on:
-    tags: true
-  skip_cleanup: true
-  overwrite: true
-- provider: script
-  script: sudo apt-get install -y libcpan-uploader-perl && cpan-upload --dry-run -u JGAZELEY -p ${PAUSE_PASS} App-PhotoDB-${TRAVIS_TAG}.tar.gz
-  on:
-    tags: true
+  - stage: deploy
+    if: tag IS present
+    script: perl Build.PL && ./Build && ./Build dist
+    deploy:
+    - provider: releases
+      api_key:
+        secure: D16t4VJ9pHLDbdEu6XQ0kVAEWYbjgIRrz6y6S4n72nCU2LBkhdbATyjb/VAVFLesskQVr9aS90b7vJHR+2Jl+ID0D9CpG3pJnBIB+ZB/ECMDN3EVzuqZxHl/pX+FRNPrpH548TShnK0TiRPCOdIr6NCeugBBKchCtSRuXG4Omgs=
+      file: App-PhotoDB-${TRAVIS_TAG}.tar.gz
+      on:
+        tags: true
+      skip_cleanup: true
+      overwrite: true
+    - provider: script
+      before_script: cpanm -q CPAN::Upload
+      script: cpan-uploader --dry-run -u JGAZELEY -p ${PAUSE_PASS} App-PhotoDB-${TRAVIS_TAG}.tar.gz
+      on:
+        tags: true
+      skip_cleanup: true
