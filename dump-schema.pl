@@ -109,14 +109,15 @@ sub dumptable {
 # Dump base migration
 sub dumpmigration {
 	print "\tDumping base migration schema\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --ignore-table=$database.schema_migrations --compact --no-data "$database" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
+	my $tables = 'ACCESSORY_TYPE ACCESSORY PERSON ARCHIVE_TYPE CONDITION LOG BATTERY PROCESS MANUFACTURER EXPOSURE_PROGRAM EXHIBITION FOCUS_TYPE METERING_MODE SHUTTER_SPEED SHUTTER_TYPE PAPER_STOCK METERING_TYPE FORMAT FLASH_PROTOCOL FILTER_ADAPTER FILTER ARCHIVE LIGHT_METER BODY_TYPE NEGATIVE_SIZE MOUNT FILMSTOCK DEVELOPER MOUNT_ADAPTER FILM_BULK TELECONVERTER TONER ENLARGER FLASH PROJECTOR LENS CAMERA MOVIE METERING_MODE_AVAILABLE EXPOSURE_PROGRAM_AVAILABLE ACCESSORY_COMPAT SHUTTER_SPEED_AVAILABLE REPAIR FILM NEGATIVE PRINT SCAN TO_PRINT EXHIBIT';
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-data "$database" --tables $tables | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
 	return;
 }
 
 # Dump functions
 sub dumpfuncs {
 	print "\nDumping functions...\n";
-	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" > schema/${database}_functions.sql`;
+	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/${database}_functions.sql`;
 	return;
 }
 
@@ -124,7 +125,7 @@ sub dumpfuncs {
 sub dumpdata {
 	my $table = shift;
 	print "\tDumping data from $table\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info --compact "$database" "$table" > sample-data/${database}_${table}_data.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
 }
 
