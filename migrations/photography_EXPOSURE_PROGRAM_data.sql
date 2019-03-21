@@ -9,6 +9,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+SET @@session.sql_mode =
+    CASE WHEN @@session.sql_mode NOT LIKE '%NO_AUTO_VALUE_ON_ZERO%'
+        THEN CASE WHEN LENGTH(@@session.sql_mode)>0
+            THEN CONCAT_WS(',',@@session.sql_mode,'NO_AUTO_VALUE_ON_ZERO')  -- added, wasn't empty
+            ELSE 'NO_AUTO_VALUE_ON_ZERO'                                    -- replaced, was empty
+        END
+        ELSE @@session.sql_mode                                             -- unchanged, already had NO_AUTO_VALUE_ON_ZERO set
+    END;
+
 LOCK TABLES `EXPOSURE_PROGRAM` WRITE;
 /*!40000 ALTER TABLE `EXPOSURE_PROGRAM` DISABLE KEYS */;
 INSERT INTO `EXPOSURE_PROGRAM` VALUES (0,'Fixed'),(1,'Manual'),(2,'Program AE'),(3,'Aperture-priority AE'),(4,'Shutter speed priority AE'),(5,'Creative (Slow speed)'),(6,'Action (High speed)'),(7,'Portrait'),(8,'Landscape'),(9,'Bulb');

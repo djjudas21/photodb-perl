@@ -9,6 +9,15 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+SET @@session.sql_mode =
+    CASE WHEN @@session.sql_mode NOT LIKE '%NO_AUTO_VALUE_ON_ZERO%'
+        THEN CASE WHEN LENGTH(@@session.sql_mode)>0
+            THEN CONCAT_WS(',',@@session.sql_mode,'NO_AUTO_VALUE_ON_ZERO')  -- added, wasn't empty
+            ELSE 'NO_AUTO_VALUE_ON_ZERO'                                    -- replaced, was empty
+        END
+        ELSE @@session.sql_mode                                             -- unchanged, already had NO_AUTO_VALUE_ON_ZERO set
+    END;
+
 LOCK TABLES `METERING_MODE` WRITE;
 /*!40000 ALTER TABLE `METERING_MODE` DISABLE KEYS */;
 INSERT INTO `METERING_MODE` VALUES (0,'None'),(1,'Average'),(2,'Center-weighted average'),(3,'Spot'),(4,'Multi-spot'),(5,'Multi-segment'),(6,'Partial');
