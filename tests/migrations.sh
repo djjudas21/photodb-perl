@@ -20,4 +20,5 @@ host=localhost
 EOT
 
 # Run Photodb to trigger migrations
-photodb
+# Exit straight away, but this still runs migrations
+printf 'exit' | photodb
