@@ -281,7 +281,7 @@ sub main {
 		my $rv = &prompt({prompt=>'photodb', type=>'text', showtype=>0, showdefault=>0, char=>'>'});
 		# Trap important keywords first
 		if ($rv eq 'exit' || $rv eq 'quit') {
-			exit;
+			last;
 		} elsif ($rv =~ /^(\w+) ?([\w-]+)?$/) {
 			# Match a command and an optional subcommand
 			# Check if the command is defined in the handlers
@@ -309,6 +309,7 @@ sub main {
 			}
 		}
 	}
+	$db->disconnect;
 	return;
 }
 
