@@ -26,7 +26,7 @@ jobs:
       overwrite: true
     - provider: script
       before_script: cpanm -q CPAN::Uploader
-      script: cpan-upload --dry-run -u JGAZELEY -p ${PAUSE_PASS} App-PhotoDB-${TRAVIS_TAG}.tar.gz
+      script: cpan-upload -u JGAZELEY -p ${PAUSE_PASS} App-PhotoDB-${TRAVIS_TAG}.tar.gz
       on:
         tags: true
       skip_cleanup: true
