@@ -6,15 +6,13 @@
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `DISPLAYSIZE`(`width` decimal(5,2), `height` decimal(5,2)) RETURNS varchar(10) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+CREATE FUNCTION `DISPLAYSIZE`(`width` decimal(5,2), `height` decimal(5,2)) RETURNS varchar(10) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
     DETERMINISTIC
 BEGIN
   declare size varchar(10);
   set size = concat(ifnull((trim(width) + 0),'?'),'×',ifnull((trim(height) + 0),'?'), '"');
 RETURN size;
 END ;;
-DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -27,8 +25,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `lenstype`(n int) RETURNS varchar(32) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+CREATE FUNCTION `lenstype`(n int) RETURNS varchar(32) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
 BEGIN
 declare x varchar(32);
 if n <= 8 then set x = 'Super telephoto' ;
@@ -41,7 +38,6 @@ else set x = 'Fisheye';
 end if;
 RETURN x;
 END ;;
-DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -54,8 +50,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `lookupneg`(p_film_id int, p_frame varchar(5)) RETURNS int(11)
+CREATE FUNCTION `lookupneg`(p_film_id int, p_frame varchar(5)) RETURNS int(11)
     DETERMINISTIC
 BEGIN
 	declare negid int;
@@ -65,7 +60,6 @@ BEGIN
 		and frame = p_frame collate utf8mb4_general_ci;
 RETURN negid;
 END ;;
-DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -78,13 +72,11 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` FUNCTION `printbool`(b int) RETURNS varchar(3) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
+CREATE FUNCTION `printbool`(b int) RETURNS varchar(3) CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci
     DETERMINISTIC
 BEGIN
 return if(b, 'Yes', 'No');
 END ;;
-DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -97,12 +89,10 @@ DELIMITER ;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-DELIMITER ;;
-CREATE DEFINER=`jonathan`@`%` PROCEDURE `print_unarchive`(IN printId int)
+CREATE PROCEDURE `print_unarchive`(IN printId int)
 BEGIN
 UPDATE PRINT set archive_id = null WHERE print_id = printId;
 END ;;
-DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;

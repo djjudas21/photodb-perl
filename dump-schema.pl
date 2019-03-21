@@ -117,7 +117,7 @@ sub dumpmigration {
 # Dump functions
 sub dumpfuncs {
 	print "\nDumping functions...\n";
-	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" > schema/${database}_functions.sql`;
+	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/${database}_functions.sql`;
 	return;
 }
 
