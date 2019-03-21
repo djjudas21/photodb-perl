@@ -28,8 +28,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `EXPOSURE_PROGRAM` WRITE;
 ALTER TABLE `EXPOSURE_PROGRAM` DISABLE KEYS;
-INSERT INTO `EXPOSURE_PROGRAM` VALUES (-1,'Fixed'),(1,'Manual'),(2,'Program AE'),(3,'Aperture-priority AE'),(4,'Shutter speed priority AE'),(5,'Creative (Slow speed)'),(6,'Action (High speed)'),(7,'Portrait'),(8,'Landscape'),(9,'Bulb');
-UPDATE `EXPOSURE_PROGRAM` SET `exposure_program_id`='0' WHERE `exposure_program_id`='-1';
+INSERT INTO `EXPOSURE_PROGRAM` VALUES (0,'Fixed'),(1,'Manual'),(2,'Program AE'),(3,'Aperture-priority AE'),(4,'Shutter speed priority AE'),(5,'Creative (Slow speed)'),(6,'Action (High speed)'),(7,'Portrait'),(8,'Landscape'),(9,'Bulb');
 ALTER TABLE `EXPOSURE_PROGRAM` ENABLE KEYS;
 UNLOCK TABLES;
 
@@ -53,8 +52,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `METERING_MODE` WRITE;
 ALTER TABLE `METERING_MODE` DISABLE KEYS;
-INSERT INTO `METERING_MODE` VALUES (-1,'None'),(1,'Average'),(2,'Center-weighted average'),(3,'Spot'),(4,'Multi-spot'),(5,'Multi-segment'),(6,'Partial');
-UPDATE `METERING_MODE` SET `metering_mode_id`='0' WHERE `metering_mode_id`='-1';
+INSERT INTO `METERING_MODE` VALUES (0,'None'),(1,'Average'),(2,'Center-weighted average'),(3,'Spot'),(4,'Multi-spot'),(5,'Multi-segment'),(6,'Partial');
 ALTER TABLE `METERING_MODE` ENABLE KEYS;
 UNLOCK TABLES;
 
