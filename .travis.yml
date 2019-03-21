@@ -7,7 +7,10 @@ env:
   - secure: ERaAHRIEwrs9nuQGomdFizcsMwlh150KGD6nd45NZ+qvIKDFnOHuIOAwtsX4ptCfUIWjJl4qTIpAEno3x2sONZgrUMsudEIiVfngc2nycf5+mvZDbfcJUJXG4cXtSkQA63jtpuq9G/TOTtJ1vZdtL+9def6VsuV9Bbm3udPe8iI=
 jobs:
   include:
+  - stage: test
     script: perl Build.PL && ./Build && ./Build dist
+  - stage: migrations
+    script: tests/migrations.sh
 deploy:
 - provider: releases
   api_key:
