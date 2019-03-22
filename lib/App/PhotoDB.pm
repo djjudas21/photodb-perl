@@ -276,6 +276,9 @@ sub main {
 	# Connect to the database
 	my $db = &db;
 
+	# Set up terminal
+	our $term = &term;
+
 	# Enter interactive prompt and loop until exited by user
 	while (1) {
 		my $rv = &prompt({prompt=>'photodb', type=>'text', showtype=>0, showdefault=>0, char=>'>'});
