@@ -20,7 +20,7 @@ our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
-	negative_add negative_bulkadd negative_prints negative_info negative_tag
+	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
@@ -682,6 +682,21 @@ sub negative_tag {
 	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
 	&tag($db, {negative_id=>$neg_id});
+	return;
+}
+
+# Search for a negative
+sub negative_search {
+	my $db = shift;
+	my $searchterm = &prompt({prompt=>'Enter negative search term'});
+	my $rows = &printlist({
+		db    => $db,
+		msg   => "negatives that match '$searchterm'",
+		cols  => ["concat(film_id, '/', frame) as id", 'description as opt'],
+		table => 'NEGATIVE',
+		where => "description like '%$searchterm%' collate utf8mb4_general_ci",
+	});
+	print "Found $rows rows\n";
 	return;
 }
 
