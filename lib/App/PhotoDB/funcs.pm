@@ -23,6 +23,7 @@ use YAML;
 use Image::ExifTool;
 use Term::ReadLine;
 use Term::ReadLine::Perl;
+use File::Basename;
 
 our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term);
 
@@ -1213,6 +1214,13 @@ sub writeconfig {
 		die "filename '$inifile' has invalid characters.\n";
 	}
 	$inifile = $1;
+
+	# Check for existence of config dir
+	my $dir = dirname($inifile);
+	if (!-d $dir) {
+		# Create it if necessary
+		mkdir $dir or die "Can't create config directory $dir";
+	}
 
 	my %inidata;
 	$inidata{'database'}{'host'} = &prompt({default=>'localhost', prompt=>'Database hostname or IP address', type=>'text'});
