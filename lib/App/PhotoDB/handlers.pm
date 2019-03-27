@@ -649,10 +649,10 @@ sub negative_prints {
 
 # Write EXIF tags to scans from a negative
 sub negative_tag {
-        my $db = shift;
+	my $db = shift;
 	my $neg_id = &chooseneg({db=>$db});
-        &tag($db, {negative_id=>$neg_id});
-        return;
+	&tag($db, {negative_id=>$neg_id});
+	return;
 }
 
 # Add a new lens to the database
