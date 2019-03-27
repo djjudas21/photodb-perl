@@ -21,7 +21,7 @@ our @EXPORT_OK = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag
-	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
+	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
@@ -771,6 +771,21 @@ sub lens_accessory {
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
+	return;
+}
+
+# Search for a camera
+sub lens_search {
+	my $db = shift;
+	my $searchterm = &prompt({prompt=>'Enter lens search term'});
+	my $rows = &printlist({
+		db    => $db,
+		msg   => "lenses that match '$searchterm'",
+		cols  => ['id', 'opt'],
+		table => 'choose_lens',
+		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	});
+	print "Found $rows rows\n";
 	return;
 }
 

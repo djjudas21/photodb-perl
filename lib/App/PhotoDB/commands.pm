@@ -444,6 +444,10 @@ Show information about a lens
 
 Repair a lens
 
+=head3 lens search
+
+Search for a lens
+
 =head3 lens sell
 
 Sell a lens
@@ -455,6 +459,7 @@ Sell a lens
 		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit an existing lens' },
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
 		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
+		'search'    => { 'handler' => \&lens_search,    'desc' => 'Search for a lens' },
 		'sell'      => { 'handler' => \&lens_sell,      'desc' => 'Sell a lens' },
 	};
 
