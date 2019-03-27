@@ -89,3 +89,8 @@
 # Avoid schema dump files
 ^schema/
 ^sample-data/
+
+^local$
+\.spec$
+^Dockerfile$
+^tests/
