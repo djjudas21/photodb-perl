@@ -277,7 +277,7 @@ sub main {
 	my $db = &db;
 
 	# Set up terminal
-	our $term = &term;
+	my $term = &term;
 
 	# Enter interactive prompt and loop until exited by user
 	while (1) {
