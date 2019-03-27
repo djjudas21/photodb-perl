@@ -775,7 +775,7 @@ Print arbitrary rows from the database as an easy way of displaying data
 
 =head4 Returns
 
-Nothing
+Integer representing the number of rows printed
 
 =cut
 
@@ -807,7 +807,7 @@ sub printlist {
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
-	return;
+	return $rows;
 }
 
 # Return values from an arbitrary column from database as an arrayref
