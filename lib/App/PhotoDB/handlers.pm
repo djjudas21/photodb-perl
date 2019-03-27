@@ -18,7 +18,7 @@ use App::PhotoDB::queries;
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit
@@ -442,6 +442,21 @@ sub camera_displaylens {
 	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, col=>'display_lens', table=>'CAMERA', where=>{camera_id=>$camera_id}})});
 	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
+}
+
+# Search for a camera
+sub camera_search {
+	my $db = shift;
+	my $searchterm = &prompt({prompt=>'Enter camera search term'});
+	my $rows = &printlist({
+		db    => $db,
+		msg   => "cameras that match '$searchterm'",
+		cols  => ['id', 'opt'],
+		table => 'choose_camera',
+		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	});
+	print "Found $rows rows\n";
+	return;
 }
 
 # Sell a camera

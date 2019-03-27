@@ -194,6 +194,10 @@ Add available metering mode info to a camera
 
 Repair a camera
 
+=head3 camera search
+
+Search for a camera
+
 =head3 camera sell
 
 Sell a camera
@@ -217,6 +221,7 @@ Add available shutter speed info to a camera
 		'info'            => { 'handler' => \&camera_info,            'desc' => 'Show information about a camera' },
 		'meteringmode'    => { 'handler' => \&camera_meteringmode,    'desc' => 'Add available metering mode info to a camera' },
 		'repair'          => { 'handler' => \&camera_repair,          'desc' => 'Repair a camera' },
+		'search'          => { 'handler' => \&camera_search,          'desc' => 'Search for a camera' },
 		'sell'            => { 'handler' => \&camera_sell,            'desc' => 'Sell a camera' },
 		'show-lenses'     => { 'handler' => \&notimplemented,         'desc' => 'Not yet implemented' },
 		'shutterspeeds'   => { 'handler' => \&camera_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera' },
