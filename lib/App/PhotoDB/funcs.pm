@@ -289,7 +289,7 @@ sub db {
 	use DB::SQL::Migrations;
 	my $migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrations');
 
-	print "Checking database schema... ";
+	print "Checking database schema... \n";
 
 	# Creates migrations table if it doesn't exist
 	$migrator->create_migrations_table();
