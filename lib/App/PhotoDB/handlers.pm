@@ -17,7 +17,7 @@ use App::PhotoDB::funcs qw(/./);
 use App::PhotoDB::queries;
 
 our @EXPORT_OK = qw(
-	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info
+	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag
@@ -229,6 +229,21 @@ sub film_choose {
 			return &listchoices({db=>$db, cols=>['film_id as id', 'notes as opt'], table=>'FILM', where=>$thinwhere, required=>1});
 		}
 	}
+	return;
+}
+
+# Search for a film
+sub film_search {
+	my $db = shift;
+	my $searchterm = &prompt({prompt=>'Enter film search term'});
+	my $rows = &printlist({
+		db    => $db,
+		msg   => "films that match '$searchterm'",
+		cols  => ['film_id as id', 'notes as opt'],
+		table => 'FILM',
+		where => "notes like '%$searchterm%' collate utf8mb4_general_ci",
+	});
+	print "Found $rows rows\n";
 	return;
 }
 

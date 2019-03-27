@@ -397,6 +397,10 @@ Load a film into a camera
 
 Locate where this film is
 
+=head3 film search
+
+Search for a film
+
 =head3 film stocks
 
 List the films that are currently in stock
@@ -416,6 +420,7 @@ Write EXIF tags to scans from a film
 		'info'     => { 'handler' => \&film_info,     'desc' => 'Show information about a film' },
 		'load'     => { 'handler' => \&film_load,     'desc' => 'Load a film into a camera' },
 		'locate'   => { 'handler' => \&film_locate,   'desc' => 'Locate where this film is' },
+		'search'   => { 'handler' => \&film_search,   'desc' => 'Search for a film' },
 		'stocks'   => { 'handler' => \&film_stocks,   'desc' => 'List the films that are currently in stock' },
 		'tag'      => { 'handler' => \&film_tag,      'desc' => 'Write EXIF tags to scans from a film' },
 	};
