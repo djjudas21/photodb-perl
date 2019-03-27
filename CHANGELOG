@@ -1,0 +1,9 @@
+Revision history for Perl module App::PhotoDB
+
+0.02 2019-03-27
+
+  * ReadLine fix to make it work on Ubuntu
+
+0.01 2019-03-23
+
+  * First release to CPAN.
