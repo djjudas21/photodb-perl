@@ -799,6 +799,7 @@ sub printlist {
 		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
+		$rows = 0 if ($rows eq  '0E0');
 	} else {
 		print "Must pass in table, cols, where\n";
 		return;
