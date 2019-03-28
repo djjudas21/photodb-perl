@@ -62,6 +62,10 @@ Add a new mount adapter to the database
 
 Add a new projector to the database
 
+=head3 accessory search
+
+Search for an accessory
+
 =head3 accessory teleconverter
 
 Add a new teleconverter to the database
@@ -83,6 +87,7 @@ Add a new category of general accessory to the database
 		'projector'     => { 'handler' => \&projector_add,      'desc' => 'Add a new projector to the database' },
 		'teleconverter' => { 'handler' => \&teleconverter_add,  'desc' => 'Add a new teleconverter to the database' },
 		'category'      => { 'handler' => \&accessory_category, 'desc' => 'Add a new category of general accessory to the database' },
+		'search'        => { 'handler' => \&accessory_search,   'desc' => 'Search for an accessory' },
 	};
 
 =head2 archive

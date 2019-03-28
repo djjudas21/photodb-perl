@@ -31,7 +31,7 @@ our @EXPORT_OK = qw(
 	teleconverter_add
 	filter_add filter_adapt
 	manufacturer_add
-	accessory_add accessory_category accessory_info
+	accessory_add accessory_category accessory_info accessory_search
 	enlarger_add enlarger_info enlarger_sell
 	flash_add
 	battery_add
@@ -1248,6 +1248,21 @@ sub accessory_info {
 	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
 	my $accessorydata = &lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}});
 	print Dump($accessorydata);
+	return;
+}
+
+# Search for an accessory
+sub accessory_search {
+	my $db = shift;
+	my $searchterm = &prompt({prompt=>'Enter accessory search term'});
+	my $rows = &printlist({
+		db    => $db,
+		msg   => "accessories that match '$searchterm'",
+		cols  => ['id', 'opt'],
+		table => 'choose_accessory',
+		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	});
+	print "Found $rows rows\n";
 	return;
 }
 
