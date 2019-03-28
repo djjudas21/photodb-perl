@@ -290,7 +290,7 @@ sub db {
 	use DB::SQL::Migrations;
 	my $migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrations');
 
-	print "Checking database schema... ";
+	print "Checking database schema... \n";
 
 	# Creates migrations table if it doesn't exist
 	$migrator->create_migrations_table();
@@ -776,7 +776,7 @@ Print arbitrary rows from the database as an easy way of displaying data
 
 =head4 Returns
 
-Nothing
+Integer representing the number of rows printed
 
 =cut
 
@@ -800,6 +800,7 @@ sub printlist {
 		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
+		$rows = 0 if ($rows eq  '0E0');
 	} else {
 		print "Must pass in table, cols, where\n";
 		return;
@@ -808,7 +809,7 @@ sub printlist {
 	while (my $ref = $sth->fetchrow_hashref) {
 		print "\t$ref->{id}\t$ref->{opt}\n";
 	}
-	return;
+	return $rows;
 }
 
 # Return values from an arbitrary column from database as an arrayref
