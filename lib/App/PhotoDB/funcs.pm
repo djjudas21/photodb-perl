@@ -25,7 +25,7 @@ use Term::ReadLine;
 use Term::ReadLine::Perl;
 use File::Basename;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci);
 
 =head2 prompt
 
@@ -2013,6 +2013,31 @@ sub dbfiles {
 	@dbfiles = grep {$_} @dbfiles;
 
 	return @dbfiles;
+}
+
+
+=head2 unsci
+
+DBD returns integer zero in scientific format as 0E0. This rewrites it.
+
+=head4 Usage
+
+    $int = &unsci($int);
+
+=head4 Arguments
+
+=item * C<$int> an integer returned by DBD
+
+=head4 Returns
+
+The same integer as passed in, except with string 0E0 rewritten as integer 0
+
+=cut
+
+sub unsci {
+	my $int = shift;
+	$int = 0 if ($int eq '0E0');
+	return $int;
 }
 
 # This ensures the lib loads smoothly
