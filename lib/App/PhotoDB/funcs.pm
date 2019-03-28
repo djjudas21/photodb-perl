@@ -382,7 +382,7 @@ sub updaterecord {
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	my $rows = $sth->execute(@bind);
-	$rows = 0 if ($rows eq  '0E0');
+	$rows = &unsci($rows);
 	print "Updated $rows rows\n" unless $silent;
 	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
 	return $rows;
@@ -455,7 +455,7 @@ sub deleterecord {
 	# Execute query
 	my $sth = $db->prepare($stmt);
 	my $rows = $sth->execute(@bind);
-	$rows = 0 if ($rows eq  '0E0');
+	$rows = &unsci($rows);
 	print "Deleted $rows rows\n" unless $silent;
 	&logger({db=>$db, type=>'DELETE', message=>"$table $rows rows"}) if $log;
 	return $rows;
@@ -800,7 +800,7 @@ sub printlist {
 		my($stmt, @bind) = $sql->select($table, $cols, $where, $order);
 		$sth = $db->prepare($stmt);
 		$rows = $sth->execute(@bind);
-		$rows = 0 if ($rows eq  '0E0');
+		$rows = &unsci($rows);
 	} else {
 		print "Must pass in table, cols, where\n";
 		return;
@@ -1072,8 +1072,7 @@ sub updatedata {
 	my $query = shift;	# Plain SQL query
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
-	# DBD returns scientific 0E0 instead of 0
-	$rows = 0 if ($rows eq '0E0');
+	$rows = &unsci($rows);
 	return $rows;
 }
 
@@ -1728,9 +1727,10 @@ sub tag {
 	# Prepare and execute the SQL
 	my $sth = $db->prepare($stmt) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute(@bind);
+	$rows - &unsci($rows);
 
 	# Get confirmation
-	if ($rows eq  '0E0') {
+	if ($rows == 0) {
 		print "No scans be will tagged\n";
 		return;
 	}
