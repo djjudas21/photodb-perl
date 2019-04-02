@@ -1,5 +1,12 @@
 Revision history for Perl module App::PhotoDB
 
+0.03 2019-04-02
+
+  * Add search functionality for cameras, lenses, negatives, films and accessories (#227)
+  * Fix display numbers in scientific format (#254)
+  * Fix bug when moving scans to the right dir (#242)
+  * Fix bug creating config file on first run (#239)
+
 0.02 2019-03-27
 
   * ReadLine fix to make it work on Ubuntu
