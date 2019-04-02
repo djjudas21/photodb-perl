@@ -25,7 +25,7 @@ use Term::ReadLine;
 use Term::ReadLine::Perl;
 use File::Basename;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice);
 
 =head2 prompt
 
@@ -750,6 +750,51 @@ sub listchoices {
 		# Return input
 		return $input;
 	}
+}
+
+
+=head2 multiplechoice
+
+Choose from a number of options expressed as an array, and return the index of the chosen option
+
+=head4 Usage
+
+    my @choices = [
+        { desc => 'Do nothing' },
+        { desc => 'Also do nothing' },
+    ];
+
+    my $action = &multiplechoice({choices => \@choices});
+
+=head4 Arguments
+
+=item * C<$choices> array of hashes of options
+
+=head4 Returns
+
+Integer of the chosen option
+
+=cut
+
+sub multiplechoice {
+	my $href = shift;
+	my $choices = $href->{choices};
+
+	my @allowedvals;
+	while (my ($index, $choice) = each @{$choices}) {
+		print "\t$index\t$choice->{desc}\n";
+		push(@allowedvals, $index);
+	}
+
+	# Loop until we get valid input
+	my $input;
+	my $msg = "Please select an action from the list";
+
+	do {
+		$input = &prompt({prompt=>$msg, type=>'integer'});
+	} while ($input && !($input ~~ [ map {"$_"} @allowedvals ] || $input eq ''));
+
+	return $input;
 }
 
 =head2 printlist
