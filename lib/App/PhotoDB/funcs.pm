@@ -1727,7 +1727,7 @@ sub tag {
 	# Prepare and execute the SQL
 	my $sth = $db->prepare($stmt) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute(@bind);
-	$rows - &unsci($rows);
+	$rows = &unsci($rows);
 
 	# Get confirmation
 	if ($rows == 0) {
