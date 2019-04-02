@@ -1629,6 +1629,11 @@ sub run_task {
 	my $db = shift;
 
 	my @tasks = @App::PhotoDB::queries::tasks;
+	if (scalar(@tasks) == 0) {
+		print "No tasks found\n";
+		return 0;
+	}
+
 	for my $i (0 .. $#tasks) {
 		print "\t$i\t$tasks[$i]{desc}\n";
 	}
@@ -1647,6 +1652,11 @@ sub run_report {
 	my $db = shift;
 
 	my @reports = @App::PhotoDB::queries::reports;
+	if (scalar(@reports) == 0) {
+		print "No reports found\n";
+		return 0;
+	}
+
 	for my $i (0 .. $#reports) {
 		print "\t$i\t$reports[$i]{desc}\n";
 	}
