@@ -1628,7 +1628,7 @@ sub exhibition_info {
 sub run_task {
 	my $db = shift;
 
-	my @tasks = @photodb::queries::tasks;
+	my @tasks = @App::PhotoDB::queries::tasks;
 	for my $i (0 .. $#tasks) {
 		print "\t$i\t$tasks[$i]{desc}\n";
 	}
@@ -1646,7 +1646,7 @@ sub run_task {
 sub run_report {
 	my $db = shift;
 
-	my @reports = @photodb::queries::reports;
+	my @reports = @App::PhotoDB::queries::reports;
 	for my $i (0 .. $#reports) {
 		print "\t$i\t$reports[$i]{desc}\n";
 	}
