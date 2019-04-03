@@ -1305,7 +1305,7 @@ Get a negative ID either from the neg ID or the film/frame ID
 
 =head4 Usage
 
-    my $negID = &resolvenegid($db, '10/4');
+    my $negID = &resolvenegid({db=>$db, string=>'10/4'});
 
 =head4 Arguments
 
@@ -1384,7 +1384,7 @@ Write out a text file in the film scans directory
 
 =head4 Usage
 
-    &annotatefilm($db, $film_id);
+    &annotatefilm({db=>$db, film_id=>$film_id});
 
 =head4 Arguments
 
@@ -1664,9 +1664,9 @@ to the JPGs that have been scanned from negatives
 
 =head4 Usage
 
-    &tag($db, $where);
-    &tag($db, {film_id=1});
-    &tag($db, {negative_id=100});
+    &tag({db=>$db, where=>$where});
+    &tag({db=>$db, where=>{film_id=1}});
+    &tag({db=>$db, where=>{negative_id=100}});
 
 =head4 Arguments
 
@@ -1878,7 +1878,7 @@ Select a scan by specifying a filename. Allows user to pick if there are multipl
 
 =head4 Usage
 
-    my $id = &choosescan($db);
+    my $id = &choosescan({db=>$db});
 
 =head4 Arguments
 
