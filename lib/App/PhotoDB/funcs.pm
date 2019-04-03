@@ -695,7 +695,7 @@ sub listchoices {
 		print "No valid $keyword options to choose from\n";
 		if ($inserthandler && &prompt({prompt=>"Add a new $keyword?", type=>'boolean', default=>'no'})) {
 			# add a new entry
-			my $id = $inserthandler->($db);
+			my $id = $inserthandler->({db=>$db});
 			return $id;
 		} elsif ($skipok) {
 			return;
@@ -744,7 +744,7 @@ sub listchoices {
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
 	if ($input eq $char && $inserthandler) {
-		my $id = $inserthandler->($db);
+		my $id = $inserthandler->({db=>$db});
 		return $id;
 	} else {
 		# Return input
@@ -1068,8 +1068,9 @@ The number of rows updated
 =cut
 
 sub updatedata {
-	my $db = shift;		# DB handle
-	my $query = shift;	# Plain SQL query
+	my $href = shift;
+	my $db = $href->{db};		   # DB handle
+	my $query = $href->{query};	# Plain SQL query
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 	$rows = &unsci($rows);
@@ -1320,8 +1321,9 @@ Integer negative ID
 =cut
 
 sub resolvenegid {
-	my $db = shift;
-	my $string = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $string = $href->{string};
 	if ($string =~ m/^\d+$/) {
 		# All digits - already a NegID
 		return $string;
@@ -1398,8 +1400,9 @@ Nothing
 =cut
 
 sub annotatefilm {
-	my $db = shift;
-	my $film_id = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id};
 
 	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
@@ -1681,8 +1684,9 @@ Nothing
 sub tag {
 
 	# Read in cmdline args
-	my $db = shift;
-	my $where = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $where = $href->{where};
 
 	# Make sure basepath is valid
 	my $basepath = &basepath;
@@ -1888,7 +1892,8 @@ Integer representing the scan ID
 =cut
 
 sub choosescan {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	# prompt user for filename of scan
 	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
 
@@ -2004,7 +2009,8 @@ Array of file paths of scans recorded in the database
 =cut
 
 sub dbfiles {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $basepath = &basepath;
 	# Query DB to find all known scans
 	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});

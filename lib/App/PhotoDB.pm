@@ -303,7 +303,7 @@ sub main {
 
 			# Execute chosen handler
 			if (&prompt({prompt=>"$handlers{$command}{$subcommand}{'desc'}. Continue?", type=>'boolean', default=>'yes'})) {
-				$handlers{$command}{$subcommand}{'handler'}->($db);
+				$handlers{$command}{$subcommand}{'handler'}->({db=>$db});
 			}
 		} else {
 			# Print list of commands if unknown input is entered

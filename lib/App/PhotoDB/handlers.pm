@@ -53,7 +53,8 @@ our @EXPORT_OK = qw(
 
 # Add a new film to the database
 sub film_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	if (&prompt({default=>'no', prompt=>'Is this film bulk-loaded?', type=>'boolean'}) == 1) {
 		# These are filled in only for bulk-loaded films
@@ -77,15 +78,16 @@ sub film_add {
 	$data{price} = &prompt({prompt=>'Purchase price', type=>'decimal'});
 	my $filmid = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 	if (&prompt({default=>'no', prompt=>'Load this film into a camera now?', type=>'boolean'})) {
-		&film_load($db, $filmid);
+		&film_load({db=>$db, film_id=>$filmid});
 	}
 	return $filmid;
 }
 
 # Load a film into a camera
 sub film_load {
-	my $db = shift;
-	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_load', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &listchoices({db=>$db, table=>'choose_film_to_load', required=>1});
 	my %data;
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}, required=>1});
 	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
@@ -96,8 +98,9 @@ sub film_load {
 
 # Put a film in a physical archive
 sub film_archive {
-	my $db = shift;
-	my $film_id = shift || &film_choose($db);
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
 	my %data;
 	$data{archive_id} = &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
@@ -105,8 +108,9 @@ sub film_archive {
 
 # Develop a film
 sub film_develop {
-	my $db = shift;
-	my $film_id = shift || &listchoices({db=>$db, table=>'choose_film_to_develop', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &listchoices({db=>$db, table=>'choose_film_to_develop', required=>1});
 	my %data;
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this film processed?', type=>'date'});
 	$data{developer_id} = &listchoices({db=>$db, table=>'DEVELOPER', cols=>['developer_id as id', 'name as opt'], where=>{'for_film'=>1}, inserthandler=>\&developer_add});
@@ -120,15 +124,16 @@ sub film_develop {
 	$data{processed_by} = &prompt({prompt=>'Who developed the film?'});
 	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 	if (&prompt({default=>'no', prompt=>'Archive this film now?', type=>'boolean'})) {
-		&film_archive($db, $film_id);
+		&film_archive({db=>$db, film_id=>$film_id});
 	}
 	return;
 }
 
 # Show information about a negative
 sub film_info {
-	my $db = shift;
-	my $film_id = shift || &film_choose($db);
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
 	my $filmdata = &lookupcol({db=>$db, table=>'info_film', where=>{'`Film ID`'=>$film_id}});
 	print Dump($filmdata);
 	return;
@@ -136,16 +141,18 @@ sub film_info {
 
 # Write EXIF tags to scans from a film
 sub film_tag {
-	my $db = shift;
-	my $film_id = shift || &film_choose($db);
-	&tag($db, {film_id=>$film_id});
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
+	&tag({db=>$db, film_id=>$film_id});
 	return;
 }
 
 # Locate where this film is
 sub film_locate {
-	my $db = shift;
-	my $film_id = shift || &film_choose($db);
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
 
 	if (my $archiveid = &lookupval({db=>$db, col=>'archive_id', table=>'FILM', where=>{film_id=>$film_id}})) {
 		my $archive = &lookupval({db=>$db, col=>"concat(name, ' (', location, ')') as archive", table=>'ARCHIVE', where=>{archive_id=> $archiveid}});
@@ -158,7 +165,8 @@ sub film_locate {
 
 # Add a new bulk film to the database
 sub film_bulk {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add, required=>1});
 	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
@@ -172,15 +180,17 @@ sub film_bulk {
 
 # Write out a text file with the scans from the film
 sub film_annotate {
-	my $db = shift;
-	my $film_id = shift || &film_choose($db);
-	&annotatefilm($db, $film_id);
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
+	&annotatefilm({db=>$db, film_id=>$film_id});
 	return;
 }
 
 # List the films that are currently in stock
 sub film_stocks {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
 	my $rows = @$data;
 	if ($rows >= 0) {
@@ -189,7 +199,7 @@ sub film_stocks {
 			print "\t$row->{qty}  x\t$row->{film}\n";
 		}
 		if (&prompt({default=>'yes', prompt=>'Load a film into a camera now?', type=>'boolean'})) {
-			&film_load($db);
+			&film_load({db=>$db});
 		}
 	} else {
 		print "No films currently in stock\n";
@@ -199,13 +209,15 @@ sub film_stocks {
 
 # List films that are currently loaded into cameras
 sub film_current {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	&printlist({db=>$db, msg=>"current films", table=>'current_films'});
 	return;
 }
 
 sub film_choose {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	while (1) {
 		my $film_id = &prompt({prompt=>'Enter film ID if you know it, or leave blank to choose', type=>'integer'});
 		if ($film_id ne '') {
@@ -234,7 +246,8 @@ sub film_choose {
 
 # Search for a film
 sub film_search {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $searchterm = &prompt({prompt=>'Enter film search term'});
 	my $rows = &printlist({
 		db    => $db,
@@ -249,10 +262,11 @@ sub film_search {
 
 # Add a new camera to the database
 sub camera_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	# Gather data from user
-	my $datahr = &camera_prompt($db);
+	my $datahr = &camera_prompt({db=>$db});
 	my %data = %$datahr;
 
 	# Insert new record into DB
@@ -260,12 +274,12 @@ sub camera_add {
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
 	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera?', type=>'boolean'})) {
-		&camera_exposureprogram($db, $cameraid);
+		&camera_exposureprogram({db=>$db, camera_id=>$cameraid});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera?', type=>'boolean'})) {
 		if ($data{metering}) {
-			&camera_meteringmode($db, $cameraid);
+			&camera_meteringmode({db=>$db, camera_id=>$cameraid});
 		} else {
 			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => 0);
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
@@ -273,24 +287,25 @@ sub camera_add {
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add shutter speeds for this camera?', type=>'boolean'})) {
-		&camera_shutterspeeds($db, $cameraid);
+		&camera_shutterspeeds({db=>$db, camera_id=>$cameraid});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera?', type=>'boolean'})) {
-		&camera_accessory($db, $cameraid);
+		&camera_accessory({db=>$db, camera_id=>$cameraid});
 	}
 	return $cameraid;
 }
 
 # Edit an existing camera
 sub camera_edit {
-	my $db = shift;
-	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$existing = @$existing[0];
 
 	# Gather data from user
-	my $data = &camera_prompt($db, $existing);
+	my $data = &camera_prompt({db=>$db, default=>$existing});
 
 	# Compare new and old data to find changed fields
 	my $changes = &hashdiff($existing, $data);
@@ -300,8 +315,9 @@ sub camera_edit {
 }
 
 sub camera_prompt {
-	my $db = shift;
-	my $defaults = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $defaults = $href->{defaults};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$defaults{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What model is the camera?', required=>1, default=>$$defaults{model}});
@@ -309,7 +325,7 @@ sub camera_prompt {
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1 && !defined($$defaults{lens_id})) {
 		# Get info about lens
 		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add($db);
+		$data{lens_id} = &lens_add({db=>$db});
 	} else {
 		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
 	}
@@ -381,8 +397,9 @@ sub camera_prompt {
 
 # Add accessory compatibility info to a camera
 sub camera_accessory {
-	my $db = shift;
-	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
@@ -395,8 +412,9 @@ sub camera_accessory {
 
 # Add available shutter speed info to a camera
 sub camera_shutterspeeds {
-	my $db = shift;
-	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 	&newrecord({db=>$db, data=>{camera_id=>$cameraid, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 	my $min_shutter_speed_duration = &duration($min_shutter_speed);
@@ -416,8 +434,9 @@ sub camera_shutterspeeds {
 
 # Add available exposure program info to a camera
 sub camera_exposureprogram {
-	my $db = shift;
-	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $exposureprograms = &lookupcol({db=>$db, table=>'EXPOSURE_PROGRAM'});
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
@@ -436,8 +455,9 @@ sub camera_exposureprogram {
 
 # Add available metering mode info to a camera
 sub camera_meteringmode {
-	my $db = shift;
-	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $meteringmodes = &lookupcol({db=>$db, table=>'METERING_MODE'});
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
@@ -451,9 +471,10 @@ sub camera_meteringmode {
 
 # Associate a camera with a lens for display purposes
 sub camera_displaylens {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $camera_id = shift || &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}, required=>1 });
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}, required=>1 });
 	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, col=>'display_lens', table=>'CAMERA', where=>{camera_id=>$camera_id}})});
 	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
@@ -461,7 +482,8 @@ sub camera_displaylens {
 
 # Search for a camera
 sub camera_search {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $searchterm = &prompt({prompt=>'Enter camera search term'});
 	my $rows = &printlist({
 		db    => $db,
@@ -476,8 +498,9 @@ sub camera_search {
 
 # Sell a camera
 sub camera_sell {
-	my $db = shift;
-	my $cameraid = shift || &listchoices({db=>$db, table=>'choose_camera'});
+	my $href = shift;
+	my $db = $href->{db};
+	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
 	my %data;
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this camera sold?', type=>'date'});
@@ -499,9 +522,10 @@ sub camera_sell {
 
 # Repair a camera
 sub camera_repair {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	$data{camera_id} = shift || &listchoices({db=>$db, table=>'choose_camera'});
+	$data{camera_id} = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this camera repaired?', type=>'date'});
 	$data{summary} = &prompt({prompt=>'Short summary of repair'});
 	$data{description} = &prompt({prompt=>'Longer description of repair'});
@@ -510,7 +534,8 @@ sub camera_repair {
 
 # Show information about a camera
 sub camera_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	# Choose camera
 	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
@@ -532,7 +557,8 @@ sub camera_info {
 
 # Choose a camera based on several criteria
 sub camera_choose {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %where;
 	$where{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$where{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT'});
@@ -572,13 +598,14 @@ sub camera_choose {
 
 # Add a new negative to the database as part of a film
 sub negative_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	$data{film_id} = &film_choose($db);
+	$data{film_id} = &film_choose({db=>$db});
 	if (!&lookupval({db=>$db, col=>'camera_id', table=>'FILM', where=>{film_id=>$data{film_id}}})) {
 		print 'Film must be loaded into a camera before you can add negatives\n';
 		if (&prompt({default=>'yes', prompt=>'Load film into a camera now?', type=>'boolean'})) {
-			&film_load($db, $data{film_id});
+			&film_load({db=>$db, film_id=>$data{film_id}});
 		} else {
 			return;
 		}
@@ -612,9 +639,10 @@ sub negative_add {
 
 # Bulk add multiple negatives to the database as part of a film
 sub negative_bulkadd {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	$data{film_id} = shift || &film_choose($db);
+	$data{film_id} = $href->{film_id} // &film_choose({db=>$db});
 	my $num = &prompt({prompt=>'How many frames to add?', type=>'integer'});
 	if (&prompt({default=>'no', prompt=>"Add any other attributes to all $num negatives?", type=>'boolean'})) {
 		$data{description} = &prompt({prompt=>'Caption'});
@@ -662,8 +690,9 @@ sub negative_bulkadd {
 
 # Show information about a negative
 sub negative_info {
-	my $db = shift;
-	my $negative_id = shift || &chooseneg({db=>$db});
+	my $href = shift;
+	my $db = $href->{db};
+	my $negative_id = $href->{negative_id} // &chooseneg({db=>$db});
 	my $negativedata = &lookupcol({db=>$db, table=>'info_negative', where=>{'`Negative ID`'=>$negative_id}});
 	print Dump($negativedata);
 	return;
@@ -671,7 +700,8 @@ sub negative_info {
 
 # Find all prints made from a negative
 sub negative_prints {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $neg_id = &chooseneg({db=>$db});
 	&printlist({db=>$db, msg=>"prints from negative $neg_id", cols=>'Print as id, concat(Size, \' - \', Location) as opt', table=>'info_print', where=>{'`Negative ID`'=>$neg_id}});
 	return;
@@ -679,15 +709,17 @@ sub negative_prints {
 
 # Write EXIF tags to scans from a negative
 sub negative_tag {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $neg_id = &chooseneg({db=>$db});
-	&tag($db, {negative_id=>$neg_id});
+	&tag({db=>$db, negative_id=>$neg_id});
 	return;
 }
 
 # Search for a negative
 sub negative_search {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $searchterm = &prompt({prompt=>'Enter negative search term'});
 	my $rows = &printlist({
 		db    => $db,
@@ -702,29 +734,31 @@ sub negative_search {
 
 # Add a new lens to the database
 sub lens_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	# Gather data from user
-	my $datahr = &lens_prompt($db);
+	my $datahr = &lens_prompt({db=>$db});
 	my %data = %$datahr;
 
 	my $lensid = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens?', type=>'boolean'})) {
-		&lens_accessory($db, $lensid);
+		&lens_accessory({db=>$db, lens_id=>$lensid});
 	}
 	return $lensid;
 }
 
 # Edit an existing lens
 sub lens_edit {
-	my $db = shift;
-	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	my $existing = &lookupcol({db=>$db, table=>'LENS', where=>{lens_id=>$lensid}});
 	$existing = @$existing[0];
 
 	# Gather data from user
-	my $data = &lens_prompt($db, $existing);
+	my $data = &lens_prompt({db=>$db, defaults=>$existing});
 
 	# Compare new and old data to find changed fields
 	my $changes = &hashdiff($existing, $data);
@@ -734,8 +768,9 @@ sub lens_edit {
 }
 
 sub lens_prompt {
-	my $db = shift;
-	my $defaults = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $defaults = $href->{defaults};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db, default=>$$defaults{manufacturer_id}});
 	$data{model} = &prompt({prompt=>'What is the lens model?', default=>$$defaults{model}});
@@ -792,8 +827,9 @@ sub lens_prompt {
 
 # Add accessory compatibility info to a lens
 sub lens_accessory {
-	my $db = shift;
-	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
@@ -806,7 +842,8 @@ sub lens_accessory {
 
 # Search for a camera
 sub lens_search {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $searchterm = &prompt({prompt=>'Enter lens search term'});
 	my $rows = &printlist({
 		db    => $db,
@@ -821,9 +858,10 @@ sub lens_search {
 
 # Sell a lens
 sub lens_sell {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $lensid = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
@@ -833,9 +871,10 @@ sub lens_sell {
 
 # Repair a lens
 sub lens_repair {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	$data{lens_id} = shift || &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this lens repaired?', type=>'date'});
 	$data{summary} = &prompt({prompt=>'Short summary of repair'});
 	$data{description} = &prompt({prompt=>'Longer description of repair'});
@@ -844,7 +883,8 @@ sub lens_repair {
 
 # Show information about a lens
 sub lens_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	# Choose lens
 	my $lens_id = &listchoices({db=>$db, table=>'choose_lens', required=>1});
@@ -879,7 +919,8 @@ sub lens_info {
 
 # Add a new print that has been made from a negative
 sub print_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the order queue', table=>'choose_todo'});
 	if ($todo_id) {
@@ -909,8 +950,8 @@ sub print_add {
 		my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
 		push @prints, $printid;
 
-		&print_tone($db, $printid) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}));
-		&print_archive($db, $printid) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
+		&print_tone({db=>$db, print_id=>$printid}) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}));
+		&print_archive({db=>$db, print_id=>$printid}) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
 	}
 
 	print "\nAdded $qty prints in this run, numbered #$prints[0]-$prints[-1]\n" if ($qty > 1);
@@ -924,7 +965,8 @@ sub print_add {
 
 # Fulfil an order for a print
 sub print_fulfil {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	my $todo_id = &listchoices({db=>$db, keyword=>'print from the queue', table=>'choose_todo', required=>1});
 	$data{printed} = &prompt({default=>'yes', prompt=>'Is this print order now fulfilled?', type=>'boolean'});
@@ -934,9 +976,10 @@ sub print_fulfil {
 
 # Add toning to a print
 sub print_tone {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $print_id = shift || &prompt({prompt=>'Which print did you tone?', type=>'integer', required=>1});
+	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print did you tone?', type=>'integer', required=>1});
 	$data{bleach_time} = &prompt({default=>'00:00:00', prompt=>'How long did you bleach for? (HH:MM:SS)', type=>'time'});
 	$data{toner_id} = &listchoices({db=>$db, cols=>['toner_id as id', 'toner as opt'], table=>'TONER', inserthandler=>\&toner_add});
 	my $dilution1 = &lookupval({db=>$db, col=>'stock_dilution', table=>'TONER', where=>{toner_id=>$data{toner_id}}});
@@ -953,19 +996,21 @@ sub print_tone {
 
 # Sell a print
 sub print_sell {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $print_id = shift || &prompt({prompt=>'Which print did you sell?', type=>'integer', required=>1});
+	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print did you sell?', type=>'integer', required=>1});
 	$data{own} = 0;
 	$data{location} = &prompt({prompt=>'What happened to the print?'});
 	$data{sold_price} = &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
-	&print_unarchive($db, $print_id);
+	&print_unarchive({db=>$db, print_id=>$print_id});
 	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
 }
 
 # Register an order for a print
 sub print_order {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{negative_id} = &chooseneg({db=>$db});
 	$data{height} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
@@ -978,9 +1023,10 @@ sub print_order {
 # Add a print to a physical archive
 sub print_archive {
 	# Archive a print for storage
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $print_id = shift || &prompt({prompt=>'Which print did you archive?', type=>'integer', required=>1});
+	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print did you archive?', type=>'integer', required=>1});
 	$data{archive_id} = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{'archive_type_id'=>3, 'sealed'=>0}, inserthandler=>\&archive_add, required=>1});
 	$data{own} = 1;
 	$data{location} = 'Archive';
@@ -990,14 +1036,16 @@ sub print_archive {
 # Remove a print from a physical archive
 sub print_unarchive {
 	# Remove a print from an archive
-	my $db = shift;
-	my $print_id = shift || &prompt({prompt=>'Which print did you remove from its archive?', type=>'integer', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print did you remove from its archive?', type=>'integer', required=>1});
 	return &call({db=>$db, procedure=>'print_unarchive', args=>[$print_id]});
 }
 
 # Locate a print in an archive
 sub print_locate {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $print_id = &prompt({prompt=>'Which print do you want to locate?', type=>'integer', required=>1});
 
 	if (my $archiveid = &lookupval({db=>$db, col=>'archive_id', table=>'PRINT', where=>{print_id=>$print_id}})) {
@@ -1017,7 +1065,8 @@ sub print_locate {
 
 # Show details about a print
 sub print_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $print_id = &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
 	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	print Dump($data);
@@ -1026,7 +1075,8 @@ sub print_info {
 
 # Exhibit a print in an exhibition
 sub print_exhibit {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{print_id} = &prompt({prompt=>'Which print do you want to exhibit?', type=>'integer', required=>1});
 	$data{exhibition_id} = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', inserthandler=>\&exhibition_add, required=>1});
@@ -1035,7 +1085,8 @@ sub print_exhibit {
 
 # Generate text to label a print
 sub print_label {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $print_id = &prompt({prompt=>'Which print do you want to label?', type=>'integer', required=>1});
 	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
 	my $row = @$data[0];
@@ -1048,7 +1099,8 @@ sub print_label {
 
 # Display print todo list
 sub print_worklist {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $data = &lookupcol({db=>$db, table=>'choose_todo'});
 
 	foreach my $row (@$data) {
@@ -1059,15 +1111,17 @@ sub print_worklist {
 
 # Write EXIF tags to scans from a print
 sub print_tag {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $print_id = &prompt({prompt=>'Which print do you want to tag?', type=>'integer', required=>1});
-	&tag($db, {print_id=>$print_id});
+	&tag({db=>$db, print_id=>$print_id});
 	return;
 }
 
 # Add a new type of photo paper to the database
 sub paperstock_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What model is the paper?'});
@@ -1080,7 +1134,8 @@ sub paperstock_add {
 
 # Add a new developer to the database
 sub developer_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What model is the developer?'});
@@ -1092,7 +1147,8 @@ sub developer_add {
 
 # Add a new lens mount to the database
 sub mount_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{mount} = &prompt({prompt=>'What is the name of this lens mount?'});
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
@@ -1107,7 +1163,8 @@ sub mount_add {
 
 # View compatible cameras and lenses for a mount
 sub mount_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $mountid = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
 	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
 	print "Showing data for $mount mount\n";
@@ -1118,7 +1175,8 @@ sub mount_info {
 
 # Add a new chemical toner to the database
 sub toner_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{toner} = &prompt({prompt=>'What is the name of this toner?'});
@@ -1129,7 +1187,8 @@ sub toner_add {
 
 # Add a new type of filmstock to the database
 sub filmstock_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What is the name of this filmstock?'});
@@ -1146,7 +1205,8 @@ sub filmstock_add {
 
 # Add a new teleconverter to the database
 sub teleconverter_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this teleconverter?'});
@@ -1160,7 +1220,8 @@ sub teleconverter_add {
 
 # Add a new (optical) filter to the database
 sub filter_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{type} = &prompt({prompt=>'What type of filter is this?'});
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
@@ -1172,7 +1233,8 @@ sub filter_add {
 
 # Add a new development process to the database
 sub process_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{name} = &prompt({prompt=>'What is the name of this film process?'});
 	$data{colour} = &prompt({prompt=>'Is this a colour process?', type=>'boolean'});
@@ -1182,7 +1244,8 @@ sub process_add {
 
 # Add a filter adapter to the database
 sub filter_adapt {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{camera_thread} = &prompt({prompt=>'What diameter thread faces the camera on this filter adapter?', type=>'decimal'});
 	$data{filter_thread} = &prompt({prompt=>'What diameter thread faces the filter on this filter adapter?', type=>'decimal'});
@@ -1191,7 +1254,8 @@ sub filter_adapt {
 
 # Add a new manufacturer to the database
 sub manufacturer_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer} = &prompt({prompt=>'What is the name of the manufacturer?', required=>1});
 	$data{country} = &prompt({prompt=>'What country is the manufacturer based in?'});
@@ -1204,7 +1268,8 @@ sub manufacturer_add {
 
 # Add a new "other" accessory to the database
 sub accessory_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{accessory_type_id} = &listchoices({db=>$db, cols=>['accessory_type_id as id', 'accessory_type as opt'], table=>'ACCESSORY_TYPE', inserthandler=>\&accessory_type});
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
@@ -1236,7 +1301,8 @@ sub accessory_add {
 
 # Add a new type of "other" accessory to the database
 sub accessory_category {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{accessory_type} = &prompt({prompt=>'What category of accessory do you want to add?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY_TYPE'});
@@ -1244,7 +1310,8 @@ sub accessory_category {
 
 # Display info about an accessory
 sub accessory_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $accessory_id = &listchoices({db=>$db, table=>'choose_accessory'});
 	my $accessorydata = &lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}});
 	print Dump($accessorydata);
@@ -1253,7 +1320,8 @@ sub accessory_info {
 
 # Search for an accessory
 sub accessory_search {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $searchterm = &prompt({prompt=>'Enter accessory search term'});
 	my $rows = &printlist({
 		db    => $db,
@@ -1268,7 +1336,8 @@ sub accessory_search {
 
 # Add a new enlarger to the database
 sub enlarger_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{enlarger} = &prompt({prompt=>'What is the model of this enlarger?'});
@@ -1282,8 +1351,9 @@ sub enlarger_add {
 
 # Display info about an enlarger
 sub enlarger_info {
-	my $db = shift;
-	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
+	my $href = shift;
+	my $db = $href->{db};
+	my $enlarger_id = $href->{enlarger_id} // &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
 	my $enlargerdata = &lookupcol({db=>$db, table=>'info_enlarger', where=>{'`Enlarger ID`'=>$enlarger_id}});
 	print Dump($enlargerdata);
 	return;
@@ -1291,9 +1361,10 @@ sub enlarger_info {
 
 # Sell an enlarger
 sub enlarger_sell {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $enlarger_id = shift || &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
+	my $enlarger_id = $href->{enlarger_id} // &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
 	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this enlarger sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this enlarger sell for?', type=>'decimal'});
 	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
@@ -1301,7 +1372,8 @@ sub enlarger_sell {
 
 # Add a new flash to the database
 sub flash_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this flash?'});
@@ -1333,7 +1405,8 @@ sub flash_add {
 
 # Add a new type of battery to the database
 sub battery_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{battery_name} = &prompt({prompt=>'What is the name of this battery?'});
 	$data{voltage} = &prompt({prompt=>'What is the nominal voltage of this battery?', type=>'decimal'});
@@ -1344,7 +1417,8 @@ sub battery_add {
 
 # Add a new film format to the database
 sub format_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{format} = &prompt({prompt=>'What is the name of this film format?'});
 	$data{digital} = &prompt({default=>'no', prompt=>'Is this a digital format?', type=>'boolean'});
@@ -1353,7 +1427,8 @@ sub format_add {
 
 # Add a size of negative to the database
 sub negativesize_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{negative_size} = &prompt({prompt=>'What is the name of this negative size?'});
 	$data{width} = &prompt({prompt=>'What is the width of this negative size in mm?', type=>'decimal'});
@@ -1368,7 +1443,8 @@ sub negativesize_add {
 
 # Add a new mount adapter to the database
 sub mount_adapt {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{lens_mount} = &listchoices({db=>$db, keyword=>'lens-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
 	$data{camera_mount} = &listchoices({db=>$db, keyword=>'camera-facing mount', cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{'purpose'=>'Camera'}, inserthandler=>\&mount_add});
@@ -1380,7 +1456,8 @@ sub mount_adapt {
 
 # Add a new light meter to the database
 sub lightmeter_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this light meter?'});
@@ -1398,7 +1475,8 @@ sub lightmeter_add {
 
 # Add a new camera body type
 sub camera_addbodytype {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{body_type} = &prompt({prompt=>'Enter new camera body type'});
 	return &newrecord({db=>$db, data=>\%data, table=>'BODY_TYPE'});
@@ -1406,7 +1484,8 @@ sub camera_addbodytype {
 
 # Add a new physical archive for prints or films
 sub archive_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{archive_type_id} = &listchoices({db=>$db, cols=>['archive_type_id as id', 'archive_type as opt'], table=>'ARCHIVE_TYPE'});
 	$data{name} = &prompt({prompt=>'What is the name of this archive?'});
@@ -1420,7 +1499,8 @@ sub archive_add {
 
 # Bulk-add multiple films to an archive
 sub archive_films {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	my $minfilm = &prompt({prompt=>'What is the lowest film ID in the range?', type=>'integer'});
 	my $maxfilm = &prompt({prompt=>'What is the highest film ID in the range?', type=>'integer'});
@@ -1439,7 +1519,8 @@ sub archive_films {
 
 # Display info about an archive
 sub archive_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $archivedata = &lookupcol({db=>$db, table=>'info_archive', where=>{'`Archive ID`'=>$archive_id}});
 	print Dump($archivedata);
@@ -1448,7 +1529,8 @@ sub archive_info {
 
 # List the contents of an archive
 sub archive_list {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $archive_name = &lookupval({db=>$db, col=>'name', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	&printlist({db=>$db, msg=>"items in archive $archive_name", table=>'archive_contents', where=>{archive_id=>$archive_id}});
@@ -1457,7 +1539,8 @@ sub archive_list {
 
 # Seal an archive and prevent new items from being added to it
 sub archive_seal {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>0}, required=>1});
 	$data{sealed} = 1;
@@ -1466,7 +1549,8 @@ sub archive_seal {
 
 # Unseal an archive and allow new items to be added to it
 sub archive_unseal {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	my $archive_id = &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>1}, required=>1});
 	$data{sealed} = 0;
@@ -1475,9 +1559,10 @@ sub archive_unseal {
 
 # Move an archive to a new location
 sub archive_move {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
-	my $archive_id = shift || &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
+	my $archive_id = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $oldlocation = &lookupval({db=>$db, col=>'location', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	$data{location} = &prompt({default=>$oldlocation, prompt=>'What is the new location of this archive?'});
 	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
@@ -1485,7 +1570,8 @@ sub archive_move {
 
 # Add a new type of shutter to the database
 sub shuttertype_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{shutter_type} = &prompt({prompt=>'What type of shutter do you want to add?', required=>1});
 	return &newrecord({db=>$db, data=>\%data, table=>'SHUTTER_TYPE'});
@@ -1493,7 +1579,8 @@ sub shuttertype_add {
 
 # Add a new type of focus system to the database
 sub focustype_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{focus_type} = &prompt({prompt=>'What type of focus system do you want to add?', required=>1});
 	return &newrecord({db=>$db, data=>\%data, table=>'FOCUS_TYPE'});
@@ -1501,7 +1588,8 @@ sub focustype_add {
 
 # Add a new flash protocol to the database
 sub flashprotocol_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{name} = &prompt({prompt=>'What flash protocol do you want to add?', required=>1});
@@ -1510,7 +1598,8 @@ sub flashprotocol_add {
 
 # Add a new type of metering system to the database
 sub meteringtype_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{metering} = &prompt({prompt=>'What type of metering system do you want to add?', required=>1});
 	return &newrecord({db=>$db, data=>\%data, table=>'METERING_TYPE'});
@@ -1518,7 +1607,8 @@ sub meteringtype_add {
 
 # Add a new shutter speed to the database
 sub shutterspeed_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{shutter_speed} = &prompt({prompt=>'What shutter speed do you want to add?', required=>1});
 	$data{duration} = &duration($data{shutter_speed});
@@ -1527,7 +1617,8 @@ sub shutterspeed_add {
 
 # Add a new person to the database
 sub person_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{name} = &prompt({prompt=>'What is this person\'s name?', required=>1});
 	return &newrecord({db=>$db, data=>\%data, table=>'PERSON'});
@@ -1535,7 +1626,8 @@ sub person_add {
 
 # Add a new projector to the database
 sub projector_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this projector?'});
@@ -1548,7 +1640,8 @@ sub projector_add {
 
 # Add a new movie to the database
 sub movie_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{title} = &prompt({prompt=>'What is the title of this movie?'});
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_movie_camera'});
@@ -1572,7 +1665,8 @@ sub movie_add {
 
 # Show info about a movie
 sub movie_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $movie_id = &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
 	my $moviedata = &lookupcol({db=>$db, table=>'info_movie', where=>{'`Movie ID`'=>$movie_id}});
 	print Dump($moviedata);
@@ -1581,31 +1675,35 @@ sub movie_info {
 
 # Audit cameras without shutter speed data
 sub audit_shutterspeeds {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
-	&camera_shutterspeeds($db, $cameraid);
+	&camera_shutterspeeds({db=>$db, camera_id=>$cameraid});
 	return;
 }
 
 # Audit cameras without exposure program data
 sub audit_exposureprograms {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
-	&camera_exposureprogram($db, $cameraid);
+	&camera_exposureprogram({db=>$db, camera_id=>$cameraid});
 	return;
 }
 
 # Audit cameras without metering mode data
 sub audit_meteringmodes {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $cameraid = &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
-	&camera_meteringmode($db, $cameraid);
+	&camera_meteringmode({db=>$db, camera_id=>$cameraid});
 	return;
 }
 
 # Add a new exhibition to the database
 sub exhibition_add {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{title} = &prompt({prompt=>'What is the title of this exhibition?', required=>1});
 	$data{location} = &prompt({prompt=>'Where is this exhibition?'});
@@ -1616,7 +1714,8 @@ sub exhibition_add {
 
 # Review which prints were exhibited at an exhibition
 sub exhibition_info {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $exhibition_id = &listchoices({db=>$db, cols=>['exhibition_id as id', 'title as opt'], table=>'EXHIBITION', required=>1});
 	my $title = &lookupval({db=>$db, col=>'title', table=>'EXHIBITION', where=>{exhibition_id=>$exhibition_id}});
 
@@ -1626,7 +1725,8 @@ sub exhibition_info {
 
 # Run a selection of maintenance tasks on the database
 sub run_task {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	my @tasks = @App::PhotoDB::queries::tasks;
 	if (scalar(@tasks) == 0) {
@@ -1642,14 +1742,15 @@ sub run_task {
 	my $input = &prompt({prompt=>'Please select a task', type=>'integer', required=>1});
 
 	my $sql = $tasks[$input]{'query'};
-	my $rows = &updatedata($db, $sql);
+	my $rows = &updatedata({db=>$db, sql=>$sql});
 	print "Updated $rows rows\n";
 	return;
 }
 
 # Run a selection of reports on the database
 sub run_report {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 
 	my @reports = @App::PhotoDB::queries::reports;
 	if (scalar(@reports) == 0) {
@@ -1707,15 +1808,17 @@ sub choose_manufacturer {
 
 # Audit cameras without display lenses set
 sub audit_displaylenses {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $camera_id = &listchoices({db=>$db, keyword=>'camera', table=>'camera_chooser', where=>{mount_id=>{'!=', undef}, display_lens=>{'=', undef}}, required=>1 });
-	&camera_displaylens($db, $camera_id);
+	&camera_displaylens({db=>$db, camera_id=>$camera_id});
 	return;
 }
 
 # Show statistics about the database
 sub db_stats {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my %data;
 	$data{'Total cameras'} = &lookupval({db=>$db, col=>'count(camera_id)', table=>'CAMERA'});
 	$data{'Total lenses'} = &lookupval({db=>$db, col=>'count(lens_id)', table=>'LENS'});
@@ -1727,7 +1830,8 @@ sub db_stats {
 
 # Show database logs
 sub db_logs {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $logs = &lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'});
 	print Dump($logs);
 	return;
@@ -1735,7 +1839,8 @@ sub db_logs {
 
 # Print basic database info
 sub db_test {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $hostname = $db->{'mysql_hostinfo'};
 	my $version = $db->{'mysql_serverinfo'};
 	my $stats = $db->{'mysql_stat'};
@@ -1745,8 +1850,8 @@ sub db_test {
 
 # Add a new scan of a negative or print
 sub scan_add {
-	my $db = shift;
 	my $href = shift;
+	my $db = $href->{db};
 
 	my %data;
 	$data{negative_id} = $href->{negative_id};
@@ -1768,27 +1873,27 @@ sub scan_add {
 
 # Add a new scan which is a derivative of an existing one
 sub scan_edit {
-	my $db = shift;
 	my $href = shift;
+	my $db = $href->{db};
 
 	# Prompt user for filename of scan
-	my $scan_id = &choosescan($db);
+	my $scan_id = &choosescan({db=>$db});
 
 	# Work out negative_id or print_id
 	my $scan_data = &lookupcol({db=>$db, cols=>['negative_id', 'print_id'], table=>'SCAN', where=>{scan_id=>$scan_id}});
 	$scan_data = &thin($$scan_data[0]);
 
 	# Insert new scan from same source
-	return &scan_add($db, $scan_data);
+	return &scan_add({db=>$db, scan_data=>$scan_data});
 }
 
 # Delete a scan from the database and optionally from the filesystem
 sub scan_delete {
-	my $db = shift;
 	my $href = shift;
+	my $db = $href->{db};
 
 	# Prompt user for filename of scan
-	my $scan_id = &choosescan($db);
+	my $scan_id = &choosescan({db=>$db});
 
 	# Work out file path
 	my $basepath = &basepath;
@@ -1806,12 +1911,12 @@ sub scan_delete {
 
 # Search the filesystem for scans which are not in the database
 sub scan_search {
-	my $db = shift;
 	my $href = shift;
+	my $db = $href->{db};
 
 	# Search filesystem basepath & DB to enumerate all *.jpg scans
 	my @fsfiles = &fsfiles;
-	my @dbfiles = &dbfiles($db);
+	my @dbfiles = &dbfiles({db=>$db});
 
 	# Find the scans only on the filesystem
 	my @fsonly = array_minus(@fsfiles, @dbfiles);
@@ -1867,7 +1972,7 @@ sub scan_search {
 				} else {
 					next if $auto;
 					if (&prompt({prompt=>"Can't automatically determine the source of this scan. Add it manually?", type=>'boolean', default=>'yes', required=>1})) {
-						&scan_add($db, {filename=>$filename});
+						&scan_add({db=>$db, filename=>$filename});
 					}
 				}
 			}
@@ -1880,7 +1985,7 @@ sub scan_search {
 
 	# Re-search filesystem basepath & DB in case it was updated above
 	@fsfiles = &fsfiles;
-	@dbfiles = &dbfiles($db);
+	@dbfiles = &dbfiles({db=>$db});
 
 	# Find scans only in the database
 	my @dbonly = array_minus(@dbfiles, @fsfiles);
