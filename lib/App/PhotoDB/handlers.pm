@@ -76,11 +76,11 @@ sub film_add {
 	}
 	$data{frames} = &prompt({prompt=>'How many frames?', type=>'integer'});
 	$data{price} = &prompt({prompt=>'Purchase price', type=>'decimal'});
-	my $filmid = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
+	my $film_id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
 	if (&prompt({default=>'no', prompt=>'Load this film into a camera now?', type=>'boolean'})) {
-		&film_load({db=>$db, film_id=>$filmid});
+		&film_load({db=>$db, film_id=>$film_id});
 	}
-	return $filmid;
+	return $film_id;
 }
 
 # Load a film into a camera
@@ -270,30 +270,30 @@ sub camera_add {
 	my %data = %$datahr;
 
 	# Insert new record into DB
-	my $cameraid = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
+	my $camera_id = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
 
 	# Now we have a camera ID, we can insert rows in auxiliary tables
 	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera?', type=>'boolean'})) {
-		&camera_exposureprogram({db=>$db, camera_id=>$cameraid});
+		&camera_exposureprogram({db=>$db, camera_id=>$camera_id});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera?', type=>'boolean'})) {
 		if ($data{metering}) {
-			&camera_meteringmode({db=>$db, camera_id=>$cameraid});
+			&camera_meteringmode({db=>$db, camera_id=>$camera_id});
 		} else {
-			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => 0);
+			my %mmdata = ('camera_id' => $camera_id, 'metering_mode_id' => 0);
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
 		}
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add shutter speeds for this camera?', type=>'boolean'})) {
-		&camera_shutterspeeds({db=>$db, camera_id=>$cameraid});
+		&camera_shutterspeeds({db=>$db, camera_id=>$camera_id});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera?', type=>'boolean'})) {
-		&camera_accessory({db=>$db, camera_id=>$cameraid});
+		&camera_accessory({db=>$db, camera_id=>$camera_id});
 	}
-	return $cameraid;
+	return $camera_id;
 }
 
 # Edit an existing camera
@@ -399,11 +399,11 @@ sub camera_prompt {
 sub camera_accessory {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
-		$compatdata{camera_id} = $cameraid;
+		$compatdata{camera_id} = $camera_id;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
 		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
@@ -414,18 +414,18 @@ sub camera_accessory {
 sub camera_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
-	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
-	&newrecord({db=>$db, data=>{camera_id=>$cameraid, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	&newrecord({db=>$db, data=>{camera_id=>$camera_id, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 	my $min_shutter_speed_duration = &duration($min_shutter_speed);
-	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 	my $max_shutter_speed_duration = &duration($max_shutter_speed);
-	&newrecord({db=>$db, data=>{camera_id=>$cameraid, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+	&newrecord({db=>$db, data=>{camera_id=>$camera_id, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 
 	while (1) {
 		my %shutterdata;
-		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$cameraid) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
-		$shutterdata{camera_id} = $cameraid;
+		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+		$shutterdata{camera_id} = $camera_id;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 		last if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'}));
 	}
@@ -436,7 +436,7 @@ sub camera_shutterspeeds {
 sub camera_exposureprogram {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $exposureprograms = &lookupcol({db=>$db, table=>'EXPOSURE_PROGRAM'});
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
@@ -445,7 +445,7 @@ sub camera_exposureprogram {
 		next if $exposureprogram->{exposure_program_id} == 7;
 		next if $exposureprogram->{exposure_program_id} == 8;
 		if (&prompt({default=>'no', prompt=>"Does this camera have $exposureprogram->{exposure_program} exposure program?", type=>'boolean'})) {
-			my %epdata = ('camera_id' => $cameraid, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
+			my %epdata = ('camera_id' => $camera_id, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
 			&newrecord({db=>$db, data=>\%epdata, table=>'EXPOSURE_PROGRAM_AVAILABLE', silent=>1});
 			last if $exposureprogram->{exposure_program_id} == 0;
 		}
@@ -457,11 +457,11 @@ sub camera_exposureprogram {
 sub camera_meteringmode {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $meteringmodes = &lookupcol({db=>$db, table=>'METERING_MODE'});
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
-			my %mmdata = ('camera_id' => $cameraid, 'metering_mode_id' => $meteringmode->{metering_mode_id});
+			my %mmdata = ('camera_id' => $camera_id, 'metering_mode_id' => $meteringmode->{metering_mode_id});
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE', silent=>1});
 			last if $meteringmode->{metering_mode_id} == 0;
 		}
@@ -500,21 +500,21 @@ sub camera_search {
 sub camera_sell {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
+	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
 	my %data;
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today, prompt=>'What date was this camera sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
-	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$cameraid"});
-	&unsetdisplaylens({db=>$db, camera_id=>$cameraid});
-	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERA', where=>{camera_id=>$cameraid}})) {
-		my $lensid = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$cameraid}});
-		if ($lensid) {
+	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	&unsetdisplaylens({db=>$db, camera_id=>$camera_id});
+	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERA', where=>{camera_id=>$camera_id}})) {
+		my $lens_id = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
+		if ($lens_id) {
 			my %lensdata;
 			$lensdata{own} = 0;
 			$lensdata{lost} = $data{lost};
 			$lensdata{lost_price} = 0;
-			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>"lens_id=$lensid"});
+			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>"lens_id=$lens_id"});
 		}
 	}
 	return;
@@ -741,20 +741,20 @@ sub lens_add {
 	my $datahr = &lens_prompt({db=>$db});
 	my %data = %$datahr;
 
-	my $lensid = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
+	my $lens_id = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens?', type=>'boolean'})) {
-		&lens_accessory({db=>$db, lens_id=>$lensid});
+		&lens_accessory({db=>$db, lens_id=>$lens_id});
 	}
-	return $lensid;
+	return $lens_id;
 }
 
 # Edit an existing lens
 sub lens_edit {
 	my $href = shift;
 	my $db = $href->{db};
-	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
-	my $existing = &lookupcol({db=>$db, table=>'LENS', where=>{lens_id=>$lensid}});
+	my $lens_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $existing = &lookupcol({db=>$db, table=>'LENS', where=>{lens_id=>$lens_id}});
 	$existing = @$existing[0];
 
 	# Gather data from user
@@ -764,7 +764,7 @@ sub lens_edit {
 	my $changes = &hashdiff($existing, $data);
 
 	# Update the DB
-	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>"lens_id=$lensid"});
+	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>"lens_id=$lens_id"});
 }
 
 sub lens_prompt {
@@ -829,11 +829,11 @@ sub lens_prompt {
 sub lens_accessory {
 	my $href = shift;
 	my $db = $href->{db};
-	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lens_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
-		$compatdata{lens_id} = $lensid;
+		$compatdata{lens_id} = $lens_id;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
@@ -861,12 +861,12 @@ sub lens_sell {
 	my $href = shift;
 	my $db = $href->{db};
 	my %data;
-	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lens_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	$data{own} = 0;
 	$data{lost} = &prompt({default=>&today, prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
-	&unsetdisplaylens({db=>$db, lens_id=>$lensid});
-	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
+	&unsetdisplaylens({db=>$db, lens_id=>$lens_id});
+	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lens_id"});
 }
 
 # Repair a lens
@@ -947,11 +947,11 @@ sub print_add {
 		$data{development_time} = &prompt({default=>'60', prompt=>'Development time (s)', type=>'integer'});
 		$data{fine} = &prompt({prompt=>'Is this a fine print?', type=>'boolean'});
 		$data{notes} = &prompt({prompt=>'Notes'});
-		my $printid = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
-		push @prints, $printid;
+		my $print_id = &newrecord({db=>$db, data=>\%data, table=>'PRINT'});
+		push @prints, $print_id;
 
-		&print_tone({db=>$db, print_id=>$printid}) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}));
-		&print_archive({db=>$db, print_id=>$printid}) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
+		&print_tone({db=>$db, print_id=>$print_id}) if (&prompt({default=>'no', prompt=>'Did you tone this print?', type=>'boolean'}));
+		&print_archive({db=>$db, print_id=>$print_id}) if (&prompt({default=>'no', prompt=>'Archive this print?', type=>'boolean'}));
 	}
 
 	print "\nAdded $qty prints in this run, numbered #$prints[0]-$prints[-1]\n" if ($qty > 1);
@@ -1677,8 +1677,8 @@ sub movie_info {
 sub audit_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
-	&camera_shutterspeeds({db=>$db, camera_id=>$cameraid});
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
+	&camera_shutterspeeds({db=>$db, camera_id=>$camera_id});
 	return;
 }
 
@@ -1686,8 +1686,8 @@ sub audit_shutterspeeds {
 sub audit_exposureprograms {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
-	&camera_exposureprogram({db=>$db, camera_id=>$cameraid});
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
+	&camera_exposureprogram({db=>$db, camera_id=>$camera_id});
 	return;
 }
 
@@ -1695,8 +1695,8 @@ sub audit_exposureprograms {
 sub audit_meteringmodes {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameraid = &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
-	&camera_meteringmode({db=>$db, camera_id=>$cameraid});
+	my $camera_id = &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
+	&camera_meteringmode({db=>$db, camera_id=>$camera_id});
 	return;
 }
 
