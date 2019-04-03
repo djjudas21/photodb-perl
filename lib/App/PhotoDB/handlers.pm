@@ -463,14 +463,32 @@ sub camera_displaylens {
 sub camera_search {
 	my $db = shift;
 	my $searchterm = &prompt({prompt=>'Enter camera search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "cameras that match '$searchterm'",
+	print "Searching for cameras that match '$searchterm'\n";
+
+	my $camera_id = &listchoices({
+		db    =>$db,
 		cols  => ['id', 'opt'],
 		table => 'choose_camera',
 		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
 	});
-	print "Found $rows rows\n";
+	print "You chose $camera_id\n";
+
+	my @choices = [
+		{
+			handler => '',
+			desc => 'Do nothing',
+		},
+		{
+			handler => \&camera_info($db, $camera_id),
+			desc => 'Get camera info',
+		}
+	];
+
+	my $action = &multiplechoice({choices => \@choices});
+
+	# Execute chosen handler
+	$choices[$action]{handler};
+
 	return;
 }
 
@@ -513,7 +531,7 @@ sub camera_info {
 	my $db = shift;
 
 	# Choose camera
-	my $camera_id = &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $camera_id = shift || &listchoices({db=>$db, table=>'choose_camera', required=>1});
 
 	# Get camera data
 	my $cameradata = &lookupcol({db=>$db, table=>'info_camera', where=>{'`Camera ID`'=>$camera_id}});
