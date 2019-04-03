@@ -59,7 +59,7 @@ sub film_add {
 	if (&prompt({default=>'no', prompt=>'Is this film bulk-loaded?', type=>'boolean'}) == 1) {
 		# These are filled in only for bulk-loaded films
 		$data{film_bulk_id} = &listchoices({db=>$db, table=>'choose_bulk_film', required=>1});
-		$data{film_bulk_loaded} = &prompt({default=>&today($db), prompt=>'When was the film bulk-loaded?'});
+		$data{film_bulk_loaded} = &prompt({default=>&today, prompt=>'When was the film bulk-loaded?'});
 		# These are deduced automagically for bulk-loaded films
 		$data{film_batch} = &lookupval({db=>$db, col=>'batch', table=>'FILM_BULK', where=>{film_bulk_id=>$data{'film_bulk_id'}}});
 		$data{film_expiry} = &lookupval({db=>$db, col=>'expiry', table=>'FILM_BULK', where=>{film_bulk_id=>$data{'film_bulk_id'}}});
@@ -70,7 +70,7 @@ sub film_add {
 		# These are filled in only for standalone films
 		$data{film_batch} = &prompt({prompt=>'Film batch number'});
 		$data{film_expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
-		$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
+		$data{purchase_date} = &prompt({default=>&today, prompt=>'Purchase date', type=>'date'});
 		$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add, required=>1});
 		$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add}, required=>1);
 	}
@@ -91,7 +91,7 @@ sub film_load {
 	my %data;
 	$data{camera_id} = &listchoices({db=>$db, table=>'choose_camera_by_film', where=>{film_id=>$film_id}, required=>1});
 	$data{exposed_at} = &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
-	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was this film loaded?', type=>'date'});
+	$data{date_loaded} = &prompt({default=>&today, prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = &prompt({prompt=>'Notes'});
 	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
 }
@@ -112,7 +112,7 @@ sub film_develop {
 	my $db = $href->{db};
 	my $film_id = $href->{film_id} // &listchoices({db=>$db, table=>'choose_film_to_develop', required=>1});
 	my %data;
-	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this film processed?', type=>'date'});
+	$data{date} = &prompt({default=>&today, prompt=>'What date was this film processed?', type=>'date'});
 	$data{developer_id} = &listchoices({db=>$db, table=>'DEVELOPER', cols=>['developer_id as id', 'name as opt'], where=>{'for_film'=>1}, inserthandler=>\&developer_add});
 	$data{directory} = &prompt({prompt=>'What directory are these scans in?'});
 	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', table=> 'PERSON', cols=>['person_id as id', 'name as opt'], inserthandler=>\&person_add});
@@ -172,7 +172,7 @@ sub film_bulk {
 	$data{format_id} = &listchoices({db=>$db, cols=>['format_id as id', 'format as opt'], table=>'FORMAT', inserthandler=>\&format_add, required=>1});
 	$data{batch} = &prompt({prompt=>'Film batch number'});
 	$data{expiry} = &prompt({prompt=>'Film expiry date', type=>'date'});
-	$data{purchase_date} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
+	$data{purchase_date} = &prompt({default=>&today, prompt=>'Purchase date', type=>'date'});
 	$data{cost} = &prompt({prompt=>'Purchase price', type=>'decimal'});
 	$data{source} = &prompt({prompt=>'Where was this bulk film purchased from?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'FILM_BULK'});
@@ -340,7 +340,7 @@ sub camera_prompt {
 	}
 	$data{body_type_id} = &listchoices({db=>$db, cols=>['body_type_id as id', 'body_type as opt'], table=>'BODY_TYPE', inserthandler=>\&camera_addbodytype, default=>$$defaults{body_type_id}});
 	$data{weight} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer', default=>$$defaults{weight}});
-	$data{acquired} = &prompt({default=>$$defaults{acquired}//&today($db), prompt=>'When was it acquired?', type=>'date'});
+	$data{acquired} = &prompt({default=>$$defaults{acquired}//&today, prompt=>'When was it acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal', default=>$$defaults{cost}});
 	$data{introduced} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer', default=>$$defaults{introduced}});
 	$data{discontinued} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer', default=>$$defaults{discontinued}});
@@ -503,7 +503,7 @@ sub camera_sell {
 	my $cameraid = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
 	my %data;
 	$data{own} = 0;
-	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this camera sold?', type=>'date'});
+	$data{lost} = &prompt({default=>&today, prompt=>'What date was this camera sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$cameraid"});
 	&unsetdisplaylens({db=>$db, camera_id=>$cameraid});
@@ -526,7 +526,7 @@ sub camera_repair {
 	my $db = $href->{db};
 	my %data;
 	$data{camera_id} = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera'});
-	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this camera repaired?', type=>'date'});
+	$data{date} = &prompt({default=>&today, prompt=>'What date was this camera repaired?', type=>'date'});
 	$data{summary} = &prompt({prompt=>'Short summary of repair'});
 	$data{description} = &prompt({prompt=>'Longer description of repair'});
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
@@ -612,7 +612,7 @@ sub negative_add {
 	}
 	$data{frame} = &prompt({prompt=>'Frame number'});
 	$data{description} = &prompt({prompt=>'Caption'});
-	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
+	$data{date} = &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 	$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
 	$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}, type=>'text'});
 	$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
@@ -646,7 +646,7 @@ sub negative_bulkadd {
 	my $num = &prompt({prompt=>'How many frames to add?', type=>'integer'});
 	if (&prompt({default=>'no', prompt=>"Add any other attributes to all $num negatives?", type=>'boolean'})) {
 		$data{description} = &prompt({prompt=>'Caption'});
-		$data{date} = &prompt({default=>&today($db), prompt=>'What date was this negative taken?', type=>'date'});
+		$data{date} = &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 		$data{lens_id} = &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}, skipok=>1});
 		$data{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}});
 		$data{aperture} = &prompt({prompt=>'Aperture', type=>'decimal'});
@@ -810,7 +810,7 @@ sub lens_prompt {
 	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$defaults{discontinued}});
 	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$defaults{manufactured}});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$defaults{negative_size_id}});
-	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$defaults{acquired}//&today($db)});
+	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$defaults{acquired}//&today});
 	$data{notes} = &prompt({prompt=>'Notes', default=>$$defaults{notes}});
 	$data{own} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$defaults{own}//'yes'});
 	$data{source} = &prompt({prompt=>'Where was this lens sourced from?', default=>$$defaults{source}});
@@ -863,7 +863,7 @@ sub lens_sell {
 	my %data;
 	my $lensid = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
 	$data{own} = 0;
-	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this lens sold?', type=>'date'});
+	$data{lost} = &prompt({default=>&today, prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
 	&unsetdisplaylens({db=>$db, lens_id=>$lensid});
 	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lensid"});
@@ -875,7 +875,7 @@ sub lens_repair {
 	my $db = $href->{db};
 	my %data;
 	$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
-	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this lens repaired?', type=>'date'});
+	$data{date} = &prompt({default=>&today, prompt=>'What date was this lens repaired?', type=>'date'});
 	$data{summary} = &prompt({prompt=>'Short summary of repair'});
 	$data{description} = &prompt({prompt=>'Longer description of repair'});
 	return &newrecord({db=>$db, data=>\%data, table=>'REPAIR'});
@@ -930,7 +930,7 @@ sub print_add {
 	}
 	my $qty = &prompt({default=>1, prompt=>'How many similar prints did you make from this negative?', type=>'integer'});
 	print "Enter some data about all the prints in the run:\n" if ($qty > 1);
-	$data{date} = &prompt({default=>&today($db), prompt=>'Date that the print was made', type=>'date'});
+	$data{date} = &prompt({default=>&today, prompt=>'Date that the print was made', type=>'date'});
 	$data{paper_stock_id} = &listchoices({db=>$db, keyword=>'paper stock', table=>'choose_paper', inserthandler=>\&paperstock_add});
 	$data{height} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{width} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
@@ -1016,7 +1016,7 @@ sub print_order {
 	$data{height} = &prompt({prompt=>'Height of the print (inches)', type=>'integer'});
 	$data{width} = &prompt({prompt=>'Width of the print (inches)', type=>'integer'});
 	$data{recipient} = &prompt({prompt=>'Who is the print for?'});
-	$data{added} = &prompt({default=>&today($db), prompt=>'Date that this order was placed', type=>'date'});
+	$data{added} = &prompt({default=>&today, prompt=>'Date that this order was placed', type=>'date'});
 	return &newrecord({db=>$db, data=>\%data, table=>'TO_PRINT'});
 }
 
@@ -1274,7 +1274,7 @@ sub accessory_add {
 	$data{accessory_type_id} = &listchoices({db=>$db, cols=>['accessory_type_id as id', 'accessory_type as opt'], table=>'ACCESSORY_TYPE', inserthandler=>\&accessory_type});
 	$data{manufacturer_id} = &choose_manufacturer({db=>$db});
 	$data{model} = &prompt({prompt=>'What is the model of this accessory?'});
-	$data{acquired} = &prompt({default=>&today($db), prompt=>'When was this accessory acquired?', type=>'date'});
+	$data{acquired} = &prompt({default=>&today, prompt=>'When was this accessory acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did this accessory cost?', type=>'decimal'});
 	my $accessoryid = &newrecord({db=>$db, data=>\%data, table=>'ACCESSORY'});
 
@@ -1344,7 +1344,7 @@ sub enlarger_add {
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add});
 	$data{introduced} = &prompt({prompt=>'What year was this enlarger introduced?', type=>'integer'});
 	$data{discontinued} = &prompt({prompt=>'What year was this enlarger discontinued?', type=>'integer'});
-	$data{acquired} = &prompt({default=>&today($db), prompt=>'Purchase date', type=>'date'});
+	$data{acquired} = &prompt({default=>&today, prompt=>'Purchase date', type=>'date'});
 	$data{cost} = &prompt({prompt=>'Purchase price', type=>'decimal'});
 	return &newrecord({db=>$db, data=>\%data, table=>'ENLARGER'});
 }
@@ -1365,7 +1365,7 @@ sub enlarger_sell {
 	my $db = $href->{db};
 	my %data;
 	my $enlarger_id = $href->{enlarger_id} // &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
-	$data{lost} = &prompt({default=>&today($db), prompt=>'What date was this enlarger sold?', type=>'date'});
+	$data{lost} = &prompt({default=>&today, prompt=>'What date was this enlarger sold?', type=>'date'});
 	$data{lost_price} = &prompt({prompt=>'How much did this enlarger sell for?', type=>'decimal'});
 	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
 }
@@ -1398,7 +1398,7 @@ sub flash_add {
 	}
 	$data{trigger_voltage} = &prompt({prompt=>'What is the measured trigger voltage?', type=>'decimal'});
 	$data{own} = 1;
-	$data{acquired} = &prompt({default=>&today($db), prompt=>'When was it acquired?', type=>'date'});
+	$data{acquired} = &prompt({default=>&today, prompt=>'When was it acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did this flash cost?', type=>'decimal'});
 	return &newrecord({db=>$db, data=>\%data, table=>'FLASH'});
 }
@@ -1655,9 +1655,9 @@ sub movie_add {
 	$data{fps} = &prompt({prompt=>'What is the framerate of this movie in fps?', type=>'integer'});
 	$data{filmstock_id} = &listchoices({db=>$db, table=>'choose_filmstock', inserthandler=>\&filmstock_add});
 	$data{feet} = &prompt({prompt=>'What is the length of this movie in feet?', type=>'integer'});
-	$data{date_loaded} = &prompt({default=>&today($db), prompt=>'What date was the film loaded?', type=>'date'});
-	$data{date_shot} = &prompt({default=>&today($db), prompt=>'What date was the movie shot?', type=>'date'});
-	$data{date_processed} = &prompt({default=>&today($db), prompt=>'What date was the movie processed?', type=>'date'});
+	$data{date_loaded} = &prompt({default=>&today, prompt=>'What date was the film loaded?', type=>'date'});
+	$data{date_shot} = &prompt({default=>&today, prompt=>'What date was the movie shot?', type=>'date'});
+	$data{date_processed} = &prompt({default=>&today, prompt=>'What date was the movie processed?', type=>'date'});
 	$data{process_id} = &listchoices({db=>$db, keyword=>'process', cols=>['process_id as id', 'name as opt'], table=>'PROCESS', inserthandler=>\&process_add});
 	$data{description} = &prompt({prompt=>'Please enter a description of the movie'});
 	return &newrecord({db=>$db, data=>\%data, table=>'MOVIE'});

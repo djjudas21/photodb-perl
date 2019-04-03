@@ -24,6 +24,7 @@ use Image::ExifTool;
 use Term::ReadLine;
 use Term::ReadLine::Perl;
 use File::Basename;
+use Time::Piece;
 
 our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci);
 
@@ -1085,7 +1086,7 @@ Return today's date according to the DB
 
 =head4 Usage
 
-    my $todaysdate = &today($db);
+    my $todaysdate = &today;
 
 =head4 Arguments
 
@@ -1098,8 +1099,7 @@ Today's date, formatted C<YYYY-MM-DD>
 =cut
 
 sub today {
-	my $db = shift;		# DB handle
-	return &lookupval({db=>$db, col=>'curdate()', table=>'CAMERA'});
+	return localtime->strftime('%Y-%m-%d');
 }
 
 =head2 now
@@ -1108,7 +1108,7 @@ Return an SQL-formatted timestamp for the current time
 
 =head4 Usage
 
-    my $time = &now($db);
+    my $time = &now;
 
 =head4 Arguments
 
@@ -1121,8 +1121,7 @@ String containing the current time, formatted C<YYYY-MM-DD HH:MM:SS>
 =cut
 
 sub now {
-	my $db = shift;	 # DB handle
-	return &lookupval({db=>$db, col=>'now()', table=>'CAMERA'});
+	return localtime->strftime('%Y-%m-%d %H:%M:%S');
 }
 
 
@@ -1870,7 +1869,7 @@ sub logger {
 	my $type = $href->{type};
 	my $message = $href->{message};
 
-	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
+	return &newrecord({db=>$db, data=>{datetime=>&now, type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
 }
 
 =head2 choosescan
