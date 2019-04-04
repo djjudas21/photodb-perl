@@ -787,7 +787,7 @@ Table to list all possible shutter speeds
     | COLUMN_NAME   | COLUMN_TYPE  | COLUMN_COMMENT                                   |
     +---------------+--------------+--------------------------------------------------+
     | shutter_speed | varchar(10)  | Shutter speed in fractional notation, e.g. 1/250 |
-    | duration      | decimal(7,5) | Shutter speed in decimal notation, e.g. 0.04     |
+    | duration      | decimal(9,5) | Shutter speed in decimal notation, e.g. 0.04     |
     +---------------+--------------+--------------------------------------------------+
 
 =head2 SHUTTER_SPEED_AVAILABLE
