@@ -111,7 +111,6 @@ sub film_develop {
 	$data{date} = &prompt({default=>&today($db), prompt=>'What date was this film processed?', type=>'date'});
 	$data{developer_id} = &listchoices({db=>$db, table=>'DEVELOPER', cols=>['developer_id as id', 'name as opt'], where=>{'for_film'=>1}, inserthandler=>\&developer_add});
 	$data{directory} = &prompt({prompt=>'What directory are these scans in?'});
-	$data{photographer_id} = &listchoices({db=>$db, keyword=>'photographer', table=> 'PERSON', cols=>['person_id as id', 'name as opt'], inserthandler=>\&person_add});
 	$data{dev_uses} = &prompt({prompt=>'How many previous uses has the developer had?', type=>'integer'});
 	$data{dev_time} = &prompt({prompt=>'How long was the film developed for?', type=>'time'});
 	$data{dev_temp} = &prompt({prompt=>'What temperature was the developer?', type=>'decimal'});
