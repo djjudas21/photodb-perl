@@ -277,7 +277,6 @@ Table to list films which consist of one or more negatives. A film can be a roll
     | frames            | int(11)      | Expected (not actual) number of frames from the film                  |
     | developer_id      | int(11)      | ID of the developer used to process this film                         |
     | directory         | varchar(100) | Name of the directory that contains the scanned images from this film |
-    | photographer_id   | int(11)      | ID of the photographer who took these pictures                        |
     | dev_uses          | int(11)      | Numnber of previous uses of the developer                             |
     | dev_time          | time         | Duration of development                                               |
     | dev_temp          | decimal(3,1) | Temperature of development                                            |
