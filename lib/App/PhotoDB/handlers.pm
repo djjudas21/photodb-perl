@@ -488,29 +488,26 @@ sub camera_search {
 
 	print "Searching for cameras that match '$searchterm'\n";
 
+	# Perform search
 	my $camera_id = &listchoices({
 		db    =>$db,
 		cols  => ['id', 'opt'],
 		table => 'choose_camera',
 		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
 	});
-	print "You chose $camera_id\n";
 
 	# Set up multiple choice
 	my @choices = (
-		{
-			handler => '',
-			desc => 'Do nothing',
-		},
-		{
-			handler => \&camera_info,
-			desc => 'Get camera info',
-		}
+		{ desc => 'Do nothing' },
+		{ desc => 'Get camera info', handler => \&camera_info, },
+		{ desc => 'Load a film', handler => \&film_load, }
 	);
 	my $action = &multiplechoice({choices => \@choices});
 
 	# Execute chosen handler with args
-	$choices[$action]{handler}->({db=>$db, camera_id=>$camera_id});
+	if ($choices[$action]{handler}) {
+		$choices[$action]{handler}->({db=>$db, camera_id=>$camera_id});
+	}
 
 	return;
 }
