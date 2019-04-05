@@ -249,14 +249,31 @@ sub film_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter film search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "films that match '$searchterm'",
-		cols  => ['film_id as id', 'notes as opt'],
-		table => 'FILM',
-		where => "notes like '%$searchterm%' collate utf8mb4_general_ci",
+	print "Searching for films that match '$searchterm'\n";
+
+	# Perform search
+	my $id = &listchoices({
+		db     => $db,
+		cols   => ['film_id as id', 'notes as opt'],
+		table  => 'FILM',
+		where  => "notes like '%$searchterm%' collate utf8mb4_general_ci",
+		skipok => 1,
 	});
-	print "Found $rows rows\n";
+
+	# Bail out if no cameras found
+	return if !$id;
+
+	# Set up multiple choice
+	my @choices = (
+		{ desc => 'Do nothing' },
+	);
+	my $action = &multiplechoice({choices => \@choices});
+
+	# Execute chosen handler with args
+	if ($choices[$action]{handler}) {
+		$choices[$action]{handler}->({db=>$db, film_id=>$id});
+	}
+
 	return;
 }
 
@@ -485,12 +502,11 @@ sub camera_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter camera search term'});
-
 	print "Searching for cameras that match '$searchterm'\n";
 
 	# Perform search
-	my $camera_id = &listchoices({
-		db     =>$db,
+	my $id = &listchoices({
+		db     => $db,
 		cols   => ['id', 'opt'],
 		table  => 'choose_camera',
 		where  => "opt like '%$searchterm%' collate utf8mb4_general_ci",
@@ -498,7 +514,7 @@ sub camera_search {
 	});
 
 	# Bail out if no cameras found
-	return if !$camera_id;
+	return if !$id;
 
 	# Set up multiple choice
 	my @choices = (
@@ -511,7 +527,7 @@ sub camera_search {
 
 	# Execute chosen handler with args
 	if ($choices[$action]{handler}) {
-		$choices[$action]{handler}->({db=>$db, camera_id=>$camera_id});
+		$choices[$action]{handler}->({db=>$db, camera_id=>$id});
 	}
 
 	return;
@@ -742,14 +758,34 @@ sub negative_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter negative search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "negatives that match '$searchterm'",
-		cols  => ["concat(film_id, '/', frame) as id", 'description as opt'],
-		table => 'NEGATIVE',
-		where => "description like '%$searchterm%' collate utf8mb4_general_ci",
+	print "Searching for negatives that match '$searchterm'\n";
+
+	# Perform search
+	my $id = &listchoices({
+		db     => $db,
+		cols   => ["concat(film_id, '/', frame) as id", 'description as opt'],
+		table  => 'NEGATIVE',
+		where  => "description like '%$searchterm%' collate utf8mb4_general_ci",
+		skipok => 1,
 	});
-	print "Found $rows rows\n";
+
+	# Bail out if no cameras found
+	return if !$id;
+
+	# Set up multiple choice
+	my @choices = (
+		{ desc => 'Do nothing' },
+		{ desc => 'Get camera info', handler => \&camera_info, },
+		{ desc => 'Load a film', handler => \&film_load, },
+		{ desc => 'Sell this camera', handler => \&camera_sell, }
+	);
+	my $action = &multiplechoice({choices => \@choices});
+
+	# Execute chosen handler with args
+	if ($choices[$action]{handler}) {
+		$choices[$action]{handler}->({db=>$db, negative_id=>$id});
+	}
+
 	return;
 }
 
@@ -866,14 +902,34 @@ sub lens_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter lens search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "lenses that match '$searchterm'",
-		cols  => ['id', 'opt'],
-		table => 'choose_lens',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	print "Searching for lenses that match '$searchterm'\n";
+
+	# Perform search
+	my $id = &listchoices({
+		db     => $db,
+		cols   => ['id', 'opt'],
+		table  => 'choose_lens',
+		where  => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		skipok => 1,
 	});
-	print "Found $rows rows\n";
+
+	# Bail out if no cameras found
+	return if !$id;
+
+	# Set up multiple choice
+	my @choices = (
+		{ desc => 'Do nothing' },
+		{ desc => 'Get camera info', handler => \&camera_info, },
+		{ desc => 'Load a film', handler => \&film_load, },
+		{ desc => 'Sell this camera', handler => \&camera_sell, }
+	);
+	my $action = &multiplechoice({choices => \@choices});
+
+	# Execute chosen handler with args
+	if ($choices[$action]{handler}) {
+		$choices[$action]{handler}->({db=>$db, lens_id=>$id});
+	}
+
 	return;
 }
 
@@ -1344,14 +1400,34 @@ sub accessory_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter accessory search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "accessories that match '$searchterm'",
-		cols  => ['id', 'opt'],
-		table => 'choose_accessory',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	print "Searching for accessories that match '$searchterm'\n";
+
+	# Perform search
+	my $id = &listchoices({
+		db     => $db,
+		cols   => ['id', 'opt'],
+		table  => 'choose_accessory',
+		where  => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		skipok => 1,
 	});
-	print "Found $rows rows\n";
+
+	# Bail out if no cameras found
+	return if !$id;
+
+	# Set up multiple choice
+	my @choices = (
+		{ desc => 'Do nothing' },
+		{ desc => 'Get camera info', handler => \&camera_info, },
+		{ desc => 'Load a film', handler => \&film_load, },
+		{ desc => 'Sell this camera', handler => \&camera_sell, }
+	);
+	my $action = &multiplechoice({choices => \@choices});
+
+	# Execute chosen handler with args
+	if ($choices[$action]{handler}) {
+		$choices[$action]{handler}->({db=>$db, accessory_id=>$id});
+	}
+
 	return;
 }
 
