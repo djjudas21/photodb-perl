@@ -24,6 +24,7 @@ use Image::ExifTool;
 use Term::ReadLine;
 use Term::ReadLine::Perl;
 use File::Basename;
+use Time::Piece;
 
 our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice);
 
@@ -695,7 +696,7 @@ sub listchoices {
 		print "No valid $keyword options to choose from\n";
 		if ($inserthandler && &prompt({prompt=>"Add a new $keyword?", type=>'boolean', default=>'no'})) {
 			# add a new entry
-			my $id = $inserthandler->($db);
+			my $id = $inserthandler->({db=>$db});
 			return $id;
 		} elsif ($skipok) {
 			return;
@@ -744,7 +745,7 @@ sub listchoices {
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
 	if ($input eq $char && $inserthandler) {
-		my $id = $inserthandler->($db);
+		my $id = $inserthandler->({db=>$db});
 		return $id;
 	} else {
 		# Return input
@@ -1113,8 +1114,9 @@ The number of rows updated
 =cut
 
 sub updatedata {
-	my $db = shift;		# DB handle
-	my $query = shift;	# Plain SQL query
+	my $href = shift;
+	my $db = $href->{db};		   # DB handle
+	my $query = $href->{query};	# Plain SQL query
 	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
 	my $rows = $sth->execute();
 	$rows = &unsci($rows);
@@ -1129,7 +1131,7 @@ Return today's date according to the DB
 
 =head4 Usage
 
-    my $todaysdate = &today($db);
+    my $todaysdate = &today;
 
 =head4 Arguments
 
@@ -1142,8 +1144,7 @@ Today's date, formatted C<YYYY-MM-DD>
 =cut
 
 sub today {
-	my $db = shift;		# DB handle
-	return &lookupval({db=>$db, col=>'curdate()', table=>'CAMERA'});
+	return localtime->strftime('%Y-%m-%d');
 }
 
 =head2 now
@@ -1152,7 +1153,7 @@ Return an SQL-formatted timestamp for the current time
 
 =head4 Usage
 
-    my $time = &now($db);
+    my $time = &now;
 
 =head4 Arguments
 
@@ -1165,8 +1166,7 @@ String containing the current time, formatted C<YYYY-MM-DD HH:MM:SS>
 =cut
 
 sub now {
-	my $db = shift;	 # DB handle
-	return &lookupval({db=>$db, col=>'now()', table=>'CAMERA'});
+	return localtime->strftime('%Y-%m-%d %H:%M:%S');
 }
 
 
@@ -1350,7 +1350,7 @@ Get a negative ID either from the neg ID or the film/frame ID
 
 =head4 Usage
 
-    my $negID = &resolvenegid($db, '10/4');
+    my $negID = &resolvenegid({db=>$db, string=>'10/4'});
 
 =head4 Arguments
 
@@ -1365,8 +1365,9 @@ Integer negative ID
 =cut
 
 sub resolvenegid {
-	my $db = shift;
-	my $string = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $string = $href->{string};
 	if ($string =~ m/^\d+$/) {
 		# All digits - already a NegID
 		return $string;
@@ -1428,7 +1429,7 @@ Write out a text file in the film scans directory
 
 =head4 Usage
 
-    &annotatefilm($db, $film_id);
+    &annotatefilm({db=>$db, film_id=>$film_id});
 
 =head4 Arguments
 
@@ -1443,8 +1444,9 @@ Nothing
 =cut
 
 sub annotatefilm {
-	my $db = shift;
-	my $film_id = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id};
 
 	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
@@ -1707,9 +1709,9 @@ to the JPGs that have been scanned from negatives
 
 =head4 Usage
 
-    &tag($db, $where);
-    &tag($db, {film_id=1});
-    &tag($db, {negative_id=100});
+    &tag({db=>$db, where=>$where});
+    &tag({db=>$db, where=>{film_id=1}});
+    &tag({db=>$db, where=>{negative_id=100}});
 
 =head4 Arguments
 
@@ -1726,8 +1728,9 @@ Nothing
 sub tag {
 
 	# Read in cmdline args
-	my $db = shift;
-	my $where = shift;
+	my $href = shift;
+	my $db = $href->{db};
+	my $where = $href->{where};
 
 	# Make sure basepath is valid
 	my $basepath = &basepath;
@@ -1911,7 +1914,7 @@ sub logger {
 	my $type = $href->{type};
 	my $message = $href->{message};
 
-	return &newrecord({db=>$db, data=>{datetime=>&now($db), type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
+	return &newrecord({db=>$db, data=>{datetime=>&now, type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
 }
 
 =head2 choosescan
@@ -1920,7 +1923,7 @@ Select a scan by specifying a filename. Allows user to pick if there are multipl
 
 =head4 Usage
 
-    my $id = &choosescan($db);
+    my $id = &choosescan({db=>$db});
 
 =head4 Arguments
 
@@ -1933,7 +1936,8 @@ Integer representing the scan ID
 =cut
 
 sub choosescan {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	# prompt user for filename of scan
 	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
 
@@ -2049,7 +2053,8 @@ Array of file paths of scans recorded in the database
 =cut
 
 sub dbfiles {
-	my $db = shift;
+	my $href = shift;
+	my $db = $href->{db};
 	my $basepath = &basepath;
 	# Query DB to find all known scans
 	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
