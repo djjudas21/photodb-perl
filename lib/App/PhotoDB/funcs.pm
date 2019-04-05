@@ -783,7 +783,7 @@ sub multiplechoice {
 
 	my @allowedvals;
 	while (my ($index, $choice) = each @{$choices}) {
-		print "\t$index\t$choice->{desc}\n";
+		print "\t$index\t$$choice{desc}\n";
 		push(@allowedvals, $index);
 	}
 

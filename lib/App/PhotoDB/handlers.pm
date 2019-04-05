@@ -496,21 +496,21 @@ sub camera_search {
 	});
 	print "You chose $camera_id\n";
 
-	my @choices = [
+	# Set up multiple choice
+	my @choices = (
 		{
 			handler => '',
 			desc => 'Do nothing',
 		},
 		{
-			handler => \&camera_info($db, $camera_id),
+			handler => \&camera_info,
 			desc => 'Get camera info',
 		}
-	];
-
+	);
 	my $action = &multiplechoice({choices => \@choices});
 
-	# Execute chosen handler
-	$choices[$action]{handler};
+	# Execute chosen handler with args
+	$choices[$action]{handler}->({db=>$db, camera_id=>$camera_id});
 
 	return;
 }
