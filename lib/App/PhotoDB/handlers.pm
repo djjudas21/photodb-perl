@@ -504,7 +504,8 @@ sub camera_search {
 	my @choices = (
 		{ desc => 'Do nothing' },
 		{ desc => 'Get camera info', handler => \&camera_info, },
-		{ desc => 'Load a film', handler => \&film_load, }
+		{ desc => 'Load a film', handler => \&film_load, },
+		{ desc => 'Sell this camera', handler => \&camera_sell, }
 	);
 	my $action = &multiplechoice({choices => \@choices});
 
