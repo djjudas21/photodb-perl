@@ -490,11 +490,15 @@ sub camera_search {
 
 	# Perform search
 	my $camera_id = &listchoices({
-		db    =>$db,
-		cols  => ['id', 'opt'],
-		table => 'choose_camera',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		db     =>$db,
+		cols   => ['id', 'opt'],
+		table  => 'choose_camera',
+		where  => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		skipok => 1,
 	});
+
+	# Bail out if no cameras found
+	return if !$camera_id;
 
 	# Set up multiple choice
 	my @choices = (
