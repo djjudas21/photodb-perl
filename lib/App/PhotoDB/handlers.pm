@@ -502,35 +502,20 @@ sub camera_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter camera search term'});
-	print "Searching for cameras that match '$searchterm'\n";
 
 	# Perform search
-	my $id = &listchoices({
-		db     => $db,
-		cols   => ['id', 'opt'],
-		table  => 'choose_camera',
-		where  => "opt like '%$searchterm%' collate utf8mb4_general_ci",
-		skipok => 1,
+	my $id = &search({
+		db         => $db,
+		table      => 'choose_camera',
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ desc => 'Get camera info', handler => \&camera_info, id=>'camera_id', },
+			{ desc => 'Load a film', handler => \&film_load, id=>'camera_id', },
+			{ desc => 'Sell this camera', handler => \&camera_sell, id=>'camera_id', }
+		],
 	});
-
-	# Bail out if no cameras found
-	return if !$id;
-
-	# Set up multiple choice
-	my @choices = (
-		{ desc => 'Do nothing' },
-		{ desc => 'Get camera info', handler => \&camera_info, },
-		{ desc => 'Load a film', handler => \&film_load, },
-		{ desc => 'Sell this camera', handler => \&camera_sell, }
-	);
-	my $action = &multiplechoice({choices => \@choices});
-
-	# Execute chosen handler with args
-	if ($choices[$action]{handler}) {
-		$choices[$action]{handler}->({db=>$db, camera_id=>$id});
-	}
-
-	return;
+	return $id;
 }
 
 # Sell a camera
