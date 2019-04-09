@@ -248,16 +248,26 @@ sub film_choose {
 sub film_search {
 	my $href = shift;
 	my $db = $href->{db};
-	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter film search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "films that match '$searchterm'",
-		cols  => ['film_id as id', 'notes as opt'],
-		table => 'FILM',
-		where => "notes like '%$searchterm%' collate utf8mb4_general_ci",
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
+
+	# Perform search
+	my $id = &search({
+		db         => $db,
+		cols       => ['film_id as id', 'notes as opt'],
+		table      => 'FILM',
+		where      => "notes like '%$searchterm%' collate utf8mb4_general_ci",
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ handler => \&film_annotate, desc => 'Write out a text file with the scans from the film', id=>'film_id' },
+			{ handler => \&film_archive,  desc => 'Put this film in a physical archive',                id=>'film_id' },
+			{ handler => \&film_develop,  desc => 'Develop this film',                                  id=>'film_id' },
+			{ handler => \&film_info,     desc => 'Show information about this film',                   id=>'film_id' },
+			{ handler => \&film_locate,   desc => 'Locate where this film is',                          id=>'film_id' },
+			{ handler => \&film_tag,      desc => 'Write EXIF tags to scans from this film',            id=>'film_id' },
+		],
 	});
-	print "Found $rows rows\n";
-	return;
+	return $id;
 }
 
 # Add a new camera to the database
@@ -485,15 +495,27 @@ sub camera_search {
 	my $href = shift;
 	my $db = $href->{db};
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter camera search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "cameras that match '$searchterm'",
-		cols  => ['id', 'opt'],
-		table => 'choose_camera',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+
+	# Perform search
+	my $id = &search({
+		db         => $db,
+		table      => 'choose_camera',
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ handler => \&camera_info,            desc => 'Get camera info',                     id=>'camera_id' },
+			{ handler => \&camera_accessory,       desc => 'Add accessory compatibility info',    id=>'camera_id' },
+			{ handler => \&camera_displaylens,     desc => 'Associate with a lens for display',   id=>'camera_id' },
+			{ handler => \&camera_edit,            desc => 'Edit this camera',                    id=>'camera_id' },
+			{ handler => \&camera_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
+			{ handler => \&camera_meteringmode,    desc => 'Add available metering mode info',    id=>'camera_id' },
+			{ handler => \&camera_repair,          desc => 'Repair this camera',                  id=>'camera_id' },
+			{ handler => \&camera_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
+			{ handler => \&camera_sell,            desc => 'Sell this camera',                    id=>'camera_id' },
+			{ handler => \&film_load,              desc => 'Load a film',                         id=>'camera_id' },
+		],
 	});
-	print "Found $rows rows\n";
-	return;
+	return $id;
 }
 
 # Sell a camera
@@ -720,16 +742,23 @@ sub negative_tag {
 sub negative_search {
 	my $href = shift;
 	my $db = $href->{db};
-	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter negative search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "negatives that match '$searchterm'",
-		cols  => ["concat(film_id, '/', frame) as id", 'description as opt'],
-		table => 'NEGATIVE',
-		where => "description like '%$searchterm%' collate utf8mb4_general_ci",
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
+
+	# Perform search
+	my $id = &search({
+	db         => $db,
+		cols       => ["concat(film_id, '/', frame) as id", 'description as opt'],
+		table      => 'NEGATIVE',
+		where      => "description like '%$searchterm%' collate utf8mb4_general_ci",
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ handler => \&negative_info,   desc => 'Show information about this  negative',       id=>'negative_id' },
+			{ handler => \&negative_prints, desc => 'Find all prints made from this negative',     id=>'negative_id' },
+			{ handler => \&negative_tag,    desc => 'Write EXIF tags to scans from this negative', id=>'negative_id' },
+		],
 	});
-	print "Found $rows rows\n";
-	return;
+	return $id;
 }
 
 # Add a new lens to the database
@@ -844,16 +873,25 @@ sub lens_accessory {
 sub lens_search {
 	my $href = shift;
 	my $db = $href->{db};
-	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter lens search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "lenses that match '$searchterm'",
-		cols  => ['id', 'opt'],
-		table => 'choose_lens',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
+
+	# Perform search
+	my $id = &search({
+		db         => $db,
+		cols       => ['id', 'opt'],
+		table      => 'choose_lens',
+		where      => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ handler => \&lens_accessory, desc => 'Add accessory compatibility info to this lens', id=>'lens_id' },
+			{ handler => \&lens_edit,      desc => 'Edit this lens',                                id=>'lens_id' },
+			{ handler => \&lens_info,      desc => 'Show information about this lens',              id=>'lens_id' },
+			{ handler => \&lens_repair,    desc => 'Repair this lens',                              id=>'lens_id' },
+			{ handler => \&lens_sell,      desc => 'Sell this lens',                                id=>'lens_id' },
+		],
 	});
-	print "Found $rows rows\n";
-	return;
+	return $id;
 }
 
 # Sell a lens
@@ -1322,16 +1360,21 @@ sub accessory_info {
 sub accessory_search {
 	my $href = shift;
 	my $db = $href->{db};
-	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter accessory search term'});
-	my $rows = &printlist({
-		db    => $db,
-		msg   => "accessories that match '$searchterm'",
-		cols  => ['id', 'opt'],
-		table => 'choose_accessory',
-		where => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
+
+	# Perform search
+	my $id = &search({
+		db         => $db,
+		cols       => ['id', 'opt'],
+		table      => 'choose_accessory',
+		where      => "opt like '%$searchterm%' collate utf8mb4_general_ci",
+		searchterm => $searchterm,
+		choices    => [
+			{ desc => 'Do nothing' },
+			{ handler => \&accessory_info, desc => 'Display info about an accessory', id=>'accessory_id' },
+		],
 	});
-	print "Found $rows rows\n";
-	return;
+	return $id;
 }
 
 # Add a new enlarger to the database

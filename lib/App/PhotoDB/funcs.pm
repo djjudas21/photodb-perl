@@ -26,7 +26,7 @@ use Term::ReadLine::Perl;
 use File::Basename;
 use Time::Piece;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search);
 
 =head2 prompt
 
@@ -751,6 +751,51 @@ sub listchoices {
 		# Return input
 		return $input;
 	}
+}
+
+
+=head2 multiplechoice
+
+Choose from a number of options expressed as an array, and return the index of the chosen option
+
+=head4 Usage
+
+    my @choices = [
+        { desc => 'Do nothing' },
+        { desc => 'Also do nothing' },
+    ];
+
+    my $action = &multiplechoice({choices => \@choices});
+
+=head4 Arguments
+
+=item * C<$choices> array of hashes of options
+
+=head4 Returns
+
+Integer of the chosen option
+
+=cut
+
+sub multiplechoice {
+	my $href = shift;
+	my $choices = $href->{choices};
+
+	my @allowedvals;
+	while (my ($index, $choice) = each @{$choices}) {
+		print "\t$index\t$$choice{desc}\n";
+		push(@allowedvals, $index);
+	}
+
+	# Loop until we get valid input
+	my $input;
+	my $msg = "Please select an action from the list";
+
+	do {
+		$input = &prompt({prompt=>$msg, type=>'integer'});
+	} while ($input && !($input ~~ [ map {"$_"} @allowedvals ] || $input eq ''));
+
+	return $input;
 }
 
 =head2 printlist
@@ -2044,6 +2089,90 @@ sub unsci {
 	my $int = shift;
 	$int = 0 if ($int eq '0E0');
 	return $int;
+}
+
+
+
+=head2 search
+
+Search for objects in the database
+
+=head4 Usage
+
+    my $id = &search({
+        db         => $db,
+        table      => 'choose_camera',
+        searchterm => $searchterm,
+        choices    => [
+            { desc => 'Do nothing' },
+            { desc => 'Get camera info', handler => \&camera_info, id=>'camera_id', },
+            { desc => 'Load a film', handler => \&film_load, id=>'camera_id', },
+            { desc => 'Sell this camera', handler => \&camera_sell, id=>'camera_id', }
+        ],
+    });
+
+=head4 Arguments
+
+=item * C<$db> database handle
+
+=item * C<$table> name of table or view to search in
+
+=item * C<$keyword> keyword to describe the thing being chosen, e.g. C<camera>. Defaults to attempting to figure it out with C<&keyword>
+
+=item * C<$searchterm> string to search for in the database
+
+=item * C<$cols> = pair of columns where the first will be returned as the matched ID and the second is the column to be searched in. Defaults to ['id', 'opt']
+
+=item * C<$where> where clause for the search. Defaults to C<"opt like '%$searchterm%' collate utf8mb4_general_ci">
+
+=item * C<$choices> arrayref to an array of hashes which represent actions to be taken on a located item. You must provide C<desc>, a description of the action, C<handler>, a function reference to a suitable handler, and C<id>, the name of the parameter to use to pass in the ID located object.
+
+=head4 Returns
+
+ID of located object
+
+=cut
+
+# Search for objects in the database
+sub search {
+	my $href = shift;
+	my $db = $href->{db};
+	my $table = $href->{table};
+	my $keyword = $href->{keyword} // &keyword($table);
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>"Enter $keyword search term"});
+	my $cols = $href->{cols} // ['id', 'opt'];
+	my $where = $href->{where} // "opt like '%$searchterm%' collate utf8mb4_general_ci";
+	my $choices = $href->{choices};
+
+	print "Searching for $keyword objects that match '$searchterm'\n";
+
+	# Perform search
+	my $id = &listchoices({
+		db     => $db,
+		cols   => $cols,
+		table  => $table,
+		where  => $where,
+		skipok => 1,
+	});
+
+	# Bail out if no results found
+	if (!$id) {
+		print "No $keyword objects matching '$searchterm' were found\n";
+		return 0;
+	}
+
+	if ($choices && @$choices >0) {
+		# Ask user to choose a followup action
+		my $action = &multiplechoice({choices => $choices});
+
+		# Execute chosen handler with ID passed into named arg
+		if ($action && $choices->[$action]{handler}) {
+			$choices->[$action]{handler}->({db=>$db, $choices->[$action]{id}=>$id});
+		}
+	} else {
+		print "Selected $id\n";
+	}
+	return;
 }
 
 # This ensures the lib loads smoothly
