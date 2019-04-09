@@ -2155,20 +2155,23 @@ sub search {
 		skipok => 1,
 	});
 
-	# Bail out if no cameras found
+	# Bail out if no results found
 	if (!$id) {
 		print "No $keyword objects matching '$searchterm' were found\n";
 		return 0;
 	}
 
-	# Ask use to choose a followup action
-	my $action = &multiplechoice({choices => $choices});
+	if ($choices && @$choices >0) {
+		# Ask user to choose a followup action
+		my $action = &multiplechoice({choices => $choices});
 
-	# Execute chosen handler with ID passed into named arg
-	if ($choices->[$action]{handler}) {
-		$choices->[$action]{handler}->({db=>$db, $choices->[$action]{id}=>$id});
+		# Execute chosen handler with ID passed into named arg
+		if ($action && $choices->[$action]{handler}) {
+			$choices->[$action]{handler}->({db=>$db, $choices->[$action]{id}=>$id});
+		}
+	} else {
+		print "Selected $id\n";
 	}
-
 	return;
 }
 
