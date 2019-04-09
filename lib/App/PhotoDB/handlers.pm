@@ -134,8 +134,7 @@ sub film_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $film_id = $href->{film_id} // &film_choose({db=>$db});
-	my $filmdata = &lookupcol({db=>$db, table=>'info_film', where=>{'`Film ID`'=>$film_id}});
-	print Dump($filmdata);
+	print Dump(&lookupcol({db=>$db, table=>'info_film', where=>{'`Film ID`'=>$film_id}}));
 	return;
 }
 
@@ -715,8 +714,7 @@ sub negative_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $negative_id = $href->{negative_id} // &chooseneg({db=>$db});
-	my $negativedata = &lookupcol({db=>$db, table=>'info_negative', where=>{'`Negative ID`'=>$negative_id}});
-	print Dump($negativedata);
+	print Dump(&lookupcol({db=>$db, table=>'info_negative', where=>{'`Negative ID`'=>$negative_id}}));
 	return;
 }
 
@@ -1106,8 +1104,7 @@ sub print_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print do you want info on?', type=>'integer', required=>1});
-	my $data = &lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}});
-	print Dump($data);
+	print Dump(&lookupcol({db=>$db, table=>'info_print', where=>{Print=>$print_id}}));
 	return;
 }
 
@@ -1351,8 +1348,7 @@ sub accessory_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $accessory_id = $href->{accessory_id} // &listchoices({db=>$db, table=>'choose_accessory'});
-	my $accessorydata = &lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}});
-	print Dump($accessorydata);
+	print Dump(&lookupcol({db=>$db, table=>'info_accessory', where=>{'`Accessory ID`'=>$accessory_id}}));
 	return;
 }
 
@@ -1397,8 +1393,7 @@ sub enlarger_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $enlarger_id = $href->{enlarger_id} // &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
-	my $enlargerdata = &lookupcol({db=>$db, table=>'info_enlarger', where=>{'`Enlarger ID`'=>$enlarger_id}});
-	print Dump($enlargerdata);
+	print Dump(&lookupcol({db=>$db, table=>'info_enlarger', where=>{'`Enlarger ID`'=>$enlarger_id}}));
 	return;
 }
 
@@ -1565,8 +1560,7 @@ sub archive_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $archive_id = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
-	my $archivedata = &lookupcol({db=>$db, table=>'info_archive', where=>{'`Archive ID`'=>$archive_id}});
-	print Dump($archivedata);
+	print Dump(&lookupcol({db=>$db, table=>'info_archive', where=>{'`Archive ID`'=>$archive_id}}));
 	return;
 }
 
@@ -1711,8 +1705,7 @@ sub movie_info {
 	my $href = shift;
 	my $db = $href->{db};
 	my $movie_id = $href->{movie_id} // &listchoices({db=>$db, cols=>['movie_id as id', 'title as opt'], table=>'MOVIE', required=>1});
-	my $moviedata = &lookupcol({db=>$db, table=>'info_movie', where=>{'`Movie ID`'=>$movie_id}});
-	print Dump($moviedata);
+	print Dump(&lookupcol({db=>$db, table=>'info_movie', where=>{'`Movie ID`'=>$movie_id}}));
 	return;
 }
 
@@ -1875,8 +1868,7 @@ sub db_stats {
 sub db_logs {
 	my $href = shift;
 	my $db = $href->{db};
-	my $logs = &lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'});
-	print Dump($logs);
+	print Dump(&lookuplist({db=>$db, col=>"concat(datetime, ' ', type, ' ', message) as log", table=>'LOG'}));
 	return;
 }
 
