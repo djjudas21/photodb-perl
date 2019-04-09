@@ -497,9 +497,16 @@ sub camera_search {
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
-			{ desc => 'Get camera info', handler => \&camera_info, id=>'camera_id', },
-			{ desc => 'Load a film', handler => \&film_load, id=>'camera_id', },
-			{ desc => 'Sell this camera', handler => \&camera_sell, id=>'camera_id', }
+			{ handler => \&camera_info,            desc => 'Get camera info',                     id=>'camera_id' },
+			{ handler => \&camera_accessory,       desc => 'Add accessory compatibility info',    id=>'camera_id' },
+			{ handler => \&camera_displaylens,     desc => 'Associate with a lens for display',   id=>'camera_id' },
+			{ handler => \&camera_edit,            desc => 'Edit this camera',                    id=>'camera_id' },
+			{ handler => \&camera_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
+			{ handler => \&camera_meteringmode,    desc => 'Add available metering mode info',    id=>'camera_id' },
+			{ handler => \&camera_repair,          desc => 'Repair this camera',                  id=>'camera_id' },
+			{ handler => \&camera_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
+			{ handler => \&camera_sell,            desc => 'Sell this camera',                    id=>'camera_id' },
+			{ handler => \&film_load,              desc => 'Load a film',                         id=>'camera_id' },
 		],
 	});
 	return $id;
