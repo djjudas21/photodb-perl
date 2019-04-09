@@ -259,6 +259,12 @@ sub film_search {
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
+			{ handler => \&film_annotate, desc => 'Write out a text file with the scans from the film', id=>'film_id' },
+			{ handler => \&film_archive,  desc => 'Put this film in a physical archive',                id=>'film_id' },
+			{ handler => \&film_develop,  desc => 'Develop this film',                                  id=>'film_id' },
+			{ handler => \&film_info,     desc => 'Show information about this film',                   id=>'film_id' },
+			{ handler => \&film_locate,   desc => 'Locate where this film is',                          id=>'film_id' },
+			{ handler => \&film_tag,      desc => 'Write EXIF tags to scans from this film',            id=>'film_id' },
 		],
 	});
 	return $id;
@@ -747,6 +753,9 @@ sub negative_search {
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
+			{ handler => \&negative_info,   desc => 'Show information about this  negative',       id=>'negative_id' },
+			{ handler => \&negative_prints, desc => 'Find all prints made from this negative',     id=>'negative_id' },
+			{ handler => \&negative_tag,    desc => 'Write EXIF tags to scans from this negative', id=>'negative_id' },
 		],
 	});
 	return $id;
@@ -862,19 +871,24 @@ sub lens_accessory {
 
 # Search for a camera
 sub lens_search {
-my $href = shift;
-my $db = $href->{db};
-my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
+	my $href = shift;
+	my $db = $href->{db};
+	my $searchterm = $href->{searchterm} // &prompt({prompt=>'Enter search term'});
 
-# Perform search
+	# Perform search
 	my $id = &search({
-	db         => $db,
+		db         => $db,
 		cols       => ['id', 'opt'],
 		table      => 'choose_lens',
 		where      => "opt like '%$searchterm%' collate utf8mb4_general_ci",
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
+			{ handler => \&lens_accessory, desc => 'Add accessory compatibility info to this lens', id=>'lens_id' },
+			{ handler => \&lens_edit,      desc => 'Edit this lens',                                id=>'lens_id' },
+			{ handler => \&lens_info,      desc => 'Show information about this lens',              id=>'lens_id' },
+			{ handler => \&lens_repair,    desc => 'Repair this lens',                              id=>'lens_id' },
+			{ handler => \&lens_sell,      desc => 'Sell this lens',                                id=>'lens_id' },
 		],
 	});
 	return $id;
@@ -1357,6 +1371,7 @@ sub accessory_search {
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
+			{ handler => \&accessory_info, desc => 'Display info about an accessory', id=>'accessory_id' },
 		],
 	});
 	return $id;
