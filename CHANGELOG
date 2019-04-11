@@ -1,5 +1,11 @@
 Revision history for Perl module App::PhotoDB
 
+0.04 2019-04-09
+
+  * Add actions to searches (#247, #262)
+  * Fix bug with long shutter speeds (#248)
+  * Fix crash when there are no tasks or reports (#250)
+
 0.03 2019-04-02
 
   * Add search functionality for cameras, lenses, negatives, films and accessories (#227)

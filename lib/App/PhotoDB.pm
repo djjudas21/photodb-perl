@@ -264,7 +264,7 @@ use App::PhotoDB::handlers;
 use App::PhotoDB::commands;
 
 # Authoritative distro version
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 sub main {
 
