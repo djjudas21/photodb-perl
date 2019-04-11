@@ -1641,7 +1641,7 @@ sub run_task {
 	my $input = &prompt({prompt=>'Please select a task', type=>'integer', required=>1});
 
 	my $sql = $tasks[$input]{'query'};
-	my $rows = &updatedata($db, $sql);
+	my $rows = &updatedata({db=>$db, query=>$sql});
 	print "Updated $rows rows\n";
 	return;
 }
