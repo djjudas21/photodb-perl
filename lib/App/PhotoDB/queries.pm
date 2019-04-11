@@ -138,6 +138,10 @@ our @tasks = (
 			and ext_flash=0
 			and NEGATIVE.flash is null'
 	},
+	{
+		desc => 'Delete log entries older than 90 days',
+		query => 'DELETE from LOG where datetime < date_sub(now(), interval 90 day)',
+	},
 );
 
 our @reports = (
