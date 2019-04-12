@@ -1,5 +1,6 @@
 bin/photodb
 Build.PL
+CHANGELOG
 docs/CONTRIBUTING.pod
 docs/SCHEMA.pod
 dump-schema.pl
@@ -16,6 +17,7 @@ migrations/000-base-schema.sql
 migrations/001-sample-data.sql
 migrations/002-functions.sql
 migrations/003-views.sql
+migrations/004-shutter-precision.sql
 README.pod
 t/00-compile.t
 t/01-perlcritic.t
