@@ -147,7 +147,7 @@ END ;;
 /*!50003 SET collation_connection  = utf8mb4_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-CREATE PROCEDURE `update_dates_of_fixed_lengths`()
+CREATE PROCEDURE `update_dates_of_fixed_lenses`()
 BEGIN
 UPDATE
     LENS,

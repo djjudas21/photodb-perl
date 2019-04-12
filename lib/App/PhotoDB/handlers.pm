@@ -1767,7 +1767,7 @@ sub run_task {
 	my @choices = (
 		{ desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',                    proc => 'update_lens_id_fixed_camera' },
 		{ desc => 'Update lens focal length per negative',                                                proc => 'update_focal_length' },
-		{ desc => 'Update dates of fixed lenses',                                                         proc => 'update_dates_of_fixed_lengths' },
+		{ desc => 'Update dates of fixed lenses',                                                         proc => 'update_dates_of_fixed_lenses' },
 		{ desc => 'Set metering mode for negatives taken with cameras with only one metering mode',       proc => 'update_metering_modes' },
 		{ desc => 'Set exposure program for negatives taken with cameras with only one exposure program', proc => 'update_exposure_programs' },
 		{ desc => 'Set fixed lenses as lost when their camera is lost',                                   proc => 'set_fixed_lenses' },

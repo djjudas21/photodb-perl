@@ -34,8 +34,8 @@ END ;;
 
 
 /* Update dates of fixed lenses */
-DROP procedure IF EXISTS `update_dates_of_fixed_lengths`;
-CREATE PROCEDURE `update_dates_of_fixed_lengths` ()
+DROP procedure IF EXISTS `update_dates_of_fixed_lenses`;
+CREATE PROCEDURE `update_dates_of_fixed_lenses` ()
 BEGIN
 UPDATE
     LENS,
