@@ -1764,22 +1764,26 @@ sub run_task {
 	my $href = shift;
 	my $db = $href->{db};
 
-	my @tasks = @App::PhotoDB::queries::tasks;
-	if (scalar(@tasks) == 0) {
-		print "No tasks found\n";
-		return 0;
+	my @choices = (
+		{ desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',                    proc => 'update_lens_id_fixed_camera' },
+		{ desc => 'Update lens focal length per negative',                                                proc => 'update_focal_length' },
+		{ desc => 'Update dates of fixed lenses',                                                         proc => 'update_dates_of_fixed_lengths' },
+		{ desc => 'Set metering mode for negatives taken with cameras with only one metering mode',       proc => 'update_metering_modes' },
+		{ desc => 'Set exposure program for negatives taken with cameras with only one exposure program', proc => 'update_exposure_programs' },
+		{ desc => 'Set fixed lenses as lost when their camera is lost',                                   proc => 'set_fixed_lenses' },
+		{ desc => 'Set crop factor, area, and aspect ratio for negative sizes that lack it',              proc => 'update_negative_sizes' },
+		{ desc => 'Set no flash for negatives taken with cameras that don\'t support flash',              proc => 'update_negative_flash' },
+		{ desc => 'Delete log entries older than 90 days',                                                proc => 'delete_logs' },
+	);
+
+	my $action = &multiplechoice({choices => \@choices});
+
+	if (defined($action) && $choices[$action]->{proc}) {
+		my $rows = &call({db=>$db, procedure=>$choices[$action]->{proc}});
+		$rows = &unsci($rows);
+		print "Updated $rows rows\n";
+		return $rows;
 	}
-
-	for my $i (0 .. $#tasks) {
-		print "\t$i\t$tasks[$i]{desc}\n";
-	}
-
-	# Wait for input
-	my $input = &prompt({prompt=>'Please select a task', type=>'integer', required=>1});
-
-	my $sql = $tasks[$input]{'query'};
-	my $rows = &updatedata({db=>$db, query=>$sql});
-	print "Updated $rows rows\n";
 	return;
 }
 
