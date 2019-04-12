@@ -17,6 +17,7 @@ migrations/001-sample-data.sql
 migrations/002-functions.sql
 migrations/003-views.sql
 migrations/004-shutter-precision.sql
+migrations/005-photographer.sql
 migrations/006-stored-procedures.sql
 README.pod
 t/00-compile.t
