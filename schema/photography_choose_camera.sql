@@ -15,7 +15,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `choose_camera` AS select `CAMERA`.`camera_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERA`.`model`) AS `opt`,`CAMERA`.`mount_id` AS `mount_id` from (`CAMERA` join `MANUFACTURER`) where ((`CAMERA`.`own` = 1) and (`CAMERA`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) order by concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERA`.`model`) */;
+/*!50001 VIEW `choose_camera` AS select `CAMERA`.`camera_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERA`.`model`) AS `opt`,`CAMERA`.`mount_id` AS `mount_id` from (`CAMERA` join `MANUFACTURER`) where ((`CAMERA`.`own` = 1) and (`CAMERA`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) order by (concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERA`.`model`) collate utf8mb4_general_ci) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;
