@@ -11,7 +11,6 @@ use YAML;
 use Array::Utils qw(:all);
 use Path::Iterator::Rule;
 use File::Basename;
-use Text::TabularDisplay;
 
 use App::PhotoDB::funcs qw(/./);
 
@@ -1803,24 +1802,7 @@ sub run_report {
 	my $action = &multiplechoice({choices => \@choices});
 
 	if (defined($action) && $choices[$action]->{view}) {
-
-		# Use SQL::Abstract
-		my $sql = SQL::Abstract->new;
-		my($stmt, @bind) = $sql->select($choices[$action]->{view});
-
-		my $sth = $db->prepare($stmt);
-		my $rows = $sth->execute(@bind);
-		my $cols = $sth->{'NAME'};
-		my @array;
-		my $table = Text::TabularDisplay->new(@$cols);
-		while (my @row = $sth->fetchrow) {
-			$table->add(@row);
-		}
-
-		print "$choices[$action]{'desc'}\n";
-		print $table->render;
-		print "\n";
-		return $rows;
+		&tabulate({db=>$db, view=>$choices[$action]->{view}});
 	}
 	return;
 }
