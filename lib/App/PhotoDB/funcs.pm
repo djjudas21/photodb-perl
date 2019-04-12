@@ -26,7 +26,7 @@ use Term::ReadLine::Perl;
 use File::Basename;
 use Time::Piece;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist updatedata today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search);
 
 =head2 prompt
 
@@ -1034,7 +1034,12 @@ sub call {
 	my $procedure = $href->{procedure};
 	my $args = $href->{args};
 
-	my $arglist = join(',', @$args);
+	my $arglist;
+	if (defined $args) {
+		$arglist = join(',', @$args);
+	} else {
+		$arglist = '';
+	}
 	my $query = "call $procedure($arglist)";
 	my $sth = $db->prepare($query);
 	my $rows = $sth->execute();
@@ -1091,36 +1096,6 @@ sub lookuplist {
 		push(@list, $row[0]);
 	}
 	return \@list;
-}
-
-=head2 updatedata
-
-Update data using a bare SQL C<UPDATE> statement. Avoid using this if possible,
-as it is dangerous. Use C<&updaterecord> instead.
-=head4 Usage
-
-    my $rows = &updatedata($db, $sql);
-
-=head4 Arguments
-
-=item * C<$db> DB handle
-
-=item * C<$query> Plain SQL UPDATE query to execute
-
-=head4 Returns
-
-The number of rows updated
-
-=cut
-
-sub updatedata {
-	my $href = shift;
-	my $db = $href->{db};		   # DB handle
-	my $query = $href->{query};	# Plain SQL query
-	my $sth = $db->prepare($query) or die "Couldn't prepare statement: " . $db->errstr;
-	my $rows = $sth->execute();
-	$rows = &unsci($rows);
-	return $rows;
 }
 
 # Return today's date according to the DB

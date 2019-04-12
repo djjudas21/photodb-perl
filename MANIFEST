@@ -8,7 +8,6 @@ lib/App/PhotoDB.pm
 lib/App/PhotoDB/commands.pm
 lib/App/PhotoDB/funcs.pm
 lib/App/PhotoDB/handlers.pm
-lib/App/PhotoDB/queries.pm
 LICENSE
 MANIFEST			This list of files
 META.json
@@ -18,6 +17,7 @@ migrations/001-sample-data.sql
 migrations/002-functions.sql
 migrations/003-views.sql
 migrations/004-shutter-precision.sql
+migrations/006-stored-procedures.sql
 README.pod
 t/00-compile.t
 t/01-perlcritic.t

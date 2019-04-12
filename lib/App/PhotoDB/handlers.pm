@@ -14,7 +14,6 @@ use File::Basename;
 use Text::TabularDisplay;
 
 use App::PhotoDB::funcs qw(/./);
-use App::PhotoDB::queries;
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
@@ -1764,22 +1763,26 @@ sub run_task {
 	my $href = shift;
 	my $db = $href->{db};
 
-	my @tasks = @App::PhotoDB::queries::tasks;
-	if (scalar(@tasks) == 0) {
-		print "No tasks found\n";
-		return 0;
+	my @choices = (
+		{ desc => 'Set right lens_id for all negatives taken with fixed-lens cameras',                    proc => 'update_lens_id_fixed_camera' },
+		{ desc => 'Update lens focal length per negative',                                                proc => 'update_focal_length' },
+		{ desc => 'Update dates of fixed lenses',                                                         proc => 'update_dates_of_fixed_lenses' },
+		{ desc => 'Set metering mode for negatives taken with cameras with only one metering mode',       proc => 'update_metering_modes' },
+		{ desc => 'Set exposure program for negatives taken with cameras with only one exposure program', proc => 'update_exposure_programs' },
+		{ desc => 'Set fixed lenses as lost when their camera is lost',                                   proc => 'set_fixed_lenses' },
+		{ desc => 'Set crop factor, area, and aspect ratio for negative sizes that lack it',              proc => 'update_negative_sizes' },
+		{ desc => 'Set no flash for negatives taken with cameras that don\'t support flash',              proc => 'update_negative_flash' },
+		{ desc => 'Delete log entries older than 90 days',                                                proc => 'delete_logs' },
+	);
+
+	my $action = &multiplechoice({choices => \@choices});
+
+	if (defined($action) && $choices[$action]->{proc}) {
+		my $rows = &call({db=>$db, procedure=>$choices[$action]->{proc}});
+		$rows = &unsci($rows);
+		print "Updated $rows rows\n";
+		return $rows;
 	}
-
-	for my $i (0 .. $#tasks) {
-		print "\t$i\t$tasks[$i]{desc}\n";
-	}
-
-	# Wait for input
-	my $input = &prompt({prompt=>'Please select a task', type=>'integer', required=>1});
-
-	my $sql = $tasks[$input]{'query'};
-	my $rows = &updatedata({db=>$db, query=>$sql});
-	print "Updated $rows rows\n";
 	return;
 }
 
@@ -1788,38 +1791,39 @@ sub run_report {
 	my $href = shift;
 	my $db = $href->{db};
 
-	my @reports = @App::PhotoDB::queries::reports;
-	if (scalar(@reports) == 0) {
-		print "No reports found\n";
-		return 0;
+	my @choices = (
+		{ desc => 'Report on how many cameras in the collection are from each decade', view => 'report_cameras_by_decade', },
+		{ desc => 'Report on which lenses have been used to take most frames',         view => 'report_most_popular_lenses_relative', },
+		{ desc => 'Report on cameras that have never been to used to take a frame',    view => 'report_never_used_cameras', },
+		{ desc => 'Report on lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
+		{ desc => 'Report on the cameras that have taken most frames',                 view => 'report_total_negatives_per_camera', },
+		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
+		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', }
+	);
+
+	my $action = &multiplechoice({choices => \@choices});
+
+	if (defined($action) && $choices[$action]->{view}) {
+
+		# Use SQL::Abstract
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select($choices[$action]->{view});
+
+		my $sth = $db->prepare($stmt);
+		my $rows = $sth->execute(@bind);
+		my $cols = $sth->{'NAME'};
+		my @array;
+		my $table = Text::TabularDisplay->new(@$cols);
+		while (my @row = $sth->fetchrow) {
+			$table->add(@row);
+		}
+
+		print "$choices[$action]{'desc'}\n";
+		print $table->render;
+		print "\n";
+		return $rows;
 	}
-
-	for my $i (0 .. $#reports) {
-		print "\t$i\t$reports[$i]{desc}\n";
-	}
-
-	# Wait for input
-	my $input = &prompt({prompt=>'Please select a report', type=>'integer', required=>1});
-
-	my $view = $reports[$input]{'view'};
-
-	# Use SQL::Abstract
-	my $sql = SQL::Abstract->new;
-	my($stmt, @bind) = $sql->select($view);
-
-	my $sth = $db->prepare($stmt);
-	my $rows = $sth->execute(@bind);
-	my $cols = $sth->{'NAME'};
-	my @array;
-	my $table = Text::TabularDisplay->new(@$cols);
-	while (my @row = $sth->fetchrow) {
-		$table->add(@row);
-	}
-
-	print "$reports[$input]{'desc'}\n";
-	print $table->render;
-	print "\n";
-	return $rows;
+	return;
 }
 
 # Select a manufacturer using the first initial
