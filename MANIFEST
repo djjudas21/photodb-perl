@@ -8,7 +8,6 @@ lib/App/PhotoDB.pm
 lib/App/PhotoDB/commands.pm
 lib/App/PhotoDB/funcs.pm
 lib/App/PhotoDB/handlers.pm
-lib/App/PhotoDB/queries.pm
 LICENSE
 MANIFEST			This list of files
 META.json
