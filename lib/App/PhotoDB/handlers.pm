@@ -187,13 +187,10 @@ sub film_annotate {
 sub film_stocks {
 	my $href = shift;
 	my $db = $href->{db};
-	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
-	my $rows = @$data;
-	if ($rows >= 0) {
-		print "Films currently in stock:\n";
-		foreach my $row (@$data) {
-			print "\t$row->{qty}  x\t$row->{film}\n";
-		}
+	print "Films currently in stock:\n";
+	my $rows = &tabulate({db=>$db, view=>'view_film_stocks'});
+
+	if ($rows > 0) {
 		if (&prompt({default=>'yes', prompt=>'Load a film into a camera now?', type=>'boolean'})) {
 			&film_load({db=>$db});
 		}
