@@ -11,7 +11,6 @@ use YAML;
 use Array::Utils qw(:all);
 use Path::Iterator::Rule;
 use File::Basename;
-use Text::TabularDisplay;
 
 use App::PhotoDB::funcs qw(/./);
 
@@ -188,13 +187,10 @@ sub film_annotate {
 sub film_stocks {
 	my $href = shift;
 	my $db = $href->{db};
-	my $data = &lookupcol({db=>$db, table=>'view_film_stocks'});
-	my $rows = @$data;
-	if ($rows >= 0) {
-		print "Films currently in stock:\n";
-		foreach my $row (@$data) {
-			print "\t$row->{qty}  x\t$row->{film}\n";
-		}
+	print "Films currently in stock:\n";
+	my $rows = &tabulate({db=>$db, view=>'view_film_stocks'});
+
+	if ($rows > 0) {
 		if (&prompt({default=>'yes', prompt=>'Load a film into a camera now?', type=>'boolean'})) {
 			&film_load({db=>$db});
 		}
@@ -1803,24 +1799,7 @@ sub run_report {
 	my $action = &multiplechoice({choices => \@choices});
 
 	if (defined($action) && $choices[$action]->{view}) {
-
-		# Use SQL::Abstract
-		my $sql = SQL::Abstract->new;
-		my($stmt, @bind) = $sql->select($choices[$action]->{view});
-
-		my $sth = $db->prepare($stmt);
-		my $rows = $sth->execute(@bind);
-		my $cols = $sth->{'NAME'};
-		my @array;
-		my $table = Text::TabularDisplay->new(@$cols);
-		while (my @row = $sth->fetchrow) {
-			$table->add(@row);
-		}
-
-		print "$choices[$action]{'desc'}\n";
-		print $table->render;
-		print "\n";
-		return $rows;
+		&tabulate({db=>$db, view=>$choices[$action]->{view}});
 	}
 	return;
 }
