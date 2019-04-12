@@ -1034,7 +1034,12 @@ sub call {
 	my $procedure = $href->{procedure};
 	my $args = $href->{args};
 
-	my $arglist = join(',', @$args);
+	my $arglist;
+	if (defined $args) {
+		$arglist = join(',', @$args);
+	} else {
+		$arglist = '';
+	}
 	my $query = "call $procedure($arglist)";
 	my $sth = $db->prepare($query);
 	my $rows = $sth->execute();
