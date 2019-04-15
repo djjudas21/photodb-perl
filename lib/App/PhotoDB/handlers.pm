@@ -1768,6 +1768,7 @@ sub run_task {
 		{ desc => 'Set crop factor, area, and aspect ratio for negative sizes that lack it',              proc => 'update_negative_sizes' },
 		{ desc => 'Set no flash for negatives taken with cameras that don\'t support flash',              proc => 'update_negative_flash' },
 		{ desc => 'Delete log entries older than 90 days',                                                proc => 'delete_logs' },
+		{ desc => 'Update copied negatives with inherited data',                                          proc => 'update_copied_negs'},
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
