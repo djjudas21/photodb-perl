@@ -140,7 +140,7 @@ sub film_tag {
 	my $href = shift;
 	my $db = $href->{db};
 	my $film_id = $href->{film_id} // &film_choose({db=>$db});
-	&tag({db=>$db, film_id=>$film_id});
+	&tag({db=>$db, where=>{film_id=>$film_id}});
 	return;
 }
 
@@ -726,7 +726,7 @@ sub negative_tag {
 	my $href = shift;
 	my $db = $href->{db};
 	my $neg_id = $href->{negative_id} // &chooseneg({db=>$db});
-	&tag({db=>$db, negative_id=>$neg_id});
+	&tag({db=>$db, where=>{negative_id=>$neg_id}});
 	return;
 }
 
@@ -1143,7 +1143,7 @@ sub print_tag {
 	my $href = shift;
 	my $db = $href->{db};
 	my $print_id = $href->{print_id} // &prompt({prompt=>'Which print do you want to tag?', type=>'integer', required=>1});
-	&tag({db=>$db, print_id=>$print_id});
+	&tag({db=>$db, where=>{print_id=>$print_id}});
 	return;
 }
 
