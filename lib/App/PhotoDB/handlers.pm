@@ -46,7 +46,7 @@ our @EXPORT_OK = qw(
 	exhibition_add exhibition_info
 	choose_manufacturer
 	db_stats db_logs db_test
-	scan_add scan_edit scan_delete scan_search
+	scan_add scan_edit scan_delete scan_search scan_rename
 );
 
 # Add a new film to the database
@@ -2025,6 +2025,61 @@ sub scan_search {
 		print "All scans in the database exist on the filesystem\n";
 	}
 	return;
+}
+
+# Rename scans to include their caption in the filename
+sub scan_rename {
+	# Read in cmdline args
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id} // &film_choose({db=>$db});
+
+	# Make sure basepath is valid
+	my $basepath = &basepath;
+
+	# Find matching scans
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select('scans_negs', '*', {film_id=>$film_id});
+	my $sth = $db->prepare($stmt) or die "Couldn't prepare statement: " . $db->errstr;
+	my $rows = $sth->execute(@bind);
+	$rows = &unsci($rows);
+	return if ($rows == 0);
+
+	# Loop through our result set
+	while (my $ref = $sth->fetchrow_hashref()) {
+		# First check the path is defined in MySQL
+		if (defined($ref->{'filename'})) {
+			# Now make sure the path actually exists on the system
+			if (-e "$basepath/$ref->{'directory'}/$ref->{'filename'}") {
+
+				# Sanitise description with fs-safe chars
+				my $safedesc = $ref->{'description'};
+				$safedesc =~ s/[^a-zA-Z0-9-_ ]//g;
+
+				# Generate theoretical new filename
+				my $newname;
+				if ($ref->{'print_id'}) {
+					# For prints
+					$newname = "P$ref->{print_id}-$safedesc.jpg";
+				} else {
+					# For negatives
+					$newname = "$ref->{film_id}-$ref->{frame}-$safedesc.jpg";
+				}
+
+				# Check if a change is needed
+				if ($ref->{'filename'} ne $newname) {
+					print "\t$ref->{'filename'} => $newname\n";
+
+					# Move file on fs
+					rename(&untaint("$basepath/$ref->{'directory'}/$ref->{'filename'}"), &untaint("$basepath/$ref->{'directory'}/$newname"));
+
+					# Update scan in db
+					&updaterecord({db=>$db, data=>{filename=>$newname}, table=>'SCAN', where=>{scan_id=>$ref->{scan_id}}, silent=>1});
+				}
+			}
+		}
+	}
+	return $rows;
 }
 
 # This ensures the lib loads smoothly
