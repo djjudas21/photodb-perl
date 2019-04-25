@@ -1,5 +1,15 @@
 Revision history for Perl module App::PhotoDB
 
+0.05 2019-04-25
+
+  * Add task to update negs copied from other negs (#272)
+  * Add task to clear out old logs (#265)
+  * Handle table printing in a better way (#269)
+  * Track photographer data per negative, not per film (#254)
+  * Fix bug that prevented tasks from running (#256)
+  * Minor fixes to SQL migrations
+  * Minor fixes to EXIF tagging
+
 0.04 2019-04-09
 
   * Add actions to searches (#247, #262)

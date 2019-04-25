@@ -19,6 +19,7 @@ migrations/003-views.sql
 migrations/004-shutter-precision.sql
 migrations/005-photographer.sql
 migrations/006-stored-procedures.sql
+migrations/007-update-copied-negs.sql
 README.pod
 t/00-compile.t
 t/01-perlcritic.t
