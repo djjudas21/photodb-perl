@@ -23,3 +23,6 @@ EOT
 # Exit straight away, but this still runs migrations
 sudo apt-get install -y expect
 ./tests/migrations.exp
+
+# Test all views by selecting from them
+./tests/test-views.pl
