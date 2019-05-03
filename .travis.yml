@@ -11,17 +11,11 @@ before_install:
   - mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
   - mkdir -p ~/.photodb
   - echo -e "[database]\nuser=photodb\nschema=photodb\npass=photodb\nhost=localhost" > ~/.photodb/photodb.ini
-addons:
-  apt:
-    packages:
-      - expect
 jobs:
   include:
   - stage: test
     name: Perl tests
     script: perl Build.PL && ./Build test
-  - name: Database migrations
-    script: tests/migrations.sh
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
