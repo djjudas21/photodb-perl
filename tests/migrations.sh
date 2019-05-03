@@ -5,10 +5,6 @@ perl Build.PL
 ./Build
 ./Build install
 
-# Install DB
-sudo apt-get update && sudo apt-get install -y mysql-server-5.6
-mysql -uroot -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
-
 # Configure PhotoDB
 mkdir -p ~/.photodb
 cat <<EOT >> ~/.photodb/photodb.ini
