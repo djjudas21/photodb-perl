@@ -9,6 +9,10 @@ services:
   - mysql
 before_install:
   - mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
+addons:
+  apt:
+    packages:
+      - expect
 jobs:
   include:
   - stage: test
