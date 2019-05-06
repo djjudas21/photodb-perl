@@ -2,14 +2,16 @@ use strict;
 use warnings;
 use Test::More;
 use DBI;
+use DBD::mysql;
 
 SKIP: {
 	# Only execute this set if we have a test DB
-	my $dbh = DBI->connect('DBI:mysql:photodb:localhost', 'photodb', 'photodb');
-	skip 'Could not connect to database', 1 if (!$dbh);
+	my $dbh = DBI->connect('DBI:mysql:photodb:localhost', 'photodb', 'photodb') or fail('dbh');
+	skip 'Could not connect to database', 1 unless (defined($dbh));
 
 	# Get a list of all views
-	my $query = "SHOW FULL TABLES WHERE TABLE_TYPE LIKE 'VIEW'";
+	#my $query = "SHOW FULL TABLES WHERE TABLE_TYPE LIKE 'VIEW'";
+	my $query = "SELECT TABLE_NAME FROM information_schema.`TABLES` WHERE TABLE_TYPE LIKE 'VIEW' AND TABLE_SCHEMA LIKE 'photodb'";
 	my $sth = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
 	my $rv = $sth->execute or die "can't execute the query: $sth->errstr";
 
@@ -18,35 +20,18 @@ SKIP: {
 		push(@views, $row[0]);
 	}
 
-	my $numviews = scalar @views;
-	#	print "Found $numviews views\n";
+	my $numviews = @views || 0;
 	plan tests => $numviews;
+	if ($numviews == 0) {
+		plan skip_all => 'No SQL views found' ;
+		exit;
+	}
 
 	# Test each view
 	my @passes;
 	my @failures;
 	foreach my $view (@views) {
 		ok(!&test_view($dbh, $view), "view $view");
-		#		if (my $error = &test_view($view)) {
-		#			# fail
-		#			print "$view is broken: $error\n";
-		#			push(@failures, $view);
-		#		} else {
-		#			# pass
-		#			push(@passes, $view);
-		#		}
-		#	}
-
-		#	my $numpasses = scalar @passes;
-		#	my $numfailures = scalar @failures;
-
-		#	print "$numpasses views passed\n";
-		#	print "$numfailures views failed\n";
-
-		#	if ($numfailures > 0) {
-		#		exit 1;
-		#	} else {
-		#		exit 0;
 	}
 }
 
