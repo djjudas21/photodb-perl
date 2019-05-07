@@ -5,7 +5,7 @@ use Expect;
 
 # Create an Expect object by spawning PhotoDB
 my $exp;
-ok($exp = Expect->spawn('bin/photodb'), 'spawn PhotoDB');
+ok($exp = Expect->spawn('bin/photodb -h localhost -s photodb -u photodb -p photodb'), 'spawn PhotoDB');
 
 # Wait for PhotoDB to give us the prompt (i.e. it has completed migrations)
 # We allow 60 seconds in case the DB is slow
