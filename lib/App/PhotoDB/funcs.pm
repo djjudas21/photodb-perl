@@ -90,7 +90,7 @@ sub prompt {
 	$msg .= "$char ";
 
 	# Create terminal handler
-	my $term = &term;
+	my $term = $App::PhotoDB::term;
 
 	my $rv;
 	# Repeatedly prompt user until we get a response of the correct type

@@ -304,7 +304,7 @@ sub main {
 	my $db = &db({args=>$args});
 
 	# Set up terminal
-	my $term = &term;
+	our $term = &term;
 
 	# Enter interactive prompt and loop until exited by user
 	while (1) {
