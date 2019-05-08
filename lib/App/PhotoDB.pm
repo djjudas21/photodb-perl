@@ -8,7 +8,33 @@ App::PhotoDB - App to manage a collection of film cameras & lenses
 
 All usage of PhotoDB is via the interactive command line, which is launched by running
 
-    photodb
+    photodb [OPTIONS]
+
+=head1 OPTIONS
+
+PhotoDB uses a config file to store database connection info. You will be prompted to create this file on first run. However, you can override this by
+specifying database connection info as command line options. It is only recommended to do this for local testing. If you specify these database connection
+options, you must specify either ALL of them or NONE of them.
+
+=over
+
+=item -h --host
+
+Hostname or IP address of MySQL database server
+
+=item -s --schema
+
+Schema name of MySQL database used for PhotoDB
+
+=item -u --user
+
+MySQL username
+
+=item -p --password
+
+MySQL password
+
+=back
 
 =head1 DESCRIPTION
 
@@ -267,6 +293,7 @@ use App::PhotoDB::commands;
 our $VERSION = '0.05';
 
 sub main {
+	my $args = shift;
 
 	# Define handlers for each command
 	my %handlers = %App::PhotoDB::commands::handlers;
@@ -274,10 +301,10 @@ sub main {
 	&welcome;
 
 	# Connect to the database
-	my $db = &db;
+	my $db = &db({args=>$args});
 
 	# Set up terminal
-	my $term = &term;
+	our $term = &term;
 
 	# Enter interactive prompt and loop until exited by user
 	while (1) {

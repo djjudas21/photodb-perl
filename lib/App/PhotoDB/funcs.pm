@@ -90,7 +90,7 @@ sub prompt {
 	$msg .= "$char ";
 
 	# Create terminal handler
-	my $term = &term;
+	my $term = $App::PhotoDB::term;
 
 	my $rv;
 	# Repeatedly prompt user until we get a response of the correct type
@@ -270,7 +270,24 @@ Variable representing the database handle
 =cut
 
 sub db {
-	my $connect = ReadINI(&ini);
+	my $href = shift;
+	my $args = $href->{args};
+
+	my $connect;
+	if (defined($$args{host}) && defined($$args{schema}) && defined($$args{user}) && defined($$args{password})) {
+		# use args
+		$$connect{'database'}{'host'} = $$args{host};
+		$$connect{'database'}{'schema'} = $$args{schema};
+		$$connect{'database'}{'user'} = $$args{user};
+		$$connect{'database'}{'pass'} = $$args{password};
+
+	} elsif (defined($$args{host}) || defined($$args{schema}) || defined($$args{user}) || defined($$args{password})) {
+		# warn user they they must pass in ALL or NO args
+		print "If configuring the database by command line arguments, you must provide all of host, schema, user, password\n";
+		exit;
+	} else {
+		$connect = ReadINI(&ini);
+	}
 
 	# host, schema, user, pass
 	if (!defined($$connect{'database'}{'host'}) || !defined($$connect{'database'}{'schema'}) || !defined($$connect{'database'}{'user'}) || !defined($$connect{'database'}{'pass'})) {

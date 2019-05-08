@@ -22,6 +22,8 @@ migrations/006-stored-procedures.sql
 migrations/007-update-copied-negs.sql
 README.pod
 t/00-compile.t
-t/01-perlcritic.t
+t/01-usage.t
+t/02-perlcritic.t
+t/03-migrations.t
+t/04-views.t
 t/perlcriticrc
-t/test.t
