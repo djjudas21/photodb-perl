@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations);
 
 =head2 prompt
 
@@ -273,6 +273,8 @@ sub db {
 	my $href = shift;
 	my $args = $href->{args};
 
+	my $skipmigrations = $$args{skipmigrations} // 0;
+
 	my $connect;
 	if (defined($$args{host}) && defined($$args{schema}) && defined($$args{user}) && defined($$args{password})) {
 		# use args
@@ -306,6 +308,31 @@ sub db {
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
 
+	&runmigrations($dbh) unless $skipmigrations;
+
+	return $dbh;
+}
+
+=head2 runmigrations
+
+Run database migrations
+
+=head4 Usage
+
+    &runmigrations($db);
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=head4 Returns
+
+Nothing
+
+=cut
+
+sub runmigrations {
+	my $dbh = shift;
 	use DB::SQL::Migrations;
 	my $migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrations');
 
@@ -317,7 +344,7 @@ sub db {
 	# Run migrations
 	$migrator->apply();
 
-	return $dbh;
+	return;
 }
 
 # Update an existing record in any table

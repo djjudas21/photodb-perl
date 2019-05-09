@@ -24,7 +24,7 @@ our @EXPORT_OK = qw(
 	paperstock_add
 	developer_add
 	toner_add
-	run_task run_report
+	run_task run_report run_migrations
 	filmstock_add
 	teleconverter_add
 	filter_add filter_adapt
@@ -1802,6 +1802,14 @@ sub run_report {
 	if (defined($action) && $choices[$action]->{view}) {
 		&tabulate({db=>$db, view=>$choices[$action]->{view}});
 	}
+	return;
+}
+
+# Run database migrations to upgrade the schema
+sub run_migrations {
+	my $href = shift;
+	my $db = $href->{db};
+	&runmigrations($db);
 	return;
 }
 

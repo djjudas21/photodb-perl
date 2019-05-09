@@ -706,10 +706,15 @@ Run a selection of maintenance tasks on the database
 
 Run a selection of reports on the database
 
+=head3 run migrations
+
+Run migrations to upgrade the database schema to the latest version
+
 =cut
 	$handlers{run} = {
-		'task'   => { 'handler' => \&run_task,   'desc' => 'Run a selection of maintenance tasks on the database' },
-		'report' => { 'handler' => \&run_report, 'desc' => 'Run a selection of reports on the database' },
+		'task'       => { 'handler' => \&run_task,       'desc' => 'Run a selection of maintenance tasks on the database' },
+		'report'     => { 'handler' => \&run_report,     'desc' => 'Run a selection of reports on the database' },
+		'migrations' => { 'handler' => \&run_migrations, 'desc' => 'Run migrations to upgrade the database schema to the latest version' },
 	};
 
 # This ensures the lib loads smoothly

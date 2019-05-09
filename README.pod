@@ -32,6 +32,10 @@ MySQL username
 
 MySQL password
 
+=item --skipmigrations
+
+If specified, PhotoDB will not attempt to run database migrations on startup
+
 =back
 
 =head1 DESCRIPTION
