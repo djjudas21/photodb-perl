@@ -12,6 +12,7 @@ GetOptions (\%args,
 	'schema|s=s',
 	'user|u=s',
 	'password|p=s',
+	'skipmigrations',
 );
 
 &App::PhotoDB::main(\%args);
