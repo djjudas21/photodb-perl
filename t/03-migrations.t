@@ -1,12 +1,11 @@
 use Test::Expect;
-use Test::More tests => 1;
+use Test::More tests => 3;
+
 expect_run(
-  command => ["bin/photodb -h localhost -s photodb -u photodb -p photodb"],
+  command => ["bin/photodb -h localhost -s photodb -u photodb -p photodb --skipmigrations"],
   prompt  => 'photodb> ',
   quit    => 'exit',
 );
-#expect_is('photodb> ');
-#expect("ping", "pong", "expect");
-#expect_send("ping", "expect_send");
-#expect_is("* Hi there, to testme", "expect_is");
-#expect_like(qr/Hi there, to testme/, "expect_like");
+
+expect_send("run migrations\n", "run migrations");
+expect_like(qr/Applied migration /, "applied migrations");
