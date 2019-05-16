@@ -97,6 +97,11 @@ One exception where alternative naming is also used is for negatives. A negative
 where 18 is the ID number of the film it belongs to, and 6 is the number of the frame, separated by a forward slash. This alternative system makes it easier
 to handle negatives in the darkroom. It is accepted in most places in PhotoDB where a negative ID is needed.
 
+=head3 Camera models
+
+PhotoDB makes the distinction between a camera model (any model of camera that exists) and a camera that is actually in the collection. This is because it is
+possible for you to own two cameras of the same model.
+
 =head3 Cameras and lenses
 
 Cameras and lenses are the central component of PhotoDB. Cameras and lenses can relate to each other in one of two ways:
