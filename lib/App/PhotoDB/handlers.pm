@@ -16,6 +16,7 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
+	cameramodel_add
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
@@ -263,8 +264,8 @@ sub film_search {
 	return $id;
 }
 
-# Add a new camera to the database
-sub camera_add {
+# Add a new camera model to the database
+sub cameramodel_add {
 	my $href = shift;
 	my $db = $href->{db};
 
@@ -273,29 +274,62 @@ sub camera_add {
 	my %data = %$datahr;
 
 	# Insert new record into DB
-	my $camera_id = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
+	my $cameramodel_id = &newrecord({db=>$db, data=>\%data, table=>'CAMERAMODEL'});
 
-	# Now we have a camera ID, we can insert rows in auxiliary tables
-	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera?', type=>'boolean'})) {
-		&camera_exposureprogram({db=>$db, camera_id=>$camera_id});
+	# Now we have a camera model ID, we can insert rows in auxiliary tables
+	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera model?', type=>'boolean'})) {
+		&camera_exposureprogram({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 
-	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera?', type=>'boolean'})) {
+	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera model?', type=>'boolean'})) {
 		if ($data{metering}) {
-			&camera_meteringmode({db=>$db, camera_id=>$camera_id});
+			&camera_meteringmode({db=>$db, cameramodel_id=>$cameramodel_id});
 		} else {
-			my %mmdata = ('camera_id' => $camera_id, 'metering_mode_id' => 0);
+			my %mmdata = ('cameramodel_id' => $cameramodel_id, 'metering_mode_id' => 0);
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
 		}
 	}
 
-	if (&prompt({default=>'yes', prompt=>'Add shutter speeds for this camera?', type=>'boolean'})) {
-		&camera_shutterspeeds({db=>$db, camera_id=>$camera_id});
+	if (&prompt({default=>'yes', prompt=>'Add shutter speeds for this camera model?', type=>'boolean'})) {
+		&camera_shutterspeeds({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 
-	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera?', type=>'boolean'})) {
-		&camera_accessory({db=>$db, camera_id=>$camera_id});
+	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera model?', type=>'boolean'})) {
+		&camera_accessory({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
+	return $cameramodel_id;
+}
+
+# Add a new camera to the database
+sub camera_add {
+	my $href = shift;
+	my $db = $href->{db};
+
+	# Gather data from user
+	my %data;
+
+	my $manufacturer_id = &choose_manufacturer({db=>$db});
+	$data{cameramodel_id} = &listchoices({db=>$db, table=>'choose_cameramodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&cameramodel_add});
+	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
+		# Get info about lens
+		print "Please enter some information about the lens\n";
+		$data{lens_id} = &lens_add({db=>$db});
+	}
+	$data{acquired} = &prompt({default=>&today, prompt=>'When was it acquired?', type=>'date'});
+	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
+	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
+	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?'});
+	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer'});
+	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
+	$data{notes} = &prompt({prompt=>'Additional notes'});
+	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+	if (defined($data{mount_id})) {
+		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}, skipok=>1});
+	}
+	# Insert new record into DB
+	my $camera_id = &newrecord({db=>$db, data=>\%data, table=>'CAMERA'});
+
 	return $camera_id;
 }
 
@@ -308,10 +342,19 @@ sub camera_edit {
 	$existing = @$existing[0];
 
 	# Gather data from user
-	my $data = &camera_prompt({db=>$db, default=>$existing});
+	my %data;
+	$data{acquired} = &prompt({default=>$$existing{acquired}//&today, prompt=>'When was it acquired?', type=>'date'});
+	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal', default=>$$existing{cost}});
+	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?', default=>$$existing{serial}});
+	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?', default=>$$existing{datecode}});
+	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$$existing{manufactured}});
+	$data{own} = &prompt({default=>$$existing{own}//'yes', prompt=>'Do you own this camera?', type=>'boolean'});
+	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$existing{notes}});
+	$data{source} = &prompt({prompt=>'Where was the camera acquired from?', default=>$$existing{source}});
+	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$existing{condition_id}});
 
 	# Compare new and old data to find changed fields
-	my $changes = &hashdiff($existing, $data);
+	my $changes = &hashdiff($existing, \%data);
 
 	# Update the DB
 	return &updaterecord({db=>$db, data=>$changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
@@ -343,14 +386,8 @@ sub camera_prompt {
 	}
 	$data{body_type_id} = &listchoices({db=>$db, cols=>['body_type_id as id', 'body_type as opt'], table=>'BODY_TYPE', inserthandler=>\&camera_addbodytype, default=>$$defaults{body_type_id}});
 	$data{weight} = &prompt({prompt=>'What does it weigh? (g)', type=>'integer', default=>$$defaults{weight}});
-	$data{acquired} = &prompt({default=>$$defaults{acquired}//&today, prompt=>'When was it acquired?', type=>'date'});
-	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal', default=>$$defaults{cost}});
 	$data{introduced} = &prompt({prompt=>'What year was the camera introduced?', type=>'integer', default=>$$defaults{introduced}});
 	$data{discontinued} = &prompt({prompt=>'What year was the camera discontinued?', type=>'integer', default=>$$defaults{discontinued}});
-	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?', default=>$$defaults{serial}});
-	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?', default=>$$defaults{datecode}});
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$$defaults{manufactured}});
-	$data{own} = &prompt({default=>$$defaults{own}//'yes', prompt=>'Do you own this camera?', type=>'boolean'});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$defaults{negative_size_id}});
 	$data{shutter_type_id} = &listchoices({db=>$db, cols=>['shutter_type_id as id', 'shutter_type as opt'], table=>'SHUTTER_TYPE', inserthandler=>\&shuttertype_add, default=>$$defaults{shutter_type_id}});
 	$data{shutter_model} = &prompt({prompt=>'What is the shutter model?', default=>$$defaults{shutter_model}});
@@ -367,7 +404,6 @@ sub camera_prompt {
 		$data{battery_type} = &listchoices({db=>$db, keyword=>'battery type', table=>'choose_battery', inserthandler=>\&battery_add, default=>$$defaults{battery_type}});
 	}
 	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$defaults{notes}});
-	$data{source} = &prompt({prompt=>'Where was the camera acquired from?', default=>$$defaults{source}});
 	$data{min_shutter} = &prompt({prompt=>'What\'s the fastest shutter speed?', default=>$$defaults{min_shutter}});
 	$data{max_shutter} = &prompt({prompt=>'What\'s the slowest shutter speed?', default=>$$defaults{max_shutter}});
 	$data{bulb} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean', default=>$$defaults{bulb}});
@@ -389,12 +425,8 @@ sub camera_prompt {
 		$data{x_sync} = &prompt({prompt=>'What\'s the X-sync speed?', type=>'text', default=>$$defaults{x_sync}});
 		$data{flash_metering} = &listchoices({db=>$db, table=>'choose_flash_protocol', inserthandler=>\&flashprotocol_add, default=>$$defaults{flash_metering}});
 	}
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$defaults{condition_id}});
 	$data{dof_preview} = &prompt({prompt=>'Does this camera have a depth-of-field preview feature?', type=>'boolean', default=>$$defaults{dof_preview}});
 	$data{tripod} = &prompt({prompt=>'Does this camera have a tripod bush?', type=>'boolean', default=>$$defaults{tripod}});
-	if (defined($data{mount_id})) {
-		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}, default=>$$defaults{display_lens}, skipok=>1});
-	}
 	return \%data;
 }
 
@@ -1794,7 +1826,8 @@ sub run_report {
 		{ desc => 'Report on lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
 		{ desc => 'Report on the cameras that have taken most frames',                 view => 'report_total_negatives_per_camera', },
 		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
-		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', }
+		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', },
+		{ desc => 'Report on potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});

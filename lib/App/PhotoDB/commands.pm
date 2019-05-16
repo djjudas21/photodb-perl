@@ -232,6 +232,20 @@ Add available shutter speed info to a camera
 		'shutterspeeds'   => { 'handler' => \&camera_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera' },
 	};
 
+=head2 cameramodel
+
+The C<cameramodel> command provides a set of subcommands for working with camera models.
+
+=head3 cameramodel add
+
+Add a new camera model to PhotoDB
+
+=cut
+
+	$handlers{cameramodel} = {
+		'add' => { 'handler' => \&cameramodel_add, 'desc' => 'Add a new camera model to PhotoDB' },
+	};
+
 =head2 data
 
 The C<data> command provides a set of subcommands for entering sundry data. You shouldn't really need these as data can be entered inline at the point of use.
