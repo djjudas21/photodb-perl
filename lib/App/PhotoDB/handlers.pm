@@ -16,8 +16,8 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_accessory camera_info camera_choose camera_edit camera_search
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
@@ -295,7 +295,7 @@ sub cameramodel_add {
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera model?', type=>'boolean'})) {
-		&camera_accessory({db=>$db, cameramodel_id=>$cameramodel_id});
+		&cameramodel_accessory({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 	return $cameramodel_id;
 }
@@ -431,14 +431,14 @@ sub camera_prompt {
 }
 
 # Add accessory compatibility info to a camera
-sub camera_accessory {
+sub cameramodel_accessory {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = &listchoices({db=>$db, table=>'choose_accessory'});
-		$compatdata{camera_id} = $camera_id;
+		$compatdata{cameramodel_id} = $cameramodel_id;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT', silent=>1});
 		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
@@ -529,7 +529,7 @@ sub camera_search {
 		choices    => [
 			{ desc => 'Do nothing' },
 			{ handler => \&camera_info,                 desc => 'Get camera info',                     id=>'camera_id' },
-			{ handler => \&camera_accessory,            desc => 'Add accessory compatibility info',    id=>'camera_id' },
+			{ handler => \&cameramodel_accessory,       desc => 'Add accessory compatibility info',    id=>'camera_id' },
 			{ handler => \&camera_displaylens,          desc => 'Associate with a lens for display',   id=>'camera_id' },
 			{ handler => \&camera_edit,                 desc => 'Edit this camera',                    id=>'camera_id' },
 			{ handler => \&cameramodel_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
