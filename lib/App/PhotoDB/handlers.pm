@@ -16,8 +16,8 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_shutterspeeds camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
+	cameramodel_add cameramodel_shutterspeeds
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
@@ -291,7 +291,7 @@ sub cameramodel_add {
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add shutter speeds for this camera model?', type=>'boolean'})) {
-		&camera_shutterspeeds({db=>$db, cameramodel_id=>$cameramodel_id});
+		&cameramodel_shutterspeeds({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera model?', type=>'boolean'})) {
@@ -445,22 +445,22 @@ sub camera_accessory {
 	return;
 }
 
-# Add available shutter speed info to a camera
-sub camera_shutterspeeds {
+# Add available shutter speed info to a camera model
+sub cameramodel_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
-	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
-	&newrecord({db=>$db, data=>{camera_id=>$camera_id, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	&newrecord({db=>$db, data=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 	my $min_shutter_speed_duration = &duration($min_shutter_speed);
-	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 	my $max_shutter_speed_duration = &duration($max_shutter_speed);
-	&newrecord({db=>$db, data=>{camera_id=>$camera_id, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+	&newrecord({db=>$db, data=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 
 	while (1) {
 		my %shutterdata;
-		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where camera_id=$camera_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
-		$shutterdata{camera_id} = $camera_id;
+		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+		$shutterdata{cameramodel_id} = $cameramodel_id;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 		last if (!&prompt({default=>'yes', prompt=>'Add another shutter speed?', type=>'boolean'}));
 	}
@@ -528,16 +528,16 @@ sub camera_search {
 		searchterm => $searchterm,
 		choices    => [
 			{ desc => 'Do nothing' },
-			{ handler => \&camera_info,            desc => 'Get camera info',                     id=>'camera_id' },
-			{ handler => \&camera_accessory,       desc => 'Add accessory compatibility info',    id=>'camera_id' },
-			{ handler => \&camera_displaylens,     desc => 'Associate with a lens for display',   id=>'camera_id' },
-			{ handler => \&camera_edit,            desc => 'Edit this camera',                    id=>'camera_id' },
-			{ handler => \&camera_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
-			{ handler => \&camera_meteringmode,    desc => 'Add available metering mode info',    id=>'camera_id' },
-			{ handler => \&camera_repair,          desc => 'Repair this camera',                  id=>'camera_id' },
-			{ handler => \&camera_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
-			{ handler => \&camera_sell,            desc => 'Sell this camera',                    id=>'camera_id' },
-			{ handler => \&film_load,              desc => 'Load a film',                         id=>'camera_id' },
+			{ handler => \&camera_info,                 desc => 'Get camera info',                     id=>'camera_id' },
+			{ handler => \&camera_accessory,            desc => 'Add accessory compatibility info',    id=>'camera_id' },
+			{ handler => \&camera_displaylens,          desc => 'Associate with a lens for display',   id=>'camera_id' },
+			{ handler => \&camera_edit,                 desc => 'Edit this camera',                    id=>'camera_id' },
+			{ handler => \&camera_exposureprogram,      desc => 'Add available exposure program info', id=>'camera_id' },
+			{ handler => \&camera_meteringmode,         desc => 'Add available metering mode info',    id=>'camera_id' },
+			{ handler => \&camera_repair,               desc => 'Repair this camera',                  id=>'camera_id' },
+			{ handler => \&cameramodel_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
+			{ handler => \&camera_sell,                 desc => 'Sell this camera',                    id=>'camera_id' },
+			{ handler => \&film_load,                   desc => 'Load a film',                         id=>'camera_id' },
 		],
 	});
 	return $id;
@@ -1739,8 +1739,8 @@ sub movie_info {
 sub audit_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera without shutter speed data', table=>'choose_camera_without_shutter_data', required=>1});
-	&camera_shutterspeeds({db=>$db, camera_id=>$camera_id});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, keyword=>'camera model without shutter speed data', table=>'choose_cameramodel_without_shutter_data', required=>1});
+	&cameramodel_shutterspeeds({db=>$db, cameramodel_id=>$cameramodel_id});
 	return;
 }
 
