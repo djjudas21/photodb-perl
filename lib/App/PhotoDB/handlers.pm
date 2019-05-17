@@ -1903,6 +1903,7 @@ sub db_test {
 	my $hostname = $db->{'mysql_hostinfo'};
 	my $version = $db->{'mysql_serverinfo'};
 	my $stats = $db->{'mysql_stat'};
+	$stats =~ s/  /\n\t/g;
 	print "\tConnected to $hostname\n\tRunning version $version\n\t$stats\n";
 	return;
 }
