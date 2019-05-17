@@ -15,8 +15,8 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `report_most_popular_lenses_relative` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`LENS`.`model`) AS `Lens`,(to_days(curdate()) - to_days(`LENS`.`acquired`)) AS `Days owned`,count(`NEGATIVE`.`negative_id`) AS `Frames shot`,(count(`NEGATIVE`.`negative_id`) / (to_days(curdate()) - to_days(`LENS`.`acquired`))) AS `Frames shot per day` from (((`LENS` join `MANUFACTURER` on((`LENS`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`))) join `NEGATIVE` on((`NEGATIVE`.`lens_id` = `LENS`.`lens_id`))) join `MOUNT` on((`LENS`.`mount_id` = `MOUNT`.`mount_id`))) where ((`LENS`.`acquired` is not null) and (`MOUNT`.`fixed` = 0)) group by `LENS`.`lens_id` order by (count(`NEGATIVE`.`negative_id`) / (to_days(curdate()) - to_days(`LENS`.`acquired`))) desc */;
+/*!50013 DEFINER=`photography`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `report_most_popular_lenses_relative` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`LENSMODEL`.`model`) AS `Lens`,(to_days(curdate()) - to_days(`LENS`.`acquired`)) AS `Days owned`,count(`NEGATIVE`.`negative_id`) AS `Frames shot`,(count(`NEGATIVE`.`negative_id`) / (to_days(curdate()) - to_days(`LENS`.`acquired`))) AS `Frames shot per day` from ((((`LENS` join `LENSMODEL` on((`LENS`.`lensmodel_id` = `LENSMODEL`.`lensmodel_id`))) join `MANUFACTURER` on((`LENSMODEL`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`))) join `NEGATIVE` on((`NEGATIVE`.`lens_id` = `LENS`.`lens_id`))) join `MOUNT` on((`LENSMODEL`.`mount_id` = `MOUNT`.`mount_id`))) where ((`LENS`.`acquired` is not null) and (`MOUNT`.`fixed` = 0)) group by `LENS`.`lens_id` order by (count(`NEGATIVE`.`negative_id`) / (to_days(curdate()) - to_days(`LENS`.`acquired`))) desc */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

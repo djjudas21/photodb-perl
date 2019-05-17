@@ -29,7 +29,7 @@ Table to define compatibility between accessories and cameras or lenses
     | compat_id      | int(11)     | Unique ID for this compatibility  |
     | accessory_id   | int(11)     | ID of the accessory               |
     | cameramodel_id | int(11)     | ID of the compatible camera model |
-    | lens_id        | int(11)     | ID of the compatible lens         |
+    | lensmodel_id   | int(11)     | ID of the compatible lens         |
     +----------------+-------------+-----------------------------------+
 
 =head2 ACCESSORY_TYPE
@@ -435,10 +435,32 @@ Table to catalogue different film formats. These are distinct from negative size
 
 Table to catalog lenses
 
+    +--------------+--------------+-------------------------------------------------------------+
+    | COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT                                              |
+    +--------------+--------------+-------------------------------------------------------------+
+    | lens_id      | int(11)      | Unique ID for this lens                                     |
+    | lensmodel_id | int(11)      |                                                             |
+    | serial       | varchar(45)  | Serial number of this lens                                  |
+    | date_code    | varchar(45)  | Date code of this lens, if different from the serial number |
+    | manufactured | smallint(6)  | Year in which this specific lens was manufactured           |
+    | acquired     | date         | Date on which this lens was acquired                        |
+    | cost         | decimal(6,2) | Price paid for this lens in local currency units            |
+    | notes        | text         | Freeform notes field                                        |
+    | own          | tinyint(1)   | Whether we currently own this lens                          |
+    | lost         | date         | Date on which lens was lost/sold/disposed                   |
+    | lost_price   | decimal(6,2) | Price for which the lens was sold                           |
+    | source       | varchar(150) | Place where the lens was acquired from                      |
+    | condition_id | int(11)      | Denotes the cosmetic condition of the camera                |
+    +--------------+--------------+-------------------------------------------------------------+
+
+=head2 LENSMODEL
+
+Table to catalog lens models
+
     +------------------------+--------------+---------------------------------------------------------------------------------------------------------------------------------------------+
     | COLUMN_NAME            | COLUMN_TYPE  | COLUMN_COMMENT                                                                                                                              |
     +------------------------+--------------+---------------------------------------------------------------------------------------------------------------------------------------------+
-    | lens_id                | int(11)      | Unique ID for this lens                                                                                                                     |
+    | lensmodel_id           | int(11)      | Unique ID for this lens model                                                                                                               |
     | mount_id               | int(11)      | Denotes the ID of the lens mount, if this is an interchangeable lens                                                                        |
     | zoom                   | tinyint(1)   | Whether this is a zoom lens                                                                                                                 |
     | min_focal_length       | int(11)      | Shortest focal length of this lens, in mm                                                                                                   |
@@ -458,27 +480,17 @@ Table to catalog lenses
     | filter_thread          | decimal(4,1) | Diameter of lens filter thread, in mm                                                                                                       |
     | magnification          | decimal(5,3) | Maximum magnification ratio of the lens, expressed like 0.765                                                                               |
     | url                    | varchar(145) | URL to more information about this lens                                                                                                     |
-    | serial                 | varchar(45)  | Serial number of this lens                                                                                                                  |
-    | date_code              | varchar(45)  | Date code of this lens, if different from the serial number                                                                                 |
     | introduced             | smallint(6)  | Year in which this lens model was introduced                                                                                                |
     | discontinued           | smallint(6)  | Year in which this lens model was discontinued                                                                                              |
-    | manufactured           | smallint(6)  | Year in which this specific lens was manufactured                                                                                           |
     | negative_size_id       | int(11)      | ID of the negative size which this lens is designed for                                                                                     |
-    | acquired               | date         | Date on which this lens was acquired                                                                                                        |
-    | cost                   | decimal(6,2) | Price paid for this lens in local currency units                                                                                            |
     | fixed_mount            | tinyint(1)   | Whether this is a fixed lens (i.e. on a compact camera)                                                                                     |
     | notes                  | text         | Freeform notes field                                                                                                                        |
-    | own                    | tinyint(1)   | Whether we currently own this lens                                                                                                          |
-    | lost                   | date         | Date on which lens was lost/sold/disposed                                                                                                   |
-    | lost_price             | decimal(6,2) | Price for which the lens was sold                                                                                                           |
-    | source                 | varchar(150) | Place where the lens was acquired from                                                                                                      |
     | coating                | varchar(45)  | Notes about the lens coating type                                                                                                           |
     | hood                   | varchar(45)  | Model number of the compatible lens hood                                                                                                    |
     | exif_lenstype          | varchar(45)  | EXIF LensID number, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/ |
     | rectilinear            | tinyint(1)   | Whether this is a rectilinear lens                                                                                                          |
     | length                 | int(11)      | Length of lens in mm                                                                                                                        |
     | diameter               | int(11)      | Width of lens in mm                                                                                                                         |
-    | condition_id           | int(11)      | Denotes the cosmetic condition of the camera                                                                                                |
     | image_circle           | int(11)      | Diameter of image circle projected by lens, in mm                                                                                           |
     | formula                | varchar(45)  | Name of the type of lens formula (e.g. Tessar)                                                                                              |
     | shutter_model          | varchar(45)  | Name of the integrated shutter, if any                                                                                                      |
