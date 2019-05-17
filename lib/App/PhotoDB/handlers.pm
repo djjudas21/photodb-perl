@@ -16,8 +16,8 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_accessory camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
@@ -283,7 +283,7 @@ sub cameramodel_add {
 
 	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera model?', type=>'boolean'})) {
 		if ($data{metering}) {
-			&camera_meteringmode({db=>$db, cameramodel_id=>$cameramodel_id});
+			&cameramodel_meteringmode({db=>$db, cameramodel_id=>$cameramodel_id});
 		} else {
 			my %mmdata = ('cameramodel_id' => $cameramodel_id, 'metering_mode_id' => 0);
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE'});
@@ -489,14 +489,14 @@ sub cameramodel_exposureprogram {
 }
 
 # Add available metering mode info to a camera
-sub camera_meteringmode {
+sub cameramodel_meteringmode {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $meteringmodes = &lookupcol({db=>$db, table=>'METERING_MODE'});
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
-			my %mmdata = ('camera_id' => $camera_id, 'metering_mode_id' => $meteringmode->{metering_mode_id});
+			my %mmdata = ('cameramodel_id' => $cameramodel_id, 'metering_mode_id' => $meteringmode->{metering_mode_id});
 			&newrecord({db=>$db, data=>\%mmdata, table=>'METERING_MODE_AVAILABLE', silent=>1});
 			last if $meteringmode->{metering_mode_id} == 0;
 		}
@@ -533,7 +533,7 @@ sub camera_search {
 			{ handler => \&camera_displaylens,          desc => 'Associate with a lens for display',   id=>'camera_id' },
 			{ handler => \&camera_edit,                 desc => 'Edit this camera',                    id=>'camera_id' },
 			{ handler => \&cameramodel_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
-			{ handler => \&camera_meteringmode,         desc => 'Add available metering mode info',    id=>'camera_id' },
+			{ handler => \&cameramodel_meteringmode,    desc => 'Add available metering mode info',    id=>'camera_id' },
 			{ handler => \&camera_repair,               desc => 'Repair this camera',                  id=>'camera_id' },
 			{ handler => \&cameramodel_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
 			{ handler => \&camera_sell,                 desc => 'Sell this camera',                    id=>'camera_id' },
@@ -1757,8 +1757,8 @@ sub audit_exposureprograms {
 sub audit_meteringmodes {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_camera_without_metering_data', required=>1});
-	&camera_meteringmode({db=>$db, camera_id=>$camera_id});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, keyword=>'camera without metering mode data', table=>'choose_cameramodel_without_metering_data', required=>1});
+	&cameramodel_meteringmode({db=>$db, cameramodel_id=>$cameramodel_id});
 	return;
 }
 
