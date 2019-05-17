@@ -16,8 +16,8 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds
-	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_exposureprogram camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram
+	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_accessory camera_meteringmode camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
@@ -278,7 +278,7 @@ sub cameramodel_add {
 
 	# Now we have a camera model ID, we can insert rows in auxiliary tables
 	if (&prompt({default=>'yes', prompt=>'Add exposure programs for this camera model?', type=>'boolean'})) {
-		&camera_exposureprogram({db=>$db, cameramodel_id=>$cameramodel_id});
+		&cameramodel_exposureprogram({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 
 	if (&prompt({default=>'yes', prompt=>'Add metering modes for this camera model?', type=>'boolean'})) {
@@ -468,10 +468,10 @@ sub cameramodel_shutterspeeds {
 }
 
 # Add available exposure program info to a camera
-sub camera_exposureprogram {
+sub cameramodel_exposureprogram {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
 	my $exposureprograms = &lookupcol({db=>$db, table=>'EXPOSURE_PROGRAM'});
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
@@ -480,7 +480,7 @@ sub camera_exposureprogram {
 		next if $exposureprogram->{exposure_program_id} == 7;
 		next if $exposureprogram->{exposure_program_id} == 8;
 		if (&prompt({default=>'no', prompt=>"Does this camera have $exposureprogram->{exposure_program} exposure program?", type=>'boolean'})) {
-			my %epdata = ('camera_id' => $camera_id, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
+			my %epdata = ('cameramodel_id' => $cameramodel_id, 'exposure_program_id' => $exposureprogram->{exposure_program_id});
 			&newrecord({db=>$db, data=>\%epdata, table=>'EXPOSURE_PROGRAM_AVAILABLE', silent=>1});
 			last if $exposureprogram->{exposure_program_id} == 0;
 		}
@@ -532,7 +532,7 @@ sub camera_search {
 			{ handler => \&camera_accessory,            desc => 'Add accessory compatibility info',    id=>'camera_id' },
 			{ handler => \&camera_displaylens,          desc => 'Associate with a lens for display',   id=>'camera_id' },
 			{ handler => \&camera_edit,                 desc => 'Edit this camera',                    id=>'camera_id' },
-			{ handler => \&camera_exposureprogram,      desc => 'Add available exposure program info', id=>'camera_id' },
+			{ handler => \&cameramodel_exposureprogram, desc => 'Add available exposure program info', id=>'camera_id' },
 			{ handler => \&camera_meteringmode,         desc => 'Add available metering mode info',    id=>'camera_id' },
 			{ handler => \&camera_repair,               desc => 'Repair this camera',                  id=>'camera_id' },
 			{ handler => \&cameramodel_shutterspeeds,   desc => 'Add available shutter speed info',    id=>'camera_id' },
@@ -1748,8 +1748,8 @@ sub audit_shutterspeeds {
 sub audit_exposureprograms {
 	my $href = shift;
 	my $db = $href->{db};
-	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera without exposure program data', table=>'choose_camera_without_exposure_programs', required=>1});
-	&camera_exposureprogram({db=>$db, camera_id=>$camera_id});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, keyword=>'camera model without exposure program data', table=>'choose_cameramodel_without_exposure_programs', required=>1});
+	&cameramodel_exposureprogram({db=>$db, cameramodel_id=>$cameramodel_id});
 	return;
 }
 
