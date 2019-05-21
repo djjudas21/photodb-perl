@@ -43,6 +43,7 @@ migrations/027-fix-accessory-compat.sql
 migrations/028-drop-lens-cols.sql
 migrations/029-lensmodel-views.sql
 migrations/030-choose-lensmodel.sql
+migrations/031-report-duplicate-lensmodels.sql
 README.pod
 t/00-compile.t
 t/01-usage.t

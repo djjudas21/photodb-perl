@@ -1842,6 +1842,7 @@ sub run_report {
 		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
 		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', },
 		{ desc => 'Report on potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
+		{ desc => 'Report on potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
