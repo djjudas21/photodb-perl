@@ -371,8 +371,8 @@ sub camera_prompt {
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', required=>1, default=>$$defaults{fixed_mount}});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1 && !defined($$defaults{lens_id})) {
 		# Get info about lens
-		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add({db=>$db});
+		print "Please select the lens model that this camera has\n";
+		$data{lensmodel_id} = &listchoices({db=>$db, table=>'choose_lensmodel', required=>1, inserthandler=>\&lensmodel_add});
 	} else {
 		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
 	}

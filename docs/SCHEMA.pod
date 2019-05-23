@@ -150,7 +150,7 @@ Table to catalog camera models - both cameras with fixed lenses and cameras with
     | video               | tinyint(1)   | Whether the camera can take video/movie                                      |
     | digital             | tinyint(1)   | Whether this is a digital camera                                             |
     | fixed_mount         | tinyint(1)   | Whether the camera has a fixed lens                                          |
-    | lens_id             | int(11)      | If fixed_mount is true, specify the lens_id                                  |
+    | lensmodel_id        | int(11)      | If fixed_mount is true, specify the lensmodel_id                             |
     | battery_qty         | int(11)      | Quantity of batteries needed                                                 |
     | battery_type        | int(11)      | Denotes type of battery needed                                               |
     | notes               | text         | Freeform text field for extra notes                                          |
