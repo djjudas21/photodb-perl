@@ -14,7 +14,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`photography`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `report_total_negatives_per_camera` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERAMODEL`.`model`) AS `Camera`,count(`NEGATIVE`.`negative_id`) AS `Frames shot` from ((((`CAMERA` left join `CAMERAMODEL` on((`CAMERA`.`cameramodel_id` = `CAMERAMODEL`.`cameramodel_id`))) join `FILM` on((`CAMERA`.`camera_id` = `FILM`.`camera_id`))) join `NEGATIVE` on((`FILM`.`film_id` = `NEGATIVE`.`film_id`))) join `MANUFACTURER` on((`CAMERAMODEL`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`))) group by `CAMERA`.`camera_id` order by count(`NEGATIVE`.`negative_id`) desc */;
+/*!50001 VIEW `report_total_negatives_per_camera` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERAMODEL`.`model`) AS `Camera`,count(`NEGATIVE`.`negative_id`) AS `Frames shot` from ((((`CAMERA` left join `CAMERAMODEL` on(`CAMERA`.`cameramodel_id` = `CAMERAMODEL`.`cameramodel_id`)) join `FILM` on(`CAMERA`.`camera_id` = `FILM`.`camera_id`)) join `NEGATIVE` on(`FILM`.`film_id` = `NEGATIVE`.`film_id`)) join `MANUFACTURER` on(`CAMERAMODEL`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) group by `CAMERA`.`camera_id` order by count(`NEGATIVE`.`negative_id`) desc */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

@@ -11,7 +11,7 @@ CREATE TABLE `NEGATIVE` (
   `aperture` decimal(4,1) DEFAULT NULL COMMENT 'Aperture used to take this picture (numerical part only)',
   `filter_id` int(11) DEFAULT NULL COMMENT 'ID of filter used to take this picture',
   `teleconverter_id` int(11) DEFAULT NULL COMMENT 'ID of teleconverter used to take this picture',
-  `notes` text CHARACTER SET utf8mb4 COMMENT 'Extra freeform notes about this exposure',
+  `notes` text CHARACTER SET utf8mb4 DEFAULT NULL COMMENT 'Extra freeform notes about this exposure',
   `mount_adapter_id` int(11) DEFAULT NULL COMMENT 'ID of lens mount adapter used to take this pciture',
   `focal_length` int(11) DEFAULT NULL COMMENT 'If a zoom lens was used, specify the focal length of the lens',
   `latitude` decimal(9,6) DEFAULT NULL COMMENT 'Latitude of the location where the picture was taken',

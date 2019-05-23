@@ -444,21 +444,32 @@ Write EXIF tags to scans from a film
 		'tag'      => { 'handler' => \&film_tag,      'desc' => 'Write EXIF tags to scans from a film' },
 	};
 
+=head2 lensmodel
+
+The C<lensmodel> command provides a set of subcommands for working with lens models.
+
+=head3 lensmodel add
+
+Add a new lens model to PhotoDB
+
+=head3 lensmodel accessory
+
+Add accessory compatibility info to a lens model
+
+=cut
+
+        $handlers{lensmodel} = {
+                'accessory' => { 'handler' => \&lensmodel_accessory, 'desc' => 'Add accessory compatibility info to a lens model' },
+                'add'       => { 'handler' => \&lensmodel_add,       'desc' => 'Add a new lens model to PhotoDB' },
+        };
+
 =head2 lens
 
 The C<lens> command provides subcommands for working with lenses (for cameras, enlargers and projectors).
 
-=head3 lens accessory
-
-Add accessory compatibility info to a lens
-
 =head3 lens add
 
 Add a new lens to the database
-
-=head3 lens edit
-
-Edit an existing lens
 
 =head3 lens info
 
@@ -478,9 +489,7 @@ Sell a lens
 
 =cut
 	$handlers{lens} = {
-		'accessory' => { 'handler' => \&lens_accessory, 'desc' => 'Add accessory compatibility info to a lens' },
 		'add'       => { 'handler' => \&lens_add,       'desc' => 'Add a new lens to the database' },
-		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit an existing lens' },
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
 		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
 		'search'    => { 'handler' => \&lens_search,    'desc' => 'Search for a lens' },

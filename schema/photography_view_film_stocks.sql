@@ -14,7 +14,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `view_film_stocks` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') AS `film`,count(`FILMSTOCK`.`filmstock_id`) AS `qty` from (((`FILM` join `FILMSTOCK`) join `FORMAT`) join `MANUFACTURER`) where (isnull(`FILM`.`camera_id`) and isnull(`FILM`.`date`) and (`FILM`.`filmstock_id` = `FILMSTOCK`.`filmstock_id`) and (`FILM`.`format_id` = `FORMAT`.`format_id`) and (`FILMSTOCK`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) group by concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') order by concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') */;
+/*!50001 VIEW `view_film_stocks` AS select concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') AS `film`,count(`FILMSTOCK`.`filmstock_id`) AS `qty` from (((`FILM` join `FILMSTOCK`) join `FORMAT`) join `MANUFACTURER`) where `FILM`.`camera_id` is null and `FILM`.`date` is null and `FILM`.`filmstock_id` = `FILMSTOCK`.`filmstock_id` and `FILM`.`format_id` = `FORMAT`.`format_id` and `FILMSTOCK`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id` group by concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') order by concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,' (',`FORMAT`.`format`,')') */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

@@ -20,7 +20,8 @@ our @EXPORT_OK = qw(
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
-	lens_add lens_sell lens_repair lens_accessory lens_info lens_edit lens_search
+	lens_add lens_sell lens_repair lens_info lens_edit lens_search
+	lensmodel_add lensmodel_accessory
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
@@ -310,11 +311,6 @@ sub camera_add {
 
 	my $manufacturer_id = &choose_manufacturer({db=>$db});
 	$data{cameramodel_id} = &listchoices({db=>$db, table=>'choose_cameramodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&cameramodel_add});
-	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
-		# Get info about lens
-		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add({db=>$db});
-	}
 	$data{acquired} = &prompt({default=>&today, prompt=>'When was it acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
 	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
@@ -324,6 +320,16 @@ sub camera_add {
 	$data{notes} = &prompt({prompt=>'Additional notes'});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+
+	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
+		# Attempt to figure out the lensmodel that comes with this cameramodel
+		my $lensmodel_id = &lookupval({db=>$db, col=>'lensmodel_id', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+
+		# Get info about lens
+		print "Please enter some information about the lens\n";
+		$data{lens_id} = &lens_add({db=>$db, cost=>0, own=>$data{own}, lensmodel_id=>$lensmodel_id, acquired=>$data{acquired}, source=>$data{source}});
+	}
+
 	if (defined($data{mount_id})) {
 		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}, skipok=>1});
 	}
@@ -370,8 +376,8 @@ sub camera_prompt {
 	$data{fixed_mount} = &prompt({prompt=>'Does this camera have a fixed lens?', type=>'boolean', required=>1, default=>$$defaults{fixed_mount}});
 	if (defined($data{fixed_mount}) && $data{fixed_mount} == 1 && !defined($$defaults{lens_id})) {
 		# Get info about lens
-		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add({db=>$db});
+		print "Please select the lens model that this camera has\n";
+		$data{lensmodel_id} = &listchoices({db=>$db, table=>'choose_lensmodel', required=>1, inserthandler=>\&lensmodel_add});
 	} else {
 		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', where=>{purpose=>'Camera'}, inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
 	}
@@ -790,20 +796,41 @@ sub lens_add {
 	my $href = shift;
 	my $db = $href->{db};
 
-	# Gather data from user
-	my $datahr = &lens_prompt({db=>$db});
-	my %data = %$datahr;
+	my %data;
+	my $manufacturer_id = $href->{manufacturer_id} // &choose_manufacturer({db=>$db});
+	$data{lensmodel_id} = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&lensmodel_add});
+	$data{cost} = $href->{cost} // &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
+	$data{serial} = $href->{serial} // &prompt({prompt=>'What is the serial number of the lens?'});
+	$data{date_code} = $href->{date_code} // &prompt({prompt=>'What is the date code of the lens?'});
+	$data{manufactured} = $href->{manufactured} // &prompt({prompt=>'When was this lens manufactured?', type=>'integer'});
+	$data{acquired} = $href->{acquired} // &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>&today});
+	$data{own} = $href->{own} // &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>'yes'});
+	$data{source} = $href->{source} // &prompt({prompt=>'Where was this lens sourced from?'});
+	$data{condition_id} = $href->{condition_id} // &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
 
 	my $lens_id = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
-
-	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens?', type=>'boolean'})) {
-		&lens_accessory({db=>$db, lens_id=>$lens_id});
-	}
 	return $lens_id;
 }
 
-# Edit an existing lens
-sub lens_edit {
+# Add a new lens model to the database
+sub lensmodel_add {
+	my $href = shift;
+	my $db = $href->{db};
+
+	# Gather data from user
+	my $datahr = &lensmodel_prompt({db=>$db});
+	my %data = %$datahr;
+
+	my $lensmodel_id = &newrecord({db=>$db, data=>\%data, table=>'LENSMODEL'});
+
+	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens model?', type=>'boolean'})) {
+		&lensmodel_accessory({db=>$db, lensmodel_id=>$lensmodel_id});
+	}
+	return $lensmodel_id;
+}
+
+# Edit an existing lens model
+sub lensmodel_edit {
 	my $href = shift;
 	my $db = $href->{db};
 	my $lens_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
@@ -820,7 +847,7 @@ sub lens_edit {
 	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>"lens_id=$lens_id"});
 }
 
-sub lens_prompt {
+sub lensmodel_prompt {
 	my $href = shift;
 	my $db = $href->{db};
 	my $defaults = $href->{defaults};
@@ -843,7 +870,6 @@ sub lens_prompt {
 	if ($data{fixed_mount} == 0) {
 		$data{mount_id} = &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', inserthandler=>\&mount_add, default=>$$defaults{mount_id}});
 		$data{weight} = &prompt({prompt=>'What is the weight of the lens? (g)', type=>'integer', default=>$$defaults{weight}});
-		$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$defaults{cost}});
 		$data{length} = &prompt({prompt=>'How long is this lens? (mm)', type=>'integer', default=>$$defaults{length}});
 		$data{diameter} = &prompt({prompt=>'How wide is this lens? (mm)', type=>'integer', default=>$$defaults{diameter}});
 	}
@@ -857,21 +883,14 @@ sub lens_prompt {
 	$data{filter_thread} = &prompt({prompt=>'What is the diameter of the filter thread? (mm)', type=>'decimal', default=>$$defaults{filter_thread}});
 	$data{magnification} = &prompt({prompt=>'What is the maximum magnification possible with this lens?', type=>'decimal', default=>$$defaults{magnification}});
 	$data{url} = &prompt({prompt=>'Informational URL for this lens', default=>$$defaults{url}});
-	$data{serial} = &prompt({prompt=>'What is the serial number of the lens?', default=>$$defaults{serial}});
-	$data{date_code} = &prompt({prompt=>'What is the date code of the lens?', default=>$$defaults{date_code}});
 	$data{introduced} = &prompt({prompt=>'When was this lens introduced?', type=>'integer', default=>$$defaults{introduced}});
 	$data{discontinued} = &prompt({prompt=>'When was this lens discontinued?', type=>'integer', default=>$$defaults{discontinued}});
-	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$defaults{manufactured}});
 	$data{negative_size_id} = &listchoices({db=>$db, cols=>['negative_size_id as id', 'negative_size as opt'], table=>'NEGATIVE_SIZE', inserthandler=>\&negativesize_add, default=>$$defaults{negative_size_id}});
-	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$defaults{acquired}//&today});
 	$data{notes} = &prompt({prompt=>'Notes', default=>$$defaults{notes}});
-	$data{own} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$defaults{own}//'yes'});
-	$data{source} = &prompt({prompt=>'Where was this lens sourced from?', default=>$$defaults{source}});
 	$data{coating} = &prompt({prompt=>'What coating does this lens have?', default=>$$defaults{coating}});
 	$data{hood} = &prompt({prompt=>'What is the model number of the suitable hood for this lens?', default=>$$defaults{hood}});
 	$data{exif_lenstype} = &prompt({prompt=>'EXIF lens type code', default=>$$defaults{exif_lenstype}});
 	$data{rectilinear} = &prompt({prompt=>'Is this a rectilinear lens?', type=>'boolean', default=>$$defaults{rectilinear}//'yes'});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$defaults{condition_id}});
 	$data{image_circle} = &prompt({prompt=>'What is the diameter of the image circle?', type=>'integer', default=>$$defaults{image_circle}});
 	$data{formula} = &prompt({prompt=>'Does this lens have a named optical formula?', default=>$$defaults{formula}});
 	$data{shutter_model} = &prompt({prompt=>'What shutter does this lens incorporate?', default=>$$defaults{shutter_model}});
@@ -879,14 +898,14 @@ sub lens_prompt {
 }
 
 # Add accessory compatibility info to a lens
-sub lens_accessory {
+sub lensmodel_accessory {
 	my $href = shift;
 	my $db = $href->{db};
-	my $lens_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lens', required=>1});
+	my $lensmodel_id = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', required=>1});
 	while (1) {
 		my %compatdata;
 		$compatdata{accessory_id} = $href->{accessory_id} // &listchoices({db=>$db, table=>'choose_accessory'});
-		$compatdata{lens_id} = $lens_id;
+		$compatdata{lensmodel_id} = $lensmodel_id;
 		&newrecord({db=>$db, data=>\%compatdata, table=>'ACCESSORY_COMPAT'});
 		last if (!&prompt({default=>'yes', prompt=>'Add more accessory compatibility info?', type=>'boolean'}));
 	}
@@ -1828,6 +1847,7 @@ sub run_report {
 		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
 		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', },
 		{ desc => 'Report on potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
+		{ desc => 'Report on potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
