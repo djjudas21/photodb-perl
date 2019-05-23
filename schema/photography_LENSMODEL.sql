@@ -25,7 +25,7 @@ CREATE TABLE `LENSMODEL` (
   `discontinued` smallint(6) DEFAULT NULL COMMENT 'Year in which this lens model was discontinued',
   `negative_size_id` int(11) DEFAULT NULL COMMENT 'ID of the negative size which this lens is designed for',
   `fixed_mount` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a fixed lens (i.e. on a compact camera)',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Freeform notes field',
+  `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Freeform notes field',
   `coating` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Notes about the lens coating type',
   `hood` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Model number of the compatible lens hood',
   `exif_lenstype` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'EXIF LensID number, if this lens has one officially registered. See documentation at http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/',

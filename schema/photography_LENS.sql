@@ -8,7 +8,7 @@ CREATE TABLE `LENS` (
   `manufactured` smallint(6) DEFAULT NULL COMMENT 'Year in which this specific lens was manufactured',
   `acquired` date DEFAULT NULL COMMENT 'Date on which this lens was acquired',
   `cost` decimal(6,2) DEFAULT NULL COMMENT 'Price paid for this lens in local currency units',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Freeform notes field',
+  `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Freeform notes field',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether we currently own this lens',
   `lost` date DEFAULT NULL COMMENT 'Date on which lens was lost/sold/disposed',
   `lost_price` decimal(6,2) DEFAULT NULL COMMENT 'Price for which the lens was sold',

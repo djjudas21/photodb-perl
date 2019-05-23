@@ -10,7 +10,7 @@ CREATE TABLE `CAMERA` (
   `manufactured` smallint(6) DEFAULT NULL COMMENT 'Year of manufacture of the camera',
   `own` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera is currently owned',
   `lens_id` int(11) DEFAULT NULL COMMENT 'If fixed_mount is true, specify the lens_id',
-  `notes` text COMMENT 'Freeform text field for extra notes',
+  `notes` text DEFAULT NULL COMMENT 'Freeform text field for extra notes',
   `lost` date DEFAULT NULL COMMENT 'Date on which the camera was lost/sold/etc',
   `lost_price` decimal(6,2) DEFAULT NULL COMMENT 'Price at which the camera was sold',
   `source` varchar(150) DEFAULT NULL COMMENT 'Where the camera was acquired from',

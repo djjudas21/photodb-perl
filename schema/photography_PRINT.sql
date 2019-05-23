@@ -25,7 +25,7 @@ CREATE TABLE `PRINT` (
   `lens_id` int(11) DEFAULT NULL COMMENT 'ID of the lens used to make this print',
   `developer_id` int(11) DEFAULT NULL COMMENT 'ID of the developer used to develop this print',
   `fine` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a fine print',
-  `notes` text COLLATE utf8mb4_unicode_ci COMMENT 'Freeform notes about this print, e.g. dodging, burning & complex toning',
+  `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Freeform notes about this print, e.g. dodging, burning & complex toning',
   `archive_id` int(11) DEFAULT NULL COMMENT 'ID of the archive to which this print belongs',
   `printer_id` int(11) DEFAULT NULL COMMENT 'ID of the person who made this print',
   PRIMARY KEY (`print_id`),

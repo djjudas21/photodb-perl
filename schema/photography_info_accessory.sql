@@ -19,7 +19,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `info_accessory` AS select `ACCESSORY`.`accessory_id` AS `Accessory ID`,`ACCESSORY_TYPE`.`accessory_type` AS `Accessory type`,if(`ACCESSORY`.`manufacturer_id`,concat(`MANUFACTURER`.`manufacturer`,' ',`ACCESSORY`.`model`),`ACCESSORY`.`model`) AS `Model`,`ACCESSORY`.`acquired` AS `Acquired`,`ACCESSORY`.`cost` AS `Cost`,`ACCESSORY`.`lost` AS `Lost`,`ACCESSORY`.`lost_price` AS `Lost price` from ((`ACCESSORY` left join `MANUFACTURER` on((`ACCESSORY`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`))) join `ACCESSORY_TYPE` on((`ACCESSORY_TYPE`.`accessory_type_id` = `ACCESSORY`.`accessory_type_id`))) */;
+/*!50001 VIEW `info_accessory` AS select `ACCESSORY`.`accessory_id` AS `Accessory ID`,`ACCESSORY_TYPE`.`accessory_type` AS `Accessory type`,if(`ACCESSORY`.`manufacturer_id`,concat(`MANUFACTURER`.`manufacturer`,' ',`ACCESSORY`.`model`),`ACCESSORY`.`model`) AS `Model`,`ACCESSORY`.`acquired` AS `Acquired`,`ACCESSORY`.`cost` AS `Cost`,`ACCESSORY`.`lost` AS `Lost`,`ACCESSORY`.`lost_price` AS `Lost price` from ((`ACCESSORY` left join `MANUFACTURER` on(`ACCESSORY`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) join `ACCESSORY_TYPE` on(`ACCESSORY_TYPE`.`accessory_type_id` = `ACCESSORY`.`accessory_type_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

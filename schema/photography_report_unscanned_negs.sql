@@ -16,7 +16,7 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `report_unscanned_negs` AS select `NEGATIVE`.`negative_id` AS `negative_id`,`NEGATIVE`.`film_id` AS `film_id`,`NEGATIVE`.`frame` AS `frame`,`NEGATIVE`.`description` AS `description` from ((`NEGATIVE` left join `SCAN` on((`NEGATIVE`.`negative_id` = `SCAN`.`negative_id`))) left join `FILM` on((`NEGATIVE`.`film_id` = `FILM`.`film_id`))) where (isnull(`SCAN`.`negative_id`) and (`FILM`.`date` is not null)) */;
+/*!50001 VIEW `report_unscanned_negs` AS select `NEGATIVE`.`negative_id` AS `negative_id`,`NEGATIVE`.`film_id` AS `film_id`,`NEGATIVE`.`frame` AS `frame`,`NEGATIVE`.`description` AS `description` from ((`NEGATIVE` left join `SCAN` on(`NEGATIVE`.`negative_id` = `SCAN`.`negative_id`)) left join `FILM` on(`NEGATIVE`.`film_id` = `FILM`.`film_id`)) where `SCAN`.`negative_id` is null and `FILM`.`date` is not null */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
 /*!50001 SET collation_connection      = @saved_col_connection */;

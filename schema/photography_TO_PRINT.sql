@@ -5,7 +5,7 @@ CREATE TABLE `TO_PRINT` (
   `negative_id` int(11) DEFAULT NULL COMMENT 'Negative ID to be printed',
   `width` int(11) DEFAULT NULL COMMENT 'Width of print to be made',
   `height` int(11) DEFAULT NULL COMMENT 'Height of print to be made',
-  `printed` tinyint(1) DEFAULT '0' COMMENT 'Whether the print has been made',
+  `printed` tinyint(1) DEFAULT 0 COMMENT 'Whether the print has been made',
   `print_id` int(11) DEFAULT NULL COMMENT 'ID of print made',
   `recipient` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Recipient of the print',
   `added` date DEFAULT NULL COMMENT 'Date that record was added',

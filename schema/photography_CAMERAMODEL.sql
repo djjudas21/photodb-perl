@@ -24,10 +24,10 @@ CREATE TABLE `CAMERAMODEL` (
   `video` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera can take video/movie',
   `digital` tinyint(1) DEFAULT NULL COMMENT 'Whether this is a digital camera',
   `fixed_mount` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera has a fixed lens',
-  `lens_id` int(11) DEFAULT NULL COMMENT 'If fixed_mount is true, specify the lens_id',
+  `lensmodel_id` int(11) DEFAULT NULL COMMENT 'If fixed_mount is true, specify the lensmodel_id',
   `battery_qty` int(11) DEFAULT NULL COMMENT 'Quantity of batteries needed',
   `battery_type` int(11) DEFAULT NULL COMMENT 'Denotes type of battery needed',
-  `notes` text COMMENT 'Freeform text field for extra notes',
+  `notes` text DEFAULT NULL COMMENT 'Freeform text field for extra notes',
   `min_shutter` varchar(10) CHARACTER SET latin1 DEFAULT NULL COMMENT 'Fastest available shutter speed, expressed like 1/400',
   `max_shutter` varchar(10) CHARACTER SET latin1 DEFAULT NULL COMMENT 'Slowest available shutter speed, expressed like 30 (no ")',
   `bulb` tinyint(1) DEFAULT NULL COMMENT 'Whether the camera supports bulb (B) exposure',
@@ -61,7 +61,7 @@ CREATE TABLE `CAMERAMODEL` (
   KEY `fk_CAMERA_1_idx` (`min_shutter`),
   KEY `fk_CAMERA_2_idx` (`max_shutter`),
   KEY `fk_CAMERA_4_idx` (`battery_type`),
-  KEY `fk_CAMERAMODEL_9_idx` (`lens_id`),
+  KEY `fk_CAMERAMODEL_9_idx` (`lensmodel_id`),
   CONSTRAINT `fk_CAMERAMODEL_1` FOREIGN KEY (`manufacturer_id`) REFERENCES `MANUFACTURER` (`manufacturer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAMERAMODEL_10` FOREIGN KEY (`battery_type`) REFERENCES `BATTERY` (`battery_type`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAMERAMODEL_2` FOREIGN KEY (`mount_id`) REFERENCES `MOUNT` (`mount_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -71,6 +71,6 @@ CREATE TABLE `CAMERAMODEL` (
   CONSTRAINT `fk_CAMERAMODEL_6` FOREIGN KEY (`body_type_id`) REFERENCES `BODY_TYPE` (`body_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAMERAMODEL_7` FOREIGN KEY (`negative_size_id`) REFERENCES `NEGATIVE_SIZE` (`negative_size_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_CAMERAMODEL_8` FOREIGN KEY (`shutter_type_id`) REFERENCES `SHUTTER_TYPE` (`shutter_type_id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_CAMERAMODEL_9` FOREIGN KEY (`lens_id`) REFERENCES `LENS` (`lens_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_CAMERAMODEL_9` FOREIGN KEY (`lensmodel_id`) REFERENCES `LENSMODEL` (`lensmodel_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to catalog camera models - both cameras with fixed lenses and cameras with interchangeable lenses';
 /*!40101 SET character_set_client = @saved_cs_client */;
