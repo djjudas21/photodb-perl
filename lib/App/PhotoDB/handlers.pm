@@ -311,11 +311,6 @@ sub camera_add {
 
 	my $manufacturer_id = &choose_manufacturer({db=>$db});
 	$data{cameramodel_id} = &listchoices({db=>$db, table=>'choose_cameramodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&cameramodel_add});
-	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
-		# Get info about lens
-		print "Please enter some information about the lens\n";
-		$data{lens_id} = &lens_add({db=>$db});
-	}
 	$data{acquired} = &prompt({default=>&today, prompt=>'When was it acquired?', type=>'date'});
 	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
 	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
@@ -325,6 +320,16 @@ sub camera_add {
 	$data{notes} = &prompt({prompt=>'Additional notes'});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+
+	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
+		# Attempt to figure out the lensmodel that comes with this cameramodel
+		my $lensmodel_id = &lookupval({db=>$db, col=>'lensmodel_id', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+
+		# Get info about lens
+		print "Please enter some information about the lens\n";
+		$data{lens_id} = &lens_add({db=>$db, cost=>0, own=>$data{own}, lensmodel_id=>$lensmodel_id, acquired=>$data{acquired}, source=>$data{source}});
+	}
+
 	if (defined($data{mount_id})) {
 		$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{mount_id=>$data{mount_id}}, skipok=>1});
 	}
@@ -792,16 +797,16 @@ sub lens_add {
 	my $db = $href->{db};
 
 	my %data;
-	my $manufacturer_id = &choose_manufacturer({db=>$db});
-	$data{lensmodel_id} = &listchoices({db=>$db, table=>'choose_lensmodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&lensmodel_add});
-	$data{cost} = &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
-	$data{serial} = &prompt({prompt=>'What is the serial number of the lens?'});
-	$data{date_code} = &prompt({prompt=>'What is the date code of the lens?'});
-	$data{manufactured} = &prompt({prompt=>'When was this lens manufactured?', type=>'integer'});
-	$data{acquired} = &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>&today});
-	$data{own} = &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>'yes'});
-	$data{source} = &prompt({prompt=>'Where was this lens sourced from?'});
-	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+	my $manufacturer_id = $href->{manufacturer_id} // &choose_manufacturer({db=>$db});
+	$data{lensmodel_id} = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&lensmodel_add});
+	$data{cost} = $href->{cost} // &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
+	$data{serial} = $href->{serial} // &prompt({prompt=>'What is the serial number of the lens?'});
+	$data{date_code} = $href->{date_code} // &prompt({prompt=>'What is the date code of the lens?'});
+	$data{manufactured} = $href->{manufactured} // &prompt({prompt=>'When was this lens manufactured?', type=>'integer'});
+	$data{acquired} = $href->{acquired} // &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>&today});
+	$data{own} = $href->{own} // &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>'yes'});
+	$data{source} = $href->{source} // &prompt({prompt=>'Where was this lens sourced from?'});
+	$data{condition_id} = $href->{condition_id} // &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
 
 	my $lens_id = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 	return $lens_id;
