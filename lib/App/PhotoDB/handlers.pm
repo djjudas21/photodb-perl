@@ -315,7 +315,16 @@ sub camera_add {
 	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
 	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
 	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?'});
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer'});
+
+	# Attempt to decode datecode for Canon cameras
+	my $manufactured;
+	if ($manufacturer_id == 3 && $data{datecode}) {
+		my $introduced = &lookupval({db=>$db, col=>'introduced', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+		my $discontinued &lookupval({db=>$db, col=>'discontinued', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+		$manufactured = &canondatecode({datecode=>$data{datecode}, introduced=>$introduced, discontinued=>$discontinued});
+	}
+
+	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$manufactured});
 	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
 	$data{notes} = &prompt({prompt=>'Additional notes'});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
