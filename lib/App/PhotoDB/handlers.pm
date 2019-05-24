@@ -315,7 +315,16 @@ sub camera_add {
 	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
 	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
 	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?'});
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer'});
+
+	# Attempt to decode datecode for Canon cameras
+	my $manufactured;
+	if ($manufacturer_id == 3 && $data{datecode}) {
+		my $introduced = &lookupval({db=>$db, col=>'introduced', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+		my $discontinued = &lookupval({db=>$db, col=>'discontinued', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}});
+		$manufactured = &canondatecode({datecode=>$data{datecode}, introduced=>$introduced, discontinued=>$discontinued});
+	}
+
+	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$manufactured});
 	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
 	$data{notes} = &prompt({prompt=>'Additional notes'});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
@@ -802,7 +811,16 @@ sub lens_add {
 	$data{cost} = $href->{cost} // &prompt({prompt=>'How much did this lens cost?', type=>'decimal'});
 	$data{serial} = $href->{serial} // &prompt({prompt=>'What is the serial number of the lens?'});
 	$data{date_code} = $href->{date_code} // &prompt({prompt=>'What is the date code of the lens?'});
-	$data{manufactured} = $href->{manufactured} // &prompt({prompt=>'When was this lens manufactured?', type=>'integer'});
+
+	# Attempt to decode datecode for Canon lenses
+	my $manufactured;
+	if ($manufacturer_id == 3 && $data{date_code}) {
+		my $introduced = &lookupval({db=>$db, col=>'introduced', table=>'LENSMODEL', where=>{lensmodel_id=>$data{lensmodel_id}}});
+		my $discontinued = &lookupval({db=>$db, col=>'discontinued', table=>'LENSMODEL', where=>{lensmodel_id=>$data{lensmodel_id}}});
+		$manufactured = &canondatecode({datecode=>$data{date_code}, introduced=>$introduced, discontinued=>$discontinued});
+	}
+
+	$data{manufactured} = $href->{manufactured} // &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$manufactured});
 	$data{acquired} = $href->{acquired} // &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>&today});
 	$data{own} = $href->{own} // &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>'yes'});
 	$data{source} = $href->{source} // &prompt({prompt=>'Where was this lens sourced from?'});
