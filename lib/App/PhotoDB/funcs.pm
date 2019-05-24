@@ -2195,13 +2195,13 @@ sub search {
 	return;
 }
 
-=head2 unsci
+=head2 tabulate
 
 Display multi-column SQL views as tabulated data.
 
 =head4 Usage
 
-    &tabulate({db=>$db, view=$view});
+    &tabulate({db=>$db, view=>$view});
 
 =head4 Arguments
 
