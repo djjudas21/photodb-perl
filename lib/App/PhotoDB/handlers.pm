@@ -1272,8 +1272,8 @@ sub mount_info {
 	my $mountid = $href->{mount_id} // &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
 	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
 	print "Showing data for $mount mount\n";
-	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"camera_id as id, concat(manufacturer, ' ', model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{own=>1, mount_id=>$mountid}, order=>'opt'});
-	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"lens_id as id, concat(manufacturer, ' ', model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{mount_id=>$mountid, own=>1}, order=>'opt'});
+	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"distinct camera_id as id, camera as opt", table=>'cameralens_compat', where=>{mount_id=>$mountid}, order=>'opt'});
+	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"distinct lens_id as id, lens as opt", table=>'cameralens_compat', where=>{mount_id=>$mountid}, order=>'opt'});
 	return;
 }
 
