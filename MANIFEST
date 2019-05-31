@@ -45,9 +45,12 @@ migrations/029-lensmodel-views.sql
 migrations/030-choose-lensmodel.sql
 migrations/031-report-duplicate-lensmodels.sql
 migrations/032-cameramodel-lensmodel.sql
+migrations/033-cameramodel-views.sql
+migrations/034-cameramodel-views.sql
 README.pod
 t/00-compile.t
 t/01-usage.t
 t/02-perlcritic.t
+t/03-functional.t
 t/03-migrations.t
 t/04-views.t
