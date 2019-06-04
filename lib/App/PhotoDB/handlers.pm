@@ -605,8 +605,11 @@ sub camera_info {
 	# Get camera data
 	my $cameradata = &lookupcol({db=>$db, table=>'info_camera', where=>{'`Camera ID`'=>$camera_id}});
 
+	# Get camera model
+	my $cameramodel_id = ${@$cameradata[0]}{'Camera Model ID'};
+
 	# Show compatible accessories
-	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{camera_id=>$camera_id}});
+	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{cameramodel_id=>$cameramodel_id}});
 	${@$cameradata[0]}{'Accessories'} = $accessories;
 
 	# Show compatible lenses
@@ -991,8 +994,11 @@ sub lens_info {
 	# Get lens data
 	my $lensdata = &lookupcol({db=>$db, table=>'info_lens', where=>{'`Lens ID`'=>$lens_id}});
 
+	# Get lens model
+	my $lensmodel_id = ${@$lensdata[0]}{'Lens Model ID'};
+
 	# Show compatible accessories
-	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lens_id=>$lens_id}});
+	my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lensmodel_id=>$lensmodel_id}});
 	${@$lensdata[0]}{'Accessories'} = $accessories;
 
 	# Show compatible cameras
@@ -1002,14 +1008,14 @@ sub lens_info {
 	print Dump($lensdata);
 
 	# Generate and print lens statistics
-	my $lens = &lookupval({db=>$db, col=>"concat(manufacturer, ' ',model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{lens_id=>$lens_id}});
+	my $lens = ${@$lensdata[0]}{'Lens'};
 	print "\tShowing statistics for $lens\n";
-	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENS', where=>{lens_id=>$lens_id}});
+	my $maxaperture = &lookupval({db=>$db, col=>'max_aperture', table=>'LENSMODEL', where=>{lensmodel_id=>$lensmodel_id}});
 	my $modeaperture = &lookupval({db=>$db, query=>"select aperture from NEGATIVE where aperture is not null and lens_id=$lens_id group by aperture order by count(aperture) desc limit 1"});
 	print "\tThis lens has a maximum aperture of f/$maxaperture but you most commonly use it at f/$modeaperture\n";
-	if (&lookupval({db=>$db, col=>'zoom', table=>'LENS', where=>{lens_id=>$lens_id}})) {
-		my $minf = &lookupval({db=>$db, col=>'min_focal_length', table=>'LENS', where=>{lens_id=>$lens_id}});
-		my $maxf = &lookupval({db=>$db, col=>'max_focal_length', table=>'LENS', where=>{lens_id=>$lens_id}});
+	if (&lookupval({db=>$db, col=>'zoom', table=>'LENSMODEL', where=>{lensmodel_id=>$lensmodel_id}})) {
+		my $minf = &lookupval({db=>$db, col=>'min_focal_length', table=>'LENSMODEL', where=>{lensmodel_id=>$lensmodel_id}});
+		my $maxf = &lookupval({db=>$db, col=>'max_focal_length', table=>'LENSMODEL', where=>{lensmodel_id=>$lensmodel_id}});
 		my $meanf = &lookupval({db=>$db, col=>'avg(focal_length)', table=>'NEGATIVE', where=>{lens_id=>$lens_id}});
 		print "\tThis is a zoom lens with a range of ${minf}-${maxf}mm, but the average focal length you used is ${meanf}mm\n";
 	}
@@ -1266,8 +1272,8 @@ sub mount_info {
 	my $mountid = $href->{mount_id} // &listchoices({db=>$db, cols=>['mount_id as id', 'mount as opt'], table=>'choose_mount', required=>1});
 	my $mount = &lookupval({db=>$db, col=>'mount', table=>'choose_mount', where=>{mount_id=>${mountid}}});
 	print "Showing data for $mount mount\n";
-	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"camera_id as id, concat(manufacturer, ' ', model) as opt", table=>'CAMERA join MANUFACTURER on CAMERA.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{own=>1, mount_id=>$mountid}, order=>'opt'});
-	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"lens_id as id, concat(manufacturer, ' ', model) as opt", table=>'LENS join MANUFACTURER on LENS.manufacturer_id=MANUFACTURER.manufacturer_id', where=>{mount_id=>$mountid, own=>1}, order=>'opt'});
+	&printlist({db=>$db, msg=>"cameras with $mount mount", cols=>"distinct camera_id as id, camera as opt", table=>'cameralens_compat', where=>{mount_id=>$mountid}, order=>'opt'});
+	&printlist({db=>$db, msg=>"lenses with $mount mount", cols=>"distinct lens_id as id, lens as opt", table=>'cameralens_compat', where=>{mount_id=>$mountid}, order=>'opt'});
 	return;
 }
 
