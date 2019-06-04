@@ -299,7 +299,7 @@ use App::PhotoDB::handlers;
 use App::PhotoDB::commands;
 
 # Authoritative distro version
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 sub main {
 	my $args = shift;
