@@ -93,7 +93,7 @@ sub film_load {
 	$data{exposed_at} = $href->{exposed_at} // &prompt({default=>&lookupval({db=>$db, col=>"iso", table=>'FILM join FILMSTOCK on FILM.filmstock_id=FILMSTOCK.filmstock_id', where=>{film_id=>$film_id}}), prompt=>'What ISO?', type=>'integer'});
 	$data{date_loaded} = $href->{date_loaded} // &prompt({default=>&today, prompt=>'What date was this film loaded?', type=>'date'});
 	$data{notes} = $href->{notes} // &prompt({prompt=>'Notes'});
-	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
 }
 
 # Put a film in a physical archive
@@ -103,7 +103,7 @@ sub film_archive {
 	my $film_id = $href->{film_id} // &film_choose({db=>$db});
 	my %data;
 	$data{archive_id} = $href->{archive_id} // &listchoices({db=>$db, table=>'ARCHIVE', cols=>['archive_id as id', 'name as opt'], where=>['archive_type_id in (1,2)', 'sealed = 0'], inserthandler=>\&archive_add, required=>1});
-	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
 }
 
 # Develop a film
@@ -121,7 +121,7 @@ sub film_develop {
 	$data{dev_n} = $href->{dev_n} // &prompt({default=>0, prompt=>'What push/pull was used?', type=>'integer'});
 	$data{development_notes} = $href->{development_notes} // &prompt({prompt=>'Any other development notes'});
 	$data{processed_by} = $href->{processed_by} // &prompt({prompt=>'Who developed the film?'});
-	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>"film_id=$film_id"});
+	&updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
 	if (&prompt({default=>'no', prompt=>'Archive this film now?', type=>'boolean'})) {
 		&film_archive({db=>$db, film_id=>$film_id});
 	}
@@ -372,7 +372,7 @@ sub camera_edit {
 	my $changes = &hashdiff($existing, \%data);
 
 	# Update the DB
-	return &updaterecord({db=>$db, data=>$changes, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	return &updaterecord({db=>$db, data=>$changes, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 }
 
 sub camera_prompt {
@@ -527,7 +527,7 @@ sub camera_displaylens {
 	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}, required=>1 });
 	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, col=>'display_lens', table=>'CAMERA', where=>{camera_id=>$camera_id}})});
-	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 }
 
 # Search for a camera
@@ -567,7 +567,7 @@ sub camera_sell {
 	$data{own} = 0;
 	$data{lost} = $href->{lost} // &prompt({default=>&today, prompt=>'What date was this camera sold?', type=>'date'});
 	$data{lost_price} = $href->{lost_price} // &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
-	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>"camera_id=$camera_id"});
+	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	&unsetdisplaylens({db=>$db, camera_id=>$camera_id});
 	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERA', where=>{camera_id=>$camera_id}})) {
 		my $lens_id = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
@@ -576,7 +576,7 @@ sub camera_sell {
 			$lensdata{own} = 0;
 			$lensdata{lost} = $data{lost};
 			$lensdata{lost_price} = 0;
-			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>"lens_id=$lens_id"});
+			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>{lens_id=>$lens_id}});
 		}
 	}
 	return;
@@ -862,7 +862,7 @@ sub lensmodel_edit {
 	my $changes = &hashdiff($existing, $data);
 
 	# Update the DB
-	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>"lens_id=$lens_id"});
+	return &updaterecord({db=>$db, data=>$changes, table=>'LENS', where=>{lens_id=>$lens_id}});
 }
 
 sub lensmodel_prompt {
@@ -965,7 +965,7 @@ sub lens_sell {
 	$data{lost} = $href->{lost} // &prompt({default=>&today, prompt=>'What date was this lens sold?', type=>'date'});
 	$data{lost_price} = $href->{lost_price} // &prompt({prompt=>'How much did this lens sell for?', type=>'decimal'});
 	&unsetdisplaylens({db=>$db, lens_id=>$lens_id});
-	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>"lens_id=$lens_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'LENS', where=>{lens_id=>$lens_id}});
 }
 
 # Repair a lens
@@ -1056,7 +1056,7 @@ sub print_add {
 	print "\nAdded $qty prints in this run, numbered #$prints[0]-$prints[-1]\n" if ($qty > 1);
 
 	# Mark is as complete in the todo list
-	&updaterecord({db=>$db, data=>{printed=>1, print_id=>$prints[-1]}, table=>'TO_PRINT', where=>"id=$todo_id"}) if ($todo_id);
+	&updaterecord({db=>$db, data=>{printed=>1, print_id=>$prints[-1]}, table=>'TO_PRINT', where=>{id=>$todo_id}}) if ($todo_id);
 
 	# Return ID of the last print in the run
 	return $prints[-1];
@@ -1070,7 +1070,7 @@ sub print_fulfil {
 	my $todo_id = $href->{todo_id} // &listchoices({db=>$db, keyword=>'print from the queue', table=>'choose_todo', required=>1});
 	$data{printed} = $href->{printed} // &prompt({default=>'yes', prompt=>'Is this print order now fulfilled?', type=>'boolean'});
 	$data{print_id} = $href->{print_id} // &prompt({prompt=>'Which print fulfilled this order?', type=>'integer'});
-	return &updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>"id=$todo_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'TO_PRINT', where=>{id=>$todo_id}});
 }
 
 # Add toning to a print
@@ -1090,7 +1090,7 @@ sub print_tone {
 		$data{'2nd_toner_dilution'} = $href->{'2nd_toner_dilution'} // &prompt({default=>$dilution2, prompt=>'What was the dilution of the second toner?'});
 		$data{'2nd_toner_time'} = $href->{'2nd_toner_time'} // &prompt({prompt=>'How long did you tone for? (HH:MM:SS)', type=>'time'});
 	}
-	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>{print_id=>$print_id}});
 }
 
 # Sell a print
@@ -1103,7 +1103,7 @@ sub print_sell {
 	$data{location} = $href->{location} // &prompt({prompt=>'What happened to the print?'});
 	$data{sold_price} = $href->{sold_price} // &prompt({prompt=>'What price was the print sold for?', type=>'decimal'});
 	&print_unarchive({db=>$db, print_id=>$print_id});
-	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>{print_id=>$print_id}});
 }
 
 # Register an order for a print
@@ -1129,7 +1129,7 @@ sub print_archive {
 	$data{archive_id} = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{'archive_type_id'=>3, 'sealed'=>0}, inserthandler=>\&archive_add, required=>1});
 	$data{own} = 1;
 	$data{location} = 'Archive';
-	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>"print_id=$print_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'PRINT', where=>{print_id=>$print_id}});
 }
 
 # Remove a print from a physical archive
@@ -1468,7 +1468,7 @@ sub enlarger_sell {
 	my $enlarger_id = $href->{enlarger_id} // &listchoices({db=>$db, table=>'choose_enlarger', required=>1});
 	$data{lost} = $href->{lost} // &prompt({default=>&today, prompt=>'What date was this enlarger sold?', type=>'date'});
 	$data{lost_price} = $href->{lost_price} // &prompt({prompt=>'How much did this enlarger sell for?', type=>'decimal'});
-	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>"enlarger_id=$enlarger_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ENLARGER', where=>{enlarger_id=>$enlarger_id}});
 }
 
 # Add a new flash to the database
@@ -1644,7 +1644,7 @@ sub archive_seal {
 	my %data;
 	my $archive_id = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>0}, required=>1});
 	$data{sealed} = 1;
-	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 }
 
 # Unseal an archive and allow new items to be added to it
@@ -1654,7 +1654,7 @@ sub archive_unseal {
 	my %data;
 	my $archive_id = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', where=>{sealed=>1}, required=>1});
 	$data{sealed} = 0;
-	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 }
 
 # Move an archive to a new location
@@ -1665,7 +1665,7 @@ sub archive_move {
 	my $archive_id = $href->{archive_id} // &listchoices({db=>$db, cols=>['archive_id as id', 'name as opt'], table=>'ARCHIVE', required=>1});
 	my $oldlocation = &lookupval({db=>$db, col=>'location', table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 	$data{location} = $href->{location} // &prompt({default=>$oldlocation, prompt=>'What is the new location of this archive?'});
-	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>"archive_id = $archive_id"});
+	return &updaterecord({db=>$db, data=>\%data, table=>'ARCHIVE', where=>{archive_id=>$archive_id}});
 }
 
 # Add a new type of shutter to the database
