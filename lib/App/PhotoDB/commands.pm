@@ -478,11 +478,16 @@ Add a new lens model to PhotoDB
 
 Add accessory compatibility info to a lens model
 
+=head3 lensmodel series
+
+Add a lens model to a series
+
 =cut
 
         $handlers{lensmodel} = {
                 'accessory' => { 'handler' => \&lensmodel_accessory, 'desc' => 'Add accessory compatibility info to a lens model' },
                 'add'       => { 'handler' => \&lensmodel_add,       'desc' => 'Add a new lens model to PhotoDB' },
+                'series'    => { 'handler' => \&lensmodel_series,    'desc' => 'Add a lens model to a series' },
         };
 
 =head2 lens

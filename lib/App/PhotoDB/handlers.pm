@@ -21,7 +21,7 @@ our @EXPORT_OK = qw(
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_info lens_edit lens_search
-	lensmodel_add lensmodel_accessory
+	lensmodel_add lensmodel_accessory lensmodel_series
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
@@ -862,6 +862,10 @@ sub lensmodel_add {
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens model?', type=>'boolean'})) {
 		&lensmodel_accessory({db=>$db, lensmodel_id=>$lensmodel_id});
 	}
+
+	if (&prompt({default=>'no', prompt=>'Add this lens model to a series?', type=>'boolean'})) {
+		&lensmodel_series({db=>$db, lensmodel_id=>$lensmodel_id});
+	}
 	return $lensmodel_id;
 }
 
@@ -948,7 +952,17 @@ sub lensmodel_accessory {
 	return;
 }
 
-# Search for a camera
+# Add a lensmodel to a series
+sub lensmodel_series {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{lensmodel_id} = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', required=>1});
+	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1, inserthandler=>\&series_add});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
+}
+
+# Search for a lens
 sub lens_search {
 	my $href = shift;
 	my $db = $href->{db};
