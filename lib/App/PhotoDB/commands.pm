@@ -96,10 +96,15 @@ Add a new category of general accessory to the database
 
 Add a new series of camera or lens models
 
+=head3 series info
+
+View information about a series of camera or lens models
+
 =cut
 
 	$handlers{series} = {
-		'add' => { 'handler' => \&series_add, 'desc' => 'Add a new series of camera or lens models' },
+		'add'  => { 'handler' => \&series_add,  'desc' => 'Add a new series of camera or lens models' },
+		'info' => { 'handler' => \&series_info, 'desc' => 'View information about a series of camera or lens models' },
 	};
 
 =head2 archive

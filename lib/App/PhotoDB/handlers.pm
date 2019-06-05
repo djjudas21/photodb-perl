@@ -42,7 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
-	series_add
+	series_add series_info
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1607,6 +1607,16 @@ sub series_add {
 	my %data;
 	$data{name} = $href->{name} // &prompt({prompt=>'What is the name of this series?'});
 	return &newrecord({db=>$db, data=>\%data, table=>'SERIES'});
+}
+
+# Print info about a series
+sub series_info {
+	my $href = shift;
+	my $db = $href->{db};
+	my $series_id = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1});
+	my $seriesname = &lookupval({db=>$db, col=>'name', table=>'SERIES', where=>{series_id=>$series_id}});
+	&printlist({db=>$db, msg=>"camera and lens models in series '$seriesname'", table=>'info_series', cols=>['`Series ID` as id', 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+	return;
 }
 
 # Add a new physical archive for prints or films
