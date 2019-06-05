@@ -42,6 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
+	series_add
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1587,6 +1588,15 @@ sub camera_addbodytype {
 	my %data;
 	$data{body_type} = $href->{body_type} // &prompt({prompt=>'Enter new camera body type'});
 	return &newrecord({db=>$db, data=>\%data, table=>'BODY_TYPE'});
+}
+
+# Add a new series of camera/lens models
+sub series_add {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{name} = $href->{name} // &prompt({prompt=>'What is the name of this series?'});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES'});
 }
 
 # Add a new physical archive for prints or films

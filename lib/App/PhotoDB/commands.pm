@@ -90,6 +90,18 @@ Add a new category of general accessory to the database
 		'search'        => { 'handler' => \&accessory_search,   'desc' => 'Search for an accessory' },
 	};
 
+=head2 series
+
+=head3 series add
+
+Add a new series of camera or lens models
+
+=cut
+
+	$handlers{series} = {
+		'add' => { 'handler' => \&series_add, 'desc' => 'Add a new series of camera or lens models' },
+	};
+
 =head2 archive
 
 =head3 archive add
