@@ -299,6 +299,10 @@ sub cameramodel_add {
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera model?', type=>'boolean'})) {
 		&cameramodel_accessory({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
+
+	if (&prompt({default=>'no', prompt=>'Add this camera model to a series?', type=>'boolean'})) {
+		&cameramodel_series({db=>$db, cameramodel_id=>$cameramodel_id});
+	}
 	return $cameramodel_id;
 }
 
