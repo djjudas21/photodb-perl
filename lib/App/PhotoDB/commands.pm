@@ -244,6 +244,10 @@ Add available exposure program info to a camera model
 
 Add available metering mode info to a camera model
 
+=head3 cameramodel series
+
+Add a camera model to a series
+
 =head3 cameramodel shutterspeeds
 
 Add available shutter speed info to a camera model
@@ -255,6 +259,7 @@ Add available shutter speed info to a camera model
 		'add'             => { 'handler' => \&cameramodel_add,             'desc' => 'Add a new camera model to PhotoDB' },
 		'exposureprogram' => { 'handler' => \&cameramodel_exposureprogram, 'desc' => 'Add available exposure program info to a camera model' },
 		'meteringmode'    => { 'handler' => \&cameramodel_meteringmode,    'desc' => 'Add available metering mode info to a camera model' },
+		'series'          => { 'handler' => \&cameramodel_series,          'desc' => 'Add a camera model to a series' },
 		'shutterspeeds'   => { 'handler' => \&cameramodel_shutterspeeds,   'desc' => 'Add available shutter speed info to a camera model' },
 	};
 

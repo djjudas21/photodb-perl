@@ -16,7 +16,7 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory cameramodel_series
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
@@ -518,6 +518,16 @@ sub cameramodel_meteringmode {
 		}
 	}
 	return;
+}
+
+# Add a cameramodel to a series
+sub cameramodel_series {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{cameramodel_id} = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
+	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
 }
 
 # Associate a camera with a lens for display purposes
