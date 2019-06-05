@@ -526,7 +526,7 @@ sub cameramodel_series {
 	my $db = $href->{db};
 	my %data;
 	$data{cameramodel_id} = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
-	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1});
+	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1, inserthandler=>\&series_add});
 	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
 }
 
