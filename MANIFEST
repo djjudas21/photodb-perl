@@ -47,6 +47,7 @@ migrations/031-report-duplicate-lensmodels.sql
 migrations/032-cameramodel-lensmodel.sql
 migrations/033-cameramodel-views.sql
 migrations/034-cameramodel-views.sql
+migrations/035-series.sql
 README.pod
 t/00-compile.t
 t/01-usage.t
