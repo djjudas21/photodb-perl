@@ -94,3 +94,7 @@
 \.spec$
 ^Dockerfile$
 ^tests/
+
+# Unfinished work
+^dep-tree\.pl
+^dependencies\.dot

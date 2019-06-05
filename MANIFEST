@@ -52,5 +52,4 @@ t/00-compile.t
 t/01-usage.t
 t/02-perlcritic.t
 t/03-functional.t
-t/03-migrations.t
 t/04-views.t
