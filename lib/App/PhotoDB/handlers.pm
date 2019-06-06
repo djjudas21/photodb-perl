@@ -540,7 +540,7 @@ sub camera_displaylens {
 	my $db = $href->{db};
 	my %data;
 	my $camera_id = $href->{camera_id} // &listchoices({db=>$db, keyword=>'camera', table=>'choose_camera', where=>{mount_id=>{'!=', undef}}, required=>1 });
-	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
+	my $mount = &lookupval({db=>$db, col=>'mount_id', table=>'choose_camera', where=>{id=>$camera_id}});
 	$data{display_lens} = &listchoices({db=>$db, table=>'choose_display_lens', where=>{camera_id=>[$camera_id, undef], mount_id=>$mount}, default=>&lookupval({db=>$db, col=>'display_lens', table=>'CAMERA', where=>{camera_id=>$camera_id}})});
 	return &updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 }
