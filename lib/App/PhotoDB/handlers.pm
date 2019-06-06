@@ -16,12 +16,12 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory cameramodel_series
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_info lens_edit lens_search
-	lensmodel_add lensmodel_accessory
+	lensmodel_add lensmodel_accessory lensmodel_series
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
@@ -42,6 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
+	series_add series_info
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -298,6 +299,10 @@ sub cameramodel_add {
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this camera model?', type=>'boolean'})) {
 		&cameramodel_accessory({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
+
+	if (&prompt({default=>'no', prompt=>'Add this camera model to a series?', type=>'boolean'})) {
+		&cameramodel_series({db=>$db, cameramodel_id=>$cameramodel_id});
+	}
 	return $cameramodel_id;
 }
 
@@ -464,7 +469,7 @@ sub cameramodel_accessory {
 sub cameramodel_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
 	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
 	&newrecord({db=>$db, data=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 	my $min_shutter_speed_duration = &duration($min_shutter_speed);
@@ -486,7 +491,7 @@ sub cameramodel_shutterspeeds {
 sub cameramodel_exposureprogram {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
 	my $exposureprograms = &lookupcol({db=>$db, table=>'EXPOSURE_PROGRAM'});
 	foreach my $exposureprogram (@$exposureprograms) {
 		# Skip 'creative' AE modes
@@ -507,7 +512,7 @@ sub cameramodel_exposureprogram {
 sub cameramodel_meteringmode {
 	my $href = shift;
 	my $db = $href->{db};
-	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_camera', required=>1});
+	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
 	my $meteringmodes = &lookupcol({db=>$db, table=>'METERING_MODE'});
 	foreach my $meteringmode (@$meteringmodes) {
 		if (&prompt({default=>'no', prompt=>"Does this camera have $meteringmode->{metering_mode} metering?", type=>'boolean'})) {
@@ -517,6 +522,16 @@ sub cameramodel_meteringmode {
 		}
 	}
 	return;
+}
+
+# Add a cameramodel to a series
+sub cameramodel_series {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{cameramodel_id} = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
+	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1, inserthandler=>\&series_add});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
 }
 
 # Associate a camera with a lens for display purposes
@@ -847,6 +862,10 @@ sub lensmodel_add {
 	if (&prompt({default=>'yes', prompt=>'Add accessory compatibility for this lens model?', type=>'boolean'})) {
 		&lensmodel_accessory({db=>$db, lensmodel_id=>$lensmodel_id});
 	}
+
+	if (&prompt({default=>'no', prompt=>'Add this lens model to a series?', type=>'boolean'})) {
+		&lensmodel_series({db=>$db, lensmodel_id=>$lensmodel_id});
+	}
 	return $lensmodel_id;
 }
 
@@ -933,7 +952,17 @@ sub lensmodel_accessory {
 	return;
 }
 
-# Search for a camera
+# Add a lensmodel to a series
+sub lensmodel_series {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{lensmodel_id} = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', required=>1});
+	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1, inserthandler=>\&series_add});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
+}
+
+# Search for a lens
 sub lens_search {
 	my $href = shift;
 	my $db = $href->{db};
@@ -1587,6 +1616,32 @@ sub camera_addbodytype {
 	my %data;
 	$data{body_type} = $href->{body_type} // &prompt({prompt=>'Enter new camera body type'});
 	return &newrecord({db=>$db, data=>\%data, table=>'BODY_TYPE'});
+}
+
+# Add a new series of camera/lens models
+sub series_add {
+	my $href = shift;
+	my $db = $href->{db};
+	my %data;
+	$data{name} = $href->{name} // &prompt({prompt=>'What is the name of this series?'});
+	return &newrecord({db=>$db, data=>\%data, table=>'SERIES'});
+}
+
+# Print info about a series
+sub series_info {
+	my $href = shift;
+	my $db = $href->{db};
+	my $series_id = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1});
+	my $seriesname = &lookupval({db=>$db, col=>'name', table=>'SERIES', where=>{series_id=>$series_id}});
+	my $total = &printlist({db=>$db, msg=>"camera and lens models in series '$seriesname'", table=>'info_series', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+	my $got = &printlist({db=>$db, msg=>"ones we've got", table=>'info_series_got', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+	my $need = &printlist({db=>$db, msg=>"ones we need", table=>'info_series_need', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+
+	if ($total > 0) {
+		my $percentcomplete = round(100 * $got/$total);
+		print "Series '$seriesname' is $percentcomplete% complete (got $got, need $need)\n";
+	}
+	return;
 }
 
 # Add a new physical archive for prints or films
