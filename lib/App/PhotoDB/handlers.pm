@@ -16,12 +16,12 @@ use App::PhotoDB::funcs qw(/./);
 
 our @EXPORT_OK = qw(
 	film_add film_load film_archive film_develop film_tag film_locate film_bulk film_annotate film_stocks film_current film_choose film_info film_search
-	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory cameramodel_series
+	cameramodel_add cameramodel_shutterspeeds cameramodel_exposureprogram cameramodel_meteringmode cameramodel_accessory cameramodel_series cameramodel_info
 	camera_add camera_displaylens camera_sell camera_repair camera_addbodytype camera_info camera_choose camera_edit camera_search
 	mount_add mount_info mount_adapt
 	negative_add negative_bulkadd negative_prints negative_info negative_tag negative_search
 	lens_add lens_sell lens_repair lens_info lens_edit lens_search
-	lensmodel_add lensmodel_accessory lensmodel_series
+	lensmodel_add lensmodel_accessory lensmodel_series lensmodel_info
 	print_add print_tone print_sell print_order print_fulfil print_archive print_unarchive print_locate print_info print_exhibit print_label print_worklist print_tag
 	paperstock_add
 	developer_add
@@ -304,6 +304,30 @@ sub cameramodel_add {
 		&cameramodel_series({db=>$db, cameramodel_id=>$cameramodel_id});
 	}
 	return $cameramodel_id;
+}
+
+
+# Show information about a cameramodel
+sub cameramodel_info {
+        my $href = shift;
+        my $db = $href->{db};
+
+        # Choose camera
+        my $cameramodel_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
+
+        # Get camera data
+        my $cameradata = &lookupcol({db=>$db, table=>'info_cameramodel', where=>{'`Camera Model ID`'=>$cameramodel_id}});
+
+        # Show compatible accessories
+        my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{cameramodel_id=>$cameramodel_id}});
+        ${@$cameradata[0]}{'Accessories'} = $accessories;
+
+        # Show compatible lenses
+        my $lenses = &lookuplist({db=>$db, col=>'lens', table=>'cameralens_compat', where=>{cameramodel_id=>$cameramodel_id}});
+        ${@$cameradata[0]}{'Lenses'} = $lenses;
+
+        print Dump($cameradata);
+        return;
 }
 
 # Add a new camera to the database
@@ -960,6 +984,29 @@ sub lensmodel_series {
 	$data{lensmodel_id} = $href->{lensmodel_id} // &listchoices({db=>$db, table=>'choose_lensmodel', required=>1});
 	$data{series_id} = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1, inserthandler=>\&series_add});
 	return &newrecord({db=>$db, data=>\%data, table=>'SERIES_MEMBER'});
+}
+
+# Show information about a lensmodel
+sub lensmodel_info {
+        my $href = shift;
+        my $db = $href->{db};
+
+        # Choose lens
+        my $lensmodel_id = $href->{lens_id} // &listchoices({db=>$db, table=>'choose_lensmodel', required=>1});
+
+        # Get lens data
+        my $lensdata = &lookupcol({db=>$db, table=>'info_lensmodel', where=>{'`Lens Model ID`'=>$lensmodel_id}});
+
+        # Show compatible accessories
+        my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{lensmodel_id=>$lensmodel_id}});
+        ${@$lensdata[0]}{'Accessories'} = $accessories;
+
+        # Show compatible cameras
+        my $cameras = &lookuplist({db=>$db, col=>'camera', table=>'cameralens_compat', where=>{lensmodel_id=>$lensmodel_id}});
+        ${@$lensdata[0]}{'Cameras'} = $cameras;
+
+        print Dump($lensdata);
+        return;
 }
 
 # Search for a lens
