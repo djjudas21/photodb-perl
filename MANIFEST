@@ -50,6 +50,8 @@ migrations/034-cameramodel-views.sql
 migrations/035-series.sql
 migrations/036-series-info.sql
 migrations/037-series-info-views.sql
+migrations/038-camera-serial.sql
+migrations/039-camera-serial.sql
 migrations/040-cameramodel-info.sql
 migrations/041-cameralens-compat.sql
 README.pod
