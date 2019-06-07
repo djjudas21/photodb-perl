@@ -2,7 +2,7 @@
 # and attempts to run real commands
 
 use Test::Expect;
-use Test::More tests => 7;
+use Test::More tests => 5;
 
 # Local test database credentials
 my $host = 'localhost';
@@ -19,20 +19,14 @@ expect_run(
 
 # run migrations - run migrations to configure schema
 expect_send("run migrations", 'run migrations');
-# Run migrations to upgrade the database schema to the latest version. Continue? (boolean) [yes]:
-expect_send('yes', 'yes');
 expect_like(qr/Applied migration|Up to date/, 'migrations complete');
 
 # db test - test db connectivity
 expect_send("db test", 'db test');
-#Test database connectivity. Continue? (boolean) [yes]:
-expect_send('yes', 'yes');
 expect_like(qr/Connected to /, 'connected');
 
 #mount info - test searching data
 #expect_send("mount info", 'mount info');
-#View compatible cameras and lenses for a mount. Continue? (boolean) \[yes\]: "
-#expect_send('yes', 'yes');
 #Please select a mount from the list (text) \[\]: "
 #expect_send('1', 'mount_id 1');
 #expect_like(qr/Now showing/, 'now showing');
