@@ -2209,6 +2209,10 @@ Display multi-column SQL views as tabulated data.
 
 =item * C<$view> name of SQL view to print
 
+=item * C<$cols> columns of view to return. Defaults to C<*>
+
+=item * C<$where> optional WHERE clause
+
 =head4 Returns
 
 Number of rows displayed
@@ -2219,16 +2223,18 @@ sub tabulate {
 	my $href = shift;
 	my $db = $href->{db};
 	my $view = $href->{view};
+	my $cols = $href->{cols} // '*';
+	my $where = $href->{where} // {};
 
 	# Use SQL::Abstract
 	my $sql = SQL::Abstract->new;
-	my($stmt, @bind) = $sql->select($view);
+	my($stmt, @bind) = $sql->select($view, $cols, $where);
 
 	my $sth = $db->prepare($stmt);
 	my $rows = $sth->execute(@bind);
-	my $cols = $sth->{'NAME'};
+	my $returnedcols = $sth->{'NAME'};
 	my @array;
-	my $table = Text::TabularDisplay->new(@$cols);
+	my $table = Text::TabularDisplay->new(@$returnedcols);
 	while (my @row = $sth->fetchrow) {
 		$table->add(@row);
 	}

@@ -1680,11 +1680,11 @@ sub series_info {
 	my $db = $href->{db};
 	my $series_id = $href->{series_id} // &listchoices({db=>$db, cols=>['series_id as id', 'name as opt'], table=>'SERIES', required=>1});
 	my $seriesname = &lookupval({db=>$db, col=>'name', table=>'SERIES', where=>{series_id=>$series_id}});
-	my $total = &printlist({db=>$db, msg=>"camera and lens models in series '$seriesname'", table=>'info_series', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
-	my $got = &printlist({db=>$db, msg=>"ones we've got", table=>'info_series_got', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
-	my $need = &printlist({db=>$db, msg=>"ones we need", table=>'info_series_need', cols=>["'' as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+	my $total = &printlist({db=>$db, msg=>"camera and lens models in series '$seriesname'", table=>'info_series', cols=>["Got as id", 'Model as opt'], where=>{'`Series ID`'=>$series_id}});
+	my $got = &lookupval({db=>$db, col=>'count(*)', table=>'info_series', where=>{'`Series ID`'=>$series_id, Got=>'✓'}});
 
 	if ($total > 0) {
+		my $need = $total - $got;
 		my $percentcomplete = round(100 * $got/$total);
 		print "Series '$seriesname' is $percentcomplete% complete (got $got, need $need)\n";
 	}
