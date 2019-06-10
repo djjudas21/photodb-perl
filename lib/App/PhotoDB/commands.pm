@@ -105,6 +105,7 @@ View information about a series of camera or lens models
 	$handlers{series} = {
 		'add'  => { 'handler' => \&series_add,  'desc' => 'Add a new series of camera or lens models' },
 		'info' => { 'handler' => \&series_info, 'desc' => 'View information about a series of camera or lens models' },
+		'list' => { 'handler' => \&series_list, 'desc' => 'Summarise series of camera or lens models' },
 	};
 
 =head2 archive

@@ -42,7 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
-	series_add series_info
+	series_add series_info series_list
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1689,6 +1689,14 @@ sub series_info {
 		print "Series '$seriesname' is $percentcomplete% complete (got $got, need $need)\n";
 	}
 	return;
+}
+
+# Summarise all series
+sub series_list {
+	my $href = shift;
+	my $db = $href->{db};
+	my $rows = &tabulate({db=>$db, view=>'summary_series'});
+	return $rows;
 }
 
 # Add a new physical archive for prints or films
