@@ -14,3 +14,16 @@ CREATE TABLE `photography`.`NEGATIVEFORMAT_COMPAT` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 COMMENT = 'Table to record compatibility between film formats and negative sizes';
+
+CREATE
+    OR REPLACE ALGORITHM = UNDEFINED
+VIEW `choose_negativeformat` AS
+    SELECT
+        `FORMAT`.`format_id` AS `format_id`,
+        `FORMAT`.`format` AS `format`,
+        `NEGATIVE_SIZE`.`negative_size_id` AS `negative_size_id`,
+        `NEGATIVE_SIZE`.`negative_size` AS `negative_size`
+    FROM
+        ((`NEGATIVEFORMAT_COMPAT`
+        JOIN `FORMAT` ON (`NEGATIVEFORMAT_COMPAT`.`format_id` = `FORMAT`.`format_id`))
+        JOIN `NEGATIVE_SIZE` ON (`NEGATIVEFORMAT_COMPAT`.`negative_size_id` = `NEGATIVE_SIZE`.`negative_size_id`));
