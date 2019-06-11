@@ -664,6 +664,17 @@ Table to catalog negatives (which includes positives/slide too). Negatives are c
     | copy_of          | int(11)      | Negative ID of negative from which this negative is reproduced/duplicated/rephotographed |
     +------------------+--------------+------------------------------------------------------------------------------------------+
 
+=head2 NEGATIVEFORMAT_COMPAT
+
+Table to record compatibility between film formats and negative sizes
+
+    +------------------+-------------+-------------------------+
+    | COLUMN_NAME      | COLUMN_TYPE | COLUMN_COMMENT          |
+    +------------------+-------------+-------------------------+
+    | format_id        | int(11)     | ID of the film format   |
+    | negative_size_id | int(11)     | ID of the negative size |
+    +------------------+-------------+-------------------------+
+
 =head2 NEGATIVE_SIZE
 
 Table to catalog different negative sizes available. Negtives sizes are distinct from film formats.
