@@ -1990,6 +1990,8 @@ sub run_report {
 		{ desc => 'Negatives that have not been scanned',                    view => 'report_unscanned_negs', },
 		{ desc => 'Potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
 		{ desc => 'Potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
+		{ desc => 'Duplicate cameras',                                       view => 'report_duplicate_cameras', },
+		{ desc => 'Duplicate lenses',                                        view => 'report_duplicate_lenses', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
