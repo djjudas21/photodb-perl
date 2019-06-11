@@ -1973,15 +1973,15 @@ sub run_report {
 	my $db = $href->{db};
 
 	my @choices = (
-		{ desc => 'Report on how many cameras in the collection are from each decade', view => 'report_cameras_by_decade', },
-		{ desc => 'Report on which lenses have been used to take most frames',         view => 'report_most_popular_lenses_relative', },
-		{ desc => 'Report on cameras that have never been to used to take a frame',    view => 'report_never_used_cameras', },
-		{ desc => 'Report on lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
-		{ desc => 'Report on the cameras that have taken most frames',                 view => 'report_total_negatives_per_camera', },
-		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
-		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', },
-		{ desc => 'Report on potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
-		{ desc => 'Report on potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
+		{ desc => 'How many cameras in the collection are from each decade', view => 'report_cameras_by_decade', },
+		{ desc => 'Lenses have been used to take most frames',               view => 'report_most_popular_lenses_relative', },
+		{ desc => 'Cameras that have never been to used to take a frame',    view => 'report_never_used_cameras', },
+		{ desc => 'Lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
+		{ desc => 'Cameras that have taken most frames',                     view => 'report_total_negatives_per_camera', },
+		{ desc => 'Lenses that have taken most frames',                      view => 'report_total_negatives_per_lens', },
+		{ desc => 'Negatives that have not been scanned',                    view => 'report_unscanned_negs', },
+		{ desc => 'Potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
+		{ desc => 'Potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
