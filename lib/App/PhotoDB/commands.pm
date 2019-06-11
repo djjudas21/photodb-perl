@@ -100,12 +100,21 @@ Add a new series of camera or lens models
 
 View information about a series of camera or lens models
 
+=head3 series list
+
+Summarise series of camera or lens models
+
+=head3 series need
+
+View list of models needed to complete series
+
 =cut
 
 	$handlers{series} = {
 		'add'  => { 'handler' => \&series_add,  'desc' => 'Add a new series of camera or lens models' },
 		'info' => { 'handler' => \&series_info, 'desc' => 'View information about a series of camera or lens models' },
 		'list' => { 'handler' => \&series_list, 'desc' => 'Summarise series of camera or lens models' },
+		'need' => { 'handler' => \&series_need, 'desc' => 'View list of models needed to complete series' },
 	};
 
 =head2 archive

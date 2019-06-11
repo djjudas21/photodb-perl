@@ -42,7 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
-	series_add series_info series_list
+	series_add series_info series_list series_need
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1696,6 +1696,14 @@ sub series_list {
 	my $href = shift;
 	my $db = $href->{db};
 	my $rows = &tabulate({db=>$db, view=>'summary_series'});
+	return $rows;
+}
+
+# List all models we need
+sub series_need {
+	my $href = shift;
+	my $db = $href->{db};
+	my $rows = &printlist({db=>$db, msg=>'models needed to complete series', cols=>["'' as id", 'Model as opt'], table=>'info_series', where=>{'Got'=>'✗'}});
 	return $rows;
 }
 
