@@ -523,7 +523,7 @@ sub cameramodel_shutterspeeds {
 
 	while (1) {
 		my %shutterdata;
-		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', inserthandler=>\&shutterspeed_add, required=>0});
+		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', inserthandler=>\&shutterspeed_add, required=>0});
 		last if (!$shutterdata{shutter_speed});
 		$shutterdata{cameramodel_id} = $cameramodel_id;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
