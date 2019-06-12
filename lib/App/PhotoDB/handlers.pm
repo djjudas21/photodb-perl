@@ -42,7 +42,7 @@ our @EXPORT_OK = qw(
 	person_add
 	projector_add
 	movie_add movie_info
-	series_add series_info
+	series_add series_info series_list series_need
 	archive_add archive_films archive_info archive_list archive_seal archive_unseal archive_move
 	shuttertype_add focustype_add flashprotocol_add meteringtype_add shutterspeed_add
 	audit_shutterspeeds audit_exposureprograms audit_meteringmodes audit_displaylenses
@@ -1713,6 +1713,22 @@ sub series_info {
 	return;
 }
 
+# Summarise all series
+sub series_list {
+	my $href = shift;
+	my $db = $href->{db};
+	my $rows = &tabulate({db=>$db, view=>'summary_series'});
+	return $rows;
+}
+
+# List all models we need
+sub series_need {
+	my $href = shift;
+	my $db = $href->{db};
+	my $rows = &printlist({db=>$db, msg=>'models needed to complete series', cols=>["'' as id", 'Model as opt'], table=>'info_series', where=>{'Got'=>'✗'}});
+	return $rows;
+}
+
 # Add a new physical archive for prints or films
 sub archive_add {
 	my $href = shift;
@@ -1987,15 +2003,17 @@ sub run_report {
 	my $db = $href->{db};
 
 	my @choices = (
-		{ desc => 'Report on how many cameras in the collection are from each decade', view => 'report_cameras_by_decade', },
-		{ desc => 'Report on which lenses have been used to take most frames',         view => 'report_most_popular_lenses_relative', },
-		{ desc => 'Report on cameras that have never been to used to take a frame',    view => 'report_never_used_cameras', },
-		{ desc => 'Report on lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
-		{ desc => 'Report on the cameras that have taken most frames',                 view => 'report_total_negatives_per_camera', },
-		{ desc => 'Report on the lenses that have taken most frames',                  view => 'report_total_negatives_per_lens', },
-		{ desc => 'Report on negatives that have not been scanned',                    view => 'report_unscanned_negs', },
-		{ desc => 'Report on potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
-		{ desc => 'Report on potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
+		{ desc => 'How many cameras in the collection are from each decade', view => 'report_cameras_by_decade', },
+		{ desc => 'Lenses have been used to take most frames',               view => 'report_most_popular_lenses_relative', },
+		{ desc => 'Cameras that have never been to used to take a frame',    view => 'report_never_used_cameras', },
+		{ desc => 'Lenses that have never been used to take a frame',        view => 'report_never_used_lenses', },
+		{ desc => 'Cameras that have taken most frames',                     view => 'report_total_negatives_per_camera', },
+		{ desc => 'Lenses that have taken most frames',                      view => 'report_total_negatives_per_lens', },
+		{ desc => 'Negatives that have not been scanned',                    view => 'report_unscanned_negs', },
+		{ desc => 'Potential duplicate camera models',                       view => 'report_duplicate_cameramodels', },
+		{ desc => 'Potential duplicate lens models',                         view => 'report_duplicate_lensmodels', },
+		{ desc => 'Duplicate cameras',                                       view => 'report_duplicate_cameras', },
+		{ desc => 'Duplicate lenses',                                        view => 'report_duplicate_lenses', },
 	);
 
 	my $action = &multiplechoice({choices => \@choices});
