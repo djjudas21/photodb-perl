@@ -56,6 +56,7 @@ migrations/040-cameramodel-info.sql
 migrations/041-cameralens-compat.sql
 migrations/044-drop-shutter-speed-cols.sql
 migrations/045-shutter-speeds-B-T.sql
+migrations/046-shutter-speed-available-pk.sql
 README.pod
 t/00-compile.t
 t/01-usage.t

@@ -738,7 +738,7 @@ sub negative_add {
 	$data{description} = $href->{description} // &prompt({prompt=>'Caption'});
 	$data{date} = $href->{date} // &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 	$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
-	$data{shutter_speed} = $href->{shutter_speed} // &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}, type=>'text'});
+	$data{shutter_speed} = $href->{shutter_speed} // &choose_shutterspeed({db=>$db, film_id=>$data{film_id}});
 	$data{aperture} = $href->{aperture} // &prompt({prompt=>'Aperture', type=>'decimal'});
 	my $filter_dia = 0;
 	if ($data{lens_id}) {
@@ -772,7 +772,7 @@ sub negative_bulkadd {
 		$data{description} = $href->{description} // &prompt({prompt=>'Caption'});
 		$data{date} = $href->{date} // &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 		$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}, skipok=>1});
-		$data{shutter_speed} = $href->{shutter_speed} // &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}});
+		$data{shutter_speed} = $href->{shutter_speed} // &choose_shutterspeed({db=>$db, film_id=>$data{film_id}});
 		$data{aperture} = $href->{aperture} // &prompt({prompt=>'Aperture', type=>'decimal'});
 		$data{filter_id} = $href->{filter_id} // &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 		$data{teleconverter_id} = $href->{teleconverter_id} // &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});

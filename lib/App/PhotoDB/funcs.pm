@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed);
 
 =head2 prompt
 
@@ -2350,6 +2350,51 @@ sub canondatecode {
 		return $plausible[0];
 	}
 	return;
+}
+
+=head2 choose_shutterspeed
+
+While entering a negative into a film, prompt the user to select an available shutter speed for the camera in use. If they choose C<B> or C<T>, prompt them for
+the duration in seconds, and return that instead. Also add it to the C<SHUTTER_SPEED_AVAILABLE> table, marked as a "bulb" speed if necessary.
+
+=head4 Usage
+
+    my $shutter_speed = &choose_shutterspeed({db=>$db, film_id=>$film_id});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$film_id> Film ID that we are inserting into, so the camera can be found
+
+=head4 Returns
+
+String representation of a shutter speed, which is both a valid EXIF representation, and also a valid data object.
+
+=cut
+
+sub choose_shutterspeed {
+	my $href = shift;
+	my $db = $href->{db};
+	my $film_id = $href->{film_id};
+
+	# Prompt user to choose available shutter speed for their camera
+	my $shutter_speed = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$film_id}, type=>'text', required=>1});
+
+	# If they chose B or T
+	if ($shutter_speed eq 'B' or $shutter_speed eq 'T') {
+		my $shutter_speed = &prompt({prompt=>'What duration was the exposure? (s)', type=>'integer', required=>1});
+		# If already a valid shutter speed
+		if (!&lookupval({db=>$db, col=>'count(*)', table=>'choose_shutter_speed_by_film', where=>{film_id=>$film_id, id=>$shutter_speed}})) {
+			# insert new bulb shutter speed
+			my %data;
+			$data{cameramodel_id} = &lookupval({db=>$db, col=>'cameramodel_id', table=>'FILM join CAMERA on FILM.camera_id=CAMERA.camera_id', where=>{film_id=>$film_id}});
+			$data{shutter_speed} = $shutter_speed;
+			$data{bulb} = 1;
+			&newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+		}
+	}
+	return $shutter_speed;
 }
 
 # This ensures the lib loads smoothly
