@@ -3,6 +3,7 @@
 CREATE TABLE `SHUTTER_SPEED_AVAILABLE` (
   `cameramodel_id` int(11) NOT NULL COMMENT 'ID of the camera model',
   `shutter_speed` varchar(10) CHARACTER SET latin1 NOT NULL COMMENT 'Shutter speed that this camera has',
+  `bulb` int(1) DEFAULT 0 COMMENT 'Whether this is a manual "bulb" shutter speed that can only be accessed in B or T modes',
   KEY `fk_SHUTTER_SPEED_AVAILABLE_1_idx` (`shutter_speed`),
   KEY `fk_SHUTTER_SPEED_AVAILABLE_2_idx` (`cameramodel_id`),
   CONSTRAINT `fk_SHUTTER_SPEED_AVAILABLE_1` FOREIGN KEY (`shutter_speed`) REFERENCES `SHUTTER_SPEED` (`shutter_speed`) ON DELETE CASCADE ON UPDATE CASCADE,
