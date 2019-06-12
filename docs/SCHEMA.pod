@@ -154,8 +154,6 @@ Table to catalog camera models - both cameras with fixed lenses and cameras with
     | battery_qty         | int(11)      | Quantity of batteries needed                                                 |
     | battery_type        | int(11)      | Denotes type of battery needed                                               |
     | notes               | text         | Freeform text field for extra notes                                          |
-    | min_shutter         | varchar(10)  | Fastest available shutter speed, expressed like 1/400                        |
-    | max_shutter         | varchar(10)  | Slowest available shutter speed, expressed like 30 (no ")                    |
     | bulb                | tinyint(1)   | Whether the camera supports bulb (B) exposure                                |
     | time                | tinyint(1)   | Whether the camera supports time (T) exposure                                |
     | min_iso             | int(11)      | Minimum ISO the camera will accept for metering                              |
