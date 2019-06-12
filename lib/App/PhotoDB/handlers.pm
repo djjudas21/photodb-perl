@@ -448,8 +448,6 @@ sub camera_prompt {
 		$data{battery_type} = &listchoices({db=>$db, keyword=>'battery type', table=>'choose_battery', inserthandler=>\&battery_add, default=>$$defaults{battery_type}});
 	}
 	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$defaults{notes}});
-	$data{min_shutter} = &prompt({prompt=>'What\'s the fastest shutter speed?', default=>$$defaults{min_shutter}});
-	$data{max_shutter} = &prompt({prompt=>'What\'s the slowest shutter speed?', default=>$$defaults{max_shutter}});
 	$data{bulb} = &prompt({prompt=>'Does the camera have bulb exposure mode?', type=>'boolean', default=>$$defaults{bulb}});
 	$data{time} = &prompt({prompt=>'Does the camera have time exposure mode?', type=>'boolean', default=>$$defaults{time}});
 	$data{min_iso} = &prompt({prompt=>'What\'s the lowest ISO the camera can do?', type=>'integer', default=>$$defaults{min_iso}});
@@ -516,16 +514,16 @@ sub cameramodel_shutterspeeds {
 	my $href = shift;
 	my $db = $href->{db};
 	my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
-	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	my $min_shutter_speed = &listchoices({db=>$db, keyword=>'min (fastest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', inserthandler=>\&shutterspeed_add, required=>1});
 	&newrecord({db=>$db, data=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$min_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 	my $min_shutter_speed_duration = &duration($min_shutter_speed);
-	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>1});
+	my $max_shutter_speed = &listchoices({db=>$db, keyword=>'max (slowest) shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', inserthandler=>\&shutterspeed_add, required=>1});
 	my $max_shutter_speed_duration = &duration($max_shutter_speed);
 	&newrecord({db=>$db, data=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$max_shutter_speed}, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 
 	while (1) {
 		my %shutterdata;
-		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where shutter_speed not in ('B', 'T') and duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', insert_handler=>\&shutterspeed_add, required=>0});
+		$shutterdata{shutter_speed} = &listchoices({db=>$db, keyword=>'shutter speed', query=>"SELECT shutter_speed as id, '' as opt FROM SHUTTER_SPEED where duration > $min_shutter_speed_duration and duration < $max_shutter_speed_duration and shutter_speed not in (select shutter_speed from SHUTTER_SPEED_AVAILABLE where cameramodel_id=$cameramodel_id) order by duration", type=>'text', inserthandler=>\&shutterspeed_add, required=>0});
 		last if (!$shutterdata{shutter_speed});
 		$shutterdata{cameramodel_id} = $cameramodel_id;
 		&newrecord({db=>$db, data=>\%shutterdata, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
@@ -740,7 +738,7 @@ sub negative_add {
 	$data{description} = $href->{description} // &prompt({prompt=>'Caption'});
 	$data{date} = $href->{date} // &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 	$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}});
-	$data{shutter_speed} = $href->{shutter_speed} // &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}, type=>'text'});
+	$data{shutter_speed} = $href->{shutter_speed} // &choose_shutterspeed({db=>$db, film_id=>$data{film_id}});
 	$data{aperture} = $href->{aperture} // &prompt({prompt=>'Aperture', type=>'decimal'});
 	my $filter_dia = 0;
 	if ($data{lens_id}) {
@@ -774,7 +772,7 @@ sub negative_bulkadd {
 		$data{description} = $href->{description} // &prompt({prompt=>'Caption'});
 		$data{date} = $href->{date} // &prompt({default=>&today, prompt=>'What date was this negative taken?', type=>'date'});
 		$data{lens_id} = $href->{lens_id} // &listchoices({db=>$db, keyword=>'lens', table=>'choose_lens_by_film', where=>{film_id=>$data{film_id}}, skipok=>1});
-		$data{shutter_speed} = $href->{shutter_speed} // &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$data{film_id}}});
+		$data{shutter_speed} = $href->{shutter_speed} // &choose_shutterspeed({db=>$db, film_id=>$data{film_id}});
 		$data{aperture} = $href->{aperture} // &prompt({prompt=>'Aperture', type=>'decimal'});
 		$data{filter_id} = $href->{filter_id} // &listchoices({db=>$db, table=>'choose_filter', inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 		$data{teleconverter_id} = $href->{teleconverter_id} // &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
