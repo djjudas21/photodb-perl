@@ -2384,11 +2384,13 @@ sub choose_shutterspeed {
 	# If they chose B or T
 	if ($shutter_speed eq 'B' or $shutter_speed eq 'T') {
 		my $shutter_speed = &prompt({prompt=>'What duration was the exposure? (s)', type=>'integer', required=>1});
-		# If already a valid shutter speed
-		if (!&lookupval({db=>$db, col=>'count(*)', table=>'choose_shutter_speed_by_film', where=>{film_id=>$film_id, id=>$shutter_speed}})) {
+
+		# If this is not already a valid shutter speed, insert it as a bulb-only speed
+		my $cameramodel_id = &lookupval({db=>$db, col=>'cameramodel_id', table=>'FILM join CAMERA on FILM.camera_id=CAMERA.camera_id', where=>{film_id=>$film_id}});
+		if (!&lookupval({db=>$db, col=>'count(*)', table=>'SHUTTER_SPEED_AVAILABLE', where=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$shutter_speed}})) {
 			# insert new bulb shutter speed
 			my %data;
-			$data{cameramodel_id} = &lookupval({db=>$db, col=>'cameramodel_id', table=>'FILM join CAMERA on FILM.camera_id=CAMERA.camera_id', where=>{film_id=>$film_id}});
+			$data{cameramodel_id} = $cameramodel_id;
 			$data{shutter_speed} = $shutter_speed;
 			$data{bulb} = 1;
 			&newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
