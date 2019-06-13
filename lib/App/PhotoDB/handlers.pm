@@ -313,7 +313,7 @@ sub cameramodel_info {
         my $db = $href->{db};
 
         # Choose camera
-        my $cameramodel_id = $href->{camera_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
+        my $cameramodel_id = $href->{cameramodel_id} // &listchoices({db=>$db, table=>'choose_cameramodel', required=>1});
 
         # Get camera data
         my $cameradata = &lookupcol({db=>$db, table=>'info_cameramodel', where=>{'`Camera Model ID`'=>$cameramodel_id}});
@@ -321,10 +321,6 @@ sub cameramodel_info {
         # Show compatible accessories
         my $accessories = &lookuplist({db=>$db, col=>'opt', table=>'choose_accessory_compat', where=>{cameramodel_id=>$cameramodel_id}});
         ${@$cameradata[0]}{'Accessories'} = $accessories;
-
-        # Show compatible lenses
-        my $lenses = &lookuplist({db=>$db, col=>'lens', table=>'cameralens_compat', where=>{cameramodel_id=>$cameramodel_id}});
-        ${@$cameradata[0]}{'Lenses'} = $lenses;
 
         print Dump($cameradata);
         return;
