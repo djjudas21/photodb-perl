@@ -742,7 +742,7 @@ sub negative_add {
 	$data{aperture} = $href->{aperture} // &prompt({prompt=>'Aperture', type=>'decimal'});
 	my $filter_dia = 0;
 	if ($data{lens_id}) {
-		$filter_dia = &lookupval({db=>$db, col=>'if(filter_thread, filter_thread, 0)', table=>'LENS', where=>{lens_id=>$data{lens_id}}});
+		$filter_dia = &lookupval({db=>$db, col=>'if(filter_thread, filter_thread, 0)', table=>'LENS join LENSMODEL on LENS.lensmodel_id=LENSMODEL.lensmodel_id', where=>{lens_id=>$data{lens_id}}});
 	}
 	$data{filter_id} = $href->{filter_id} // &listchoices({db=>$db, table=>'choose_filter', where=>{'thread'=>{'>=', $filter_dia}}, inserthandler=>\&filter_add, skipok=>1, autodefault=>0});
 	$data{teleconverter_id} = $href->{teleconverter_id} // &listchoices({db=>$db, keyword=>'teleconverter', table=>'choose_teleconverter_by_film', where=>{film_id=>$data{film_id}}, inserthandler=>\&teleconverter_add, skipok=>1, autodefault=>0});
