@@ -6,8 +6,7 @@ use DBD::mysql;
 
 SKIP: {
 	# Only execute this set if we have a test DB
-	my $dbh = DBI->connect('DBI:mysql:photodb:localhost', 'photodb', 'photodb') or fail('dbh');
-	skip 'Could not connect to database', 1 unless (defined($dbh));
+	my $dbh = DBI->connect('DBI:mysql:photodb:localhost', 'photodb', 'photodb') or plan skip_all => 'Could not connect to database' ;
 
 	# Get a list of all views
 	#my $query = "SHOW FULL TABLES WHERE TABLE_TYPE LIKE 'VIEW'";

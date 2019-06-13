@@ -2,7 +2,14 @@
 # and attempts to run real commands
 
 use Test::Expect;
-use Test::More tests => 5;
+use Test::More;
+
+# Skip these tests if we are not running under Travis
+if ($ENV{'TRAVIS'} eq 'true') {
+	plan tests => 5;
+} else {
+	plan skip_all => 'These tests require Travis CI';
+}
 
 # Local test database credentials
 my $host = 'localhost';
