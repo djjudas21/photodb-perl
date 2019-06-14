@@ -22,7 +22,7 @@ GetOptions (
 	"hostname=s" => \$hostname,
 	"database=s" => \$database,
 	"username=s" => \$username,
-	"password=s" => \$pass;
+	"password=s" => \$pass,
 	"tables!" => \$dumptables,
 	"funcs!" => \$dumpfuncs,
 	"data!" => \$dumpdata,
