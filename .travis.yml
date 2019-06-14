@@ -15,7 +15,7 @@ install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
   - stage: dump
-    script: mysqldump photodb -uphotodb -pphotodb > dump.sql
+    script: ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status
   - stage: test
     name: Perl tests
     script: perl Build.PL && ./Build test
