@@ -3,6 +3,7 @@
 CREATE TABLE `EXPOSURE_PROGRAM_AVAILABLE` (
   `cameramodel_id` int(11) NOT NULL COMMENT 'ID of camera model',
   `exposure_program_id` int(11) NOT NULL COMMENT 'ID of exposure program',
+  PRIMARY KEY (`cameramodel_id`,`exposure_program_id`),
   KEY `fk_EXPOSURE_PROGRAM_AVAILABLE_1_idx` (`cameramodel_id`),
   KEY `fk_EXPOSURE_PROGRAM_AVAILABLE_2_idx` (`exposure_program_id`),
   CONSTRAINT `fk_EXPOSURE_PROGRAM_AVAILABLE_1` FOREIGN KEY (`cameramodel_id`) REFERENCES `CAMERAMODEL` (`cameramodel_id`) ON DELETE CASCADE ON UPDATE CASCADE,
