@@ -104,7 +104,7 @@ if ($dumpbasemigration) {
 sub dumptable {
 	my $table = shift;
 	print "\tDumping schema for $table\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`;
 	return;
 }
 
