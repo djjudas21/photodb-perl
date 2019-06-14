@@ -4,19 +4,28 @@ perl:
 env:
   global:
   - PERL5LIB=$TRAVIS_BUILD_DIR/lib
+  - DBHOST=localhost
+  - DBNAME=photodb
+  - DBUSER=photodb
+  - DBPASS=photodb
   - secure: ERaAHRIEwrs9nuQGomdFizcsMwlh150KGD6nd45NZ+qvIKDFnOHuIOAwtsX4ptCfUIWjJl4qTIpAEno3x2sONZgrUMsudEIiVfngc2nycf5+mvZDbfcJUJXG4cXtSkQA63jtpuq9G/TOTtJ1vZdtL+9def6VsuV9Bbm3udPe8iI=
-services:
-  - mysql
+  - secure: IH0UsXakf6yFcj8U/cLQUJmDoe0dEGtMPZX5s5G0xgtuL0K7C4/DIGQk6NGjlgnsFkIcLvjzruHj0kFgC8QbmUu3bVRiHJSkhgMeNIFhPgUt3A9EdHTpqPuQtFMgTo2yGf6ffk/sg+FFQ+H+s9bvwEcDt2JbcOZ8em0MfW5GcgU=
+addons:
+  mariadb: '10.3'
 before_install:
-  - mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
-  - mkdir -p ~/.photodb
-  - echo -e "[database]\nuser=photodb\nschema=photodb\npass=photodb\nhost=localhost" > ~/.photodb/photodb.ini
+- travis/setup-db.bash
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
   - stage: test
     name: Perl tests
-    script: perl Build.PL && ./Build test
+    script:
+    - perl Build.PL && ./Build test
+    - travis/setup-git.bash
+    - travis/dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}
+    - ./Build docs
+    - ./Build manifest
+    - travis/git-push.bash
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
