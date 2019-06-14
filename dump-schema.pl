@@ -10,6 +10,7 @@ use DBI;
 my $hostname = '127.0.0.1';
 my $database = 'photography';
 my $username = getlogin;
+my $pass;
 my $dumptables = 1;
 my $dumpfuncs = 1;
 my $dumpdata = 1;
@@ -21,6 +22,7 @@ GetOptions (
 	"hostname=s" => \$hostname,
 	"database=s" => \$database,
 	"username=s" => \$username,
+	"password=s" => \$pass;
 	"tables!" => \$dumptables,
 	"funcs!" => \$dumpfuncs,
 	"data!" => \$dumpdata,
@@ -31,7 +33,7 @@ GetOptions (
 die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $dumpdata || $dumpdocs || $dumpbasemigration);
 
 # Prompt for password
-my $password = &password($username, $hostname);
+my $password = $pass // &password($username, $hostname);
 
 if ($dumptables) {
 	# Find out the list of table and view names
