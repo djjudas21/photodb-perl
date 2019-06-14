@@ -13,7 +13,7 @@ my $username = getlogin;
 my $pass;
 my $dumptables = 1;
 my $dumpfuncs = 1;
-my $dumpdata = 1;
+my $dumpdata = 0;
 my $dumpdocs = 1;
 my $dumpbasemigration = 0;
 
