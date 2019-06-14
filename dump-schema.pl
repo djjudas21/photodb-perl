@@ -38,7 +38,7 @@ my $password = $pass // &password($username, $hostname);
 if ($dumptables) {
 	# Find out the list of table and view names
 	my $query = "show full tables";
-	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
+	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password) or die "Bad database connection info";
 	my $sqlQuery = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
 	my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 
