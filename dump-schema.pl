@@ -40,7 +40,7 @@ if ($dumptables) {
 	my @listing = `mysql -NBA -h $hostname -u $username -p$password -D $database -e 'show tables'`;
 
 	# Skip if we don't find tables
-	return unless (scalar @listing > 0);
+	#return unless (scalar @listing > 0);
 
 	# Delete all existing *.sql files in the schema subdir
 	unlink <schema/*.sql>;
