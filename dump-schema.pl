@@ -37,23 +37,29 @@ my $password = $pass // &password($username, $hostname);
 
 if ($dumptables) {
 	# Find out the list of table and view names
-	my $query = "show full tables";
-	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password) or die "Bad database connection info";
-	my $sqlQuery = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
-	my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
+	#	my $query = "show full tables";
+	#	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password) or die "Bad database connection info";
+	#	my $sqlQuery = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
+	#	my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
+
+
+	my @listing = `mysql -NBA -h $hostname -u $username -p$password -D $database -e 'show tables'`;
 
 	# Delete all existing *.sql files in the schema subdir
 	unlink <schema/*.sql>;
 
 	# Dump each table schema to its own file
 	print "\nDumping table schemas and views...\n";
-	while (my @row= $sqlQuery->fetchrow_array()) {
-		my $table = $row[0];
+	#	while (my @row= $sqlQuery->fetchrow_array()) {
+	foreach my $table (@listing)  {
+		#my $table = $row[0];
+		chomp $table;
+		$table =~ s/[^A-Z0-9_]//g;
 		&dumptable($table);
 	}
 
 	# Disconnect from the database
-	$sqlQuery->finish;
+	#	$sqlQuery->finish;
 }
 
 if ($dumpdata) {
