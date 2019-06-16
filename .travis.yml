@@ -18,7 +18,7 @@ jobs:
     name: Perl tests
     script:
       - perl Build.PL && ./Build test
-      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status
+      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git diff
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
