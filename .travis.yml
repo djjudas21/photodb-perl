@@ -16,9 +16,9 @@ jobs:
   include:
   - stage: test
     name: Perl tests
-    script: perl Build.PL && ./Build test
-  - stage: dump
-    script: ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status
+    script:
+      - perl Build.PL && ./Build test
+      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
