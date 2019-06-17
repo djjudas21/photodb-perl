@@ -13,7 +13,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `choose_flash_protocol` AS select `FLASH_PROTOCOL`.`flash_protocol_id` AS `id`,if(`MANUFACTURER`.`manufacturer_id` is null or `MANUFACTURER`.`manufacturer` = 'Unknown',`FLASH_PROTOCOL`.`name`,concat(`MANUFACTURER`.`manufacturer`,' ',`FLASH_PROTOCOL`.`name`)) AS `opt` from (`FLASH_PROTOCOL` left join `MANUFACTURER` on(`MANUFACTURER`.`manufacturer_id` = `FLASH_PROTOCOL`.`manufacturer_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

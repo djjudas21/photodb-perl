@@ -14,7 +14,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `choose_scan` AS select `SCAN`.`scan_id` AS `id`,ifnull(concat('Negative ',`NEGATIVE`.`film_id`,'/',`NEGATIVE`.`frame`,ifnull(concat(' ',`NEGATIVE`.`description`),'')),concat('Print #',`PRINT`.`print_id`,' ',`PRINTNEG`.`description`)) AS `opt`,`SCAN`.`filename` AS `filename` from (((`SCAN` left join `NEGATIVE` on(`SCAN`.`negative_id` = `NEGATIVE`.`negative_id`)) left join `PRINT` on(`SCAN`.`print_id` = `PRINT`.`print_id`)) left join `NEGATIVE` `PRINTNEG` on(`PRINT`.`negative_id` = `PRINTNEG`.`negative_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

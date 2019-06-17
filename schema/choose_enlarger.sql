@@ -13,7 +13,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `choose_enlarger` AS select `ENLARGER`.`enlarger_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`ENLARGER`.`enlarger`) AS `opt` from (`ENLARGER` join `MANUFACTURER`) where `ENLARGER`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id` and `ENLARGER`.`lost` is null */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

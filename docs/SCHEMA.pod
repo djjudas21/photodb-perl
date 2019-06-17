@@ -921,11 +921,9 @@ Table to catalogue negatives that should be printed
 
 =head2 schema_migrations
 
-Table to record schema migrations
-
-    +--------------+--------------+-------------------------------+
-    | COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT                |
-    +--------------+--------------+-------------------------------+
-    | name         | varchar(255) | Filename of applied migration |
-    | date_applied | datetime     | Date migration was applied    |
-    +--------------+--------------+-------------------------------+
+    +--------------+--------------+----------------+
+    | COLUMN_NAME  | COLUMN_TYPE  | COLUMN_COMMENT |
+    +--------------+--------------+----------------+
+    | name         | varchar(255) |                |
+    | date_applied | datetime     |                |
+    +--------------+--------------+----------------+

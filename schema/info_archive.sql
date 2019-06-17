@@ -18,7 +18,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `info_archive` AS select `ARCHIVE`.`archive_id` AS `Archive ID`,`ARCHIVE`.`name` AS `Archive name`,concat(`ARCHIVE`.`max_width`,'x',`ARCHIVE`.`max_height`) AS `Maximum size`,`ARCHIVE`.`location` AS `Location`,`ARCHIVE`.`storage` AS `Storage type`,`printbool`(`ARCHIVE`.`sealed`) AS `Sealed`,`ARCHIVE_TYPE`.`archive_type` AS `Archive type` from (`ARCHIVE` join `ARCHIVE_TYPE` on(`ARCHIVE`.`archive_type_id` = `ARCHIVE_TYPE`.`archive_type_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

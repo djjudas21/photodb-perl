@@ -15,7 +15,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `report_duplicate_cameras` AS select count(`CAMERA`.`camera_id`) AS `Qty`,concat(`MANUFACTURER`.`manufacturer`,' ',`CAMERAMODEL`.`model`) AS `Camera model`,group_concat(distinct `CAMERA`.`camera_id` separator ', ') AS `Camera IDs`,group_concat(distinct `CAMERA`.`serial` separator ', ') AS `Serial numbers` from ((`CAMERA` join `CAMERAMODEL` on(`CAMERA`.`cameramodel_id` = `CAMERAMODEL`.`cameramodel_id`)) join `MANUFACTURER` on(`CAMERAMODEL`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) where `CAMERA`.`own` = 1 group by `CAMERA`.`cameramodel_id` having count(`CAMERA`.`camera_id`) > 1 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

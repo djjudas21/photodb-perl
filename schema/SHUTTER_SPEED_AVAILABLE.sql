@@ -7,6 +7,7 @@ CREATE TABLE `SHUTTER_SPEED_AVAILABLE` (
   PRIMARY KEY (`cameramodel_id`,`shutter_speed`),
   KEY `fk_SHUTTER_SPEED_AVAILABLE_1_idx` (`shutter_speed`),
   KEY `fk_SHUTTER_SPEED_AVAILABLE_2_idx` (`cameramodel_id`),
+  CONSTRAINT `fk_SHUTTER_SPEED_AVAILABLE_1` FOREIGN KEY (`shutter_speed`) REFERENCES `SHUTTER_SPEED` (`shutter_speed`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_SHUTTER_SPEED_AVAILABLE_2` FOREIGN KEY (`cameramodel_id`) REFERENCES `CAMERAMODEL` (`cameramodel_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Table to associate cameras with shutter speeds';
 /*!40101 SET character_set_client = @saved_cs_client */;

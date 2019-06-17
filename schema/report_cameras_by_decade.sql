@@ -13,7 +13,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`photography`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `report_cameras_by_decade` AS select floor(`CAMERAMODEL`.`introduced` / 10) * 10 AS `Decade`,count(`CAMERA`.`camera_id`) AS `Cameras` from (`CAMERA` join `CAMERAMODEL` on(`CAMERA`.`cameramodel_id` = `CAMERAMODEL`.`cameramodel_id`)) where `CAMERAMODEL`.`introduced` is not null group by floor(`CAMERAMODEL`.`introduced` / 10) * 10 */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

@@ -15,7 +15,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `choose_negativeformat` AS select `FORMAT`.`format_id` AS `format_id`,`FORMAT`.`format` AS `format`,`NEGATIVE_SIZE`.`negative_size_id` AS `negative_size_id`,`NEGATIVE_SIZE`.`negative_size` AS `negative_size` from ((`NEGATIVEFORMAT_COMPAT` join `FORMAT` on(`NEGATIVEFORMAT_COMPAT`.`format_id` = `FORMAT`.`format_id`)) join `NEGATIVE_SIZE` on(`NEGATIVEFORMAT_COMPAT`.`negative_size_id` = `NEGATIVE_SIZE`.`negative_size_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
