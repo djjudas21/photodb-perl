@@ -35,12 +35,9 @@ die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $
 # Prompt for password
 my $password = $pass // &password($username, $hostname);
 
-# Set up secure login
-`mysql_config_editor set --login-path=local --host=$hostname --user=$username --password=$password`;
-
 if ($dumptables) {
 	# Find out the list of table and view names
-	my @listing = `mysql --login-path=local -NBA -D $database -e 'show tables'`;
+	my @listing = `mysql -NBA -h $hostname -u $username -p$password -D $database -e 'show tables'`;
 
 	# Skip if we don't find tables
 	#return unless (scalar @listing > 0);
@@ -105,7 +102,7 @@ if ($dumpbasemigration) {
 sub dumptable {
 	my $table = shift;
 	print "\tDumping schema for $table\n";
-	`mysqldump --login-path=local --max_allowed_packet=1G --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${table}.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${table}.sql`;
 	return;
 }
 
@@ -113,14 +110,14 @@ sub dumptable {
 sub dumpmigration {
 	print "\tDumping base migration schema\n";
 	my $tables = 'ACCESSORY_TYPE ACCESSORY PERSON ARCHIVE_TYPE CONDITION LOG BATTERY PROCESS MANUFACTURER EXPOSURE_PROGRAM EXHIBITION FOCUS_TYPE METERING_MODE SHUTTER_SPEED SHUTTER_TYPE PAPER_STOCK METERING_TYPE FORMAT FLASH_PROTOCOL FILTER_ADAPTER FILTER ARCHIVE LIGHT_METER BODY_TYPE NEGATIVE_SIZE MOUNT FILMSTOCK DEVELOPER MOUNT_ADAPTER FILM_BULK TELECONVERTER TONER ENLARGER FLASH PROJECTOR LENS CAMERA MOVIE METERING_MODE_AVAILABLE EXPOSURE_PROGRAM_AVAILABLE ACCESSORY_COMPAT SHUTTER_SPEED_AVAILABLE REPAIR FILM NEGATIVE PRINT SCAN TO_PRINT EXHIBIT';
-	`mysqldump --login-path=local --max_allowed_packet=1G --protocol=tcp --default-character-set=utf8 --skip-comments --no-data "$database" --tables $tables | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-data "$database" --tables $tables | sed 's/ AUTO_INCREMENT=[0-9]*//g' > basemigration.sql`;
 	return;
 }
 
 # Dump functions
 sub dumpfuncs {
 	print "\nDumping functions...\n";
-	`mysqldump --login-path=local --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/functions.sql`;
+	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/functions.sql`;
 	return;
 }
 
@@ -128,7 +125,7 @@ sub dumpfuncs {
 sub dumpdata {
 	my $table = shift;
 	print "\tDumping data from $table\n";
-	`mysqldump --login-path=local --max_allowed_packet=1G --protocol=tcp --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${table}_data.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${table}_data.sql`;
 	return;
 }
 
@@ -163,7 +160,7 @@ sub dumpdocs {
 			push(@output, "$commentrow[0]\n\n");
 		}
 
-		my @tableoutput = `mysql --login-path=local -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
+		my @tableoutput = `mysql -h$hostname -u$username -p$password -t -e "SELECT COLUMN_NAME, COLUMN_TYPE, COLUMN_COMMENT FROM information_schema.columns WHERE table_name = '$table';" $database`;
 
 		# Add 4 leading spaces
 		foreach (@tableoutput) {
