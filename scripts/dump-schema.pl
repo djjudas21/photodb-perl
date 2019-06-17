@@ -10,10 +10,9 @@ use DBI;
 my $hostname = '127.0.0.1';
 my $database = 'photography';
 my $username = getlogin;
-my $pass;
 my $dumptables = 1;
 my $dumpfuncs = 1;
-my $dumpdata = 0;
+my $dumpdata = 1;
 my $dumpdocs = 1;
 my $dumpbasemigration = 0;
 
@@ -22,7 +21,6 @@ GetOptions (
 	"hostname=s" => \$hostname,
 	"database=s" => \$database,
 	"username=s" => \$username,
-	"password=s" => \$pass,
 	"tables!" => \$dumptables,
 	"funcs!" => \$dumpfuncs,
 	"data!" => \$dumpdata,
@@ -33,25 +31,27 @@ GetOptions (
 die("Must specify at least one action\n") unless ($dumptables || $dumpfuncs || $dumpdata || $dumpdocs || $dumpbasemigration);
 
 # Prompt for password
-my $password = $pass // &password($username, $hostname);
+my $password = &password($username, $hostname);
 
 if ($dumptables) {
 	# Find out the list of table and view names
-	my @listing = `mysql -NBA -h $hostname -u $username -p$password -D $database -e 'show tables'`;
-
-	# Skip if we don't find tables
-	#return unless (scalar @listing > 0);
+	my $query = "show full tables";
+	my $dbh = DBI->connect("DBI:mysql:$database:$hostname", $username, $password);
+	my $sqlQuery = $dbh->prepare($query) or die "Can't prepare $query: $dbh->errstr\n";
+	my $rv = $sqlQuery->execute or die "can't execute the query: $sqlQuery->errstr";
 
 	# Delete all existing *.sql files in the schema subdir
 	unlink <schema/*.sql>;
 
 	# Dump each table schema to its own file
 	print "\nDumping table schemas and views...\n";
-	foreach my $table (@listing)  {
-		chomp $table;
-		$table =~ s/[^\w]//gi;
+	while (my @row= $sqlQuery->fetchrow_array()) {
+		my $table = $row[0];
 		&dumptable($table);
 	}
+
+	# Disconnect from the database
+	$sqlQuery->finish;
 }
 
 if ($dumpdata) {
@@ -102,7 +102,7 @@ if ($dumpbasemigration) {
 sub dumptable {
 	my $table = shift;
 	print "\tDumping schema for $table\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' | sed -e 's/DEFINER=[^ ]* //' > schema/${table}.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --compact --no-data "$database" "$table" | sed 's/ AUTO_INCREMENT=[0-9]*//g' > schema/${database}_${table}.sql`;
 	return;
 }
 
@@ -117,7 +117,7 @@ sub dumpmigration {
 # Dump functions
 sub dumpfuncs {
 	print "\nDumping functions...\n";
-	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/functions.sql`;
+	`mysqldump --host=$hostname --user=$username --password=$password --routines --no-create-info --no-data --no-create-db --skip-comments --compact --skip-opt "$database" | grep -v DELIMITER | sed -e 's/DEFINER=[^ ]* //' > schema/${database}_functions.sql`;
 	return;
 }
 
@@ -125,7 +125,7 @@ sub dumpfuncs {
 sub dumpdata {
 	my $table = shift;
 	print "\tDumping data from $table\n";
-	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${table}_data.sql`;
+	`mysqldump --max_allowed_packet=1G --host=$hostname --protocol=tcp --user=$username --password=$password --default-character-set=utf8 --skip-comments --no-create-info "$database" "$table" > sample-data/${database}_${table}_data.sql`;
 	return;
 }
 
