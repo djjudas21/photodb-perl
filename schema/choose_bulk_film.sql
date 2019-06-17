@@ -13,7 +13,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8 */;
 /*!50001 SET collation_connection      = utf8_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`jonathan`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `choose_bulk_film` AS select `FILM_BULK`.`film_bulk_id` AS `id`,concat(`MANUFACTURER`.`manufacturer`,' ',`FILMSTOCK`.`name`,if(`FILM_BULK`.`batch`,concat(' (',`FILM_BULK`.`batch`,')'),'')) AS `opt` from ((`FILM_BULK` join `FILMSTOCK` on(`FILM_BULK`.`filmstock_id` = `FILMSTOCK`.`filmstock_id`)) join `MANUFACTURER` on(`FILMSTOCK`.`manufacturer_id` = `MANUFACTURER`.`manufacturer_id`)) */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;

@@ -13,7 +13,6 @@ SET character_set_client = @saved_cs_client;
 /*!50001 SET character_set_results     = utf8mb4 */;
 /*!50001 SET collation_connection      = utf8mb4_general_ci */;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`photography`@`%` SQL SECURITY DEFINER */
 /*!50001 VIEW `current_films` AS select `FILM`.`film_id` AS `id`,concat(`FM`.`manufacturer`,' ',`FILMSTOCK`.`name`,ifnull(concat(' loaded into ',`CM`.`manufacturer`,' ',`CAMERAMODEL`.`model`),''),ifnull(concat(' on ',`FILM`.`date_loaded`),''),', ',count(`NEGATIVE`.`film_id`),ifnull(concat('/',`FILM`.`frames`),''),' frames registered') AS `opt` from ((((((`FILM` join `CAMERA` on(`FILM`.`camera_id` = `CAMERA`.`camera_id`)) join `CAMERAMODEL` on(`CAMERA`.`cameramodel_id` = `CAMERAMODEL`.`cameramodel_id`)) join `MANUFACTURER` `CM` on(`CAMERAMODEL`.`manufacturer_id` = `CM`.`manufacturer_id`)) join `FILMSTOCK` on(`FILM`.`filmstock_id` = `FILMSTOCK`.`filmstock_id`)) join `MANUFACTURER` `FM` on(`FILMSTOCK`.`manufacturer_id` = `FM`.`manufacturer_id`)) left join `NEGATIVE` on(`FILM`.`film_id` = `NEGATIVE`.`film_id`)) where `FILM`.`date` is null group by `FILM`.`film_id` */;
 /*!50001 SET character_set_client      = @saved_cs_client */;
 /*!50001 SET character_set_results     = @saved_cs_results */;
