@@ -9,21 +9,25 @@ env:
 addons:
   mariadb: '10.3'
 before_install:
-  - mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
-  - mkdir -p ~/.photodb
-  - echo -e "[database]\nuser=photodb\nschema=photodb\npass=photodb\nhost=localhost" > ~/.photodb/photodb.ini
+- mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
+- mkdir -p ~/.photodb
+- echo -e "[database]\nuser=photodb\nschema=photodb\npass=photodb\nhost=localhost" > ~/.photodb/photodb.ini
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
   - stage: test
     name: Perl tests
     script:
-      - perl Build.PL && ./Build test
-      - git config --global user.email "travis@travis-ci.org" && git config --global user.name "Travis CI" && git config --global push.default current && git checkout ${TRAVIS_BRANCH}
-      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb
-      - git status
-      - git commit -a -m "Automatic docs update"
-      - git push "https://${TRAVIS_SECURE_TOKEN_NAME}@https://github.com/djjudas21/photodb.git" > /dev/null 2>&1
+    - perl Build.PL && ./Build test
+    - git config --global user.email "travis@travis-ci.org" && git config --global
+      user.name "Travis CI" && git config --global push.default current && git checkout
+      ${TRAVIS_BRANCH}
+    - "./dump-schema.pl --hostname=localhost --database=photodb --username=photodb
+      --password=photodb"
+    - git status
+    - git commit -a -m "Automatic docs update"
+    - git push "https://${GH_TOKEN}@https://github.com/djjudas21/photodb.git"
+      > /dev/null 2>&1
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
