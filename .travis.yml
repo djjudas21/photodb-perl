@@ -5,6 +5,7 @@ env:
   global:
   - PERL5LIB=$TRAVIS_BUILD_DIR/lib
   - secure: ERaAHRIEwrs9nuQGomdFizcsMwlh150KGD6nd45NZ+qvIKDFnOHuIOAwtsX4ptCfUIWjJl4qTIpAEno3x2sONZgrUMsudEIiVfngc2nycf5+mvZDbfcJUJXG4cXtSkQA63jtpuq9G/TOTtJ1vZdtL+9def6VsuV9Bbm3udPe8iI=
+  - secure: D16t4VJ9pHLDbdEu6XQ0kVAEWYbjgIRrz6y6S4n72nCU2LBkhdbATyjb/VAVFLesskQVr9aS90b7vJHR+2Jl+ID0D9CpG3pJnBIB+ZB/ECMDN3EVzuqZxHl/pX+FRNPrpH548TShnK0TiRPCOdIr6NCeugBBKchCtSRuXG4Omgs=
 addons:
   mariadb: '10.3'
 before_install:
@@ -19,7 +20,7 @@ jobs:
     script:
       - perl Build.PL && ./Build test
       - git config --global user.email "travis@travis-ci.org" && git config --global user.name "Travis CI" && git config --global push.default current && git checkout ${TRAVIS_BRANCH}
-      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git diff
+      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status && git add docs/SCHEMA.pod && git commit -m "Automatic docs update" && git push "https://${TRAVIS_SECURE_TOKEN_NAME}@https://github.com/djjudas21/photodb.git" > /dev/null 2>&1
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
