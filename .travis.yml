@@ -20,7 +20,7 @@ jobs:
     script:
       - perl Build.PL && ./Build test
       - git config --global user.email "travis@travis-ci.org" && git config --global user.name "Travis CI" && git config --global push.default current && git checkout ${TRAVIS_BRANCH}
-      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status && git add docs/SCHEMA.pod && git commit -m "Automatic docs update" && git push "https://${TRAVIS_SECURE_TOKEN_NAME}@https://github.com/djjudas21/photodb.git" > /dev/null 2>&1
+      - ./dump-schema.pl --hostname=localhost --database=photodb --username=photodb --password=photodb && git status && git add "docs/SCHEMA.pod" && git commit -m "Automatic docs update" && git push "https://${TRAVIS_SECURE_TOKEN_NAME}@https://github.com/djjudas21/photodb.git" > /dev/null 2>&1
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
