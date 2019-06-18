@@ -1,6 +1,6 @@
 =head1 PhotoDB schema documentation
 
-This documentation is generated automatically from the database schema itself with the C<travis/dump-schema.pl> script, using table and column comments embedded in the database
+This documentation is generated automatically from the database schema itself with the C<./dump-schema.pl> script, using table and column comments embedded in the database
 
 =head2 ACCESSORY
 
