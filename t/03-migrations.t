@@ -16,7 +16,7 @@ my $username = $ENV{'DBUSER'};
 my $password = $ENV{'DBPASS'};
 
 my $dbh;
-ok($dbh = DBI->connect("DBI:mysql:database=$database;host=$hostname}", $username, $password,
+ok($dbh = DBI->connect("DBI:mysql:database=$database;host=$hostname", $username, $password,
 	{
 		# Required for updates to work properly
 		mysql_client_found_rows => 0,
