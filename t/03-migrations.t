@@ -1,5 +1,7 @@
 use Test::More;
 use DB::SQL::Migrations;
+use DBI;
+use DBD::mysql;
 
 # Skip these tests if we are not running under Travis
 if ($ENV{'TRAVIS'} eq 'true') {
