@@ -4,14 +4,17 @@ perl:
 env:
   global:
   - PERL5LIB=$TRAVIS_BUILD_DIR/lib
+  - DBHOST=localhost
+  - DBNAME=photodb
+  - DBUSER=photodb
+  - DBPASS=photodb
   - secure: ERaAHRIEwrs9nuQGomdFizcsMwlh150KGD6nd45NZ+qvIKDFnOHuIOAwtsX4ptCfUIWjJl4qTIpAEno3x2sONZgrUMsudEIiVfngc2nycf5+mvZDbfcJUJXG4cXtSkQA63jtpuq9G/TOTtJ1vZdtL+9def6VsuV9Bbm3udPe8iI=
   - secure: IH0UsXakf6yFcj8U/cLQUJmDoe0dEGtMPZX5s5G0xgtuL0K7C4/DIGQk6NGjlgnsFkIcLvjzruHj0kFgC8QbmUu3bVRiHJSkhgMeNIFhPgUt3A9EdHTpqPuQtFMgTo2yGf6ffk/sg+FFQ+H+s9bvwEcDt2JbcOZ8em0MfW5GcgU=
 addons:
   mariadb: '10.3'
 before_install:
-- mysql -e "create schema photodb; GRANT ALL PRIVILEGES ON photodb.* TO photodb@localhost IDENTIFIED BY 'photodb'"
-- mkdir -p ~/.photodb
-- echo -e "[database]\nuser=photodb\nschema=photodb\npass=photodb\nhost=localhost" > ~/.photodb/photodb.ini
+- travis/setup-db.bash
+- travis/setup-git.bash
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
@@ -19,14 +22,10 @@ jobs:
     name: Perl tests
     script:
     - perl Build.PL && ./Build test
-    - git config --global user.email "travis@travis-ci.org" && git config --global
-      user.name "Travis CI" && git config --global push.default current && git checkout
-      ${TRAVIS_BRANCH}
-    - "./dump-schema.pl --hostname=localhost --database=photodb --username=photodb
-      --password=photodb"
-    - git status
-    - git commit -a -m "Automatic docs update"
-    - git push "https://${GH_TOKEN}@github.com/djjudas21/photodb.git"
+    - "./dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}"
+    - ./Build docs
+    - ./Build manifest
+    - travis/git-push.bash
   - stage: deploy
     if: tag IS present
     script: perl Build.PL && ./Build manifest && ./Build && ./Build dist
