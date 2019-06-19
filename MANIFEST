@@ -63,6 +63,7 @@ migrations/045-shutter-speeds-B-T.sql
 migrations/046-shutter-speed-available-pk.sql
 migrations/047-hide-bulb-shutterspeeds.sql
 README.pod
+scripts/dump-schema.pl
 t/00-compile.t
 t/01-usage.t
 t/02-perlcritic.t
