@@ -1,4 +1,5 @@
 use Test::More;
+use Test::Output;
 use DB::SQL::Migrations;
 use DBI;
 use DBD::mysql;
@@ -34,4 +35,4 @@ ok($migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrat
 ok($migrator->create_migrations_table(), 'create migrations table');
 
 # Run migrations
-ok($migrator->apply(), 'run migrations');
+stdout_unlike($migrator->apply(), qr/Failed to apply migration/,'run migrations');
