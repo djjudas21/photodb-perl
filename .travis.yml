@@ -14,6 +14,7 @@ addons:
   mariadb: '10.3'
 before_install:
 - travis/setup-db.bash
+- travis/setup-git.bash
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
@@ -21,7 +22,6 @@ jobs:
     name: Perl tests
     script:
     - perl Build.PL && ./Build test
-    - travis/setup-git.bash
     - "./dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}"
     - ./Build docs
     - ./Build manifest
