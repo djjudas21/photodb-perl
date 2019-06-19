@@ -35,4 +35,4 @@ ok($migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrat
 ok($migrator->create_migrations_table(), 'create migrations table');
 
 # Run migrations
-stdout_unlike(\$migrator->apply(), qr/Failed to apply migration/, 'run migrations');
+stdout_unlike(sub {$migrator->apply();}, qr/Failed to apply migration/, 'run migrations');
