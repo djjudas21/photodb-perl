@@ -23,7 +23,7 @@ jobs:
     - perl Build.PL && ./Build test
   - stage: generate
     name: Generate assets
-    if: type IS NOT pull_request
+    if: type IS NOT pull_request && commit_message != 'Automatic docs update'
     script:
     - travis/setup-git.bash
     - travis/run-migrations.pl
