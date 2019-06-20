@@ -14,7 +14,6 @@ addons:
   mariadb: '10.3'
 before_install:
 - travis/setup-db.bash
-- travis/setup-git.bash
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
 jobs:
   include:
@@ -22,6 +21,12 @@ jobs:
     name: Perl tests
     script:
     - perl Build.PL && ./Build test
+  - stage: generate
+    name: Generate assets
+    if: type IS NOT pull_request && commit_message != 'Automatic docs update'
+    script:
+    - travis/setup-git.bash
+    - travis/run-migrations.pl
     - "./dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}"
     - ./Build docs
     - ./Build manifest
