@@ -15,7 +15,7 @@ addons:
 before_install:
 - travis/setup-db.bash
 install: cpanm --quiet --installdeps --notest --skip-satisfied .
-if: commit_message != 'Automatic docs update'
+if: commit_message != 'Automatic docs update' || tag IS present
 jobs:
   include:
   - stage: test
