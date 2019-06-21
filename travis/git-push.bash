@@ -9,4 +9,3 @@ else
   git commit -m "Automatic docs update"
   git push "https://${GH_TOKEN}@github.com/djjudas21/photodb.git"
 fi
-git stash apply
