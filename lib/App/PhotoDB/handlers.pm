@@ -624,15 +624,12 @@ sub camera_sell {
 	$data{lost_price} = $href->{lost_price} // &prompt({prompt=>'How much did this camera sell for?', type=>'decimal'});
 	&updaterecord({db=>$db, data=>\%data, table=>'CAMERA', where=>{camera_id=>$camera_id}});
 	&unsetdisplaylens({db=>$db, camera_id=>$camera_id});
-	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERA', where=>{camera_id=>$camera_id}})) {
-		my $lens_id = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$camera_id}});
-		if ($lens_id) {
-			my %lensdata;
-			$lensdata{own} = 0;
-			$lensdata{lost} = $data{lost};
-			$lensdata{lost_price} = 0;
-			&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>{lens_id=>$lens_id}});
-		}
+	if (my $lens_id = &lookupval({db=>$db, col=>'lens_id', table=>'CAMERA', where=>{camera_id=>$camera_id}})) {
+		my %lensdata;
+		$lensdata{own} = 0;
+		$lensdata{lost} = $data{lost};
+		$lensdata{lost_price} = 0;
+		&updaterecord({db=>$db, data=>\%lensdata, table=>'LENS', where=>{lens_id=>$lens_id}});
 	}
 	return;
 }
