@@ -30,7 +30,7 @@ jobs:
     - perl Build.PL && ./Build test
     - travis/dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}
     - ./Build docs
-    - ./Build manifest
+    - rm MANIFEST && ./Build manifest
     - travis/git-push.bash
   - stage: deploy
     if: tag IS present
