@@ -89,6 +89,7 @@
 # Avoid schema dump files
 ^schema/
 ^sample-data/
+^travis/
 
 ^local$
 \.spec$
