@@ -27,7 +27,7 @@ jobs:
     script:
     - travis/setup-git.bash
     - perl Build.PL && ./Build test
-    - ./dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}
+    - travis/dump-schema.pl --hostname=${DBHOST} --database=${DBNAME} --username=${DBUSER} --password=${DBPASS}
     - ./Build docs
     - ./Build manifest
     - travis/git-push.bash
