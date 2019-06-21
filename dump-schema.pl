@@ -52,6 +52,8 @@ if ($dumptables) {
 			$table =~ s/[^\w]//gi;
 			&dumptable($table);
 		}
+	} else {
+		exit 1;
 	}
 }
 
