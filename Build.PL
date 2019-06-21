@@ -53,6 +53,7 @@ my $builder = $class->new(
 		'Test::Perl::Critic' => 0,
 		'Test::Compile' => 0,
 		'Test::Expect' => 0,
+		'Test::Output' => 0,
 		'DB::SQL::Migrations' => 0,
 	},
 );

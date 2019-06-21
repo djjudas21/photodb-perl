@@ -3,15 +3,12 @@ Build.PL
 CHANGELOG
 docs/CONTRIBUTING.pod
 docs/SCHEMA.pod
-dump-schema.pl
 lib/App/PhotoDB.pm
 lib/App/PhotoDB/commands.pm
 lib/App/PhotoDB/funcs.pm
 lib/App/PhotoDB/handlers.pm
 LICENSE
 MANIFEST			This list of files
-META.json
-META.yml
 migrations/000-base-schema.sql
 migrations/001-sample-data.sql
 migrations/002-functions.sql
@@ -66,5 +63,6 @@ README.pod
 t/00-compile.t
 t/01-usage.t
 t/02-perlcritic.t
-t/03-functional.t
-t/04-views.t
+t/03-migrations.t
+t/04-functional.t
+t/05-views.t
