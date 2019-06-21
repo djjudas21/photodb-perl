@@ -3,6 +3,7 @@
 CREATE TABLE `METERING_MODE_AVAILABLE` (
   `cameramodel_id` int(11) NOT NULL COMMENT 'ID of camera model',
   `metering_mode_id` int(11) NOT NULL COMMENT 'ID of metering mode',
+  PRIMARY KEY (`cameramodel_id`,`metering_mode_id`),
   KEY `fk_METERING_MODE_AVAILABLE_2_idx` (`metering_mode_id`),
   KEY `fk_METERING_MODE_AVAILABLE_1_idx` (`cameramodel_id`),
   CONSTRAINT `fk_METERING_MODE_AVAILABLE_1` FOREIGN KEY (`cameramodel_id`) REFERENCES `CAMERAMODEL` (`cameramodel_id`) ON DELETE CASCADE ON UPDATE CASCADE,
