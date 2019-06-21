@@ -59,6 +59,8 @@ migrations/044-drop-shutter-speed-cols.sql
 migrations/045-shutter-speeds-B-T.sql
 migrations/046-shutter-speed-available-pk.sql
 migrations/047-hide-bulb-shutterspeeds.sql
+migrations/048-info_camera.sql
+migrations/049-info-camera-view.sql
 README.pod
 t/00-compile.t
 t/01-usage.t
