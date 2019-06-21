@@ -9,6 +9,8 @@ lib/App/PhotoDB/funcs.pm
 lib/App/PhotoDB/handlers.pm
 LICENSE
 MANIFEST			This list of files
+META.json
+META.yml
 migrations/000-base-schema.sql
 migrations/001-sample-data.sql
 migrations/002-functions.sql
