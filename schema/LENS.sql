@@ -14,6 +14,7 @@ CREATE TABLE `LENS` (
   `lost_price` decimal(6,2) DEFAULT NULL COMMENT 'Price for which the lens was sold',
   `source` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Place where the lens was acquired from',
   `condition_id` int(11) DEFAULT NULL COMMENT 'Denotes the cosmetic condition of the camera',
+  `condition` text COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Description of condition',
   PRIMARY KEY (`lens_id`),
   KEY `fk_LENS_1_idx` (`condition_id`),
   KEY `fk_LENS_5_idx` (`lensmodel_id`),
