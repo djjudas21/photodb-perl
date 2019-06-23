@@ -317,7 +317,7 @@ sub main {
 	&welcome;
 
 	# Connect to the database
-	my $db = &db({args=>$args});
+	our $db = &db({args=>$args});
 
 	# Set up terminal
 	our $term = &term;
@@ -346,7 +346,7 @@ sub main {
 
 			# Execute chosen handler
 			print "$handlers{$command}{$subcommand}{'desc'}\n";
-			$handlers{$command}{$subcommand}{'handler'}->({db=>$db});
+			$handlers{$command}{$subcommand}{'handler'}->();
 		} else {
 			# Print list of commands if unknown input is entered
 			if ($rv ne '') {
