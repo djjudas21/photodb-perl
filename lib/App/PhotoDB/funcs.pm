@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed column_comment);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed colcomment);
 
 =head2 prompt
 
@@ -2422,7 +2422,7 @@ String representation of the column comment
 
 =cut
 
-sub column_comment {
+sub colcomment {
 	my $href = shift;
 	my $db = $href->{db};
 	my $table = $href->{table};
