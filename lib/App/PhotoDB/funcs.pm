@@ -129,7 +129,7 @@ Terminal object
 =cut
 
 sub term {
-	my $term = Term::ReadLine->new('PhotoDB');
+	my $term = Term::ReadLine->new('PhotoDB') or die "Can't attach terminal\n";
 	$term->ornaments(0);
 	$term->MinLine(7);
 	return $term;
