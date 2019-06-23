@@ -308,8 +308,6 @@ sub db {
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
 
-	&runmigrations unless $skipmigrations;
-
 	return $dbh;
 }
 

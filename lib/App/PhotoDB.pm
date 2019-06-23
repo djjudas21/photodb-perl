@@ -318,6 +318,7 @@ sub main {
 
 	# Connect to the database
 	our $db = &db({args=>$args});
+	&runmigrations unless $$args{skipmigrations};
 
 	# Set up terminal
 	our $term = &term;
