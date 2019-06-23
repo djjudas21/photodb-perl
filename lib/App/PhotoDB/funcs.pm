@@ -2428,7 +2428,7 @@ sub colcomment {
 	my $table = $href->{table};
 	my $col = $href->{col};
 	return if (!$table || !$col);
-	return &lookupval({db=>$db, col=>'column_comment', table=>'information_schema', where=>{table_name=>$table, column_name=>$col}});
+	return &lookupval({db=>$db, col=>'column_comment', table=>'information_schema.COLUMNS', where=>{table_name=>$table, column_name=>$col}});
 }
 
 # This ensures the lib loads smoothly
