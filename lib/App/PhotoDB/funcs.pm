@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed column_comment);
 
 =head2 prompt
 
@@ -2397,6 +2397,37 @@ sub choose_shutterspeed {
 		}
 	}
 	return $shutter_speed;
+}
+
+
+=head2 column_comment
+
+Retrieve the comment defined in the SQL schema for a specific column
+
+=head4 Usage
+
+    my $comment = &column_comment({db=>$db, table=>$table, col=>$col});
+
+=head4 Arguments
+
+=item * C<$db> DB handle
+
+=item * C<$table> Table to retrieve the comment for
+
+=item * C<$col> Column to retrieve the comment for
+
+=head4 Returns
+
+String representation of the column comment
+
+=cut
+
+sub column_comment {
+	my $href = shift;
+	my $db = $href->{db};
+	my $table = $href->{table};
+	my $col = $href->{col};
+	return &lookupval({db=>$db, col=>'column_comment', table=>'information_schema', where=>{table_name=>$table, column_name=>$col}});
 }
 
 # This ensures the lib loads smoothly
