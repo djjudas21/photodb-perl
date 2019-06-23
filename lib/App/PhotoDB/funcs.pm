@@ -308,8 +308,6 @@ sub db {
 		}
 	) or die "Couldn't connect to database: " . DBI->errstr;
 
-	&runmigrations($dbh) unless $skipmigrations;
-
 	return $dbh;
 }
 
@@ -319,11 +317,11 @@ Run database migrations
 
 =head4 Usage
 
-    &runmigrations($db);
+    &runmigrations;
 
 =head4 Arguments
 
-=item * C<$db> DB handle
+None
 
 =head4 Returns
 
@@ -332,9 +330,9 @@ Nothing
 =cut
 
 sub runmigrations {
-	my $dbh = shift;
+	my $db = $App::PhotoDB::db;
 	use DB::SQL::Migrations;
-	my $migrator = DB::SQL::Migrations->new(dbh=>$dbh, migrations_directory=>'migrations');
+	my $migrator = DB::SQL::Migrations->new(dbh=>$db, migrations_directory=>'migrations');
 
 	print "Checking database schema... \n";
 
@@ -355,11 +353,9 @@ Update an existing record in any table
 
 =head4 Usage
 
-    my $rows = &updaterecord({db=>$db, data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
+    my $rows = &updaterecord({data=>\%data, table=>'FILM', where=>{film_id=>$film_id}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$data> Hash of new values to update
 
@@ -382,7 +378,7 @@ sub updaterecord {
 	my $href = shift;
 
 	# Unpack the hashref and set default values
-	my $db = $href->{db};			# DB handle
+	my $db = $App::PhotoDB::db;
 	my $data = $href->{data};		# Hash of new values to update
 	my $table = $href->{table};		# Name of table to update
 	my $where = $href->{where};		# Where clause, formatted for SQL::Abstract
@@ -390,7 +386,6 @@ sub updaterecord {
 	my $log = $href->{log} // 1;	    # Write event to log
 
 	# Quit if we didn't get params
-	die 'Must pass in $db' if !($db);
 	die 'Must pass in $data' if !($data);
 	die 'Must pass in $table' if !($table);
 	die 'Must pass in $where' if !($where);
@@ -404,7 +399,7 @@ sub updaterecord {
 	}
 
 	# Work out affected rows
-	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+	my $rowcount = &lookupval({col=>'count(*)', table=>$table, where=>$where});
 
 	# Dump data for debugging
 	print "\n\nThis is what I will update into $table where:\n" unless $silent;
@@ -430,7 +425,7 @@ sub updaterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = &unsci($rows);
 	print "Updated $rows rows\n" unless $silent;
-	&logger({db=>$db, type=>'EDIT', message=>"$table $rows rows"}) if $log;
+	&logger({type=>'EDIT', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 
@@ -442,11 +437,9 @@ Delete an existing record from any table
 
 =head4 Usage
 
-    my $rows = &deleterecord({db=>$db, table=>'FILM', where=>{film_id=>$film_id}});
+    my $rows = &deleterecord({table=>'FILM', where=>{film_id=>$film_id}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$table> Name of table to delete from
 
@@ -467,19 +460,18 @@ sub deleterecord {
 	my $href = shift;
 
 	# Unpack the hashref and set default values
-	my $db = $href->{db};		   # DB handle
+	my $db = $App::PhotoDB::db;
 	my $table = $href->{table};	     # Name of table to delete from
 	my $where = $href->{where};	     # Where clause, formatted for SQL::Abstract
 	my $silent = $href->{silent} // 0;      # Suppress output
 	my $log = $href->{log} // 1;	    # Write event to log
 
 	# Quit if we didn't get params
-	die 'Must pass in $db' if !($db);
 	die 'Must pass in $table' if !($table);
 	die 'Must pass in $where' if !($where);
 
 	# Work out affected rows
-	my $rowcount = &lookupval({db=>$db, col=>'count(*)', table=>$table, where=>$where});
+	my $rowcount = &lookupval({col=>'count(*)', table=>$table, where=>$where});
 
 	# Dump data for debugging
 	print "\n\nI will delete from $table where:\n" unless $silent;
@@ -503,7 +495,7 @@ sub deleterecord {
 	my $rows = $sth->execute(@bind);
 	$rows = &unsci($rows);
 	print "Deleted $rows rows\n" unless $silent;
-	&logger({db=>$db, type=>'DELETE', message=>"$table $rows rows"}) if $log;
+	&logger({type=>'DELETE', message=>"$table $rows rows"}) if $log;
 	return $rows;
 }
 
@@ -513,11 +505,9 @@ Insert a record into any table
 
 =head4 Usage
 
-    my $id = &newrecord({db=>$db, data=>\%data, table=>'FILM'});
+    my $id = &newrecord({data=>\%data, table=>'FILM'});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$data> reference to hash of new values to insert
 
@@ -538,14 +528,13 @@ sub newrecord {
 	my $href = shift;
 
 	# Unpack the hashref and set default values
-	my $db = $href->{db};			# DB handle
+	my $db = $App::PhotoDB::db;
 	my $data = $href->{data};		# Hash of new values to insert
 	my $table = $href->{table};		# Table to insert into
 	my $silent = $href->{silent} // 0;	# Suppress output
 	my $log = $href->{log} // 1;		# Log this event
 
 	# Quit if we didn't get params
-	die 'Must pass in $db' if !($db);
 	die 'Must pass in $data' if !($data);
 	die 'Must pass in $table' if !($table);
 
@@ -576,7 +565,7 @@ sub newrecord {
 	# Display inserted row
 	my $insertedrow = $sth->{mysql_insertid};
 	print "Inserted $table $insertedrow\n" unless $silent;
-	&logger({db=>$db, type=>'ADD', message=>"$table #$insertedrow"}) if $log;
+	&logger({type=>'ADD', message=>"$table #$insertedrow"}) if $log;
 
 	return $insertedrow;
 }
@@ -667,11 +656,9 @@ List arbitrary choices from the DB and return ID of the selected one
 
 =head4 Usage
 
-    my $id = &listchoices({db=>$db, table=>$table, where=>$where});
+    my $id = &listchoices({table=>$table, where=>$where});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$query> (legacy) the SQL to generate the list of choices
 
@@ -707,7 +694,7 @@ sub listchoices {
 	# Pass in a hashref of arguments
 	my $href = shift;
 
-	my $db = $href->{db};								# DB handle
+	my $db = $App::PhotoDB::db;
 	my $query = $href->{query};							# (legacy) the SQL to generate the list of choices
 	my $type = $href->{type} || 'text';						# Data type of choice to be made. Often but not always integer
 	my $inserthandler = $href->{inserthandler};					# ref to handler that can be used to insert a new row
@@ -741,7 +728,7 @@ sub listchoices {
 		print "No valid $keyword options to choose from\n";
 		if ($inserthandler && &prompt({prompt=>"Add a new $keyword?", type=>'boolean', default=>'no'})) {
 			# add a new entry
-			my $id = $inserthandler->({db=>$db});
+			my $id = $inserthandler->();
 			return $id;
 		} elsif ($skipok) {
 			return;
@@ -790,7 +777,7 @@ sub listchoices {
 	# Spawn a new handler if that's what the user chose
 	# Otherwise return what we got
 	if ($input eq $char && $inserthandler) {
-		my $id = $inserthandler->({db=>$db});
+		my $id = $inserthandler->();
 		return $id;
 	} else {
 		# Return input
@@ -849,11 +836,9 @@ Print arbitrary rows from the database as an easy way of displaying data
 
 =head4 Usage
 
-    &printlist({db=>$db, msg=>"prints from negative $neg_id", table=>'info_print', where=>{`Negative ID`=>$neg_id}});
+    &printlist({msg=>"prints from negative $neg_id", table=>'info_print', where=>{`Negative ID`=>$neg_id}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$msg> Message to display to user to describe what is being displayed. Shows up as C<Now showing $msg\n>
 
@@ -875,7 +860,7 @@ sub printlist {
 	# Pass in a hashref of arguments
 	my $href = shift;
 
-	my $db = $href->{db};				# DB handle
+	my $db = $App::PhotoDB::db;
 	my $msg = $href->{msg};				# Message to display to user
 	my $table = $href->{table};			# Part of the SQL::Abstract tuple
 	my $cols = $href->{cols} // ('id, opt');	# Part of the SQL::Abstract tuple
@@ -911,11 +896,9 @@ Return values from an arbitrary column from database as an arrayref
 
 =head4 Usage
 
-    my $existing = &lookupcol({db=>$db, table=>'CAMERA', where=>{camera_id=>$camera_id}});
+    my $existing = &lookupcol({table=>'CAMERA', where=>{camera_id=>$camera_id}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$query> (legacy) bare SQL query to run
 
@@ -935,7 +918,7 @@ sub lookupcol {
 	# Pass in a hashref of arguments
 	my $href = shift;
 
-	my $db = $href->{db};			# DB handle
+	my $db = $App::PhotoDB::db;
 	my $query = $href->{query};		# (legacy) SQL query to run
 	my $table = $href->{table};		# Part of the SQL::Abstract tuple
 	my $cols = $href->{cols} // '*';	# Part of the SQL::Abstract tuple
@@ -998,11 +981,9 @@ Return arbitrary single value from database
 
 =head4 Usage
 
-    my $info = &lookupval({db=>$db, col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
+    my $info = &lookupval({col=>'notes', table=>'FILM', where=>{film_id=>$film_id}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$query> (legacy) bare SQL query to run
 
@@ -1022,7 +1003,7 @@ sub lookupval {
 	# Pass in a hashref of arguments
 	my $href = shift;
 
-	my $db = $href->{db};			# DB handle
+	my $db = $App::PhotoDB::db;			# DB handle
 	my $query = $href->{query};		# (legacy) SQL query to run
 	my $table = $href->{table};		# Part of the SQL::Abstract tuple
 	my $col = $href->{col};			# Part of the SQL::Abstract tuple
@@ -1056,11 +1037,9 @@ Call a stored procedure from the database
 
 =head4 Usage
 
-    &call({db=>$db, procedure=>'print_unarchive', args=>['123']});
+    &call({procedure=>'print_unarchive', args=>['123']});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$procedure> name of the database stored procedure to call
 
@@ -1075,7 +1054,7 @@ Number of affected rows
 sub call {
 	my $href = shift;
 
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my $procedure = $href->{procedure};
 	my $args = $href->{args};
 
@@ -1097,11 +1076,9 @@ Return multiple values from a single database column as an arrayref
 
 =head4 Usage
 
-    my $values = &lookuplist({db=>$db, col=>$column, table=>$table, where{key=>value}});
+    my $values = &lookuplist({col=>$column, table=>$table, where{key=>value}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$table> table to run query against. Part of the SQL::Abstract tuple
 
@@ -1119,7 +1096,7 @@ sub lookuplist {
 	# Pass in a hashref of arguments
 	my $href = shift;
 
-	my $db = $href->{db};		   # DB handle
+	my $db = $App::PhotoDB::db;		   # DB handle
 	my $table = $href->{table};	     # Part of the SQL::Abstract tuple
 	my $col = $href->{col};		 # Part of the SQL::Abstract tuple
 	my $where = $href->{where} // {};       # Part of the SQL::Abstract tuple
@@ -1155,7 +1132,7 @@ Return today's date according to the DB
 
 =head4 Arguments
 
-=item * C<$db> DB handle
+None 
 
 =head4 Returns
 
@@ -1177,7 +1154,7 @@ Return an SQL-formatted timestamp for the current time
 
 =head4 Arguments
 
-=item * C<$db> Database handle
+None
 
 =head4 Returns
 
@@ -1370,11 +1347,9 @@ Get a negative ID either from the neg ID or the film/frame ID
 
 =head4 Usage
 
-    my $negID = &resolvenegid({db=>$db, string=>'10/4'});
+    my $negID = &resolvenegid({string=>'10/4'});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$string> String to represent a negative ID, either as an integer or in film/frame format, e.g. C<834> or C<10/4>
 
@@ -1386,7 +1361,6 @@ Integer negative ID
 
 sub resolvenegid {
 	my $href = shift;
-	my $db = $href->{db};
 	my $string = $href->{string};
 	if ($string =~ m/^\d+$/) {
 		# All digits - already a NegID
@@ -1395,7 +1369,7 @@ sub resolvenegid {
 		# 999/99A - a film/frame ID
 		my $film_id = $1;
 		my $frame = $2;
-		my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
+		my $neg_id = &lookupval({col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 		return $neg_id;
 	} else {
 		# Could not resolve
@@ -1409,11 +1383,9 @@ Select a negative by drilling down
 
 =head4 Usage
 
-    my $id = &chooseneg({db=>$db, oktoreturnundef=>$oktoreturnundef});
+    my $id = &chooseneg({oktoreturnundef=>$oktoreturnundef});
 
 =head4 Arguments
-
-=item * C<$db> variable containing database handle as returned by C<&db>
 
 =item * C<$oktoreturnundef> optional boolean to specify whether it is OK to fail to find a negative
 
@@ -1425,15 +1397,14 @@ Integer representing the negative ID
 
 sub chooseneg {
 	my $href = shift;
-	my $db = $href->{db};
 	my $oktoreturnundef = $href->{oktoreturnundef} || 0;
 
 	# Choose a film
 	my $film_id = &prompt({default=>'', prompt=>'Enter Film ID', type=>'integer'});
 
 	#  Choose a negative from this film
-	my $frame = &listchoices({db=>$db, table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
-	my $neg_id = &lookupval({db=>$db, col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
+	my $frame = &listchoices({table=>'NEGATIVE', cols=>'frame as id, description as opt', where=>{film_id=>$film_id}, type=>'text'});
+	my $neg_id = &lookupval({col=>"lookupneg($film_id, $frame)", table=>'NEGATIVE'});
 	if (defined($neg_id) && $neg_id =~ m/^\d+$/) {
 		return $neg_id;
 	} elsif ($oktoreturnundef == 1) {
@@ -1449,11 +1420,9 @@ Write out a text file in the film scans directory
 
 =head4 Usage
 
-    &annotatefilm({db=>$db, film_id=>$film_id});
+    &annotatefilm({film_id=>$film_id});
 
 =head4 Arguments
-
-=item * C<$db> variable containing database handle as returned by C<&db>
 
 =item * C<$film_id> integer variable containing ID of the film to be annotated
 
@@ -1465,12 +1434,12 @@ Nothing
 
 sub annotatefilm {
 	my $href = shift;
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my $film_id = $href->{film_id};
 
 	my $path = &basepath;
 	if (defined($path) && $path ne '' && -d $path) {
-		my $filmdir = &lookupval({db=>$db, col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
+		my $filmdir = &lookupval({col=>'directory', table=>'FILM', where=>{film_id=>$film_id}});
 		if (defined($filmdir) && $filmdir ne '' && -d "$path/$filmdir") {
 			# proceed
 			my $filename = "$path/$filmdir/details.txt";
@@ -1626,12 +1595,10 @@ the lens ID. It is not harmful to pass in both, but it is pointless.
 
 =head4 Usage
 
-    &unsetdisplaylens({db=>$db, camera_id=>$camera_id});
-    &unsetdisplaylens({db=>$db, lens_id=>$lens_id});
+    &unsetdisplaylens({camera_id=>$camera_id});
+    &unsetdisplaylens({lens_id=>$lens_id});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$camera_id> ID of camera whose display lens you want to unassociate
 
@@ -1645,7 +1612,7 @@ Result of SQL update
 
 sub unsetdisplaylens {
 	my $href = shift;
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my %where;
 	$where{camera_id} = $href->{camera_id};
 	$where{display_lens} = $href->{lens_id};
@@ -1729,13 +1696,11 @@ to the JPGs that have been scanned from negatives
 
 =head4 Usage
 
-    &tag({db=>$db, where=>$where});
-    &tag({db=>$db, where=>{film_id=1}});
-    &tag({db=>$db, where=>{negative_id=100}});
+    &tag({where=>$where});
+    &tag({where=>{film_id=1}});
+    &tag({where=>{negative_id=100}});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$where> hash to specify which scans should be tagged. Tags all scans if not set!
 
@@ -1749,7 +1714,7 @@ sub tag {
 
 	# Read in cmdline args
 	my $href = shift;
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my $where = $href->{where};
 
 	# Make sure basepath is valid
@@ -1912,11 +1877,9 @@ Record a database event in the log
 
 =head4 Usage
 
-    &logger({db=>$db, type=>$type, message=>$message});
+    &logger({type=>$type, message=>$message});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$type> Type of log message. Currently C<ADD> or C<EDIT> to reflect database changes.
 
@@ -1930,11 +1893,10 @@ ID of the log message
 
 sub logger {
 	my $href = shift;
-	my $db = $href->{db};
 	my $type = $href->{type};
 	my $message = $href->{message};
 
-	return &newrecord({db=>$db, data=>{datetime=>&now, type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
+	return &newrecord({data=>{datetime=>&now, type=>$type, message=>$message}, table=>'LOG', silent=>1, log=>0});
 }
 
 =head2 choosescan
@@ -1943,11 +1905,9 @@ Select a scan by specifying a filename. Allows user to pick if there are multipl
 
 =head4 Usage
 
-    my $id = &choosescan({db=>$db});
+    my $id = &choosescan;
 
 =head4 Arguments
-
-=item * C<$db> variable containing database handle as returned by C<&db>
 
 =head4 Returns
 
@@ -1957,12 +1917,11 @@ Integer representing the scan ID
 
 sub choosescan {
 	my $href = shift;
-	my $db = $href->{db};
 	# prompt user for filename of scan
 	my $filename = &prompt({prompt=>'Please enter the filename of the scan', type=>'text'});
 
 	# should be unique if filename is X-Y-img1234.jpg, otherwise they can choose
-	return &listchoices({db=>$db, table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
+	return &listchoices({table=>'choose_scan', where=>{'filename'=>$filename}, type=>'text'});
 }
 
 
@@ -2065,7 +2024,7 @@ List all scan files in the database
 
 =head4 Arguments
 
-=item * C<$db> database handle
+None
 
 =head4 Returns
 Array of file paths of scans recorded in the database
@@ -2074,10 +2033,9 @@ Array of file paths of scans recorded in the database
 
 sub dbfiles {
 	my $href = shift;
-	my $db = $href->{db};
 	my $basepath = &basepath;
 	# Query DB to find all known scans
-	my $dbfilesref = &lookuplist({db=>$db, col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
+	my $dbfilesref = &lookuplist({col=>"concat('$basepath', '/', directory, '/', filename)", table=>'scans_negs'});
 	my @dbfiles = @$dbfilesref;
 
 	# Filter out empty elements
@@ -2120,7 +2078,6 @@ Search for objects in the database
 =head4 Usage
 
     my $id = &search({
-        db         => $db,
         table      => 'choose_camera',
         searchterm => $searchterm,
         choices    => [
@@ -2132,8 +2089,6 @@ Search for objects in the database
     });
 
 =head4 Arguments
-
-=item * C<$db> database handle
 
 =item * C<$table> name of table or view to search in
 
@@ -2156,7 +2111,6 @@ ID of located object
 # Search for objects in the database
 sub search {
 	my $href = shift;
-	my $db = $href->{db};
 	my $table = $href->{table};
 	my $keyword = $href->{keyword} // &keyword($table);
 	my $searchterm = $href->{searchterm} // &prompt({prompt=>"Enter $keyword search term"});
@@ -2168,7 +2122,6 @@ sub search {
 
 	# Perform search
 	my $id = &listchoices({
-		db     => $db,
 		cols   => $cols,
 		table  => $table,
 		where  => $where,
@@ -2187,7 +2140,7 @@ sub search {
 
 		# Execute chosen handler with ID passed into named arg
 		if ($action && $choices->[$action]{handler}) {
-			$choices->[$action]{handler}->({db=>$db, $choices->[$action]{id}=>$id});
+			$choices->[$action]{handler}->({$choices->[$action]{id}=>$id});
 		}
 	} else {
 		print "Selected $id\n";
@@ -2201,11 +2154,9 @@ Display multi-column SQL views as tabulated data.
 
 =head4 Usage
 
-    &tabulate({db=>$db, view=>$view});
+    &tabulate({view=>$view});
 
 =head4 Arguments
-
-=item * C<$db> database handle
 
 =item * C<$view> name of SQL view to print
 
@@ -2221,7 +2172,7 @@ Number of rows displayed
 
 sub tabulate {
 	my $href = shift;
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my $view = $href->{view};
 	my $cols = $href->{cols} // '*';
 	my $where = $href->{where} // {};
@@ -2359,11 +2310,9 @@ the duration in seconds, and return that instead. Also add it to the C<SHUTTER_S
 
 =head4 Usage
 
-    my $shutter_speed = &choose_shutterspeed({db=>$db, film_id=>$film_id});
+    my $shutter_speed = &choose_shutterspeed({film_id=>$film_id});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$film_id> Film ID that we are inserting into, so the camera can be found
 
@@ -2375,25 +2324,24 @@ String representation of a shutter speed, which is both a valid EXIF representat
 
 sub choose_shutterspeed {
 	my $href = shift;
-	my $db = $href->{db};
 	my $film_id = $href->{film_id};
 
 	# Prompt user to choose available shutter speed for their camera
-	my $shutter_speed = &listchoices({db=>$db, keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$film_id}, type=>'text', required=>1});
+	my $shutter_speed = &listchoices({keyword=>'shutter speed', table=>'choose_shutter_speed_by_film', where=>{film_id=>$film_id}, type=>'text', required=>1});
 
 	# If they chose B or T
 	if ($shutter_speed eq 'B' or $shutter_speed eq 'T') {
 		my $shutter_speed = &prompt({prompt=>'What duration was the exposure? (s)', type=>'integer', required=>1});
 
 		# If this is not already a valid shutter speed, insert it as a bulb-only speed
-		my $cameramodel_id = &lookupval({db=>$db, col=>'cameramodel_id', table=>'FILM join CAMERA on FILM.camera_id=CAMERA.camera_id', where=>{film_id=>$film_id}});
-		if (!&lookupval({db=>$db, col=>'count(*)', table=>'SHUTTER_SPEED_AVAILABLE', where=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$shutter_speed}})) {
+		my $cameramodel_id = &lookupval({col=>'cameramodel_id', table=>'FILM join CAMERA on FILM.camera_id=CAMERA.camera_id', where=>{film_id=>$film_id}});
+		if (!&lookupval({col=>'count(*)', table=>'SHUTTER_SPEED_AVAILABLE', where=>{cameramodel_id=>$cameramodel_id, shutter_speed=>$shutter_speed}})) {
 			# insert new bulb shutter speed
 			my %data;
 			$data{cameramodel_id} = $cameramodel_id;
 			$data{shutter_speed} = $shutter_speed;
 			$data{bulb} = 1;
-			&newrecord({db=>$db, data=>\%data, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
+			&newrecord({data=>\%data, table=>'SHUTTER_SPEED_AVAILABLE', silent=>1});
 		}
 	}
 	return $shutter_speed;
