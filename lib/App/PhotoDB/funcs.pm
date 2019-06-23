@@ -2427,6 +2427,7 @@ sub colcomment {
 	my $db = $href->{db};
 	my $table = $href->{table};
 	my $col = $href->{col};
+	return if (!$table || !$col);
 	return &lookupval({db=>$db, col=>'column_comment', table=>'information_schema', where=>{table_name=>$table, column_name=>$col}});
 }
 
