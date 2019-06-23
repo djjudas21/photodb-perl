@@ -354,6 +354,7 @@ sub camera_add {
 	$data{notes} = &prompt({prompt=>'Additional notes'});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+	$data{condition} = &prompt({prompt=>'Condition description'});
 
 	if (&lookupval({db=>$db, col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
 		# Attempt to figure out the lensmodel that comes with this cameramodel
@@ -392,6 +393,7 @@ sub camera_edit {
 	$data{notes} = &prompt({prompt=>'Additional notes', default=>$$existing{notes}});
 	$data{source} = &prompt({prompt=>'Where was the camera acquired from?', default=>$$existing{source}});
 	$data{condition_id} = &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$existing{condition_id}});
+	$data{condition} = &prompt({prompt=>'Condition description'});
 
 	# Compare new and old data to find changed fields
 	my $changes = &hashdiff($existing, \%data);
@@ -880,6 +882,7 @@ sub lens_add {
 	$data{own} = $href->{own} // &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>'yes'});
 	$data{source} = $href->{source} // &prompt({prompt=>'Where was this lens sourced from?'});
 	$data{condition_id} = $href->{condition_id} // &listchoices({db=>$db, keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
+	$data{condition} = &prompt({prompt=>'Condition description'});
 
 	my $lens_id = &newrecord({db=>$db, data=>\%data, table=>'LENS'});
 	return $lens_id;
