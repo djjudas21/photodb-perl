@@ -319,10 +319,10 @@ sub camera_add {
 
 	my $manufacturer_id = &choose_manufacturer;
 	$data{cameramodel_id} = &listchoices({table=>'choose_cameramodel', where=>{'manufacturer_id'=>$manufacturer_id}, required=>1, inserthandler=>\&cameramodel_add});
-	$data{acquired} = &prompt({default=>&today, prompt=>'When was it acquired?', type=>'date'});
-	$data{cost} = &prompt({prompt=>'What did the camera cost?', type=>'decimal'});
-	$data{serial} = &prompt({prompt=>'What is the camera\'s serial number?'});
-	$data{datecode} = &prompt({prompt=>'What is the camera\'s datecode?'});
+	$data{acquired} = &prompt({table=>'CAMERA', col=>'acquired', default=>&today});
+	$data{cost} = &prompt({table=>'CAMERA', col=>'cost'});
+	$data{serial} = &prompt({table=>'CAMERA', col=>'serial'});
+	$data{datecode} = &prompt({table=>'CAMERA', col=>'datecode'});
 
 	# Attempt to decode datecode for Canon cameras
 	my $manufactured;
@@ -332,10 +332,10 @@ sub camera_add {
 		$manufactured = &canondatecode({datecode=>$data{datecode}, introduced=>$introduced, discontinued=>$discontinued});
 	}
 
-	$data{manufactured} = &prompt({prompt=>'When was the camera manufactured?', type=>'integer', default=>$manufactured});
-	$data{own} = &prompt({default=>'yes', prompt=>'Do you own this camera?', type=>'boolean'});
-	$data{notes} = &prompt({prompt=>'Additional notes'});
-	$data{source} = &prompt({prompt=>'Where was the camera acquired from?'});
+	$data{manufactured} = &prompt({table=>'CAMERA', col=>'manufactured', default=>$manufactured});
+	$data{own} = &prompt({default=>'yes', table=>'CAMERA', col=>'own'});
+	$data{notes} = &prompt({table=>'CAMERA', col=>'notes'});
+	$data{source} = &prompt({table=>'CAMERA', col=>'source'});
 	$data{condition_id} = &listchoices({keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`'});
 
 	if (&lookupval({col=>'fixed_mount', table=>'CAMERAMODEL', where=>{cameramodel_id=>$data{cameramodel_id}}})) {
