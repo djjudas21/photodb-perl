@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed colcomment colcomments);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed colcomment colcomments mapdatatype);
 
 =head2 prompt
 
@@ -2411,6 +2411,50 @@ sub colcomments {
 		$comments{$ref->{COLUMN_NAME}} = $ref->{COLUMN_COMMENT};
         }
 	return \%comments;
+}
+
+
+=head2 mapdatatype
+
+Map one of the many SQL data types to one of a smaller set of PhotoDB data types
+
+=head4 Usage
+
+    my $photodbdatatype = &mapdatatype($sqldatatype);
+
+=head4 Arguments
+
+=item * String representation of SQL data type
+
+=head4 Returns
+
+String representation of PhotoDB data type - one of C<text>, C<integer>, C<boolean>, C<date>, C<decimal>, C<time>
+
+=cut
+
+sub mapdatatype {
+	my $sqldatatype = shift;
+
+	# int tinyint smallint bigint
+	if ($sqldatatype =~ m/int$/) {
+		return 'integer';
+	# year
+	} elsif ($sqldatatype eq 'year') {
+		return 'integer';
+	# decimal
+	} elsif ($sqldatatype eq 'decimal') {
+		return 'decimal';
+	# varchar text char mediumtext
+	} elsif ($sqldatatype =~ m/text$|char$/) {
+		return 'text';
+	} elsif ($sqldatatype eq 'date') {
+		return 'date';
+	} elsif ($sqldatatype eq 'time') {
+		return 'time';
+	}
+	return 'text';
+#| datetime   |
+#| varbinary  |
 }
 
 # This ensures the lib loads smoothly
