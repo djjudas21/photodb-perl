@@ -27,7 +27,7 @@ use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
 
-our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed colcomment);
+our @EXPORT_OK = qw(prompt db updaterecord deleterecord newrecord notimplemented nocommand nosubcommand listchoices lookupval lookuplist today validate ini printlist round pad lookupcol thin resolvenegid chooseneg annotatefilm keyword parselensmodel unsetdisplaylens welcome duration tag printbool hashdiff logger now choosescan basepath call untaint fsfiles dbfiles term unsci multiplechoice search tabulate runmigrations canondatecode choose_shutterspeed colcomment colcomments);
 
 =head2 prompt
 
@@ -2375,6 +2375,42 @@ sub colcomment {
 	my $col = $href->{col};
 	return if (!$table || !$col);
 	return &lookupval({db=>$db, col=>'column_comment', table=>'information_schema.COLUMNS', where=>{table_name=>$table, column_name=>$col}});
+}
+
+
+=head2 colcomments
+
+Retrieve all column comments defined in the SQL schema for a specific table
+
+=head4 Usage
+
+   my $commentshref = &colcomments({table=>$table});
+
+=head4 Arguments
+
+=item * C<$table> Table to retrieve the comments for
+
+=head4 Returns
+
+Hashref to hash with column names as keys as column comments as values
+
+=cut
+
+sub colcomments {
+	my $href = shift;
+	my $db = $App::PhotoDB::db;
+	my $table = $href->{table};
+
+	my $sql = SQL::Abstract->new;
+	my($stmt, @bind) = $sql->select('information_schema.COLUMNS', ['COLUMN_NAME', 'COLUMN_COMMENT'], {TABLE_NAME=>$table});
+	my $sth = $db->prepare($stmt);
+	my $rows = $sth->execute(@bind);
+
+	my %comments;
+	while (my $ref = $sth->fetchrow_hashref) {
+		$comments{$ref->{COLUMN_NAME}} = $ref->{COLUMN_COMMENT};
+        }
+	return \%comments;
 }
 
 # This ensures the lib loads smoothly
