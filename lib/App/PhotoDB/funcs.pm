@@ -81,12 +81,12 @@ sub prompt {
 	if ($table && $col) {
 		my $db = $App::PhotoDB::db;
 		my $sql = SQL::Abstract->new;
-		my($stmt, @bind) = $sql->select('information_schema.COLUMNS', ['DATA_TYPE', 'COLUMN_COMMENT'], {TABLE_NAME=>$table, COLUMN_NAME=>$col});
+		my($stmt, @bind) = $sql->select('information_schema.COLUMNS', ['COLUMN_TYPE', 'COLUMN_COMMENT'], {TABLE_NAME=>$table, COLUMN_NAME=>$col});
 		my $sth = $db->prepare($stmt);
 		my $rows = $sth->execute(@bind);
 		my $ref = $sth->fetchrow_hashref;
 		$lookup{prompt} = $ref->{COLUMN_COMMENT};
-		$lookup{type} = &mapdatatype($ref->{DATA_TYPE});
+		$lookup{type} = &mapdatatype($ref->{COLUMN_TYPE});
 	}
 
 	# Unpack the hashref and set default values
@@ -2457,21 +2457,22 @@ String representation of PhotoDB data type - one of C<text>, C<integer>, C<boole
 sub mapdatatype {
 	my $sqldatatype = shift;
 
+	if ($sqldatatype eq 'tinyint(1)') {
 	# int tinyint smallint bigint
-	if ($sqldatatype =~ m/int$/) {
+	} elsif ($sqldatatype =~ m/int/) {
 		return 'integer';
 	# year
-	} elsif ($sqldatatype eq 'year') {
+	} elsif ($sqldatatype =~ m/^year/) {
 		return 'integer';
 	# decimal
-	} elsif ($sqldatatype eq 'decimal') {
+	} elsif ($sqldatatype =~ m/^decimal/) {
 		return 'decimal';
 	# varchar text char mediumtext
-	} elsif ($sqldatatype =~ m/text$|char$/) {
+	} elsif ($sqldatatype =~ m/text|char/) {
 		return 'text';
-	} elsif ($sqldatatype eq 'date') {
+	} elsif ($sqldatatype =~ m/^date/) {
 		return 'date';
-	} elsif ($sqldatatype eq 'time') {
+	} elsif ($sqldatatype =~ m/^time/) {
 		return 'time';
 	}
 	return 'text';
