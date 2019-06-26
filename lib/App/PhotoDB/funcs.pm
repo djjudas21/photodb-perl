@@ -2348,17 +2348,15 @@ sub choose_shutterspeed {
 }
 
 
-=head2 column_comment
+=head2 colcomment
 
 Retrieve the comment defined in the SQL schema for a specific column
 
 =head4 Usage
 
-    my $comment = &column_comment({db=>$db, table=>$table, col=>$col});
+    my $comment = &colcomment({table=>$table, col=>$col});
 
 =head4 Arguments
-
-=item * C<$db> DB handle
 
 =item * C<$table> Table to retrieve the comment for
 
@@ -2372,7 +2370,7 @@ String representation of the column comment
 
 sub colcomment {
 	my $href = shift;
-	my $db = $href->{db};
+	my $db = $App::PhotoDB::db;
 	my $table = $href->{table};
 	my $col = $href->{col};
 	return if (!$table || !$col);
