@@ -44,6 +44,10 @@ would give a prompt like
 
 =head4 Arguments
 
+=item * C<$table> Name of the SQL table that this prompt relates to. Used to look up $prompt and $type if supplied.
+
+=item * C<$table> Name of the SQL column that this prompt relates to. Used to look up $prompt and $type if supplied.
+
 =item * C<$default> Default value that will be used if no input from user. Default empty string.
 
 =item * C<$prompt> Prompt message for the user
@@ -67,14 +71,32 @@ The value the user provided
 sub prompt {
 	# Pass in a hashref of arguments
 	my $href = shift;
+
+	# Unpack early hashref values
+	my $table = $href->{table};
+	my $col = $href->{col};
+
+	# If we were passed $table and $col, look up appropriate values from the schema
+	my %lookup;
+	if ($table && $col) {
+		my $db = $App::PhotoDB::db;
+		my $sql = SQL::Abstract->new;
+		my($stmt, @bind) = $sql->select('information_schema.COLUMNS', ['DATA_TYPE', 'COLUMN_COMMENT'], {TABLE_NAME=>$table, COLUMN_NAME=>$col});
+		my $sth = $db->prepare($stmt);
+		my $rows = $sth->execute(@bind);
+		my $ref = $sth->fetchrow_hashref;
+		$lookup{prompt} = $ref->{COLUMN_COMMENT};
+		$lookup{type} = &mapdatatype($ref->{DATA_TYPE});
+	}
+
 	# Unpack the hashref and set default values
-	my $default = $href->{default} // '';		# Default value that will be used if no input from user
-	my $prompt = $href->{prompt};			# Prompt message for the user
-	my $type = $href->{type} || 'text';		# Data type that this input expects, out of text, integer, boolean, date, decimal, time
-	my $required = $href->{required} // 0;		# Whether this input is required, or whether it can return an empty value
-	my $showtype = $href->{showtype} // 1;		# Whether to show the user what data type is expected
-	my $showdefault = $href->{showdefault} // 1;	# Whether to show the user what the default value is
-	my $char = $href->{char} // ':';		# Character to print at the end of the prompt
+	my $default = $href->{default} // '';			# Default value that will be used if no input from user
+	my $prompt = $lookup{prompt} || $href->{prompt};	# Prompt message for the user
+	my $type = $lookup{type} || $href->{type} || 'text';	# Data type that this input expects, out of text, integer, boolean, date, decimal, time
+	my $required = $href->{required} // 0;			# Whether this input is required, or whether it can return an empty value
+	my $showtype = $href->{showtype} // 1;			# Whether to show the user what data type is expected
+	my $showdefault = $href->{showdefault} // 1;		# Whether to show the user what the default value is
+	my $char = $href->{char} // ':';			# Character to print at the end of the prompt
 
 	die "Must provide value for \$prompt\n" if !($prompt);
 
