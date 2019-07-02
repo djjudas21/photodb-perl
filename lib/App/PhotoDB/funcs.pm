@@ -21,8 +21,7 @@ use Exporter qw(import);
 use Config::IniHash;
 use YAML;
 use Image::ExifTool;
-use Term::ReadLine;
-use Term::ReadLine::Perl;
+use Term::ReadLine::Tiny;
 use File::Basename;
 use Time::Piece;
 use Text::TabularDisplay;
@@ -129,9 +128,7 @@ Terminal object
 =cut
 
 sub term {
-	my $term = Term::ReadLine->new('PhotoDB');
-	$term->ornaments(0);
-	$term->MinLine(7);
+	my $term = Term::ReadLine::Tiny->new() or die "Cant make term\n";
 	return $term;
 }
 
