@@ -117,6 +117,7 @@ Table to catalog cameras - both cameras with fixed lenses and cameras with inter
     | lost_price     | decimal(6,2) | Price at which the camera was sold                                     |
     | source         | varchar(150) | Where the camera was acquired from                                     |
     | condition_id   | int(11)      | Denotes the cosmetic condition of the camera                           |
+    | condition      | text         | Description of condition                                               |
     | display_lens   | int(11)      | Lens ID of the lens that this camera should normally be displayed with |
     +----------------+--------------+------------------------------------------------------------------------+
 
@@ -449,6 +450,7 @@ Table to catalog lenses
     | lost_price   | decimal(6,2) | Price for which the lens was sold                           |
     | source       | varchar(150) | Place where the lens was acquired from                      |
     | condition_id | int(11)      | Denotes the cosmetic condition of the camera                |
+    | condition    | text         | Description of condition                                    |
     +--------------+--------------+-------------------------------------------------------------+
 
 =head2 LENSMODEL

@@ -15,6 +15,7 @@ CREATE TABLE `CAMERA` (
   `lost_price` decimal(6,2) DEFAULT NULL COMMENT 'Price at which the camera was sold',
   `source` varchar(150) DEFAULT NULL COMMENT 'Where the camera was acquired from',
   `condition_id` int(11) DEFAULT NULL COMMENT 'Denotes the cosmetic condition of the camera',
+  `condition` text DEFAULT NULL COMMENT 'Description of condition',
   `display_lens` int(11) DEFAULT NULL COMMENT 'Lens ID of the lens that this camera should normally be displayed with',
   PRIMARY KEY (`camera_id`),
   UNIQUE KEY `display_lens_UNIQUE` (`display_lens`),
