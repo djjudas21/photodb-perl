@@ -518,6 +518,10 @@ The C<lens> command provides subcommands for working with lenses (for cameras, e
 
 Add a new lens to the database
 
+=head3 lens edit
+
+Edit a lens
+
 =head3 lens info
 
 Show information about a lens
@@ -537,6 +541,7 @@ Sell a lens
 =cut
 	$handlers{lens} = {
 		'add'       => { 'handler' => \&lens_add,       'desc' => 'Add a new lens to the database' },
+		'edit'      => { 'handler' => \&lens_edit,      'desc' => 'Edit a lens' },
 		'info'      => { 'handler' => \&lens_info,      'desc' => 'Show information about a lens' },
 		'repair'    => { 'handler' => \&lens_repair,    'desc' => 'Repair a lens' },
 		'search'    => { 'handler' => \&lens_search,    'desc' => 'Search for a lens' },

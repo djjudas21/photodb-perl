@@ -847,6 +847,34 @@ sub lens_add {
 	return $lens_id;
 }
 
+
+# Edit an existing lens
+sub lens_edit {
+	my $href = shift;
+	my $lens_id = $href->{lens_id} // &listchoices({table=>'choose_lens', required=>1});
+	my $existing = &lookupcol({table=>'LENS', where=>{lens_id=>$lens_id}});
+	$existing = @$existing[0];
+
+	# Gather data from user
+	my %data;
+	$data{cost} = $href->{cost} // &prompt({prompt=>'How much did this lens cost?', type=>'decimal', default=>$$existing{cost}});
+	$data{serial} = $href->{serial} // &prompt({prompt=>'What is the serial number of the lens?', default=>$$existing{serial}});
+	$data{date_code} = $href->{date_code} // &prompt({prompt=>'What is the date code of the lens?', default=>$$existing{date_code}});
+	$data{manufactured} = $href->{manufactured} // &prompt({prompt=>'When was this lens manufactured?', type=>'integer', default=>$$existing{manufactured}});
+	$data{acquired} = $href->{acquired} // &prompt({prompt=>'When was this lens acquired?', type=>'date', default=>$$existing{acquired}//&today});
+	$data{own} = $href->{own} // &prompt({prompt=>'Do you own this lens?', type=>'boolean', default=>$$existing{own}//'yes'});
+	$data{source} = $href->{source} // &prompt({prompt=>'Where was this lens sourced from?', default=>$$existing{source}});
+	$data{condition_id} = $href->{condition_id} // &listchoices({keyword=>'condition', cols=>['condition_id as id', 'name as opt'], table=>'`CONDITION`', default=>$$existing{condition_id}});
+	$data{condition} = &prompt({prompt=>'Condition description', default=>$$existing{condition}});
+
+	# Compare new and old data to find changed fields
+	my $changes = &hashdiff($existing, \%data);
+
+	# Update the DB
+	return &updaterecord({data=>$changes, table=>'LENS', where=>{lens_id=>$lens_id}});
+}
+
+
 # Add a new lens model to the database
 sub lensmodel_add {
 	my $href = shift;
