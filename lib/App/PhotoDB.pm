@@ -308,6 +308,9 @@ use App::PhotoDB::commands;
 # Authoritative distro version
 our $VERSION = '0.07';
 
+# Set up terminal
+our $term = &term;
+
 sub main {
 	my $args = shift;
 
@@ -319,9 +322,6 @@ sub main {
 	# Connect to the database
 	our $db = &db({args=>$args});
 	&runmigrations unless $$args{skipmigrations};
-
-	# Set up terminal
-	our $term = &term;
 
 	# Enter interactive prompt and loop until exited by user
 	while (1) {
