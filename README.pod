@@ -1,3 +1,8 @@
+=head1 WARNING
+
+This text-mode version of PhotoDB has been deprecated and replaced with a web-based version.
+This version is still available but the development has ceased.
+
 =head1 NAME
 
 App::PhotoDB - App to manage a collection of film cameras & lenses
